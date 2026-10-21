@@ -3,6 +3,7 @@ import { createOpeningFacts, dispatch, ENGINE_VERSION, INTENTS, inspectActionPla
 import { activateWorldline, assertSlotCompatible, commitWorldline, loadWorkspace, parseSave, toJson, verifySave, type SaveFile, type WorkspaceSnapshot } from '../storage';
 import { kinshipTerm, STAT_NAMES, type AccountName, type AssetName, type Phase2Action, type RelationshipKind } from '../phase2';
 import { EXAMPLE_LANGUAGE, OFFICIAL_ABILITIES, sampleLightningContext, type AbilityCombinationId, type AbilityId, type HarmIntent, type IllusionDistribution, type InnateAction, type RealityDepth } from '../innate';
+import { HISTORY_CONTENT, type ControlLevel, type Phase4Action, type PolicyId, type WarUnit } from '../phase4';
 
 const blankWorkspace: WorkspaceSnapshot = { saves: [], profile: { regions: [], surnames: [], activeWorldlineId: null } };
 const DEDICATED_ABILITY_OPERATIONS = new Set<AbilityId>(['軒轅幻術・五感天幕','全幻術系強制執行通則','萬軍共夢','千軍異夢','惑感','入實','五感實相','五感盡失','神識威壓','妖術・伏地','萬軍伏地','全雷霆系強制敘事通則','軒轅天罰','地走雷','雷震','萬雷震軍','天雷禁域','天雷破城','軒轅天罰・雷海','百脈敕令','百脈敕令・封將','萬疫敕令','軒轅觀世','天醫敕生','歲月回春','軒轅傳音','軒轅傳音・天下共視','軒轅閃','軒轅藏界','軒轅極限收斂','萬解','霸者橫攔','霸者橫攔・摧關','霸者橫攔・撼陣','霸者橫攔・霸王擲','霸者橫攔・不動','霸骨天成','山河薪火','薪火不滅','群星入懷','萬民歸心','萬軍如臂']);
@@ -67,6 +68,14 @@ export default function App() {
   const [lightningAbility, setLightningAbility] = useState<AbilityId>('軒轅天罰');
   const [forceAbility, setForceAbility] = useState<AbilityId>('霸者橫攔・摧關');
   const [unitCommand, setUnitCommand] = useState<'前進'|'固守'|'撤退'|'護送'>('固守');
+  const [p4Policy, setP4Policy] = useState<PolicyId>('屯田與水利');
+  const [p4Control, setP4Control] = useState<ControlLevel>('軍事進入');
+  const [p4Office, setP4Office] = useState('office-clerk');
+  const [p4Person, setP4Person] = useState('example-clerk');
+  const [p4Candidate, setP4Candidate] = useState('sample-scribe');
+  const [p4Treaty, setP4Treaty] = useState('永久割讓示例郡縣');
+  const [p4TreatyTerritory, setP4TreatyTerritory] = useState('sample-county');
+  const [p4TreatySuccessor, setP4TreatySuccessor] = useState('鄰近勢力（示例）');
   const [curseAbility, setCurseAbility] = useState<'妖術・伏地'|'萬軍伏地'>('妖術・伏地');
   const [suppressSecondary, setSuppressSecondary] = useState(false);
   const [lightningPreset, setLightningPreset] = useState<'乾燥庭院'|'雨中木舍'|'潮濕金屬陣地'|'石砌關門'>('乾燥庭院');
@@ -82,6 +91,7 @@ export default function App() {
   const events = activeSave?.events ?? [];
   const phase2 = state?.phase2 ?? null;
   const innate = state?.innate ?? null;
+  const phase4 = state?.phase4 ?? null;
   const livingContacts = phase2?.persons.filter((person) => person.alive && person.id !== 'protagonist') ?? [];
   const selectedRelation = phase2?.relationships.find((entry) => entry.personId === relationTarget) ?? phase2?.relationships[0];
   const selectedContact = livingContacts.find((person) => person.id === messageTarget) ?? livingContacts[0];
@@ -102,7 +112,7 @@ export default function App() {
       }
       const worldlineId = result.state.worldlineId;
       const nextEvents = command.type === 'StartGame' ? [result.event] : [...events, result.event];
-      const save: SaveFile = { format: 'shenzhou-save', version: 5, worldlineId, events: nextEvents, state: result.state };
+      const save: SaveFile = { format: 'shenzhou-save', version: 6, worldlineId, events: nextEvents, state: result.state };
       const nextProfile = command.type === 'StartGame'
         ? { regions: [...workspace.profile.regions, command.facts.birthRegion].slice(-3), surnames: [...workspace.profile.surnames, command.facts.surname].slice(-3) }
         : workspace.profile;
@@ -139,6 +149,10 @@ export default function App() {
   function useInnate(action: InnateAction) {
     if (!state) return;
     void run({ version:ENGINE_VERSION, commandId:commandId(), expectedRevision:state.revision, worldlineId:state.worldlineId, type:'InnateAction', action });
+  }
+  function phase4Action(action:Phase4Action) {
+    if(!state)return;
+    void run({version:ENGINE_VERSION,commandId:commandId(),expectedRevision:state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action});
   }
   function submitCombination() {
     if (!state || !phase2 || !innate) return;
@@ -184,7 +198,7 @@ export default function App() {
     try {
       const rawText = await file.text();
       const raw = JSON.parse(rawText) as { version?: number };
-      const original = raw.version !== 5 ? parseSave(rawText) : undefined;
+      const original = raw.version !== 6 ? parseSave(rawText) : undefined;
       const imported = verifySave(rawText);
       const existing = workspace.saves.find((entry) => entry.worldlineId === imported.worldlineId);
       assertSlotCompatible(existing ?? undefined, imported);
@@ -296,6 +310,25 @@ export default function App() {
       {(state.actionNotes?.length??0)>0&&<article className="panel folds"><details><summary>已保存的補充說明</summary>{state.actionNotes!.map((note)=><p key={note.revision}>第 {note.turn} 回合備註：{note.text}</p>)}</details></article>}
       <p className="caption side-caption">四引擎與天生技提供可操作的小型情境；自由文字解讀、完整歷史節點及軍政世界資料仍待後續階段。</p>
     </aside></div>
+    {phase4 && phase2 && <article className="panel folds phase-panel phase4-panel"><details><summary>歷史、軍政與重大決策・資料面板（收合）</summary>
+      <p><b>世界日期：</b>西元 {phase4.year} 年 {phase4.month} 月 {phase4.dayOfMonth} 日・經歷 {phase4.day} 日。玩家位置：{phase4.playerLocation}；前線救治物資：{phase4.medicalSupplies} 份。</p>
+      <p className="caption">小型內容包 {phase4.contentVersion}。歷史資料註明來源與日期精度；郡縣、候選人才、路線與戰役單位皆為示例，不代表完整三國資料庫。工程參數見覆蓋規格。</p>
+      <section className="phase4-subsection"><h3>歷史節點・跨年自動處理</h3>{phase4.nodes.map((node)=>{const content=HISTORY_CONTENT.find(item=>item.id===node.contentId);return <div className="item-row" key={node.contentId}><span><b>{content?.title}</b><small>{content?.precision}級日期・{node.status}・{node.carrier}</small><small>{content?.source}</small></span>{node.status==='triggered'&&content?.kind==='death'&&<button className="quiet" disabled={busy||phase4.playerLocation!==phase4.historicalPersons.find(p=>p.id==='sun-jian')?.location||phase4.medicalSupplies<1} onClick={()=>{if(window.confirm('確認主角本人已在孫堅所在前線，將直接使用一份救治物資處理本次死亡危機？只有現場救治成功才會打破此節點。'))phase4Action({type:'InterveneDeath',nodeId:node.contentId,personId:'sun-jian',method:'直接前線救治',location:phase4.playerLocation});}}>親赴前線直接救治</button>}</div>;})}
+      {phase4.nodes.some(n=>n.contentId==='sun-jian-death-191'&&n.status==='triggered')&&<p className="caption">救治要求主角本人與孫堅位於同一地點，且有可用物資；可從天生技操作台使用軒轅閃抵達標示位置。一般持有治療能力不會自動介入。</p>}
+      <p className="caption">可直接處理一般事件的核心原因；每項處理會留下因果紀錄。死亡硬節點不出現在此列表，不能靠移除一般原因取消。</p>{phase4.causes.filter(c=>['dong-zhuo-central-control','regional-arms-resistance'].includes(c)).map(c=><div className="item-row" key={c}><span>{c==='dong-zhuo-central-control'?'董卓控制中央（事件因果）':'州郡武裝對立（事件因果）'}</span><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'ResolveCause',causeId:c,reason:c==='dong-zhuo-central-control'?'本世界線已完成中央權力交接（示例政治行動）':'玩家勢力以具體協議化解州郡武裝對立（示例政治行動）'})}>記錄已完成的因果處理</button></div>)}</section>
+      <div className="phase4-subsection"><h3>官職、人材與勢力競爭</h3><label>示例職缺<select value={p4Office} onChange={e=>setP4Office(e.target.value)}>{phase4.offices.map(o=><option key={o.id} value={o.id}>{o.title}・{o.holderId?'已任':'空缺'}{o.appointment?'・交接中':''}</option>)}</select></label><label>任命人選<select value={p4Person} onChange={e=>setP4Person(e.target.value)}>{phase2.persons.filter(p=>p.alive).map(p=><option key={p.id} value={p.id}>{p.name}・{p.office}</option>)}{phase4.candidates.filter(c=>c.status==='recruited').map(c=><option key={c.id} value={c.id}>{c.name}・已登用人才（示例）</option>)}</select></label><button className="quiet" disabled={busy||!!phase4.offices.find(o=>o.id===p4Office)?.holderId||!!phase4.offices.find(o=>o.id===p4Office)?.appointment} onClick={()=>phase4Action({type:'Appoint',officeId:p4Office,personId:p4Person})}>任命並按路程等待到任</button>
+      <label>人才線索<select value={p4Candidate} onChange={e=>setP4Candidate(e.target.value)}>{phase4.candidates.map(c=><option key={c.id} value={c.id}>{c.name}・{c.specialty}・{c.status}・意願 {c.willingness}</option>)}</select></label><button className="quiet" disabled={busy||['recruited','refused','approached'].includes(phase4.candidates.find(c=>c.id===p4Candidate)?.status??'')} onClick={()=>phase4Action({type:'Recruit',candidateId:p4Candidate})}>提出招攬（等待本人回應）</button>{phase4.candidates.map(c=><p className="caption" key={c.id}>{c.name}・{c.status}・目前勢力：{c.faction}・{c.example?'示例人物':''}</p>)}
+      </div>
+      <div className="phase4-subsection"><h3>政策、五層控制與普通運輸</h3><label>地區<select id="p4-territory"><option value="sample-county">潁川東部路線・郡縣示例</option><option value="sample-market">許縣至潁川驛路（示例）</option></select></label><label>政策<select value={p4Policy} onChange={e=>setP4Policy(e.target.value as PolicyId)}>{['屯田與水利','減徵與賑濟','互市與道路','軍糧徵調'].map(x=><option key={x}>{x}</option>)}</select></label><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'SetPolicy',territoryId:(document.getElementById('p4-territory') as HTMLSelectElement).value,policy:p4Policy})}>施行政策（按月結算）</button><label>下一層控制<select value={p4Control} onChange={e=>setP4Control(e.target.value as ControlLevel)}>{['名義影響','軍事進入','初步接收','穩定治理','完全實控'].map(x=><option key={x}>{x}</option>)}</select></label><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'SetControl',territoryId:(document.getElementById('p4-territory') as HTMLSelectElement).value,control:p4Control})}>逐級建立控制狀態</button>
+      <p>{phase4.territories.map(t=><span key={t.id} className="p4-chip">{t.name}・{t.control}・糧 {t.grain}・人口 {t.population}・支持 {t.support}</span>)}</p><label>普通糧運量<input id="p4-quantity" type="number" min="1" max="100" defaultValue="20" /></label><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'SendConvoy',routeId:'route-county-market',owner:'家族帳・示例',item:'糧',quantity:Number((document.getElementById('p4-quantity') as HTMLInputElement).value),from:phase4.routes[0].from,to:phase4.routes[0].to})}>沿驛路運糧（按日抵達）</button>{phase4.convoys.map(c=><p className="caption" key={c.id}>{c.quantity} {c.item}・{c.from} → {c.to}・{c.status}・尚需 {c.daysRemaining} 日・所有者 {c.owner}</p>)}
+      </div>
+      <div className="phase4-subsection"><h3>戰役示例・單一部隊清冊</h3>{!phase4.battle&&<button className="quiet" disabled={busy} onClick={()=>{const units:WarUnit[]=[{id:'blue-vanguard',faction:'郡縣守備（示例）',commanderId:'captain-blue',commanderName:'守備校尉・示例',location:'汝南渡口（示例）',strength:4000,reserve:1000,supply:5,morale:70,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命'},{id:'red-vanguard',faction:'來犯部隊（示例）',commanderId:'captain-red',commanderName:'前軍校尉・示例',location:'汝南渡口（示例）',strength:5000,reserve:0,supply:4,morale:65,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命'}];phase4Action({type:'StartBattle',id:commandId(),location:'汝南渡口・前線（示例）',units,protagonistPresent:true});}}>進入萬人級戰役示例（主角親臨）</button>}
+      {phase4.battle&&<><p>{phase4.battle.location}・第 {phase4.battle.rounds} 輪・{phase4.battle.status}・主角{phase4.battle.protagonistPresent?'親臨':'未親臨'}。總指揮：{phase4.battle.overallCommander.name}（不直接領一軍）</p><ul>{phase4.battle.units.map(u=><li key={u.id}>{u.commanderName}・{u.faction}・位置 {u.location}・地形 {u.terrain}・現役 {u.strength}・預備 {u.reserve}・糧 {u.supply}・士氣 {u.morale}・疲勞 {u.fatigue}・傷亡 死 {u.killed}／傷 {u.wounded}／潰 {u.routed}・{u.order}<button className="quiet tiny" disabled={busy||phase4.battle!.status!=='active'} onClick={()=>phase4Action({type:'Retreat',unitId:u.id})}>本部撤退</button></li>)}</ul><button className="quiet" disabled={busy||phase4.battle.status!=='active'} onClick={()=>phase4Action({type:'BattleRound',orders:Object.fromEntries(phase4.battle!.units.map((u,i)=>[u.id,i===0?'防守':'進攻']))})}>結算一輪：守軍防守、來犯部隊進攻</button>{phase4.battle.logs.map((log,i)=><p className="p4-log" key={i}>{log}</p>)}</>}</div>
+      <div className="phase4-subsection"><h3>主權草案與結局</h3><label>談判提出的具體條款<textarea value={p4Treaty} onChange={e=>setP4Treaty(e.target.value)} /></label><label>涉及領地<select value={p4TreatyTerritory} onChange={e=>setP4TreatyTerritory(e.target.value)}>{phase4.territories.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></label><label>條款生效後的控制者<input value={p4TreatySuccessor} onChange={e=>setP4TreatySuccessor(e.target.value)} /></label><button className="quiet" disabled={busy||!p4Treaty.trim()||!p4TreatySuccessor.trim()} onClick={()=>phase4Action({type:'DraftTreaty',id:commandId(),proposer:'鄰近勢力使節（示例）',clauses:[{id:'land-clause',text:p4Treaty.trim(),sovereign:true,territoryId:p4TreatyTerritory,successorOwner:p4TreatySuccessor.trim()}]})}>保存草案（不改主權）</button>{phase4.treaties.filter(t=>['draft','pending-player'].includes(t.status)).map(t=><div className="p4-decision" key={t.id}><p><b>待決條款：</b>{t.clauses.map(c=>{const territory=phase4.territories.find(x=>x.id===c.territoryId);return `${c.text}${c.sovereign?`（${territory?.name??'領地未明'} → ${c.successorOwner??'承接者未明'}）`:''}`;}).join('；')}・狀態 {t.status}</p>{t.clauses.some(c=>c.sovereign)&&<p className="caption">永久主權條款；「談判」「繼續」與送出行動均不批准。批准按鈕會再次要求確認。</p>}<button className="primary" disabled={busy} onClick={()=>{if(window.confirm(`你要明確批准以下條款嗎？\n${t.clauses.map(c=>c.text).join('；')}\n批准後會變更所列領地控制者。`))phase4Action({type:'DecideTreaty',treatyId:t.id,decision:'approve'});}}>明確批准條款</button><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'DecideTreaty',treatyId:t.id,decision:'reject'})}>拒絕條款</button></div>)}
+      <button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'SetUnified',unified:true})}>記錄完成統一（開啟善後，不自動結局）</button>{phase4.ending==='pending'&&<><p>天下已統一，善後與人生仍繼續。</p><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'ContinueAfterUnification'})}>選擇繼續人生</button><button className="primary" disabled={busy} onClick={()=>{const ending=window.prompt('請輸入你選擇的結局方向：');if(ending?.trim())phase4Action({type:'ChooseEnding',ending});}}>玩家選擇結局…</button></>}{phase4.chosenEnding&&<p>玩家選擇結局：{phase4.chosenEnding}</p>}</div>
+      <div className="phase4-subsection"><h3>事件與來源</h3>{phase4.eventLedger.slice(-12).map(event=><p className="p4-log" key={event.id}>西元 {event.year} 年 {event.month} 月 {event.dayOfMonth} 日・{event.type}：{event.detail}{event.source?`【${event.source}】`:''}</p>)}{phase4.policiesLog.slice(-4).map((log,i)=><p className="caption" key={`policy-${i}`}>{log}</p>)}{phase4.externalUpdates.slice(-4).map((log,i)=><p className="caption" key={`external-${i}`}>天下外部動態：{log}</p>)}</div>
+      <p className="caption">長期行動時間依計畫中各項需求累加（耕讀 30 日、訪求 7 日、經商 10 日、遊歷 14 日，皆為原型工程參數）；跨越重大歷史節點時，計畫在已完成行動後中斷。天生技直接移動與普通驛路運輸分開記錄。</p>
+    </details></article>}
     {phase2?.pendingNames[0] && <div className="modal-backdrop"><section className="name-dialog" role="dialog" aria-modal="true" aria-labelledby="name-dialog-title"><div className="section-kicker">玩家命名權・待決</div><h2 id="name-dialog-title">請為「{phase2.pendingNames[0].role}」命名</h2><p>命名完成前，此人物不會加入正式家族圖。</p><label>姓名<input autoFocus maxLength={20} value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} /></label><button className="primary" disabled={!nameDraft.trim() || busy} onClick={finalizeName}>確認姓名</button></section></div>}
     {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice('')}>×</button></div>}
     <footer>神洲三國・第三階段原型　<span>commit-before-render 自動保存・事件版本 {state.engineVersion}</span></footer>

@@ -9,7 +9,7 @@ function makeSave(id = 'storage-world') {
   const facts = createOpeningFacts(9, 184, noHistory);
   const result = dispatch(null, { version:ENGINE_VERSION, commandId:id, expectedRevision:0, type:'StartGame', name:`${facts.surname}元直`, seed:9, facts });
   if (!result.state || !result.event) throw new Error('storage fixture failed');
-  return { format:'shenzhou-save' as const, version:5 as const, worldlineId:result.state.worldlineId, events:[result.event], state:result.state } satisfies SaveFile;
+  return { format:'shenzhou-save' as const, version:6 as const, worldlineId:result.state.worldlineId, events:[result.event], state:result.state } satisfies SaveFile;
 }
 function makeLegacySave(id = 'legacy-world', turns = 0): LegacySaveFile {
   const facts = createOpeningFacts(99, 184, noHistory);
@@ -33,7 +33,7 @@ describe('A05／A06 存檔交易與重播', () => {
 
   it('A06 匯出後可驗證事件重播，版本未知或內容毀損會拒絕', () => {
     const save = makeSave(); expect(verifySave(toJson(save))).toEqual(save);
-    expect(() => parseSave(JSON.stringify({ ...save, version:6 }))).toThrow('存檔格式或版本不符');
+    expect(() => parseSave(JSON.stringify({ ...save, version:7 }))).toThrow('存檔格式或版本不符');
     const corrupt = { ...save, state:{ ...save.state, character:{ ...save.state.character, money:999 } } };
     expect(() => verifySave(toJson(corrupt))).toThrow('事件重播結果不一致');
   });
@@ -56,7 +56,7 @@ describe('A05／A06 存檔交易與重播', () => {
       tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error);
     }); db.close();
     const loaded = await loadWorkspace(); const migrated = loaded.saves[0];
-    expect(migrated.version).toBe(5); expect(migrated.state.phase2).toBeDefined(); expect(migrated.state.innate).toBeDefined();
+    expect(migrated.version).toBe(6); expect(migrated.state.phase2).toBeDefined(); expect(migrated.state.innate).toBeDefined(); expect(migrated.state.phase4).toBeDefined();
     expect(migrated.events.slice(0, legacy.events.length)).toEqual(legacy.events); expect(migrated.state.turn).toBe(10); expect(migrated.state.status).toBe('playing');
     expect(migrated.state.phase2?.assetBalances.錢.private).toBe(legacy.state.character.money);
     expect(migrated.state.phase2?.age).toBe(legacy.state.character.age);
@@ -81,7 +81,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const oldState=applyEvent(null,oldStart)!;
     const v3={format:'shenzhou-save' as const,version:3 as const,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
     const migrated=verifySave(JSON.stringify(v3));
-    expect(migrated.version).toBe(5);expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events.at(-2)?.type).toBe('InnateSystemUpgraded');expect(migrated.events.at(-1)?.type).toBe('EngineUpgraded');
+    expect(migrated.version).toBe(6);expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events.at(-2)?.type).toBe('EngineUpgraded');expect(migrated.events.at(-1)?.type).toBe('EngineUpgraded');
     expect(migrated.state.innate).toBeDefined();expect(migrated.state.turn).toBe(oldState.turn);expect(replay(migrated.events)).toEqual(migrated.state);
   });
 
@@ -92,11 +92,15 @@ describe('A05／A06 存檔交易與重播', () => {
     const oldEvents=[start.event!,turn.event!];
     const old={format:'shenzhou-save' as const,version:4 as const,worldlineId:turn.state!.worldlineId,events:oldEvents,state:turn.state!};
     const migrated=verifySave(JSON.stringify(old));
-    expect(migrated.version).toBe(5);
+    expect(migrated.version).toBe(6);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
     expect(migrated.events.at(-1)?.type).toBe('EngineUpgraded');
     expect(migrated.state.turn).toBe(old.state.turn);
     expect(replay(migrated.events)).toEqual(migrated.state);
+  });
+
+  it('第四階段保留既有 v5 第三階段存檔事件流並以追加升級事件遷移',()=>{
+    const facts=createOpeningFacts(52,184,noHistory);const oldStart=dispatchV3(null,{version:3,commandId:'phase3-v5-start',expectedRevision:0,type:'StartGame',name:`${facts.surname}舊線`,seed:52,facts});const oldTurn=dispatchV3(oldStart.state,{version:3,commandId:'phase3-v5-turn',expectedRevision:oldStart.state!.revision,worldlineId:oldStart.state!.worldlineId,type:'ChooseIntent',intent:'耕讀自持'});const oldEvents=[oldStart.event!,oldTurn.event!];const v4Upgrade:GameEvent={version:4,eventId:`${oldTurn.state!.worldlineId}:upgrade-v4`,commandId:'upgrade-v4',commandHash:'upgrade-v4',revision:oldTurn.state!.revision+1,type:'EngineUpgraded'};const v4State=applyEvent(oldTurn.state!,v4Upgrade);const phase3Save={format:'shenzhou-save' as const,version:5 as const,worldlineId:v4State.worldlineId,events:[...oldEvents,v4Upgrade],state:v4State};const migrated=verifySave(JSON.stringify(phase3Save));expect(migrated.version).toBe(6);expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events.at(-1)?.version).toBe(5);expect(migrated.state.phase4).toBeDefined();expect(migrated.state.turn).toBe(v4State.turn);expect(replay(migrated.events)).toEqual(migrated.state);
   });
 
   it('A05 IndexedDB 寫入失敗時仍能載回上一個完整世界線', async () => {

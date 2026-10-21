@@ -15,7 +15,7 @@ export interface RelationshipRecord {
   grievances: Array<{ id: string; turn: number; text: string }>;
 }
 export interface CoreSkill { id: string; name: string; rank: '初階' | '進階' | '極階'; practice: number; }
-export interface Injury { id: string; label: string; severity: '輕' | '中' | '重'; startedTurn: number; elapsedTurns: number; active: boolean; }
+export interface Injury { id: string; label: string; severity: '輕' | '中' | '重'; startedTurn: number; elapsedTurns: number; active: boolean; elapsedDays?:number; }
 export interface Message { id: string; recipientId: string; channel: '軒轅傳音示例' | '書信'; sentTurn: number; arrivalTurn: number; text: string; arrived: boolean; }
 export interface Speech { speakerId: string; name: string; label: string; text: string; firstSpeech: boolean; }
 export interface SceneRecord { turn: number; location: string; presentIds: string[]; enteredIds: string[]; leftIds: string[]; speeches: Speech[]; }
@@ -221,7 +221,7 @@ export function applyPhase2Action(model: Phase2Model, action: Phase2Action): Pha
   }
 }
 
-export function advancePhase2(model: Phase2Model, turn: number, year: number, intent: string, privateMoney?: number, eventId?: string): Phase2Model {
+export function advancePhase2(model: Phase2Model, turn: number, year: number, intent: string, privateMoney?: number, eventId?: string, elapsedDays?:number): Phase2Model {
   const next = structuredClone(model);
   next.age = Math.max(0, year - (next.persons.find((person) => person.id === 'protagonist')?.birthYear ?? year));
   if (privateMoney !== undefined && privateMoney !== next.assetBalances.錢.private) {
@@ -229,7 +229,7 @@ export function advancePhase2(model: Phase2Model, turn: number, year: number, in
     next.assetBalances.錢.private = privateMoney;
     next.assetLedger.push({ id:eventId ?? `round-${turn}-cash`, turn, asset:'錢', amount:Math.abs(delta), from:delta > 0 ? 'market' : 'private', to:delta > 0 ? 'private' : 'market', memo:`${intent}生活結算` });
   }
-  next.injuries.forEach((injury) => { if (injury.active) injury.elapsedTurns += 1; });
+  next.injuries.forEach((injury) => { if (injury.active) { injury.elapsedTurns += 1; if(elapsedDays!==undefined)injury.elapsedDays=(injury.elapsedDays??0)+elapsedDays; } });
   next.messages.forEach((message) => { if (!message.arrived && message.arrivalTurn <= turn) message.arrived = true; });
   if (turn === 15) {
     const clerk = next.persons.find((person) => person.id === 'example-clerk' && person.alive);

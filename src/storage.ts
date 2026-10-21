@@ -9,8 +9,9 @@ const META = 'profile';
 export interface LegacySaveFile { format: 'shenzhou-save'; version: 2; worldlineId: string; events: GameEvent[]; state: GameState; }
 export interface Phase2SaveFile { format: 'shenzhou-save'; version: 3; worldlineId: string; events: GameEvent[]; state: GameState; }
 export interface Phase3SaveFile { format: 'shenzhou-save'; version: 4; worldlineId: string; events: GameEvent[]; state: GameState; }
-export interface SaveFile { format: 'shenzhou-save'; version: 5; worldlineId: string; events: GameEvent[]; state: GameState; }
-export type AnySaveFile = SaveFile | Phase3SaveFile | Phase2SaveFile | LegacySaveFile;
+export interface Phase3WorldSaveFile { format: 'shenzhou-save'; version: 5; worldlineId: string; events: GameEvent[]; state: GameState; }
+export interface SaveFile { format: 'shenzhou-save'; version: 6; worldlineId: string; events: GameEvent[]; state: GameState; }
+export type AnySaveFile = SaveFile | Phase3WorldSaveFile | Phase3SaveFile | Phase2SaveFile | LegacySaveFile;
 export interface SaveProfile extends OpeningHistory { activeWorldlineId: string | null; }
 export interface WorkspaceSnapshot { saves: SaveFile[]; profile: SaveProfile; }
 
@@ -54,7 +55,7 @@ export async function loadWorkspace(): Promise<WorkspaceSnapshot> {
       db.close();
       try {
         const migrated = rawSaves.map(migrateSaveFile);
-        const changed = migrated.filter((_entry, index) => rawSaves[index].version !== 5);
+        const changed = migrated.filter((_entry, index) => rawSaves[index].version !== 6);
         if (changed.length) {
           const writeDb = await openSaveDb();
           await new Promise<void>((done, fail) => {
@@ -111,7 +112,7 @@ export async function activateWorldline(worldlineId: string): Promise<void> {
 export function toJson(save: SaveFile): string { return JSON.stringify(save, null, 2); }
 export function parseSave(text: string): AnySaveFile {
   const value = JSON.parse(text) as AnySaveFile;
-  if (value.format !== 'shenzhou-save' || ![2, 3, 4, 5].includes(value.version) || !value.worldlineId || !Array.isArray(value.events) || !value.state || value.state.worldlineId !== value.worldlineId) throw new Error('存檔格式或版本不符');
+  if (value.format !== 'shenzhou-save' || ![2, 3, 4, 5, 6].includes(value.version) || !value.worldlineId || !Array.isArray(value.events) || !value.state || value.state.worldlineId !== value.worldlineId) throw new Error('存檔格式或版本不符');
   return value;
 }
 
@@ -122,7 +123,7 @@ function stable(value: unknown): string {
 }
 
 export function migrateSaveFile(raw: AnySaveFile): SaveFile {
-  if (raw.version === 5) {
+  if (raw.version === 6) {
     const current = replay(raw.events);
     if (!current || stable(current) !== stable(raw.state) || current.engineVersion !== ENGINE_VERSION) throw new Error('存檔狀態與事件重播結果不一致');
     return raw;
@@ -140,15 +141,19 @@ export function migrateSaveFile(raw: AnySaveFile): SaveFile {
     const innateEvent: GameEvent = { version: 3, eventId: `${raw.worldlineId}:upgrade-v3`, commandId: `${raw.worldlineId}:upgrade-v3`, commandHash: 'upgrade-v3', revision: state.revision + 1, type: 'InnateSystemUpgraded', payload: { innate:createInnateModel(state.phase2!,state.character.birthYear,state.character.home) } };
     state = applyEvent(state,innateEvent);events.push(innateEvent);
   }
-  if (state.engineVersion !== 3) throw new Error('第三階段存檔引擎版本不符');
-  const engineUpgrade: GameEvent = { version:4, eventId:`${raw.worldlineId}:upgrade-v4`, commandId:`${raw.worldlineId}:upgrade-v4`, commandHash:'upgrade-v4', revision:state.revision+1, type:'EngineUpgraded' };
-  state=applyEvent(state,engineUpgrade);events.push(engineUpgrade);
-  return { format:'shenzhou-save',version:5,worldlineId:raw.worldlineId,events,state };
+  if (state.engineVersion === 3) {
+    const engineUpgrade: GameEvent = { version:4, eventId:`${raw.worldlineId}:upgrade-v4`, commandId:`${raw.worldlineId}:upgrade-v4`, commandHash:'upgrade-v4', revision:state.revision+1, type:'EngineUpgraded' };
+    state=applyEvent(state,engineUpgrade);events.push(engineUpgrade);
+  }
+  if (state.engineVersion !== 4) throw new Error('第三階段存檔引擎版本不符');
+  const worldUpgrade: GameEvent = {version:5,eventId:`${raw.worldlineId}:upgrade-v5`,commandId:`${raw.worldlineId}:upgrade-v5`,commandHash:'upgrade-v5',revision:state.revision+1,type:'EngineUpgraded'};
+  state=applyEvent(state,worldUpgrade);events.push(worldUpgrade);
+  return { format:'shenzhou-save',version:6,worldlineId:raw.worldlineId,events,state };
 }
 
 export function verifySave(text: string): SaveFile {
   const save = parseSave(text);
-  if (save.version !== 5) {
+  if (save.version !== 6) {
     const legacy = replay(save.events);
     if (!legacy || stable(legacy) !== stable(save.state)) throw new Error('舊存檔狀態與事件重播結果不一致');
     return migrateSaveFile(save);
