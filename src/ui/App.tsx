@@ -11,8 +11,15 @@ const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
 const commandId = () => crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 function saveName(save: SaveFile) { return `${save.state.character.name}・${save.state.character.home}・第${save.state.turn}回合`; }
 function era(year: number) { return year >= 184 && year <= 189 ? `漢中平${year - 183}年` : `年號待補（${year}年）`; }
-function turnInterval(birthYear: number, turn: number, endYear: number, endMonth: number) {
+function turnInterval(birthYear: number, turn: number, endYear: number, endMonth: number, endDay: number, timelineDay?: number, elapsedDays = 90) {
   if (turn === 0) return `西元 ${endYear} 年 ${endMonth} 月／${era(endYear)}・出生`;
+  if (timelineDay !== undefined) {
+    const startDay = Math.max(0, timelineDay - elapsedDays);
+    const startYear = birthYear + Math.floor(startDay / 360);
+    const startMonth = Math.floor((startDay % 360) / 30) + 1;
+    const startDayOfMonth = (startDay % 30) + 1;
+    return `西元 ${startYear} 年 ${startMonth} 月 ${startDayOfMonth} 日至 ${endYear} 年 ${endMonth} 月 ${endDay} 日／${era(startYear)}至${era(endYear)}・本回合推進 ${elapsedDays} 日`;
+  }
   const startMonths = (turn - 1) * 3;
   const startYear = birthYear + Math.floor(startMonths / 12);
   const startMonth = (startMonths % 12) + 1;
@@ -238,7 +245,7 @@ export default function App() {
       <select aria-label="切換世界線" value={state.worldlineId} onChange={(e) => void switchTimeline(e.target.value)}>{workspace.saves.map((save) => <option key={save.worldlineId} value={save.worldlineId}>{saveName(save)}</option>)}</select>
       <button className="quiet" onClick={() => { setNewTimeline(true); setConfirmed(false); }}>新建世界線</button><button className="quiet" onClick={() => exportSave()}>匯出</button><button className="quiet" onClick={() => fileRef.current?.click()}>匯入</button><input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(e) => void importSave(e.target.files?.[0])} />
     </div></header>
-    <section className="hero"><div><p className="eyebrow">{turnInterval(c.birthYear, state.turn, w.year, w.month)}　｜　第 {state.turn} 回合</p><h1>{c.name}<small>　{c.age} 歲・出生於 {c.home}</small></h1><p>{c.background}（示例）・{c.health}；世界線 {w.worldlineId}</p></div><div className="worldline"><span>種子 {w.seed}</span><span>規則 v{state.rulesVersion}・天生技 v{state.skillsVersion}</span></div></section>
+    <section className="hero"><div><p className="eyebrow">{turnInterval(c.birthYear, state.turn, w.year, w.month, state.phase4?.dayOfMonth ?? 1, state.phase4?.day, state.actions.at(-1)?.elapsedDays ?? 90)}　｜　第 {state.turn} 回合</p><h1>{c.name}<small>　{c.age} 歲・出生於 {c.home}</small></h1><p>{c.background}（示例）・{c.health}；世界線 {w.worldlineId}</p></div><div className="worldline"><span>種子 {w.seed}</span><span>規則 v{state.rulesVersion}・天生技 v{state.skillsVersion}</span></div></section>
     <div className="layout"><section className="main-column">
       <article className="panel trend"><div className="section-kicker">天下大勢　／　每回合自動推進</div><p>{state.trend}</p><span className="caption">範本敘事・小型示例事件</span></article>
       {phase2 && <article className="panel scene-panel"><div className="section-kicker">本回合場景與在場名單</div><p><b>{phase2.scene.location}</b>・第 {phase2.scene.turn} 回合</p><p>在場：{phase2.scene.presentIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</p><p className="caption">進場：{phase2.scene.enteredIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}；離場：{phase2.scene.leftIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</p>

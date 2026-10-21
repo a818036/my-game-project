@@ -14,7 +14,9 @@ export const SOURCE_HASHES = {
   rules: 'c30b9b1e64bfff24f2827f0a0f791f667edc5a4686cd520c8529af746d4f48a4',
   skills: 'd1d9ee7687b5bcb6ab1e4899e0d2ac62c22ee34bcd72900df78e4cb436cc7a80',
 } as const;
-export const MAX_TURNS = 60;
+// Leave enough in-world turns for a 184-born timeline to reach the Phase 4
+// 190/191 historical windows through ordinary 30-day actions.
+export const MAX_TURNS = 120;
 export const INTENTS = ['耕讀自持', '訪求人才', '經商營生', '遊歷鄉里'] as const;
 export type Intent = typeof INTENTS[number];
 export const STATS = ['統率', '武力', '智力', '政治', '魅力'] as const;

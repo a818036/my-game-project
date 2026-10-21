@@ -26,6 +26,7 @@ input,select,textarea{max-width:100%;min-width:0}
   .game-shell{padding:0 12px}.topbar{align-items:flex-start}.topbar>div{gap:7px}.top-actions{justify-content:flex-start;width:100%}.reader-control.compact{width:100%}.reader-control input[type=range]{flex:1}
   .layout{grid-template-columns:minmax(0,1fr);gap:12px}.intent-grid,.form-grid{grid-template-columns:minmax(0,1fr)}.panel{padding:16px 14px}.hero h1{font-size:clamp(30px,8vw,40px);line-height:1.2}.hero h1 small{font-size:16px}.button-row>*{flex:1 1 100%}.family-list li,.item-row{align-items:flex-start;flex-wrap:wrap}.worldline{grid-template-columns:minmax(0,1fr)}.start-card{padding:24px 18px}.start-page{padding:14px}.name-dialog{max-height:90vh;overflow:auto}
 }
+.hero .eyebrow{max-width:100%;white-space:normal;overflow-wrap:anywhere}
 
 /* Eastern Han visual language: quiet paper, ink and seal red. */
 :root{color:#211c16;background:#e9dfc7}
