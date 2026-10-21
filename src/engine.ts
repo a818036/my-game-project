@@ -3,7 +3,7 @@ import { developTalent, historicalNodeAt, resolvePersonnel, runPersonnelEngine, 
 import { advancePhase2, applyPhase2Action, createPhase2Model, type Phase2Action, type Phase2Model } from './phase2';
 import { advanceInnate, applyInnateAction, createInnateModel, type InnateAction, type InnateModel } from './innate';
 import { applyEvent as applyLegacyEvent, type GameEvent as LegacyGameEvent, type GameState as LegacyGameState } from './engine.v3';
-import { advancePhase4, applyPhase4Action, createPhase4Model, type Phase4Action, type Phase4Model } from './phase4';
+import { advancePhase4, applyPhase4Action, createPhase4Model, recordInnateDeathRescue, type Phase4Action, type Phase4Model } from './phase4';
 
 export const ENGINE_VERSION = 5;
 export const LEGACY_ENGINE_VERSION = 1;
@@ -48,11 +48,13 @@ export interface GameState {
   innate?: InnateModel;
   phase4?: Phase4Model;
 }
+function historicalRescueSubject(location:string):InnateModel['subjects'][string]{return{id:'sun-jian',fear:0,trauma:[],injuries:[],disease:[],physiologicalAge:0,bodyChanges:[],grantedAbilities:[],sensesLost:false,morale:50,willingness:50,location,alive:true,lifeThreatened:false,bodySystems:{神經:50,肌力:50,肌腱關節:50,循環:50,心肺:50,疼痛:50,感官:50,平衡:50,反射:50,動作協調:50,疲勞處理:50,恢復:50}};}
+function syncHistoricalPatient(source:InnateModel,phase4:Phase4Model):InnateModel{const innate=structuredClone(source),patient=innate.subjects['sun-jian'],person=phase4.historicalPersons.find(p=>p.id==='sun-jian'),node=phase4.nodes.find(n=>n.contentId==='sun-jian-death-191');if(!patient||!person)return innate;if(!person.alive){patient.alive=false;patient.location='亡者紀錄';return innate;}patient.location=person.location;if(node?.status==='triggered'&&!patient.injuries.some(injury=>injury.includes('死亡節點情境'))){patient.injuries.unshift('前線危重傷勢（死亡節點情境示例）');patient.lifeThreatened=true;}return innate;}
 export type GameEvent =
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldCreated'; payload: { worldlineId: string; name: string; seed: number; facts: OpeningFacts } }
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'IntentResolved'; payload: { intent: Intent } }
   | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string } }
-  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string; executedIntents: Intent[]; elapsedDays: number; interruptions: string[] } }
+  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string; executedIntents: Intent[]; elapsedDays: number; interruptions: string[]; interruptedIntent?:Intent } }
   | { version: 4 | 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionNoteRecorded'; payload: { text: string } }
   | { version: 2 | 3 | 4 | 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase2Changed'; payload: { action: Phase2Action } }
   | { version: 2; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldlineUpgraded'; payload: { phase2: Phase2Model } }
@@ -182,9 +184,10 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     if(event.version!==ENGINE_VERSION||!state.phase4||!state.phase2)throw new Error('第四階段資料尚未遷移');
     const people=[...state.phase2.persons.map(p=>({id:p.id,name:p.name,alive:p.alive,location:p.id==='protagonist'?state.phase2!.scene.location:'地方（未定位）',office:p.office})),...state.phase4.candidates.filter(c=>c.status==='recruited').map(c=>({id:c.id,name:c.name,alive:true,location:c.origin,office:'在籍人才（待任）'}))];
     const phase4=applyPhase4Action(state.phase4,event.payload.action,people);
+    const innate=state.innate?syncHistoricalPatient(state.innate,phase4):undefined;
     const phase2=structuredClone(state.phase2);
     for(const person of phase2.persons){const office=phase4.offices.find(o=>o.holderId===person.id);if(office)person.office=office.title;else if(phase4.offices.some(o=>o.appointment?.personId===person.id)||phase4.offices.some(o=>o.holderId!==person.id&&person.office===o.title))person.office='白身';}
-    return {...state,revision:event.revision,phase4,phase2,world:{...state.world,year:phase4.year,month:phase4.month},appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash}};
+    return {...state,revision:event.revision,phase4,phase2,...(innate?{innate}:{}),world:{...state.world,year:phase4.year,month:phase4.month},appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash}};
   }
   if (event.type === 'Phase2Changed') {
     if (![ENGINE_VERSION,4,PHASE2_ENGINE_VERSION,3].includes(event.version) || !state.phase2) throw new Error('第二階段命令不適用於此版本存檔');
@@ -216,8 +219,9 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
   if (event.type === 'InnateChanged') {
     if (![4,ENGINE_VERSION].includes(event.version) || !state.phase2 || !state.innate) throw new Error('此世界線尚未完成天生技系統遷移');
     const scene = state.phase2.scene;
-    const innate = applyInnateAction(state.innate,event.payload.action,state.turn, {location:scene.location,presentIds:scene.presentIds,text:state.actions.at(-1)?.details ?? '場景尚無已記錄正文'},state.phase2);
-    const action=event.payload.action;
+    const action=event.payload.action;const sourceInnate=structuredClone(state.innate);if(action.type==='Heal'&&action.targetId==='sun-jian'&&!sourceInnate.subjects['sun-jian']&&state.phase4){sourceInnate.subjects['sun-jian']=historicalRescueSubject(state.phase4.historicalPersons.find(p=>p.id==='sun-jian')?.location??'長江中游（節點資料）');Object.assign(sourceInnate,syncHistoricalPatient(sourceInnate,state.phase4));}
+    const sunInjuriesBefore=sourceInnate.subjects['sun-jian']?.injuries.length??0;
+    const innate = applyInnateAction(sourceInnate,event.payload.action,state.turn, {location:scene.location,presentIds:scene.presentIds,text:state.actions.at(-1)?.details ?? '場景尚無已記錄正文'},state.phase2);
     let phase2 = state.phase2;
     const actionSteps:InnateAction[]=action.type==='Combination'?action.steps:[action];
     const flashStep=actionSteps.find((step):step is Extract<InnateAction,{type:'Flash'}>=>step.type==='Flash');
@@ -230,7 +234,10 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
       const moved=new Map(innate.objects.map(object=>[object.id,object]));
       phase2={...phase2,items:phase2.items.map(item=>{const object=moved.get(item.id);return object?{...item,ownerId:object.ownerId,custodianId:object.custodianId,locationId:object.location,quantity:object.quantity}:item;})};
     }
-    const phase4=state.phase4&&flashStep?{...state.phase4,playerLocation:innate.subjects.protagonist.location}:state.phase4;
+    let phase4=state.phase4&&flashStep?{...state.phase4,playerLocation:innate.subjects.protagonist.location}:state.phase4;
+    const healingSteps=actionSteps.filter((step):step is Extract<InnateAction,{type:'Heal'}>=>step.type==='Heal');
+    if(phase4&&healingSteps.some(step=>step.targetId==='sun-jian')&&innate.subjects['sun-jian'].injuries.length<sunInjuriesBefore)phase4=recordInnateDeathRescue(phase4,'sun-jian',true);
+    if(phase4)Object.assign(innate,syncHistoricalPatient(innate,phase4));
     const lethalIllusion=action.type==='Illusion'&&action.intent==='致命'&&((action.severity===3&&(action.depth==='入實'||action.depth==='五感實相'))||action.accidentOutcome==='致命');
     const lethalLightning=action.type==='Lightning'&&action.intent==='致命'&&action.intensity===3;
     if(lethalIllusion||lethalLightning){
@@ -244,7 +251,8 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
   const turnLimit = event.version === LEGACY_ENGINE_VERSION ? 20 : MAX_TURNS;
   if (state.status === 'complete' && !(event.version === ENGINE_VERSION && state.schemaVersion >= 2) || state.turn >= turnLimit) throw new Error('本段旅程已結束');
   const intents: Intent[] | null = event.type === 'IntentResolved' ? [event.payload.intent] : event.type === 'ActionPlanResolved' ? (event.version===ENGINE_VERSION&&event.payload.executedIntents?event.payload.executedIntents:event.payload.intents) : null;
-  if (!intents || intents.length === 0 || intents.some((intent) => !INTENTS.includes(intent)) || !event.eventId.startsWith(`${state.worldlineId}:`)) throw new Error('回合事件無效或屬於其他世界線');
+  const interruptedOnly=event.version===ENGINE_VERSION&&event.type==='ActionPlanResolved'&&intents?.length===0&&!!event.payload.interruptedIntent&&event.payload.interruptions.length>0;
+  if (!intents || intents.length === 0&&!interruptedOnly || intents.some((intent) => !INTENTS.includes(intent)) || !event.eventId.startsWith(`${state.worldlineId}:`)) throw new Error('回合事件無效或屬於其他世界線');
   if (event.type === 'ActionPlanResolved' && (![4,ENGINE_VERSION].includes(event.version) || inspectActionPlan(intents).conflicts.length > 0)) throw new Error('行動計畫有衝突，請先調整');
   const turn = state.turn + 1;
   const elapsedDays=event.version===ENGINE_VERSION&&event.type==='ActionPlanResolved'?event.payload.elapsedDays:intents.reduce((sum,intent)=>sum+ACTION_DURATION_DAYS[intent],0);
@@ -264,9 +272,11 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     }
   }
   moneyDelta = Math.max(-character.money, moneyDelta);
-  const title = intents.length === 1 ? ({'耕讀自持':'田畝與書卷','訪求人才':'訪求人才','經商營生':'市集營生','遊歷鄉里':'行走鄉里'} as Record<Intent,string>)[intents[0]] : `行動計畫：${intents.join('、')}`;
+  const recordedIntents=event.type==='ActionPlanResolved'?event.payload.intents:intents;
+  const interruptedIntent=event.type==='ActionPlanResolved'&&event.version===ENGINE_VERSION?event.payload.interruptedIntent:undefined;
+  const title = intents.length === 0 ? `介入窗口中斷：${interruptedIntent??''}` : intents.length === 1 ? ({'耕讀自持':'田畝與書卷','訪求人才':'訪求人才','經商營生':'市集營生','遊歷鄉里':'行走鄉里'} as Record<Intent,string>)[intents[0]] : `行動計畫：${intents.join('、')}`;
   const supplement = event.type === 'ActionPlanResolved' ? event.payload.supplement.trim() : '';
-  const details = `${outcomes.join('；')}${supplement ? `；補充說明（已保存，未解析為執行條件）：${supplement}` : ''}`;
+  const details = `${outcomes.join('；')|| (interruptedOnly?`「${interruptedIntent}」尚未完成，未結算其收益或資源`: '')}${supplement ? `；補充說明（已保存，未解析為執行條件）：${supplement}` : ''}`;
   const finalDetails = `${details}${event.version===ENGINE_VERSION?`；本計畫推進 ${elapsedDays} 日${interruptions.length?`，遇重大節點後中斷：${interruptions.join('；')}`:''}`:''}`;
   character.money += moneyDelta; character.reputation += reputationDelta;
   for (const intent of intents) character = developTalent(character, intent, random(state.world.seed, turn * 7 + INTENTS.indexOf(intent)));
@@ -286,10 +296,11 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     accounts = entry.accounts; newLedger.push(entry.entry);
   }
   const ledger = newLedger.length ? [...state.ledger, ...newLedger] : state.ledger;
-  const actions = [...state.actions, { turn, intent:intents[0], intents:[...intents], title, details:finalDetails, ...(supplement ? { supplement } : {}), ...(event.version===ENGINE_VERSION?{elapsedDays,interruptions}: {}) }];
+  const actions = [...state.actions, { turn, intent:intents[0]??recordedIntents[0], intents:[...recordedIntents], title, details:finalDetails, ...(supplement ? { supplement } : {}), ...(event.version===ENGINE_VERSION?{elapsedDays,interruptions}: {}) }];
   const summaries = turn % 5 === 0 ? [...state.summaries, makeSummary(turn, character, state.world, actions, ledger)] : state.summaries;
   let phase2 = event.version >= PHASE2_ENGINE_VERSION && state.phase2 ? advancePhase2(state.phase2, turn, year, intents.join('＋'), character.money, event.eventId,event.version===ENGINE_VERSION?elapsedDays:undefined) : state.phase2;
-  const innate = event.version >= 4 && state.innate ? advanceInnate(state.innate,turn,event.version===ENGINE_VERSION?elapsedDays:undefined,year) : state.innate;
+  let innate = event.version >= 4 && state.innate ? advanceInnate(state.innate,turn,event.version===ENGINE_VERSION?elapsedDays:undefined,year) : state.innate;
+  if(innate&&phase4)innate=syncHistoricalPatient(innate,phase4);
   if(phase2&&phase4){phase2=structuredClone(phase2);for(const person of phase2.persons){const assigned=phase4.offices.find(office=>office.holderId===person.id);if(assigned)person.office=assigned.title;else if(phase4.offices.some(office=>office.title===person.office))person.office='白身';}}
   if (phase2 && turn % 5 === 0) {
     const summary = summaries.at(-1)!;
@@ -312,9 +323,20 @@ export function makeSummary(turn: number, c: Character, world: World, actions: A
 export const ACTION_PLAN_EFFORT_BUDGET = 2;
 const ACTION_EFFORT: Record<Intent, number> = { '耕讀自持':1, '訪求人才':2, '經商營生':1, '遊歷鄉里':2 };
 export const ACTION_DURATION_DAYS: Record<Intent,number> = {'耕讀自持':30,'訪求人才':7,'經商營生':10,'遊歷鄉里':14};
-function plannedTimeline(state:GameState,intents:Intent[]):{executedIntents:Intent[];elapsedDays:number;interruptions:string[]}{
+function plannedTimeline(state:GameState,intents:Intent[]):{executedIntents:Intent[];elapsedDays:number;interruptions:string[];interruptedIntent?:Intent}{
  let timeline=state.phase4;const executedIntents:Intent[]=[];let elapsedDays=0;const interruptions:string[]=[];
- for(const intent of intents){executedIntents.push(intent);const days=ACTION_DURATION_DAYS[intent];elapsedDays+=days;if(!timeline)continue;const before=timeline.eventLedger.length;timeline=advancePhase4(timeline,days);const major=timeline.eventLedger.slice(before).find(e=>['史實事件形成','史實事件取消','死亡硬節點觸發','死亡硬節點落實'].includes(e.type));if(major){interruptions.push(`${major.type}：${major.detail}`);break;}}
+ for(let index=0;index<intents.length;index++){
+  const intent=intents[index],days=ACTION_DURATION_DAYS[intent];let actionEvent:string|undefined;
+  for(let day=0;day<days;day++){
+   if(!timeline){elapsedDays++;continue;}
+   const before=timeline.eventLedger.length;timeline=advancePhase4(timeline,1);elapsedDays++;
+   const newEvents=timeline.eventLedger.slice(before),deathWindow=newEvents.find(e=>e.type==='死亡硬節點觸發');
+   if(deathWindow){interruptions.push(`${deathWindow.type}：${deathWindow.detail}`);return{executedIntents,elapsedDays,interruptions,interruptedIntent:intent};}
+   const major=newEvents.find(e=>['史實事件形成','史實事件取消','死亡硬節點落實'].includes(e.type));if(major)actionEvent??=`${major.type}：${major.detail}`;
+  }
+  executedIntents.push(intent);
+  if(actionEvent){interruptions.push(actionEvent);return{executedIntents,elapsedDays,interruptions,...(intents[index+1]?{interruptedIntent:intents[index+1]}:{})};}
+ }
  return {executedIntents,elapsedDays,interruptions};
 }
 export function inspectActionPlan(intents: Intent[]): { effort: number; conflicts: string[] } {

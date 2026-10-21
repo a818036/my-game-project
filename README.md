@@ -36,14 +36,16 @@ npm.cmd run dev
 
 ## 第四階段範圍及未完成項目
 
-第四階段提供小型可玩的歷史與軍政切片，不是完整三國沙盒。現有軍隊以編制和逐輪工程參數結算，沒有逐兵、完整敵軍 AI、複雜多線行軍、天候／地形全資料；政策不是完整稅制或市場模型。史實人物與事件只列有來源的少量案例；示例名稱、日期精度及未完成內容列在 [第四階段內容表](docs/HISTORY_CONTENT.md)。本階段不接 AI，不包含第五階段工作。
+第四階段提供小型可玩的歷史與軍政切片，不是完整三國沙盒。現有雙線案例已實作指揮分工、唯一部隊位置、兵力守恆與跨線調動；未完成的是多戰區內容規模、逐兵模擬、完整敵軍 AI、天候／地形全資料。政策不是完整稅制或市場模型。史實人物與事件只列有來源的少量案例；示例名稱、日期精度及未完成內容列在 [第四階段內容表](docs/HISTORY_CONTENT.md)。本階段不接 AI，不包含第五階段工作。
 
 第三階段逐能力細節與缺口分類見 [docs/ABILITY_COVERAGE.md](docs/ABILITY_COVERAGE.md)，驗收案例見 [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md)。若清冊仍列原文明定直接效果未完成，PR 不得以測試通過數量宣稱第三階段出口已完成。
 
 ## 最近驗證
 
-目前工作分支驗證：Vitest 84 項／4 個測試檔通過；TypeScript 型別檢查與 Vite 正式建置通過。第四階段行為測試涵蓋 A23–A26、A29–A32、Phase 3「藏界＋軒轅閃」交互與多選行動跨事件中斷；存檔測試驗證 v5→v6 追加遷移及舊事件重播。
+本次驗證：Vitest 90 項／4 個測試檔通過；TypeScript 型別檢查與 Vite 正式建置通過。行為驗收包含死亡第 29／30 日邊界、一般醫療與天生技分流、死亡後禁止復活、雙線指揮與跨線兵力守恆、出生年／年齡，以及 A23–A26、A29–A32；存檔測試驗證 v5→v6 追加遷移及舊事件重播。
 
-Chromium 實際操作檢查：在遊戲介面送出 85 份正常耕讀行動，實際走到 191 年死亡節點；桌面 1440px 及手機 390px、24px 字級／40.8px 行高下文件寬度等於視窗寬度，表單控制沒有超出畫面；字級偏好重新載入後仍保存。草擬主權條款時保持待決，明確批准後條款日誌記錄並更新領地控制者；瀏覽器無頁面錯誤。畫面證據：[桌面截圖](docs/screenshots/phase4-desktop.png)、[手機截圖](docs/screenshots/phase4-mobile.png)。
+Chromium 實際操作檢查：相同姓名、世界線種子、191 年節點與第 85 回合的舊版／新版畫面以 1440×1000 桌面和 390×844 手機截取。另以 874 字壓力正文、四項全選、570 字補充註記及衝突提示測試 24px 字級；兩種畫面文件寬度均等於視窗、操作區無水平溢出或重疊，字級偏好重新載入後仍為 24px，瀏覽器無頁面錯誤。第 84 回合另有介入窗口畫面，確認提示在死亡落實前顯示。草擬主權條款仍待決，明確批准後才更新領地控制者。
+
+畫面證據：[桌面改版前](docs/screenshots/pr4-before-desktop.png)、[桌面改版後](docs/screenshots/pr4-after-desktop.png)、[手機改版前](docs/screenshots/pr4-before-mobile.png)、[手機改版後](docs/screenshots/pr4-after-mobile.png)、[手機行動表單壓力測試](docs/screenshots/pr4-ui-validation-mobile.png)、[桌面行動表單壓力測試](docs/screenshots/pr4-ui-validation-desktop.png)、[長篇正文桌面](docs/screenshots/pr4-ui-long-story-desktop.png)與[手機](docs/screenshots/pr4-ui-long-story-mobile.png)。死亡窗口於第 84 回合的[桌面](docs/screenshots/pr4-death-window-desktop.png)與[手機](docs/screenshots/pr4-death-window-mobile.png)畫面另存。
 
 目前沒有部署的遊戲預覽站。從本機啟動後可用 `http://localhost:5173` 試玩；同一區網手機可連線至開發電腦的區網 IP 與 Vite 埠號。

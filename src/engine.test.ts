@@ -29,6 +29,7 @@ function phaseAction(state: GameState, action: Phase2Action, id = `phase-${state
   return dispatch(state, { version:ENGINE_VERSION, commandId:id, expectedRevision:state.revision, worldlineId:state.worldlineId, type:'Phase2Action', action });
 }
 describe('ROADMAP 第一階段：正式驗收案例', () => {
+  it('開局出生年使用玩家選擇值；人物年齡隨世界日曆跨年，不固定採用 184 年',()=>{const facts=createOpeningFacts(123,160,noHistory);let s=dispatch(null,{version:ENGINE_VERSION,commandId:'birth-160',expectedRevision:0,type:'StartGame',name:`${facts.surname}景初`,seed:123,facts}).state!;expect(s.world.year).toBe(160);expect(s.character).toMatchObject({birthYear:160,age:0});expect(s.phase2?.age).toBe(0);for(let i=0;i<12;i++)s=dispatch(s,{version:ENGINE_VERSION,commandId:`year-cross-${i}`,expectedRevision:s.revision,worldlineId:s.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持'],supplement:''}).state!;expect(s.world.year).toBe(161);expect(s.character.age).toBe(1);expect(s.phase2?.age).toBe(1);});
   it('A01 相同種子與命令重播十回合，狀態、事件與 RNG 結果一致；不同意圖會產生不同狀態', () => {
     const a = playTurns('deterministic', INTENTS, 10); const b = playTurns('deterministic', INTENTS, 10);
     expect(a.events).toEqual(b.events); expect(a.state).toEqual(b.state); expect(replay(a.events)).toEqual(a.state);
