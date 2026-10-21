@@ -1,14 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { indexedDB } from 'fake-indexeddb';
-import { createOpeningFacts, dispatch, ENGINE_VERSION, replay, type OpeningHistory } from './engine';
-import { commitWorldline, loadWorkspace, parseSave, toJson, verifySave, assertSlotCompatible, type SaveFile } from './storage';
+import { applyEvent, createOpeningFacts, createStartEvent, dispatch, ENGINE_VERSION, LEGACY_ENGINE_VERSION, replay, type GameCommand, type GameEvent, type OpeningHistory } from './engine';
+import { commitWorldline, loadWorkspace, openSaveDb, parseSave, toJson, verifySave, assertSlotCompatible, type LegacySaveFile, type SaveFile } from './storage';
 
 const noHistory: OpeningHistory = { regions: [], surnames: [] };
 function makeSave(id = 'storage-world') {
   const facts = createOpeningFacts(9, 184, noHistory);
   const result = dispatch(null, { version:ENGINE_VERSION, commandId:id, expectedRevision:0, type:'StartGame', name:`${facts.surname}元直`, seed:9, facts });
   if (!result.state || !result.event) throw new Error('storage fixture failed');
-  return { format:'shenzhou-save' as const, version:2 as const, worldlineId:result.state.worldlineId, events:[result.event], state:result.state } satisfies SaveFile;
+  return { format:'shenzhou-save' as const, version:3 as const, worldlineId:result.state.worldlineId, events:[result.event], state:result.state } satisfies SaveFile;
+}
+function makeLegacySave(id = 'legacy-world', turns = 0): LegacySaveFile {
+  const facts = createOpeningFacts(99, 184, noHistory);
+  const command = { version:LEGACY_ENGINE_VERSION, commandId:id, expectedRevision:0, type:'StartGame' as const, name:`${facts.surname}舊存`, seed:99, facts } satisfies GameCommand;
+  const event = createStartEvent(command); const state = applyEvent(null, event);
+  if (!state) throw new Error('legacy fixture failed');
+  const events: GameEvent[] = [event]; let current = state;
+  for (let turn = 1; turn <= turns; turn++) {
+    const resolved: GameEvent = { version:LEGACY_ENGINE_VERSION, eventId:`${current.worldlineId}:${current.revision + 1}`, commandId:`${id}-turn-${turn}`, commandHash:`legacy-${turn}`, revision:current.revision + 1, type:'IntentResolved', payload:{ intent:'耕讀自持' } };
+    current = applyEvent(current, resolved)!; events.push(resolved);
+  }
+  return { format:'shenzhou-save', version:2, worldlineId:current.worldlineId, events, state:current };
 }
 function deleteDatabase(): Promise<void> {
   return new Promise((resolve, reject) => { const request = indexedDB.deleteDatabase('shenzhou-three-kingdoms'); request.onsuccess = () => resolve(); request.onerror = () => reject(request.error); request.onblocked = () => reject(new Error('database deletion blocked')); });
@@ -20,7 +32,7 @@ describe('A05／A06 存檔交易與重播', () => {
 
   it('A06 匯出後可驗證事件重播，版本未知或內容毀損會拒絕', () => {
     const save = makeSave(); expect(verifySave(toJson(save))).toEqual(save);
-    expect(() => parseSave(JSON.stringify({ ...save, version:3 }))).toThrow('存檔格式或版本不符');
+    expect(() => parseSave(JSON.stringify({ ...save, version:4 }))).toThrow('存檔格式或版本不符');
     const corrupt = { ...save, state:{ ...save.state, character:{ ...save.state.character, money:999 } } };
     expect(() => verifySave(toJson(corrupt))).toThrow('事件重播結果不一致');
   });
@@ -33,6 +45,33 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(reloaded.profile.activeWorldlineId).toBe(imported.worldlineId);
     expect(reloaded.saves).toEqual([imported]);
     expect(replay(reloaded.saves[0].events)).toEqual(reloaded.saves[0].state);
+  });
+
+  it('舊版第一階段存檔先封存原檔，再遷移並可續玩', async () => {
+    const legacy = makeLegacySave('migration-world', 10);
+    const db = await openSaveDb();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction('worldlines', 'readwrite'); tx.objectStore('worldlines').put(legacy);
+      tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error);
+    }); db.close();
+    const loaded = await loadWorkspace(); const migrated = loaded.saves[0];
+    expect(migrated.version).toBe(3); expect(migrated.state.phase2).toBeDefined();
+    expect(migrated.events.slice(0, legacy.events.length)).toEqual(legacy.events); expect(migrated.state.turn).toBe(10); expect(migrated.state.status).toBe('playing');
+    expect(migrated.state.phase2?.assetBalances.錢.private).toBe(legacy.state.character.money);
+    expect(migrated.state.phase2?.age).toBe(legacy.state.character.age);
+    const archivedDb = await openSaveDb();
+    const archived = await new Promise<LegacySaveFile | undefined>((resolve, reject) => {
+      const tx = archivedDb.transaction('profile', 'readonly'); const req = tx.objectStore('profile').get(`legacy:${legacy.worldlineId}:v2`);
+      req.onsuccess = () => resolve(req.result as LegacySaveFile | undefined); req.onerror = () => reject(req.error);
+    }); archivedDb.close();
+    expect(archived).toEqual(legacy);
+    const advanced = dispatch(migrated.state, { version:ENGINE_VERSION, commandId:'post-migration-turn', expectedRevision:migrated.state.revision, worldlineId:migrated.worldlineId, type:'ChooseIntent', intent:'耕讀自持' });
+    expect(advanced.state?.turn).toBe(11); expect(replay([...migrated.events, advanced.event!])).toEqual(advanced.state);
+    const completedOldSave = makeLegacySave('completed-old-world', 20);
+    const reopened = verifySave(JSON.stringify(completedOldSave));
+    expect(completedOldSave.state.status).toBe('complete'); expect(reopened.state.status).toBe('playing');
+    const afterOldLimit = dispatch(reopened.state, { version:ENGINE_VERSION, commandId:'past-old-limit', expectedRevision:reopened.state.revision, worldlineId:reopened.worldlineId, type:'ChooseIntent', intent:'耕讀自持' });
+    expect(afterOldLimit.state?.turn).toBe(21);
   });
 
   it('A05 IndexedDB 寫入失敗時仍能載回上一個完整世界線', async () => {

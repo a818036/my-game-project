@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createOpeningFacts, dispatch, ENGINE_VERSION, INTENTS, MAX_TURNS, replay, type GameCommand, type GameEvent, type GameState, type OpeningHistory } from './engine';
 import { applyAccountEntry, placeInSubspace } from './ledger';
+import { applyPhase2Action, advancePhase2, kinshipTerm, validateStatValue, type Phase2Action } from './phase2';
 
 const noHistory: OpeningHistory = { regions: [], surnames: [] };
 function start(commandId = 'start-a', seed = 987654, profile = noHistory) {
@@ -24,7 +25,9 @@ function playTurns(id = 'start-a', pattern: readonly (typeof INTENTS[number])[] 
   }
   return { state, events };
 }
-
+function phaseAction(state: GameState, action: Phase2Action, id = `phase-${state.revision}`) {
+  return dispatch(state, { version:ENGINE_VERSION, commandId:id, expectedRevision:state.revision, worldlineId:state.worldlineId, type:'Phase2Action', action });
+}
 describe('ROADMAP 第一階段：正式驗收案例', () => {
   it('A01 相同種子與命令重播十回合，狀態、事件與 RNG 結果一致；不同意圖會產生不同狀態', () => {
     const a = playTurns('deterministic', INTENTS, 10); const b = playTurns('deterministic', INTENTS, 10);
@@ -63,7 +66,7 @@ describe('ROADMAP 第一階段：正式驗收案例', () => {
   });
 
   it('A07 每回合四引擎皆自動檢查；5／10／15／20 摘要節點正確且十回合不重複小記', () => {
-    const { state } = playTurns('summaries');
+    const { state } = playTurns('summaries', INTENTS, 20);
     expect(state.summaries.map(({ turn, kind }) => [turn, kind])).toEqual([[5,'小記'],[10,'大記'],[15,'小記'],[20,'大記']]);
     expect(state.actions).toHaveLength(20); expect(state.actions.every((action) => action.turn >= 1 && action.details.length > 0)).toBe(true);
     expect(state.backend).toMatchObject({ personnelChecks: 20, talentChecks: 20, historyChecks: 20, trendChecks: 20 });
@@ -90,5 +93,101 @@ describe('ROADMAP 第一階段：正式驗收案例', () => {
     const result = dispatch(withDecision, { version:ENGINE_VERSION, commandId:'continue-only', expectedRevision:state.revision, worldlineId:state.worldlineId, type:'Continue' });
     expect(INTENTS).toHaveLength(4); expect(result.event).toBeNull(); expect(result.state).toEqual(withDecision);
     expect(result.state?.turn).toBe(0); expect(result.state?.pendingDecisions).toHaveLength(1);
+  });
+});
+
+describe('ROADMAP 第二階段：人物與資訊行為驗收', () => {
+  it('A08 五維硬限 1–100、普通核心技能最多五項，與天生技清單分離', () => {
+    const { state } = start('limits'); const p2 = state.phase2!;
+    expect(p2.stats).toBeNull(); expect(() => applyPhase2Action(p2, { type:'TrainStat', stat:'智力', turn:0 })).toThrow('童年階段');
+    expect(validateStatValue(1)).toBe(1); expect(validateStatValue(100)).toBe(100); expect(() => validateStatValue(101)).toThrow('1 至 100');
+    let changed = p2;
+    for (let i=0;i<5;i++) changed = applyPhase2Action(changed, { type:'PracticeSkill', skillId:`s${i}`, name:`技能${i}`, turn:0 });
+    expect(changed.coreSkills).toHaveLength(5);
+    expect(() => applyPhase2Action(changed, { type:'PracticeSkill', skillId:'s6', name:'第六項', turn:0 })).toThrow('最多五項');
+    changed.innateAbilities.push('天生技基準・未實作');
+    expect(changed.innateAbilities).toHaveLength(1); expect(changed.coreSkills).toHaveLength(5);
+  });
+
+  it('A09 命名先暫停在待決流程，只有玩家提交姓名後才建立人物', () => {
+    const { state } = start('naming');
+    const pending = phaseAction(state, { type:'RequestName', request:{ id:'name-request', relation:'收養子女', role:'養子女', birthYear:184, anchorId:'protagonist' } });
+    expect(pending.state?.phase2?.pendingNames).toHaveLength(1);
+    expect(pending.state?.phase2?.persons.some((person) => person.name === '阿和')).toBe(false);
+    const completed = phaseAction(pending.state!, { type:'ChooseName', requestId:'name-request', personId:'adopted-1', name:'阿和' });
+    expect(completed.state?.phase2?.pendingNames).toHaveLength(0);
+    expect(completed.state?.phase2?.persons.find((person) => person.id === 'adopted-1')?.name).toBe('阿和');
+    expect(kinshipTerm(completed.state!.phase2!, 'adopted-1')).toBe('養子女');
+  });
+
+  it('A10 親屬稱謂依世代路徑而非年齡；婚姻、收養、死亡均保留關係紀錄', () => {
+    const { state } = start('kinship'); let graph = state.phase2!;
+    graph = applyPhase2Action(graph, { type:'RequestName', request:{ id:'sibling-request', relation:'血親手足', role:'血親手足', birthYear:184, anchorId:'protagonist' } });
+    graph = applyPhase2Action(graph, { type:'ChooseName', requestId:'sibling-request', personId:'sibling', name:'景同' });
+    graph = applyPhase2Action(graph, { type:'RequestName', request:{ id:'nephew-request', relation:'血親子女', role:'血親子女', birthYear:184, anchorId:'sibling' } });
+    graph = applyPhase2Action(graph, { type:'ChooseName', requestId:'nephew-request', personId:'nephew', name:'景晚' });
+    expect(graph.persons.find((person) => person.id === 'nephew')?.birthYear).toBe(graph.persons.find((person) => person.id === 'protagonist')?.birthYear);
+    expect(kinshipTerm(graph, 'nephew')).toBe('姪／甥輩');
+    graph = applyPhase2Action(graph, { type:'RequestName', request:{ id:'spouse-request', relation:'婚姻', role:'配偶', birthYear:184, anchorId:'protagonist' } });
+    graph = applyPhase2Action(graph, { type:'ChooseName', requestId:'spouse-request', personId:'spouse', name:'清和' });
+    expect(kinshipTerm(graph, 'spouse')).toBe('配偶／姻親');
+    const dead = applyPhase2Action(graph, { type:'MarkDeath', personId:'nephew', deathYear:190 });
+    expect(dead.persons.find((person) => person.id === 'nephew')).toMatchObject({ alive:false, deathYear:190 });
+    expect(kinshipTerm(dead, 'nephew')).toBe('姪／甥輩');
+  });
+
+  it('A11／A12 不同資產分帳、物權與保管分離，帳務可由事件重播還原', () => {
+    const initial = start('accounts'); const action: Phase2Action = { type:'TransferAsset', asset:'糧', amount:5, from:'family', to:'private', memo:'分家取糧', turn:0, id:'grain-transfer' };
+    const changed = phaseAction(initial.state, action); expect(changed.state?.phase2?.assetBalances.糧.family).toBe(15); expect(changed.state?.phase2?.assetBalances.糧.private).toBe(5);
+    expect(changed.state?.phase2?.assetLedger.at(-1)).toMatchObject({ asset:'糧', amount:5, from:'family', to:'private' });
+    expect(() => applyPhase2Action(changed.state!.phase2!, { ...action, id:'overdraw', amount:99 })).toThrow('來源帳戶資產不足');
+    const lot = changed.state!.phase2!.items[0], moved = phaseAction(changed.state!, { type:'ChangeCustody', itemId:lot.id, custodianId:'protagonist', locationId:'主角隨身' });
+    expect(moved.state?.phase2?.items[0]).toMatchObject({ ownerId:lot.ownerId, custodianId:'protagonist', quantity:lot.quantity });
+    expect(replay([initial.event, changed.event!])).toEqual(changed.state);
+    const cash = phaseAction(moved.state!, { type:'TransferAsset', asset:'錢', amount:3, from:'private', to:'family', memo:'示例家庭支出', turn:0, id:'cash-transfer' });
+    expect(cash.state?.phase2?.assetBalances.錢.private).toBe(cash.state?.accounts.private);
+    expect(cash.state?.phase2?.assetBalances.錢.family).toBe(cash.state?.accounts.family);
+    const earned = act(cash.state!, '耕讀自持', 'after-cash-transfer');
+    expect(earned.state?.phase2?.assetBalances.錢.private).toBe(earned.state?.character.money);
+    expect(earned.state?.phase2?.assetBalances.錢.private).toBe(earned.state?.accounts.private);
+  });
+
+  it('A13 單向傳音立即抵達但不自動回覆；書信依旅程延遲抵達', () => {
+    const { state } = start('messages'); const recipient = state.phase2!.persons.find((person) => person.alive && person.id !== 'protagonist')!;
+    const sent = applyPhase2Action(state.phase2!, { type:'SendMessage', id:'signal-1', recipientId:recipient.id, channel:'軒轅傳音示例', text:'家中安好', turn:2 });
+    expect(sent.messages[0]).toMatchObject({ arrived:true, sentTurn:2, arrivalTurn:2 }); expect(sent.messages).toHaveLength(1);
+    let mail = applyPhase2Action(sent, { type:'SendMessage', id:'letter-1', recipientId:recipient.id, channel:'書信', text:'兩回合後見', turn:2 });
+    expect(mail.messages[1].arrived).toBe(false);
+    mail = advancePhase2(mail, 3, 184, '耕讀自持'); expect(mail.messages[1].arrived).toBe(false);
+    mail = advancePhase2(mail, 4, 185, '耕讀自持'); expect(mail.messages[1].arrived).toBe(true);
+  });
+
+  it('A14 場景只列在場者；同回合首次發言含年齡官職，後續不重複且換回合重置', () => {
+    const { state } = start('scene'); const first = advancePhase2(state.phase2!, 1, 184, '耕讀自持');
+    expect(first.scene.presentIds).toContain('protagonist'); expect(first.scene.speeches).toHaveLength(2);
+    expect(first.scene.speeches[0].label).toMatch(/（\d+歲，.+）/); expect(first.scene.speeches[1].label).toBe(first.scene.speeches[1].name);
+    const second = advancePhase2(first, 2, 184, '耕讀自持');
+    expect(second.scene.speeches[0].firstSpeech).toBe(true); expect(second.scene.turn).toBe(2);
+    expect(second.scene.leftIds.length + second.scene.enteredIds.length).toBeGreaterThan(0);
+  });
+
+  it('A25 只選家庭生活仍自動結算外部人事死亡、接任與天下後台', () => {
+    const { state } = start('family-turns'); let current = state;
+    for (let i=0;i<16;i++) {
+      const result = act(current, '耕讀自持', `family-turn-${i+1}`); current = result.state!;
+    }
+    expect(current.backend).toMatchObject({ personnelChecks:16, talentChecks:16, historyChecks:16, trendChecks:16 });
+    expect(current.phase2?.worldUpdates.some((entry) => entry.includes('佐吏病故'))).toBe(true);
+    expect(current.phase2?.worldUpdates.some((entry) => entry.includes('抵達接任'))).toBe(true);
+    expect(current.phase2?.persons.find((person) => person.id === 'example-clerk')?.alive).toBe(false);
+    expect(current.phase2?.persons.some((person) => person.id === 'example-successor' && person.alive)).toBe(true);
+  });
+
+  it('A28 一次目擊只記錄可見現象，不洩漏技能名稱、容量或後台限制', () => {
+    const { state } = start('witness'); const witness = state.phase2!.persons.find((person) => person.id !== 'protagonist')!;
+    const observed = applyPhase2Action(state.phase2!, { type:'RecordObservation', observation:{ id:'witness-event', witnessId:witness.id, turn:1, observation:'物品短暫消失後出現。', known:['目擊物品消失並出現'], unknown:['能力名稱','容量','全部限制'] } });
+    expect(observed.observations[0].known).toEqual(['目擊物品消失並出現']);
+    expect(observed.observations[0].unknown.join('')).not.toContain('容量=');
+    expect(JSON.stringify(observed.observations[0])).not.toMatch(/軒轅藏界|無限容量/);
   });
 });
