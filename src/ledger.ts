@@ -25,6 +25,13 @@ export function applyAccountEntry(book: AccountBook, input: AccountEntry): { acc
   return { accounts, entry: { ...input } };
 }
 
+/** Rebuild money accounts only from their ordered, auditable source entries. */
+export function rebuildAccountBook(entries: readonly AccountEntry[]): AccountBook {
+  return entries.reduce((book, entry) => applyAccountEntry(book, entry).accounts, {
+    private: 0, family: 0, public: 0, military: 0, sovereign: 0,
+  });
+}
+
 /** Custody may move while legal ownership and quantity remain unchanged. */
 export function changeCustody(lot: ItemLot, custodianId: string, locationId: string): ItemLot {
   if (!Number.isSafeInteger(lot.quantity) || lot.quantity <= 0 || !custodianId || !locationId) throw new Error('物資保管資料無效');

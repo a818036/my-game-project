@@ -1,14 +1,16 @@
-import { applyAccountEntry, openingEntry, type AccountBook, type AccountEntry } from './ledger';
+import { applyAccountEntry, openingEntry, rebuildAccountBook, type AccountBook, type AccountEntry } from './ledger';
 import { developTalent, historicalNodeAt, resolvePersonnel, runPersonnelEngine, runTalentEngine, trendForTurn } from './systems';
+import { advancePhase2, applyPhase2Action, createPhase2Model, type Phase2Action, type Phase2Model } from './phase2';
 
-export const ENGINE_VERSION = 1;
+export const ENGINE_VERSION = 2;
+export const LEGACY_ENGINE_VERSION = 1;
 export const RULES_VERSION = '3.15';
 export const SKILLS_VERSION = '1.10';
 export const SOURCE_HASHES = {
   rules: 'c30b9b1e64bfff24f2827f0a0f791f667edc5a4686cd520c8529af746d4f48a4',
   skills: 'd1d9ee7687b5bcb6ab1e4899e0d2ac62c22ee34bcd72900df78e4cb436cc7a80',
 } as const;
-export const MAX_TURNS = 20;
+export const MAX_TURNS = 60;
 export const INTENTS = ['耕讀自持', '訪求人才', '經商營生', '遊歷鄉里'] as const;
 export type Intent = typeof INTENTS[number];
 export const STATS = ['統率', '武力', '智力', '政治', '魅力'] as const;
@@ -35,14 +37,18 @@ export interface GameState {
   status: 'playing'|'complete'; turn: number; revision: number; worldlineId: string; character: Character; world: World;
   trend: string; historicalNodes: string[]; backend: { personnelChecks: number; talentChecks: number; historyChecks: number; trendChecks: number; personnel: string[]; talents: string[] };
   accounts: AccountBook; ledger: LedgerEntry[]; actions: ActionRecord[]; summaries: Summary[]; pendingDecisions: PendingDecision[]; appliedCommands: Record<string, string>;
+  phase2?: Phase2Model;
 }
 export type GameEvent =
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldCreated'; payload: { worldlineId: string; name: string; seed: number; facts: OpeningFacts } }
-  | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'IntentResolved'; payload: { intent: Intent } };
+  | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'IntentResolved'; payload: { intent: Intent } }
+  | { version: 2; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase2Changed'; payload: { action: Phase2Action } }
+  | { version: 2; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldlineUpgraded'; payload: { phase2: Phase2Model } };
 export type GameCommand =
   | { version: number; commandId: string; expectedRevision: number; type: 'StartGame'; name: string; seed: number; facts: OpeningFacts }
   | { version: number; commandId: string; expectedRevision: number; worldlineId: string; type: 'ChooseIntent'; intent: Intent }
-  | { version: number; commandId: string; expectedRevision: number; worldlineId: string; type: 'Continue' };
+  | { version: number; commandId: string; expectedRevision: number; worldlineId: string; type: 'Continue' }
+  | { version: 2; commandId: string; expectedRevision: number; worldlineId: string; type: 'Phase2Action'; action: Phase2Action };
 
 export const REGIONS = [
   '司隸','豫州','兗州','徐州','青州','冀州','幽州','并州','涼州','荊州','揚州','益州','交州','漢中','關中','遼東','南中','江東','荊襄','河東','潁川','汝南','陳留','南陽','襄陽','成都周邊','吳郡／會稽一帶','許縣／潁川一帶','洛陽周邊','隨機邊郡／特殊地區',
@@ -85,15 +91,19 @@ export function createOpeningFacts(seed: number, birthYear: number, history: Ope
 }
 export function createStartEvent(command: Extract<GameCommand,{type:'StartGame'}>): GameEvent {
   const worldlineId = `wl-${command.commandId}`;
-  return { version: ENGINE_VERSION, eventId: `${worldlineId}:1`, commandId: command.commandId, commandHash: fingerprint(command), revision: 1, type: 'WorldCreated', payload: { worldlineId, name: command.name.trim(), seed: command.seed >>> 0, facts: command.facts } };
+  return { version: command.version, eventId: `${worldlineId}:1`, commandId: command.commandId, commandHash: fingerprint(command), revision: 1, type: 'WorldCreated', payload: { worldlineId, name: command.name.trim(), seed: command.seed >>> 0, facts: command.facts } };
 }
 function fingerprint(command: GameCommand): string {
   return JSON.stringify(command.type === 'StartGame'
     ? { type: command.type, name: command.name.trim(), seed: command.seed >>> 0, facts: command.facts, expectedRevision: command.expectedRevision }
-    : { type: command.type, worldlineId: command.worldlineId, intent: command.type === 'ChooseIntent' ? command.intent : null, expectedRevision: command.expectedRevision });
+    : { type: command.type, worldlineId: command.worldlineId, payload: command.type === 'ChooseIntent' ? command.intent : command.type === 'Phase2Action' ? command.action : null, expectedRevision: command.expectedRevision });
 }
 export function applyEvent(state: GameState | null, event: GameEvent): GameState {
-  if (event.version !== ENGINE_VERSION) throw new Error(`不支援的事件版本：${event.version}`);
+  if (event.version !== ENGINE_VERSION && event.version !== LEGACY_ENGINE_VERSION) throw new Error(`不支援的事件版本：${event.version}`);
+  if (event.type === 'WorldlineUpgraded') {
+    if (!state || state.engineVersion !== LEGACY_ENGINE_VERSION || event.version !== ENGINE_VERSION || event.revision !== state.revision + 1) throw new Error('舊世界線升級事件無效');
+    return { ...state, schemaVersion: 2, engineVersion: ENGINE_VERSION, status: 'playing', revision: event.revision, phase2: event.payload.phase2, appliedCommands: { ...state.appliedCommands, [event.commandId]: event.commandHash } };
+  }
   if (event.type === 'WorldCreated') {
     if (state) {
       const existing = state.appliedCommands[event.commandId];
@@ -103,7 +113,7 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     const { facts, name, worldlineId, seed } = event.payload;
     if (!name.trim() || !Number.isInteger(facts.birthYear) || facts.birthYear < 160 || facts.birthYear > 184 || !Number.isInteger(seed) || !REGIONS.includes(facts.birthRegion as typeof REGIONS[number])) throw new Error('開局資料無效');
     const newState: GameState = {
-      schemaVersion: 1, engineVersion: ENGINE_VERSION, rulesVersion: RULES_VERSION, skillsVersion: SKILLS_VERSION, sourceHashes: SOURCE_HASHES,
+      schemaVersion: event.version === ENGINE_VERSION ? 2 : 1, engineVersion: event.version, rulesVersion: RULES_VERSION, skillsVersion: SKILLS_VERSION, sourceHashes: SOURCE_HASHES,
       status: 'playing', turn: 0, revision: 1, worldlineId, character: {
         name, birthYear: facts.birthYear, age: 0, home: facts.birthRegion, surname: facts.surname, family: facts.family,
         background: facts.background, health: facts.health, potential: facts.potential, growth: { study: 0, practice: 0, social: 0 },
@@ -114,6 +124,7 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
       backend: { personnelChecks: 0, talentChecks: 0, historyChecks: 0, trendChecks: 0, personnel: ['縣亭佐吏・示例人物（待地方考課）'], talents: [] },
       accounts: { private: 12, family: 0, public: 0, military: 0, sovereign: 0 }, ledger: [openingEntry(worldlineId, facts.birthYear)], actions: [], summaries: [], pendingDecisions: [], appliedCommands: { [event.commandId]: event.commandHash },
     };
+    if (event.version === ENGINE_VERSION) newState.phase2 = createPhase2Model(name, facts.birthYear, facts.family, facts.potential);
     return newState;
   }
   if (!state) throw new Error('事件流缺少世界線建立事件');
@@ -122,7 +133,25 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     throw new Error('事件 commandId 重複但內容不一致');
   }
   if (event.revision !== state.revision + 1) throw new Error('事件版本序列不連續');
-  if (state.status === 'complete' || state.turn >= MAX_TURNS) throw new Error('二十回合旅程已結束');
+  if (event.type === 'Phase2Changed') {
+    if (event.version !== ENGINE_VERSION || !state.phase2) throw new Error('第二階段命令不適用於此版本存檔');
+    const phase2 = applyPhase2Action(state.phase2, event.payload.action);
+    const changed = { ...state, revision: event.revision, phase2, appliedCommands: { ...state.appliedCommands, [event.commandId]: event.commandHash } };
+    if (event.payload.action.type === 'TransferAsset' && event.payload.action.asset === '錢') {
+      const action = event.payload.action;
+      const result = applyAccountEntry(state.accounts, { id:event.eventId, eventId:event.eventId, turn:action.turn, asset:'錢', amount:action.amount, from:action.from, to:action.to, memo:action.memo });
+      if (result.accounts.private !== phase2.assetBalances.錢.private) throw new Error('私帳金額與多資產帳簿不一致');
+      return { ...changed, character: { ...state.character, money: result.accounts.private }, accounts: result.accounts, ledger: [...state.ledger, result.entry] };
+    }
+    if (event.payload.action.type === 'RecalculateMoneyAccounts') {
+      const accounts = rebuildAccountBook(state.ledger);
+      const balances = { ...phase2.assetBalances.錢, ...accounts };
+      return { ...changed, character: { ...state.character, money: accounts.private }, accounts, phase2: { ...phase2, assetBalances: { ...phase2.assetBalances, 錢: balances } } };
+    }
+    return changed;
+  }
+  const turnLimit = event.version === LEGACY_ENGINE_VERSION ? 20 : MAX_TURNS;
+  if (state.status === 'complete' && !(event.version === ENGINE_VERSION && state.schemaVersion === 2) || state.turn >= turnLimit) throw new Error('本段旅程已結束');
   const { intent } = event.payload;
   if (!INTENTS.includes(intent) || !event.eventId.startsWith(`${state.worldlineId}:`)) throw new Error('回合事件無效或屬於其他世界線');
   const turn = state.turn + 1, roll = random(state.world.seed, turn * 7 + INTENTS.indexOf(intent));
@@ -149,12 +178,17 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
   const accounts = entry?.accounts ?? state.accounts;
   const actions = [...state.actions, { turn, intent, title, details }];
   const summaries = turn % 5 === 0 ? [...state.summaries, makeSummary(turn, character, state.world, actions, ledger)] : state.summaries;
+  const phase2 = event.version === ENGINE_VERSION && state.phase2 ? advancePhase2(state.phase2, turn, year, intent, character.money, event.eventId) : state.phase2;
+  if (phase2 && turn % 5 === 0) {
+    const summary = summaries.at(-1)!;
+    summary.text += `；成長記錄 ${phase2.practiceLog.length} 項、持續傷勢 ${phase2.injuries.filter((injury) => injury.active).length} 項、關係人物 ${phase2.relationships.length} 位`;
+  }
   return {
-    ...state, status: turn === MAX_TURNS ? 'complete' : 'playing', turn, revision: event.revision,
+    ...state, schemaVersion: event.version === ENGINE_VERSION ? 2 : state.schemaVersion, engineVersion: event.version === ENGINE_VERSION ? 2 : state.engineVersion, status: turn === turnLimit ? 'complete' : 'playing', turn, revision: event.revision,
     character, world: { ...state.world, year, month, eventCount: state.world.eventCount + 1 }, trend,
     historicalNodes: node ? [...state.historicalNodes, node] : state.historicalNodes,
     backend: { personnelChecks: state.backend.personnelChecks + 1, talentChecks: state.backend.talentChecks + 1, historyChecks: state.backend.historyChecks + 1, trendChecks: state.backend.trendChecks + 1, personnel: personnel.messages.length ? personnel.messages : state.backend.personnel, talents: talent.names },
-    accounts, ledger, actions, summaries, appliedCommands: { ...state.appliedCommands, [event.commandId]: event.commandHash },
+    accounts, ledger, actions, summaries, appliedCommands: { ...state.appliedCommands, [event.commandId]: event.commandHash }, ...(phase2 ? { phase2 } : {}),
   };
 }
 export function makeSummary(turn: number, c: Character, world: World, actions: ActionRecord[], ledger: LedgerEntry[]): Summary {
@@ -185,6 +219,11 @@ export function dispatch(state: GameState | null, command: GameCommand): { state
   }
   if (!state || command.worldlineId !== state.worldlineId) throw new Error('命令世界線不符');
   if (command.expectedRevision !== state.revision) throw new Error('狀態版本已更新，請重新檢視');
+  if (command.type === 'Phase2Action') {
+    if (!state.phase2) throw new Error('此世界線尚未完成第二階段存檔遷移');
+    const event: GameEvent = { version: ENGINE_VERSION, eventId: `${state.worldlineId}:${state.revision + 1}`, commandId: command.commandId, commandHash: fingerprint(command), revision: state.revision + 1, type: 'Phase2Changed', payload: { action: command.action } };
+    return { state: applyEvent(state, event), event, duplicate: false };
+  }
   if (!INTENTS.includes(command.intent)) throw new Error('無效的生活意圖');
   const event: GameEvent = { version: ENGINE_VERSION, eventId: `${state.worldlineId}:${state.revision + 1}`, commandId: command.commandId, commandHash: fingerprint(command), revision: state.revision + 1, type: 'IntentResolved', payload: { intent: command.intent } };
   return { state: applyEvent(state, event), event, duplicate: false };
