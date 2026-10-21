@@ -14,8 +14,8 @@ export const SOURCE_HASHES = {
   rules: 'c30b9b1e64bfff24f2827f0a0f791f667edc5a4686cd520c8529af746d4f48a4',
   skills: 'd1d9ee7687b5bcb6ab1e4899e0d2ac62c22ee34bcd72900df78e4cb436cc7a80',
 } as const;
-// Leave enough in-world turns for a 184-born timeline to reach the Phase 4
-// 190/191 historical windows through ordinary 30-day actions.
+// Leave enough in-world turns for a 184-born timeline to reach Phase 4's
+// 190/191 historical events through ordinary 30-day actions.
 export const MAX_TURNS = 120;
 export const INTENTS = ['耕讀自持', '訪求人才', '經商營生', '遊歷鄉里'] as const;
 export type Intent = typeof INTENTS[number];
@@ -274,7 +274,7 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
   moneyDelta = Math.max(-character.money, moneyDelta);
   const recordedIntents=event.type==='ActionPlanResolved'?event.payload.intents:intents;
   const interruptedIntent=event.type==='ActionPlanResolved'&&event.version===ENGINE_VERSION?event.payload.interruptedIntent:undefined;
-  const title = intents.length === 0 ? `介入窗口中斷：${interruptedIntent??''}` : intents.length === 1 ? ({'耕讀自持':'田畝與書卷','訪求人才':'訪求人才','經商營生':'市集營生','遊歷鄉里':'行走鄉里'} as Record<Intent,string>)[intents[0]] : `行動計畫：${intents.join('、')}`;
+  const title = intents.length === 0 ? `重大節點中斷：${interruptedIntent??''}` : intents.length === 1 ? ({'耕讀自持':'田畝與書卷','訪求人才':'訪求人才','經商營生':'市集營生','遊歷鄉里':'行走鄉里'} as Record<Intent,string>)[intents[0]] : `行動計畫：${intents.join('、')}`;
   const supplement = event.type === 'ActionPlanResolved' ? event.payload.supplement.trim() : '';
   const details = `${outcomes.join('；')|| (interruptedOnly?`「${interruptedIntent}」尚未完成，未結算其收益或資源`: '')}${supplement ? `；補充說明（已保存，未解析為執行條件）：${supplement}` : ''}`;
   const finalDetails = `${details}${event.version===ENGINE_VERSION?`；本計畫推進 ${elapsedDays} 日${interruptions.length?`，遇重大節點後中斷：${interruptions.join('；')}`:''}`:''}`;
