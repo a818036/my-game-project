@@ -2,8 +2,9 @@ import { applyAccountEntry, openingEntry, rebuildAccountBook, type AccountBook, 
 import { developTalent, historicalNodeAt, resolvePersonnel, runPersonnelEngine, runTalentEngine, trendForTurn } from './systems';
 import { advancePhase2, applyPhase2Action, createPhase2Model, type Phase2Action, type Phase2Model } from './phase2';
 import { advanceInnate, applyInnateAction, createInnateModel, type InnateAction, type InnateModel } from './innate';
+import { applyEvent as applyLegacyEvent, type GameEvent as LegacyGameEvent, type GameState as LegacyGameState } from './engine.v3';
 
-export const ENGINE_VERSION = 3;
+export const ENGINE_VERSION = 4;
 export const LEGACY_ENGINE_VERSION = 1;
 export const PHASE2_ENGINE_VERSION = 2;
 export const RULES_VERSION = '3.15';
@@ -31,7 +32,7 @@ export interface Character {
 }
 export interface World { seed: number; worldlineId: string; year: number; month: number; eventCount: number; }
 export interface LedgerEntry extends AccountEntry { turn: number; }
-export interface ActionRecord { turn: number; intent: Intent; title: string; details: string; }
+export interface ActionRecord { turn: number; intent: Intent; intents?: Intent[]; title: string; details: string; supplement?: string; }
 export interface Summary { turn: number; kind: '小記'|'大記'; text: string; }
 export interface PendingDecision { id: string; kind: string; }
 export interface GameState {
@@ -39,22 +40,28 @@ export interface GameState {
   status: 'playing'|'complete'; turn: number; revision: number; worldlineId: string; character: Character; world: World;
   trend: string; historicalNodes: string[]; backend: { personnelChecks: number; talentChecks: number; historyChecks: number; trendChecks: number; personnel: string[]; talents: string[] };
   accounts: AccountBook; ledger: LedgerEntry[]; actions: ActionRecord[]; summaries: Summary[]; pendingDecisions: PendingDecision[]; appliedCommands: Record<string, string>;
+  actionNotes?: Array<{ turn: number; revision: number; text: string }>;
   phase2?: Phase2Model;
   innate?: InnateModel;
 }
 export type GameEvent =
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldCreated'; payload: { worldlineId: string; name: string; seed: number; facts: OpeningFacts } }
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'IntentResolved'; payload: { intent: Intent } }
-  | { version: 2 | 3; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase2Changed'; payload: { action: Phase2Action } }
+  | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string } }
+  | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionNoteRecorded'; payload: { text: string } }
+  | { version: 2 | 3 | 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase2Changed'; payload: { action: Phase2Action } }
   | { version: 2; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldlineUpgraded'; payload: { phase2: Phase2Model } }
   | { version: 3; eventId: string; commandId: string; commandHash: string; revision: number; type: 'InnateSystemUpgraded'; payload: { innate: InnateModel } }
-  | { version: 3; eventId: string; commandId: string; commandHash: string; revision: number; type: 'InnateChanged'; payload: { action: InnateAction } };
+  | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'InnateChanged'; payload: { action: InnateAction } }
+  | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'EngineUpgraded' };
 export type GameCommand =
   | { version: number; commandId: string; expectedRevision: number; type: 'StartGame'; name: string; seed: number; facts: OpeningFacts }
   | { version: number; commandId: string; expectedRevision: number; worldlineId: string; type: 'ChooseIntent'; intent: Intent }
+  | { version: 4; commandId: string; expectedRevision: number; worldlineId: string; type: 'SubmitActionPlan'; intents: Intent[]; supplement: string }
+  | { version: 4; commandId: string; expectedRevision: number; worldlineId: string; type: 'RecordActionNote'; text: string }
   | { version: number; commandId: string; expectedRevision: number; worldlineId: string; type: 'Continue' }
-  | { version: 3; commandId: string; expectedRevision: number; worldlineId: string; type: 'Phase2Action'; action: Phase2Action }
-  | { version: 3; commandId: string; expectedRevision: number; worldlineId: string; type: 'InnateAction'; action: InnateAction };
+  | { version: 4; commandId: string; expectedRevision: number; worldlineId: string; type: 'Phase2Action'; action: Phase2Action }
+  | { version: 4; commandId: string; expectedRevision: number; worldlineId: string; type: 'InnateAction'; action: InnateAction };
 
 export const REGIONS = [
   '司隸','豫州','兗州','徐州','青州','冀州','幽州','并州','涼州','荊州','揚州','益州','交州','漢中','關中','遼東','南中','江東','荊襄','河東','潁川','汝南','陳留','南陽','襄陽','成都周邊','吳郡／會稽一帶','許縣／潁川一帶','洛陽周邊','隨機邊郡／特殊地區',
@@ -102,17 +109,28 @@ export function createStartEvent(command: Extract<GameCommand,{type:'StartGame'}
 function fingerprint(command: GameCommand): string {
   return JSON.stringify(command.type === 'StartGame'
     ? { type: command.type, name: command.name.trim(), seed: command.seed >>> 0, facts: command.facts, expectedRevision: command.expectedRevision }
-    : { type: command.type, worldlineId: command.worldlineId, payload: command.type === 'ChooseIntent' ? command.intent : command.type === 'Phase2Action' || command.type === 'InnateAction' ? command.action : null, expectedRevision: command.expectedRevision });
+    : { type: command.type, worldlineId: command.worldlineId, payload: command.type === 'ChooseIntent' ? command.intent : command.type === 'SubmitActionPlan' ? { intents: command.intents, supplement: command.supplement } : command.type === 'RecordActionNote' ? command.text : command.type === 'Phase2Action' || command.type === 'InnateAction' ? command.action : null, expectedRevision: command.expectedRevision });
 }
 export function applyEvent(state: GameState | null, event: GameEvent): GameState {
+  // Event versions 1–3 retain their original reducers so existing event streams
+  // replay byte-for-byte before the explicit v4 upgrade event is appended.
+  if (event.version < ENGINE_VERSION) return applyLegacyEvent(state as LegacyGameState | null, event as LegacyGameEvent) as GameState;
   if (![LEGACY_ENGINE_VERSION, PHASE2_ENGINE_VERSION, ENGINE_VERSION].includes(event.version)) throw new Error(`不支援的事件版本：${event.version}`);
+  if (event.type === 'EngineUpgraded') {
+    if (!state || state.engineVersion !== 3 || event.revision !== state.revision + 1) throw new Error('第四階段前置引擎升級事件無效');
+    const innate = state.innate ? {
+      ...state.innate,
+      lightningZones: state.innate.lightningZones ?? [], scenarioUnits: state.innate.scenarioUnits ?? [],
+      loyaltyNetworks: state.innate.loyaltyNetworks ?? [], communitySupport: state.innate.communitySupport ?? 50,
+      languageActs: state.innate.languageActs ?? [],
+    } : undefined;
+    if(innate&&state.phase2)for(const person of state.phase2.persons){const subject=innate.subjects[person.id];if(subject){subject.birthYear??=person.birthYear;subject.rejuvenationOffset??=0;}}
+    if(innate)for(const object of innate.objects.filter(item=>item.kind==='其他生命'))if(!innate.subjects[object.id])innate.subjects[object.id]={id:object.id,fear:0,trauma:[],injuries:[],disease:[],physiologicalAge:0,bodyChanges:[],grantedAbilities:[],sensesLost:false,morale:50,willingness:50,location:object.location,alive:true,bodySystems:{神經:50,肌力:50,肌腱關節:50,循環:50,心肺:50,疼痛:50,感官:50,平衡:50,反射:50,動作協調:50,疲勞處理:50,恢復:50}};
+    return { ...state, schemaVersion:4, engineVersion:4, revision:event.revision, ...(innate?{innate}:{}), appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash} };
+  }
   if (event.type === 'WorldlineUpgraded') {
     if (!state || state.engineVersion !== LEGACY_ENGINE_VERSION || event.version !== PHASE2_ENGINE_VERSION || event.revision !== state.revision + 1) throw new Error('舊世界線升級事件無效');
     return { ...state, schemaVersion: 2, engineVersion: PHASE2_ENGINE_VERSION, status: 'playing', revision: event.revision, phase2: event.payload.phase2, appliedCommands: { ...state.appliedCommands, [event.commandId]: event.commandHash } };
-  }
-  if (event.type === 'InnateSystemUpgraded') {
-    if (!state || state.engineVersion !== PHASE2_ENGINE_VERSION || event.version !== ENGINE_VERSION || event.revision !== state.revision + 1) throw new Error('天生技系統升級事件無效');
-    return { ...state, schemaVersion: 3, engineVersion: ENGINE_VERSION, status: 'playing', revision: event.revision, innate: event.payload.innate, character:{...state.character,profile:{...state.character.profile,abilitiesStatus:'phase-three-partial'}}, appliedCommands: { ...state.appliedCommands, [event.commandId]: event.commandHash } };
   }
   if (event.type === 'WorldCreated') {
     if (state) {
@@ -144,8 +162,12 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     throw new Error('事件 commandId 重複但內容不一致');
   }
   if (event.revision !== state.revision + 1) throw new Error('事件版本序列不連續');
+  if (event.type === 'ActionNoteRecorded') {
+    if (event.version !== ENGINE_VERSION || !event.payload.text.trim()) throw new Error('補充說明不可為空白');
+    return { ...state, revision:event.revision, actionNotes:[...(state.actionNotes ?? []), { turn:state.turn, revision:event.revision, text:event.payload.text.trim() }], appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash} };
+  }
   if (event.type === 'Phase2Changed') {
-    if ((event.version !== ENGINE_VERSION && event.version !== PHASE2_ENGINE_VERSION) || !state.phase2) throw new Error('第二階段命令不適用於此版本存檔');
+    if ((event.version !== ENGINE_VERSION && event.version !== PHASE2_ENGINE_VERSION && event.version !== 3) || !state.phase2) throw new Error('第二階段命令不適用於此版本存檔');
     const phase2 = applyPhase2Action(state.phase2, event.payload.action);
     let innate=state.innate;
     if(innate&&event.payload.action.type==='MarkDeath'){
@@ -173,7 +195,11 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     const innate = applyInnateAction(state.innate,event.payload.action,state.turn, {location:scene.location,presentIds:scene.presentIds,text:state.actions.at(-1)?.details ?? '場景尚無已記錄正文'},state.phase2);
     const action=event.payload.action;
     let phase2 = state.phase2;
-    if(action.type==='Flash')phase2={...phase2,scene:{...phase2.scene,location:action.location,presentIds:['protagonist'],enteredIds:['protagonist'],leftIds:phase2.scene.presentIds.filter(id=>id!=='protagonist')}};
+    if(action.type==='Flash'){
+      const carriedPeople=action.bringIds.map(id=>innate.objects.find(object=>object.id===id)).filter(object=>object?.kind==='人類活體').map(object=>object!.id.replace(/^person-body-/,''));
+      const presentIds=['protagonist',...carriedPeople];
+      phase2={...phase2,scene:{...phase2.scene,location:action.location,presentIds,enteredIds:presentIds,leftIds:phase2.scene.presentIds.filter(id=>!presentIds.includes(id))}};
+    }
     if(action.type==='Store'||action.type==='Retrieve'||action.type==='Flash'){
       const moved=new Map(innate.objects.map(object=>[object.id,object]));
       phase2={...phase2,items:phase2.items.map(item=>{const object=moved.get(item.id);return object?{...item,ownerId:object.ownerId,custodianId:object.custodianId,locationId:object.location,quantity:object.quantity}:item;})};
@@ -190,34 +216,49 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
   }
   const turnLimit = event.version === LEGACY_ENGINE_VERSION ? 20 : MAX_TURNS;
   if (state.status === 'complete' && !(event.version === ENGINE_VERSION && state.schemaVersion >= 2) || state.turn >= turnLimit) throw new Error('本段旅程已結束');
-  const { intent } = event.payload;
-  if (!INTENTS.includes(intent) || !event.eventId.startsWith(`${state.worldlineId}:`)) throw new Error('回合事件無效或屬於其他世界線');
-  const turn = state.turn + 1, roll = random(state.world.seed, turn * 7 + INTENTS.indexOf(intent));
-  let moneyDelta = 0, reputationDelta = 0, title = '', details = '';
+  const intents: Intent[] | null = event.type === 'IntentResolved' ? [event.payload.intent] : event.type === 'ActionPlanResolved' ? event.payload.intents : null;
+  if (!intents || intents.length === 0 || intents.some((intent) => !INTENTS.includes(intent)) || !event.eventId.startsWith(`${state.worldlineId}:`)) throw new Error('回合事件無效或屬於其他世界線');
+  if (event.type === 'ActionPlanResolved' && (event.version !== ENGINE_VERSION || inspectActionPlan(intents).conflicts.length > 0)) throw new Error('行動計畫有衝突，請先調整');
+  const turn = state.turn + 1;
+  let moneyDelta = 0, reputationDelta = 0;
+  const moneyDeltas: Array<{ intent:Intent; amount:number; memo:string }> = [];
   let character = { ...state.character, growth: { ...state.character.growth }, contacts: [...state.character.contacts] };
-  switch (intent) {
-    case '耕讀自持': character.growth.study += 1; title = '田畝與書卷'; details = `在${character.home}整理薄田、溫習經書，累積一段學習與家計經驗。`; moneyDelta = roll > .82 ? 4 : 2; break;
-    case '訪求人才': { const result = resolvePersonnel(character, state.world.seed, turn, roll); character = result.character; reputationDelta = result.reputationDelta; title = result.title; details = result.details; break; }
-    case '經商營生': character.growth.practice += 1; title = '市集營生'; moneyDelta = roll > .24 ? 5 : -2; details = moneyDelta > 0 ? `售出土產，收入錢 ${moneyDelta}。` : `貨物折損，支出錢 ${Math.min(2, character.money)}。`; moneyDelta = Math.max(-character.money, moneyDelta); break;
-    case '遊歷鄉里': character.growth.social += 1; moneyDelta = character.money > 0 ? -1 : 0; reputationDelta = roll > .48 ? 1 : 0; title = '行走鄉里'; details = `探訪周邊村落並聽取地方消息。${moneyDelta ? '支出旅費錢 1。' : '盤纏不足，改在近處步行。'}${reputationDelta ? ' 熱心助人，鄉里聲望略升。' : ''}`; break;
+  const outcomes: string[] = [];
+  for (const intent of intents) {
+    const roll = random(state.world.seed, turn * 7 + INTENTS.indexOf(intent));
+    switch (intent) {
+      case '耕讀自持': { const income = roll > .82 ? 4 : 2; moneyDelta += income; moneyDeltas.push({intent,amount:income,memo:`田畝與書卷・家計收入 ${income}`}); outcomes.push(`田畝與書卷：學習經驗增加，家計收入錢 ${income}`); break; }
+      case '訪求人才': { const result = resolvePersonnel(character, state.world.seed, turn, roll); character = result.character; reputationDelta += result.reputationDelta; outcomes.push(`${result.title}：${result.details}`); break; }
+      case '經商營生': { const trade = roll > .24 ? 5 : -2; moneyDelta += trade; moneyDeltas.push({intent,amount:trade,memo:`市集營生・${trade > 0 ? `收入 ${trade}` : '貨損支出 2'}`}); outcomes.push(`市集營生：${trade > 0 ? `收入錢 ${trade}` : '貨物折損，支出錢 2'}`); break; }
+      case '遊歷鄉里': { moneyDelta -= 1; moneyDeltas.push({intent,amount:-1,memo:'行走鄉里・旅費支出 1'}); const rep = roll > .48 ? 1 : 0; reputationDelta += rep; outcomes.push(`行走鄉里：探訪村落，支出旅費錢 1${rep ? '，鄉里聲望 +1' : ''}`); break; }
+    }
   }
+  moneyDelta = Math.max(-character.money, moneyDelta);
+  const title = intents.length === 1 ? ({'耕讀自持':'田畝與書卷','訪求人才':'訪求人才','經商營生':'市集營生','遊歷鄉里':'行走鄉里'} as Record<Intent,string>)[intents[0]] : `行動計畫：${intents.join('、')}`;
+  const supplement = event.type === 'ActionPlanResolved' ? event.payload.supplement.trim() : '';
+  const details = `${outcomes.join('；')}${supplement ? `；補充說明（已保存，未解析為執行條件）：${supplement}` : ''}`;
   character.money += moneyDelta; character.reputation += reputationDelta;
-  character = developTalent(character, intent, roll);
+  for (const intent of intents) character = developTalent(character, intent, random(state.world.seed, turn * 7 + INTENTS.indexOf(intent)));
   const year = state.world.year + (turn % 4 === 0 ? 1 : 0), month = ((turn * 3) % 12) + 1;
   character.age = year - character.birthYear;
   const personnel = runPersonnelEngine(state.backend.personnel, turn);
   const talent = runTalentEngine(state.backend.talents, state.world.seed, turn);
   const node = historicalNodeAt(turn), trend = trendForTurn(state.world.seed, turn);
-  const entry = moneyDelta === 0 ? null : applyAccountEntry(state.accounts, {
-    id: event.eventId, eventId: event.eventId, turn, asset: '錢', amount: Math.abs(moneyDelta),
-    from: moneyDelta > 0 ? 'market' : 'private', to: moneyDelta > 0 ? 'private' : 'market', memo: `${title}｜${details}`,
-  });
-  const ledger = entry ? [...state.ledger, entry.entry] : state.ledger;
-  const accounts = entry?.accounts ?? state.accounts;
-  const actions = [...state.actions, { turn, intent, title, details }];
+  let accounts = state.accounts;
+  const newLedger: LedgerEntry[] = [];
+  for (const [index, change] of moneyDeltas.entries()) {
+    const amount = Math.abs(change.amount);
+    if (!amount) continue;
+    const paid = Math.min(amount, accounts.private);
+    if (change.amount < 0 && paid === 0) continue;
+    const entry = applyAccountEntry(accounts, { id:`${event.eventId}:asset:${index}`, eventId:event.eventId, turn, asset:'錢', amount:change.amount > 0 ? amount : paid, from:change.amount > 0 ? 'market' : 'private', to:change.amount > 0 ? 'private' : 'market', memo:change.memo });
+    accounts = entry.accounts; newLedger.push(entry.entry);
+  }
+  const ledger = newLedger.length ? [...state.ledger, ...newLedger] : state.ledger;
+  const actions = [...state.actions, { turn, intent:intents[0], intents:[...intents], title, details, ...(supplement ? { supplement } : {}) }];
   const summaries = turn % 5 === 0 ? [...state.summaries, makeSummary(turn, character, state.world, actions, ledger)] : state.summaries;
-  const phase2 = event.version >= PHASE2_ENGINE_VERSION && state.phase2 ? advancePhase2(state.phase2, turn, year, intent, character.money, event.eventId) : state.phase2;
-  const innate = event.version === ENGINE_VERSION && state.innate ? advanceInnate(state.innate,turn) : state.innate;
+  const phase2 = event.version >= PHASE2_ENGINE_VERSION && state.phase2 ? advancePhase2(state.phase2, turn, year, intents.join('＋'), character.money, event.eventId) : state.phase2;
+  const innate = event.version === ENGINE_VERSION && state.innate ? advanceInnate(state.innate,turn,undefined,year) : state.innate;
   if (phase2 && turn % 5 === 0) {
     const summary = summaries.at(-1)!;
     summary.text += `；成長記錄 ${phase2.practiceLog.length} 項、持續傷勢 ${phase2.injuries.filter((injury) => injury.active).length} 項、關係人物 ${phase2.relationships.length} 位`;
@@ -236,6 +277,17 @@ export function makeSummary(turn: number, c: Character, world: World, actions: A
   const finance = ledger.filter((entry) => entry.turn > turn - 5 && entry.turn <= turn).map((entry) => entry.memo).join('；');
   return { turn, kind, text: `第 ${turn} 回合${kind}（${world.year}年）：${c.name}生於${c.home}，現年 ${c.age} 歲、私錢 ${c.money}；本段行動：${period || '無'}；帳務：${finance || '無資產異動'}。` };
 }
+export const ACTION_PLAN_EFFORT_BUDGET = 2;
+const ACTION_EFFORT: Record<Intent, number> = { '耕讀自持':1, '訪求人才':2, '經商營生':1, '遊歷鄉里':2 };
+export function inspectActionPlan(intents: Intent[]): { effort: number; conflicts: string[] } {
+  const conflicts: string[] = [];
+  if (new Set(intents).size !== intents.length) conflicts.push('同一行動重複勾選，請移除重複項目。');
+  const effort = intents.reduce((sum, intent) => sum + (ACTION_EFFORT[intent] ?? 99), 0);
+  if (effort > ACTION_PLAN_EFFORT_BUDGET) conflicts.push(`本回合可用行動時間為 ${ACTION_PLAN_EFFORT_BUDGET} 點，所選行動需要 ${effort} 點；請調整計畫。`);
+  if (intents.includes('遊歷鄉里') && intents.some((intent) => intent !== '遊歷鄉里')) conflicts.push('遊歷鄉里會離開家宅；與同回合留在家宅耕讀或市集營生有地點衝突。');
+  if (intents.includes('訪求人才') && intents.includes('遊歷鄉里')) conflicts.push('訪求人才與遊歷鄉里都需要外出安排，無法在此示例的一回合內保證行程相容。');
+  return { effort, conflicts:[...new Set(conflicts)] };
+}
 export function dispatch(state: GameState | null, command: GameCommand): { state: GameState | null; event: GameEvent | null; duplicate: boolean } {
   if (command.version !== ENGINE_VERSION) throw new Error(`不支援的命令版本：${command.version}`);
   const known = state?.appliedCommands[command.commandId];
@@ -249,6 +301,12 @@ export function dispatch(state: GameState | null, command: GameCommand): { state
     if (command.expectedRevision !== state.revision) throw new Error('狀態版本已更新，請重新檢視');
     // Continue only closes the current narrative pause; it neither advances time nor accepts any pending decision.
     return { state, event: null, duplicate: false };
+  }
+  if (command.type === 'RecordActionNote') {
+    if (!state || command.worldlineId !== state.worldlineId || command.expectedRevision !== state.revision) throw new Error('補充說明所屬世界線或版本已變更');
+    if (!command.text.trim()) throw new Error('補充說明不可為空白');
+    const event: GameEvent = { version:ENGINE_VERSION, eventId:`${state.worldlineId}:${state.revision+1}`, commandId:command.commandId, commandHash:fingerprint(command), revision:state.revision+1, type:'ActionNoteRecorded', payload:{text:command.text.trim()} };
+    return { state:applyEvent(state,event), event, duplicate:false };
   }
   if (command.type === 'StartGame') {
     if (state) throw new Error('請先切換到新世界線');
@@ -267,6 +325,13 @@ export function dispatch(state: GameState | null, command: GameCommand): { state
     if (!state.innate || !state.phase2) throw new Error('此存檔尚未升級天生技系統');
     const event: GameEvent = { version: ENGINE_VERSION, eventId: `${state.worldlineId}:${state.revision + 1}`, commandId: command.commandId, commandHash: fingerprint(command), revision: state.revision + 1, type: 'InnateChanged', payload: { action: command.action } };
     return { state: applyEvent(state,event), event, duplicate:false };
+  }
+  if (command.type === 'SubmitActionPlan') {
+    if (!command.intents.length) throw new Error('行動計畫至少須勾選一項行動');
+    const plan = inspectActionPlan(command.intents);
+    if (plan.conflicts.length) throw new Error(plan.conflicts.join(' '));
+    const event: GameEvent = { version:ENGINE_VERSION, eventId:`${state.worldlineId}:${state.revision+1}`, commandId:command.commandId, commandHash:fingerprint(command), revision:state.revision+1, type:'ActionPlanResolved', payload:{intents:[...command.intents],supplement:command.supplement} };
+    return { state:applyEvent(state,event), event, duplicate:false };
   }
   if (!INTENTS.includes(command.intent)) throw new Error('無效的生活意圖');
   const event: GameEvent = { version: ENGINE_VERSION, eventId: `${state.worldlineId}:${state.revision + 1}`, commandId: command.commandId, commandHash: fingerprint(command), revision: state.revision + 1, type: 'IntentResolved', payload: { intent: command.intent } };
