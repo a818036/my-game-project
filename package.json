@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "narration": "node server/index.mjs",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b --pretty",
     "test": "vitest run"

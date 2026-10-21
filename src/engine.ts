@@ -3,7 +3,7 @@ import { developTalent, historicalNodeAt, resolvePersonnel, runPersonnelEngine, 
 import { advancePhase2, applyPhase2Action, createPhase2Model, type Phase2Action, type Phase2Model } from './phase2';
 import { advanceInnate, applyInnateAction, createInnateModel, type InnateAction, type InnateModel } from './innate';
 import { applyEvent as applyLegacyEvent, type GameEvent as LegacyGameEvent, type GameState as LegacyGameState } from './engine.v3';
-import { advancePhase4, applyPhase4Action, createPhase4Model, recordInnateDeathRescue, type Phase4Action, type Phase4Model } from './phase4';
+import { advancePhase4, applyPhase4Action, createPhase4Model, ENGINEERING, recordInnateDeathRescue, type Phase4Action, type Phase4Model } from './phase4';
 
 export const ENGINE_VERSION = 5;
 export const LEGACY_ENGINE_VERSION = 1;
@@ -35,7 +35,8 @@ export interface Character {
 }
 export interface World { seed: number; worldlineId: string; year: number; month: number; eventCount: number; }
 export interface LedgerEntry extends AccountEntry { turn: number; }
-export interface ActionRecord { turn: number; intent: Intent; intents?: Intent[]; title: string; details: string; supplement?: string; elapsedDays?: number; interruptions?: string[]; }
+export interface PlannedActionDetail { intent:Intent; order:number; targetId?:string; targetName?:string; method?:string; condition?:'目標仍在場'; }
+export interface ActionRecord { turn: number; intent: Intent; intents?: Intent[]; title: string; details: string; supplement?: string; freeTextActions?:PlannedActionDetail[]; elapsedDays?: number; interruptions?: string[]; }
 export interface Summary { turn: number; kind: '小記'|'大記'; text: string; }
 export interface PendingDecision { id: string; kind: string; }
 export interface GameState {
@@ -54,7 +55,7 @@ export type GameEvent =
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldCreated'; payload: { worldlineId: string; name: string; seed: number; facts: OpeningFacts } }
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'IntentResolved'; payload: { intent: Intent } }
   | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string } }
-  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string; executedIntents: Intent[]; elapsedDays: number; interruptions: string[]; interruptedIntent?:Intent } }
+  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string; executedIntents: Intent[]; elapsedDays: number; interruptions: string[]; interruptedIntent?:Intent; freeTextActions?:PlannedActionDetail[] } }
   | { version: 4 | 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionNoteRecorded'; payload: { text: string } }
   | { version: 2 | 3 | 4 | 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase2Changed'; payload: { action: Phase2Action } }
   | { version: 2; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldlineUpgraded'; payload: { phase2: Phase2Model } }
@@ -66,7 +67,7 @@ export type GameEvent =
 export type GameCommand =
   | { version: number; commandId: string; expectedRevision: number; type: 'StartGame'; name: string; seed: number; facts: OpeningFacts }
   | { version: number; commandId: string; expectedRevision: number; worldlineId: string; type: 'ChooseIntent'; intent: Intent }
-  | { version: 5; commandId: string; expectedRevision: number; worldlineId: string; type: 'SubmitActionPlan'; intents: Intent[]; supplement: string }
+  | { version: 5; commandId: string; expectedRevision: number; worldlineId: string; type: 'SubmitActionPlan'; intents: Intent[]; supplement: string; freeTextActions?:PlannedActionDetail[] }
   | { version: 5; commandId: string; expectedRevision: number; worldlineId: string; type: 'RecordActionNote'; text: string }
   | { version: number; commandId: string; expectedRevision: number; worldlineId: string; type: 'Continue' }
   | { version: 5; commandId: string; expectedRevision: number; worldlineId: string; type: 'Phase2Action'; action: Phase2Action }
@@ -254,10 +255,21 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
   const interruptedOnly=event.version===ENGINE_VERSION&&event.type==='ActionPlanResolved'&&intents?.length===0&&!!event.payload.interruptedIntent&&event.payload.interruptions.length>0;
   if (!intents || intents.length === 0&&!interruptedOnly || intents.some((intent) => !INTENTS.includes(intent)) || !event.eventId.startsWith(`${state.worldlineId}:`)) throw new Error('回合事件無效或屬於其他世界線');
   if (event.type === 'ActionPlanResolved' && (![4,ENGINE_VERSION].includes(event.version) || inspectActionPlan(intents).conflicts.length > 0)) throw new Error('行動計畫有衝突，請先調整');
+  const freeTextActions=event.type==='ActionPlanResolved'&&event.version===ENGINE_VERSION?(event.payload.freeTextActions??[]).filter(detail=>intents.includes(detail.intent)):[];
+  for(const detail of freeTextActions){
+    if(!intents.includes(detail.intent)||!Number.isInteger(detail.order)||detail.order<1)throw new Error('自由文字候選行動未包含於已確認計畫');
+    if(detail.method&&!({耕讀自持:['讀書','讀兵書','讀經','抄書','耕作','耕田'],訪求人才:['訪求人才','訪賢','尋訪人才','尋才','招攬','延請','登門延請','訪問'],經商營生:['經商營生','經商','做生意','買賣','交易','擺攤','市集'],遊歷鄉里:['遊歷鄉里','遊歷','走訪','遊訪','探訪','拜訪','探望','出門走走']} as Record<Intent,string[]>)[detail.intent].includes(detail.method))throw new Error('文字行動方式尚未支援');
+    if(detail.condition&&detail.condition!=='目標仍在場')throw new Error('文字行動條件尚未支援');
+    if(detail.targetId&&detail.intent==='訪求人才'&&!state.phase4?.candidates.some(candidate=>candidate.id===detail.targetId&&candidate.name===detail.targetName&&['available','competing'].includes(candidate.status)))throw new Error('指定人才目前不可招攬');
+    if(detail.targetId&&detail.intent==='遊歷鄉里'&&!state.phase2?.persons.some(person=>person.id===detail.targetId&&person.name===detail.targetName&&person.alive&&state.phase2?.scene.presentIds.includes(person.id)))throw new Error('指定人物不在可拜訪的當前場景');
+    if(detail.targetId&&!['訪求人才','遊歷鄉里'].includes(detail.intent))throw new Error('此行動尚不支援指定目標');
+    if(detail.condition==='目標仍在場'&&(!detail.targetId||!state.phase2?.scene.presentIds.includes(detail.targetId)))throw new Error('行動條件不成立：目標目前不在場');
+  }
   const turn = state.turn + 1;
   const elapsedDays=event.version===ENGINE_VERSION&&event.type==='ActionPlanResolved'?event.payload.elapsedDays:intents.reduce((sum,intent)=>sum+ACTION_DURATION_DAYS[intent],0);
   const interruptions=event.version===ENGINE_VERSION&&event.type==='ActionPlanResolved'?event.payload.interruptions:[];
-  const phase4 = event.version===ENGINE_VERSION&&state.phase4 ? advancePhase4(state.phase4,elapsedDays) : state.phase4;
+  let phase4 = event.version===ENGINE_VERSION&&state.phase4 ? advancePhase4(state.phase4,elapsedDays) : state.phase4;
+  if(phase4)for(const detail of freeTextActions)if(detail.intent==='訪求人才'&&detail.targetId){phase4=applyPhase4Action(phase4,{type:'Recruit',candidateId:detail.targetId},state.phase2?.persons.map(person=>({id:person.id,name:person.name,alive:person.alive,office:person.office,location:state.phase2?.scene.location??''}))??[]);}
   let moneyDelta = 0, reputationDelta = 0;
   const moneyDeltas: Array<{ intent:Intent; amount:number; memo:string }> = [];
   let character = { ...state.character, growth: { ...state.character.growth }, contacts: [...state.character.contacts] };
@@ -266,9 +278,9 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     const roll = random(state.world.seed, turn * 7 + INTENTS.indexOf(intent));
     switch (intent) {
       case '耕讀自持': { const income = roll > .82 ? 4 : 2; moneyDelta += income; moneyDeltas.push({intent,amount:income,memo:`田畝與書卷・家計收入 ${income}`}); outcomes.push(`田畝與書卷：學習經驗增加，家計收入錢 ${income}`); break; }
-      case '訪求人才': { const result = resolvePersonnel(character, state.world.seed, turn, roll); character = result.character; reputationDelta += result.reputationDelta; outcomes.push(`${result.title}：${result.details}`); break; }
+      case '訪求人才': { const target=freeTextActions.find(detail=>detail.intent==='訪求人才'&&detail.targetId);if(target){const status=phase4?.candidates.find(candidate=>candidate.id===target.targetId)?.status;outcomes.push(status==='approached'?`已向指定人才 ${target.targetName} 正式提出招攬；本人回應仍待後續結算`:`指定人才 ${target.targetName} 已被競爭勢力先行延請，招攬未成功`);}else{const result = resolvePersonnel(character, state.world.seed, turn, roll); character = result.character; reputationDelta += result.reputationDelta; outcomes.push(`${result.title}：${result.details}`);} break; }
       case '經商營生': { const trade = roll > .24 ? 5 : -2; moneyDelta += trade; moneyDeltas.push({intent,amount:trade,memo:`市集營生・${trade > 0 ? `收入 ${trade}` : '貨損支出 2'}`}); outcomes.push(`市集營生：${trade > 0 ? `收入錢 ${trade}` : '貨物折損，支出錢 2'}`); break; }
-      case '遊歷鄉里': { moneyDelta -= 1; moneyDeltas.push({intent,amount:-1,memo:'行走鄉里・旅費支出 1'}); const rep = roll > .48 ? 1 : 0; reputationDelta += rep; outcomes.push(`行走鄉里：探訪村落，支出旅費錢 1${rep ? '，鄉里聲望 +1' : ''}`); break; }
+      case '遊歷鄉里': { moneyDelta -= 1; moneyDeltas.push({intent,amount:-1,memo:'行走鄉里・旅費支出 1'}); const rep = roll > .48 ? 1 : 0; reputationDelta += rep; const target=freeTextActions.find(detail=>detail.intent==='遊歷鄉里'&&detail.targetId);outcomes.push(`行走鄉里：${target?`拜訪${target.targetName}，信任 +${ENGINEERING.playerVisitTrustGain}`:'探訪村落'}，支出旅費錢 1${rep ? '，鄉里聲望 +1' : ''}`); break; }
     }
   }
   moneyDelta = Math.max(-character.money, moneyDelta);
@@ -276,7 +288,9 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
   const interruptedIntent=event.type==='ActionPlanResolved'&&event.version===ENGINE_VERSION?event.payload.interruptedIntent:undefined;
   const title = intents.length === 0 ? `重大節點中斷：${interruptedIntent??''}` : intents.length === 1 ? ({'耕讀自持':'田畝與書卷','訪求人才':'訪求人才','經商營生':'市集營生','遊歷鄉里':'行走鄉里'} as Record<Intent,string>)[intents[0]] : `行動計畫：${intents.join('、')}`;
   const supplement = event.type === 'ActionPlanResolved' ? event.payload.supplement.trim() : '';
-  const details = `${outcomes.join('；')|| (interruptedOnly?`「${interruptedIntent}」尚未完成，未結算其收益或資源`: '')}${supplement ? `；補充說明（已保存，未解析為執行條件）：${supplement}` : ''}`;
+  const resolvedText=freeTextActions.map(detail=>`${detail.order}. ${detail.intent}${detail.targetName?`・對象 ${detail.targetName}`:''}${detail.method?`・方式 ${detail.method}`:''}${detail.condition?`・條件 ${detail.condition}`:''}`).join('；');
+  const supplementRecord=event.type==='ActionPlanResolved'&&event.payload.supplement.trim()?freeTextActions.length?'；補充說明原文已保存於本條紀錄；僅已確認候選條件參與結算':'；補充說明未解析，原文已保存於本條紀錄':'';
+  const details = `${outcomes.join('；')|| (interruptedOnly?`「${interruptedIntent}」尚未完成，未結算其收益或資源`: '')}${resolvedText?`；已確認文字行動：${resolvedText}`:''}${supplementRecord}`;
   const finalDetails = `${details}${event.version===ENGINE_VERSION?`；本計畫推進 ${elapsedDays} 日${interruptions.length?`，遇重大節點後中斷：${interruptions.join('；')}`:''}`:''}`;
   character.money += moneyDelta; character.reputation += reputationDelta;
   for (const intent of intents) character = developTalent(character, intent, random(state.world.seed, turn * 7 + INTENTS.indexOf(intent)));
@@ -296,9 +310,10 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     accounts = entry.accounts; newLedger.push(entry.entry);
   }
   const ledger = newLedger.length ? [...state.ledger, ...newLedger] : state.ledger;
-  const actions = [...state.actions, { turn, intent:intents[0]??recordedIntents[0], intents:[...recordedIntents], title, details:finalDetails, ...(supplement ? { supplement } : {}), ...(event.version===ENGINE_VERSION?{elapsedDays,interruptions}: {}) }];
+  const actions = [...state.actions, { turn, intent:intents[0]??recordedIntents[0], intents:[...recordedIntents], title, details:finalDetails, ...(supplement ? { supplement } : {}), ...(freeTextActions.length?{freeTextActions}:{}), ...(event.version===ENGINE_VERSION?{elapsedDays,interruptions}: {}) }];
   const summaries = turn % 5 === 0 ? [...state.summaries, makeSummary(turn, character, state.world, actions, ledger)] : state.summaries;
   let phase2 = event.version >= PHASE2_ENGINE_VERSION && state.phase2 ? advancePhase2(state.phase2, turn, year, intents.join('＋'), character.money, event.eventId,event.version===ENGINE_VERSION?elapsedDays:undefined) : state.phase2;
+  if(phase2)for(const detail of freeTextActions)if(detail.intent==='遊歷鄉里'&&detail.targetId){const relation=phase2.relationships.find(record=>record.personId===detail.targetId);if(relation)phase2=applyPhase2Action(phase2,{type:'AdjustRelation',personId:detail.targetId,axis:'trust',delta:ENGINEERING.playerVisitTrustGain,reason:`依玩家已確認的${detail.method??'拜訪'}行動建立交往`,turn});}
   let innate = event.version >= 4 && state.innate ? advanceInnate(state.innate,turn,event.version===ENGINE_VERSION?elapsedDays:undefined,year) : state.innate;
   if(innate&&phase4)innate=syncHistoricalPatient(innate,phase4);
   if(phase2&&phase4){phase2=structuredClone(phase2);for(const person of phase2.persons){const assigned=phase4.offices.find(office=>office.holderId===person.id);if(assigned)person.office=assigned.title;else if(phase4.offices.some(office=>office.title===person.office))person.office='白身';}}
@@ -396,7 +411,7 @@ export function dispatch(state: GameState | null, command: GameCommand): { state
     const plan = inspectActionPlan(command.intents);
     if (plan.conflicts.length) throw new Error(plan.conflicts.join(' '));
     const schedule=plannedTimeline(state,command.intents);
-    const event: GameEvent = { version:ENGINE_VERSION, eventId:`${state.worldlineId}:${state.revision+1}`, commandId:command.commandId, commandHash:fingerprint(command), revision:state.revision+1, type:'ActionPlanResolved', payload:{intents:[...command.intents],supplement:command.supplement,...schedule} };
+    const event: GameEvent = { version:ENGINE_VERSION, eventId:`${state.worldlineId}:${state.revision+1}`, commandId:command.commandId, commandHash:fingerprint(command), revision:state.revision+1, type:'ActionPlanResolved', payload:{intents:[...command.intents],supplement:command.supplement,...schedule,...(command.freeTextActions?{freeTextActions:command.freeTextActions}:{})} };
     return { state:applyEvent(state,event), event, duplicate:false };
   }
   if (!INTENTS.includes(command.intent)) throw new Error('無效的生活意圖');
