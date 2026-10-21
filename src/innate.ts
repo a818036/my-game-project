@@ -20,7 +20,7 @@ export interface InnateConsequence { id: string; turn: number; ability: AbilityI
 export interface ActiveCurse { id: string; targetId: string; ability: '妖術・伏地'|'萬軍伏地'; intensity: number; startedTurn: number; active: boolean; accruedInjuries: number; }
 export interface InnateModel {
   version: 1; subjects: Record<string, InnateSubject>; objects: StoredObject[]; subspace: string[]; consequences: InnateConsequence[]; curses: ActiveCurse[];
-  convergence: { active: boolean; allowedContacts: string[] }; anchored:boolean; visions: Array<{turn:number; targetIds:string[]; location:string; sceneText:string}>;
+  convergence: { active: boolean; allowedContacts: string[]; radiusMeters:2 }; anchored:boolean; visions: Array<{turn:number; targetIds:string[]; location:string; sceneText:string}>;
   messages: Array<{turn:number; recipientId:string; text:string; arrived:boolean}>; truthsKnown: string[]; forecasts: Array<{turn:number; question:string; result:string; markedUncertain:boolean}>; environmentalEvents:string[];
 }
 
@@ -36,7 +36,7 @@ export type InnateAction =
  | { type:'Flash'; location:string; bringIds:string[] }
  | { type:'Disassemble'; objectIds:string[]; excluded:string[]; secondary?:string }
  | { type:'SetConvergence'; active:boolean; allowedContacts:string[] }
- | { type:'Contact'; source:string; target:string; harmful:boolean }
+ | { type:'Contact'; source:string; target:string; harmful:boolean; distanceMeters?:number }
  | { type:'Diagnose'; targetId:string }
  | { type:'Heal'; targetId:string; injuryIndex?:number; diseaseIndex?:number }
  | { type:'Rejuvenate'; targetId:string; years:number }
@@ -58,7 +58,7 @@ export function createInnateModel(phase2: Phase2Model, birthYear:number, locatio
   initialObjects.push({ id:'example-remote-cargo',name:'遠方府庫糧貨（示例）',quantity:50,ownerId:'county',custodianId:'county',location:'遠方府庫',kind:'物品',intact:true,reachable:false });
   initialObjects.push({ id:'example-horse',name:'家中馬匹（其他生命示例）',quantity:1,ownerId:'opening-family-0',custodianId:'opening-family-0',location,kind:'其他生命',intact:true,reachable:true });
   for (const person of phase2.persons) initialObjects.push({id:`person-body-${person.id}`,name:`${person.name}（人類${person.alive?'活體':'屍體'}）`,quantity:1,ownerId:person.id,custodianId:person.id,location:person.alive?location:'亡者紀錄',kind:person.alive?'人類活體':'人類屍體',intact:true,reachable:true});
-  return { version:1, subjects, objects:initialObjects, subspace:[], consequences:[],curses:[],convergence:{active:false,allowedContacts:[]},anchored:false,visions:[],messages:[],truthsKnown:[],forecasts:[],environmentalEvents:[] };
+  return { version:1, subjects, objects:initialObjects, subspace:[], consequences:[],curses:[],convergence:{active:false,allowedContacts:[],radiusMeters:2},anchored:false,visions:[],messages:[],truthsKnown:[],forecasts:[],environmentalEvents:[] };
 }
 
 const ids = (values:string[], excluded:string[]) => values.filter((id,index)=>values.indexOf(id)===index&&!excluded.includes(id));
@@ -133,8 +133,8 @@ export function applyInnateAction(source:InnateModel,action:InnateAction,turn:nu
       const direct:string[]=[];for(const id of targets){const object=m.objects.find(item=>item.id===id);if(!object)throw new Error(`找不到物件：${id}`);if(object.kind==='人類活體'||object.kind==='人類屍體')throw new Error('萬解不能直接分解生命或人類屍體');if(object.disassembled)throw new Error(`${object.name} 已分解，不可再次作為完整目標`);object.intact=false;object.disassembled=true;object.location='已分解';direct.push(`${object.name} ×${object.quantity}：已不可逆分解，不能作為完整戰利品`);}
       result(m,turn,'萬解',targets,action.excluded,'指定物品已選擇性分解',direct,action.secondary?[`次生後果另行計算：${action.secondary}`]:[]);return m;
     }
-    case 'SetConvergence': m.convergence={active:action.active,allowedContacts:[...new Set(action.allowedContacts)]};result(m,turn,'軒轅極限收斂',[],[] ,action.active?'個人防禦已開啟':'個人防禦已關閉',[action.active?'有害物質／能量無法傷及主角；僅指定接觸可通行':'防護停止']);return m;
-    case 'Contact': {const allowed=m.convergence.allowedContacts.includes(action.source)||m.convergence.allowedContacts.includes(action.target);const blocked=m.convergence.active&&action.harmful&&!allowed;result(m,turn,'軒轅極限收斂',[action.source,action.target],[] ,blocked?'有害接觸被阻':'接觸依選擇性通行成立',[blocked?'接觸未造成傷害':`接觸成立：${action.source} → ${action.target}`]);return m;}
+    case 'SetConvergence': m.convergence={active:action.active,allowedContacts:[...new Set(action.allowedContacts)],radiusMeters:2};result(m,turn,'軒轅極限收斂',[],[] ,action.active?'個人防禦已開啟':'個人防禦已關閉',[`只保護主角個人約 ${m.convergence.radiusMeters}m 範圍；沒有護盾值`,action.active?'有害物質／能量在範圍內無法傷及主角；僅指定接觸可通行':'防護停止']);return m;
+    case 'Contact': {const distance=action.distanceMeters??1;if(!Number.isFinite(distance)||distance<0)throw new Error('接觸距離無效');const allowed=m.convergence.allowedContacts.includes(action.source)||m.convergence.allowedContacts.includes(action.target);const inRange=distance<=m.convergence.radiusMeters;const blocked=m.convergence.active&&action.harmful&&inRange&&!allowed;result(m,turn,'軒轅極限收斂',[action.source,action.target],[] ,blocked?'有害接觸被阻':!inRange?'超出個人防護範圍':'接觸依選擇性通行成立',[blocked?`距離 ${distance}m，在個人防護範圍內且未造成傷害`:`距離 ${distance}m：${action.source} → ${action.target}`]);return m;}
     case 'Diagnose': {const s=subject(m,action.targetId);const findings=[...s.injuries,...s.disease];const text=findings.length?findings.join('；'):'目前沒有可診出的傷勢或疾病';m.truthsKnown.push(`${action.targetId}診斷：${text}`);result(m,turn,'軒轅觀世',[action.targetId],[],'診斷完成',[text]);return m;}
     case 'Heal': {const s=subject(m,action.targetId);if(!s.alive)throw new Error('天醫敕生不能復活亡者');let healed:string|undefined;if(action.injuryIndex!==undefined)healed=s.injuries.splice(action.injuryIndex,1)[0];else if(action.diseaseIndex!==undefined)healed=s.disease.splice(action.diseaseIndex,1)[0];else if(s.injuries.length)healed=s.injuries.shift();else if(s.disease.length)healed=s.disease.shift();if(!healed)throw new Error('沒有指定可治療的傷勢或疾病');result(m,turn,'天醫敕生',[action.targetId],[],'治療完成',[`${healed} 已修復`]);return m;}
     case 'Rejuvenate': {const s=subject(m,action.targetId);if(!s.alive||!Number.isInteger(action.years)||action.years<1)throw new Error('回春目標或幅度無效');s.physiologicalAge=Math.max(0,s.physiologicalAge-action.years);result(m,turn,'歲月回春',[action.targetId],[],'生理狀態回春',[`生理年齡減少 ${action.years} 年；實際出生年與實歲不變`]);return m;}

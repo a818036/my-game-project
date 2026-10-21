@@ -122,6 +122,9 @@ describe('v1.10 天生技可重播行為',()=>{
     expect(model.consequences.at(-1)?.title).toBe('有害接觸被阻');
     model=applyInnateAction(model,{type:'Contact',source:'opening-family-0',target:'protagonist',harmful:true},0,scene,state.phase2!);
     expect(model.consequences.at(-1)?.title).toBe('接觸依選擇性通行成立');expect(model.convergence).not.toHaveProperty('shield');
+    model.convergence.allowedContacts=[];
+    model=applyInnateAction(model,{type:'Contact',source:'example-clerk',target:'protagonist',harmful:true,distanceMeters:3},0,scene,state.phase2!);
+    expect(model.consequences.at(-1)?.title).toBe('超出個人防護範圍');
   });
 
   it('診斷、治療、回春、百脈改善各改變對應人物狀態，實歲不變且不復活',()=>{
