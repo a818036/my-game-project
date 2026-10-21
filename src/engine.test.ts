@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createOpeningFacts, dispatch, ENGINE_VERSION, INTENTS, MAX_TURNS, replay, type GameCommand, type GameEvent, type GameState, type OpeningHistory } from './engine';
+import { createOpeningFacts, dispatch, ENGINE_VERSION, INTENTS, inspectActionPlan, MAX_TURNS, replay, type GameCommand, type GameEvent, type GameState, type OpeningHistory } from './engine';
 import { applyAccountEntry, placeInSubspace } from './ledger';
 import { applyPhase2Action, advancePhase2, kinshipTerm, validateStatValue, type Phase2Action } from './phase2';
 
@@ -93,6 +93,51 @@ describe('ROADMAP 第一階段：正式驗收案例', () => {
     const result = dispatch(withDecision, { version:ENGINE_VERSION, commandId:'continue-only', expectedRevision:state.revision, worldlineId:state.worldlineId, type:'Continue' });
     expect(INTENTS).toHaveLength(4); expect(result.event).toBeNull(); expect(result.state).toEqual(withDecision);
     expect(result.state?.turn).toBe(0); expect(result.state?.pendingDecisions).toHaveLength(1);
+  });
+
+  it('A37 複選耕讀與經商只推進一回合及一輪後台，兩筆資產變動逐項可追溯並可重播', () => {
+    const initial=start('action-plan');
+    const command:GameCommand={version:ENGINE_VERSION,commandId:'plan-one',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持','經商營生'],supplement:''};
+    const sent=dispatch(initial.state,command); const duplicate=dispatch(sent.state,command);
+    expect(sent.state?.turn).toBe(1); expect(sent.state?.backend).toMatchObject({personnelChecks:1,talentChecks:1,historyChecks:1,trendChecks:1});
+    expect(sent.state?.actions.at(-1)?.intents).toEqual(['耕讀自持','經商營生']);
+    expect(sent.state?.ledger.filter(entry=>entry.eventId===sent.event?.eventId)).toHaveLength(2);
+    expect(duplicate.duplicate).toBe(true);expect(duplicate.state).toEqual(sent.state);
+    expect(replay([initial.event,sent.event!])).toEqual(sent.state);
+  });
+
+  it('A38 地點衝突與時間超額顯示原因，計畫不執行、不耗回合或資源',()=>{
+    const initial=start('action-conflict');
+    expect(inspectActionPlan(['耕讀自持','遊歷鄉里']).conflicts.join(' ')).toMatch(/地點衝突/);
+    expect(inspectActionPlan(['耕讀自持','經商營生','訪求人才']).conflicts.join(' ')).toMatch(/行動時間/);
+    expect(()=>dispatch(initial.state,{version:ENGINE_VERSION,commandId:'bad-plan',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持','遊歷鄉里'],supplement:''})).toThrow('地點衝突');
+    expect(initial.state.turn).toBe(0);expect(initial.state.character.money).toBe(12);
+  });
+
+  it('A39 空白計畫被阻止；純補充說明明確保存為備註但不耗時、不改資源',()=>{
+    const initial=start('action-note');
+    expect(()=>dispatch(initial.state,{version:ENGINE_VERSION,commandId:'empty-plan',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'SubmitActionPlan',intents:[],supplement:'  '})).toThrow('至少須勾選');
+    expect(()=>dispatch(initial.state,{version:ENGINE_VERSION,commandId:'empty-note',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'RecordActionNote',text:'  '})).toThrow('不可為空白');
+    const saved=dispatch(initial.state,{version:ENGINE_VERSION,commandId:'note-only',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'RecordActionNote',text:'先探望家人，再查市價。'});
+    expect(saved.state?.turn).toBe(0);expect(saved.state?.character.money).toBe(12);expect(saved.state?.backend.personnelChecks).toBe(0);
+    expect(saved.state?.actionNotes?.[0]?.text).toBe('先探望家人，再查市價。');expect(replay([initial.event,saved.event!])).toEqual(saved.state);
+  });
+
+  it('A40 未解析說明跟隨實際行動紀錄保存，不冒充已執行條件',()=>{
+    const initial=start('action-supplement');
+    const sent=dispatch(initial.state,{version:ENGINE_VERSION,commandId:'plan-with-note',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持'],supplement:'如果下雨，就先到市場。'});
+    expect(sent.state?.turn).toBe(1);expect(sent.state?.actions.at(-1)?.supplement).toContain('如果下雨');
+    expect(sent.state?.actions.at(-1)?.details).toContain('未解析為執行條件');expect(sent.state?.character.growth.study).toBe(initial.state.character.growth.study+1);
+  });
+
+  it('A41 同一計畫命令快速重送只結算一次，保存事件不重複扣款或推進後台',()=>{
+    const initial=start('action-double-submit');
+    const command:GameCommand={version:ENGINE_VERSION,commandId:'double-submit-once',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持','經商營生'],supplement:'快速連點驗收'};
+    const first=dispatch(initial.state,command);const duplicate=dispatch(first.state,command);
+    expect(duplicate.duplicate).toBe(true);expect(duplicate.state).toEqual(first.state);
+    expect(first.state?.turn).toBe(1);expect(first.state?.backend.personnelChecks).toBe(1);
+    expect(first.state?.ledger.filter(entry=>entry.eventId===first.event?.eventId)).toHaveLength(2);
+    expect(first.state?.actions).toHaveLength(1);
   });
 });
 
