@@ -152,6 +152,20 @@ describe('ROADMAP 第二階段：人物與資訊行為驗收', () => {
     expect(earned.state?.phase2?.assetBalances.錢.private).toBe(earned.state?.accounts.private);
   });
 
+  it('A12 已知餘額錯帳可由可靠流水重算，不寫入無來源補差額', () => {
+    const { state, event:opening } = start('recalculate-ledger');
+    const first = act(state, '耕讀自持', 'recalc-income');
+    const expected = first.state!.accounts;
+    const corrupted = { ...first.state!, character:{ ...first.state!.character, money:999 }, accounts:{ ...first.state!.accounts, private:999 }, phase2:{ ...first.state!.phase2!, assetBalances:{ ...first.state!.phase2!.assetBalances, 錢:{ ...first.state!.phase2!.assetBalances.錢, private:999 } } } };
+    const recalculated = phaseAction(corrupted, { type:'RecalculateMoneyAccounts' }, 'rebuild-known-ledger');
+    expect(recalculated.state?.accounts).toEqual(expected);
+    expect(recalculated.state?.character.money).toBe(expected.private);
+    expect(recalculated.state?.phase2?.assetBalances.錢.private).toBe(expected.private);
+    expect(recalculated.event?.type).toBe('Phase2Changed');
+    expect(recalculated.state?.ledger).toEqual(first.state?.ledger);
+    expect(replay([opening, first.event!, recalculated.event!])).toEqual(recalculated.state);
+  });
+
   it('A13 單向傳音立即抵達但不自動回覆；書信依旅程延遲抵達', () => {
     const { state } = start('messages'); const recipient = state.phase2!.persons.find((person) => person.alive && person.id !== 'protagonist')!;
     const sent = applyPhase2Action(state.phase2!, { type:'SendMessage', id:'signal-1', recipientId:recipient.id, channel:'軒轅傳音示例', text:'家中安好', turn:2 });

@@ -43,6 +43,7 @@ export type Phase2Action =
   | { type: 'TrainStat'; stat: StatName; turn: number }
   | { type: 'InitializeAdultStats' }
   | { type: 'TransferAsset'; asset: AssetName; amount: number; from: AccountName | 'market'; to: AccountName | 'market'; memo: string; turn: number; id: string }
+  | { type: 'RecalculateMoneyAccounts' }
   | { type: 'ChangeCustody'; itemId: string; custodianId: string; locationId: string }
   | { type: 'SendMessage'; id: string; recipientId: string; channel: Message['channel']; text: string; turn: number }
   | { type: 'AddInjury'; injury: Injury }
@@ -201,6 +202,7 @@ export function applyPhase2Action(model: Phase2Model, action: Phase2Action): Pha
       if (action.to !== 'market') balances[action.to] += action.amount;
       next.assetLedger.push({ id: action.id, turn: action.turn, asset: action.asset, amount: action.amount, from: action.from, to: action.to, memo: action.memo.trim() }); return next;
     }
+    case 'RecalculateMoneyAccounts': return next;
     case 'ChangeCustody': {
       const item = next.items.find((entry) => entry.id === action.itemId); if (!item || !action.custodianId.trim() || !action.locationId.trim()) throw new Error('物品保管資料無效');
       item.custodianId = action.custodianId.trim(); item.locationId = action.locationId.trim(); return next;

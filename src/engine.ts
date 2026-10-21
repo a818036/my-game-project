@@ -1,4 +1,4 @@
-import { applyAccountEntry, openingEntry, type AccountBook, type AccountEntry } from './ledger';
+import { applyAccountEntry, openingEntry, rebuildAccountBook, type AccountBook, type AccountEntry } from './ledger';
 import { developTalent, historicalNodeAt, resolvePersonnel, runPersonnelEngine, runTalentEngine, trendForTurn } from './systems';
 import { advancePhase2, applyPhase2Action, createPhase2Model, type Phase2Action, type Phase2Model } from './phase2';
 
@@ -142,6 +142,11 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
       const result = applyAccountEntry(state.accounts, { id:event.eventId, eventId:event.eventId, turn:action.turn, asset:'錢', amount:action.amount, from:action.from, to:action.to, memo:action.memo });
       if (result.accounts.private !== phase2.assetBalances.錢.private) throw new Error('私帳金額與多資產帳簿不一致');
       return { ...changed, character: { ...state.character, money: result.accounts.private }, accounts: result.accounts, ledger: [...state.ledger, result.entry] };
+    }
+    if (event.payload.action.type === 'RecalculateMoneyAccounts') {
+      const accounts = rebuildAccountBook(state.ledger);
+      const balances = { ...phase2.assetBalances.錢, ...accounts };
+      return { ...changed, character: { ...state.character, money: accounts.private }, accounts, phase2: { ...phase2, assetBalances: { ...phase2.assetBalances, 錢: balances } } };
     }
     return changed;
   }
