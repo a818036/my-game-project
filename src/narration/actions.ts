@@ -9,6 +9,7 @@ export interface FreeTextCandidate {
   unsupported: string[];
   understood: string;
   needsConfirmation: boolean;
+  interpretationSource?: string;
 }
 
 const WORDS: Array<{ intent: Intent; words: string[]; methods: string[] }> = [
@@ -69,8 +70,37 @@ export function interpretFreeText(text:string, selected:Intent[], targets:Action
 export function validateFreeTextCandidate(candidate:FreeTextCandidate,selected:Intent[],targets:ActionTarget[]):void{
   const all=[...selected,...candidate.actions.map(action=>action.intent)];
   if(candidate.questions.length||candidate.unsupported.length)throw new Error('自由文字行動仍有待澄清或未支援內容');
-  const invalid=candidate.actions.some(action=>!INTENTS.includes(action.intent)||action.order<1||action.targetId&&!targets.some(target=>target.id===action.targetId&&target.alive&&target.name===action.targetName));
+  const invalid=candidate.actions.some(action=>!INTENTS.includes(action.intent)||action.order<1||action.targetId&&!targets.some(target=>target.id===action.targetId&&target.alive&&target.name===action.targetName)||action.intent==='訪求人才'&&action.targetId&&!targets.some(target=>target.id===action.targetId&&target.recruitable)||action.intent==='遊歷鄉里'&&action.targetId&&!targets.some(target=>target.id===action.targetId&&target.present));
   if(invalid)throw new Error('自由文字候選行動未通過規則驗證');
   const conflicts=inspectActionPlan([...new Set(all)]).conflicts;
   if(conflicts.length)throw new Error(conflicts.join(' '));
+}
+
+export async function interpretWithConfiguredProvider(text:string,selected:Intent[],targets:ActionTarget[],signal:AbortSignal):Promise<FreeTextCandidate>{
+  const local=()=>interpretFreeText(text,selected,targets);
+  try{
+    const health=await fetch('/api/health',{signal});if(!health.ok)throw new Error('無法確認行動解析服務狀態');
+    const status=await health.json() as {provider?:string};
+    if(status.provider!=='openai')return {...local(),interpretationSource:'本機確定性解析（mock 模式）'};
+    const response=await fetch('/api/interpret',{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({text,selectedIntents:selected,targets})});
+    const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(typeof result.error==='string'?result.error:`解析服務回應 ${response.status}`);
+    if(!result||typeof result!=='object'||Object.keys(result).some(key=>!['actions','questions','unsupported','unparsedText'].includes(key))||!Array.isArray(result.actions)||!Array.isArray(result.questions)||!Array.isArray(result.unsupported)||typeof result.unparsedText!=='string')throw new Error('供應者行動解析格式無效');
+    const actions:ResolvedFreeAction[]=result.actions.map((item:Record<string,unknown>)=>{
+      if(typeof item.intent!=='string'||!INTENTS.includes(item.intent as Intent)||!Number.isInteger(item.order))throw new Error('供應者提出無效意圖候選');
+      const action:ResolvedFreeAction={intent:item.intent as Intent,order:item.order as number};
+      if(item.targetId!==null&&item.targetId!==undefined){if(typeof item.targetId!=='string'||typeof item.targetName!=='string')throw new Error('供應者提出無效目標');const target=targets.find(entry=>entry.id===item.targetId&&entry.name===item.targetName&&entry.alive);if(!target)throw new Error('供應者提出不在允許目標清單中的人物');action.targetId=target.id;action.targetName=target.name;}
+      else if(item.targetName!==null&&item.targetName!==undefined)throw new Error('供應者提供了沒有對應人物識別碼的目標');
+      if(item.method!==null&&item.method!==undefined){if(typeof item.method!=='string'||item.method.length>50)throw new Error('供應者提出無效方式');action.method=item.method;}
+      if(item.condition!==null&&item.condition!==undefined){if(item.condition!=='目標仍在場'||!action.targetId||!targets.some(target=>target.id===action.targetId&&target.present))throw new Error('供應者提出無法驗證的行動條件');action.condition='目標仍在場';}
+      return action;
+    });
+    if(result.questions.some((value:unknown)=>typeof value!=='string')||result.unsupported.some((value:unknown)=>typeof value!=='string'))throw new Error('供應者回傳無效澄清內容');
+    const questions=[...result.questions];if(result.unparsedText.trim())questions.push(`尚未解析的文字：「${result.unparsedText.trim()}」；請澄清，或選擇只執行已勾選行動。`);
+    const conflicts=inspectActionPlan([...selected,...actions.map(action=>action.intent)]).conflicts;
+    const understood=actions.length?actions.slice().sort((a,b)=>a.order-b.order).map(action=>`${action.order}. ${action.intent}${action.targetName?`（目標：${action.targetName}）`:''}${action.method?`・方式：${action.method}`:''}${action.condition?`・條件：${action.condition}`:''}`).join('；'):'沒有可結算的文字行動';
+    return {actions,conflicts,questions,unsupported:result.unsupported,understood,needsConfirmation:true,interpretationSource:'OpenAI 結構化候選（仍待玩家確認）'};
+  }catch(error){
+    if(signal.aborted)throw error;
+    const candidate=local();candidate.interpretationSource=`本機確定性回退（AI 解析失敗：${error instanceof Error?error.message:'未知錯誤'}）`;return candidate;
+  }
 }

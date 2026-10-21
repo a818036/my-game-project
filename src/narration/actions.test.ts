@@ -1,7 +1,8 @@
-import {describe,expect,it} from 'vitest';
-import {interpretFreeText,validateFreeTextCandidate} from './actions';
+import {afterEach,describe,expect,it,vi} from 'vitest';
+import {interpretFreeText,interpretWithConfiguredProvider,validateFreeTextCandidate} from './actions';
 
 describe('第五階段・自由文字候選行動',()=>{
+  afterEach(()=>vi.unstubAllGlobals());
   it('將自然文字中的先後順序與方式轉成候選，不自行執行',()=>{
     const candidate=interpretFreeText('先讀兵書，再到市集做生意',[],[]);
     expect(candidate.actions).toEqual([{intent:'耕讀自持',order:1,method:'讀兵書'},{intent:'經商營生',order:2,method:'做生意'}]);
@@ -32,5 +33,28 @@ describe('第五階段・自由文字候選行動',()=>{
   it('玩家勾選項目與文字候選同樣接受規則衝突檢查',()=>{
     const candidate=interpretFreeText('再去遊歷鄉里', ['耕讀自持'],[]);
     expect(candidate.conflicts.join(' ')).toContain('地點衝突');
+  });
+  it('mock 模式由本機確定性解析器產生候選，不呼叫 AI 解析端點',async()=>{
+    const calls:string[]=[];vi.stubGlobal('fetch',async(input:string)=>{calls.push(input);return new Response(JSON.stringify({provider:'mock'}),{status:200});});
+    const candidate=await interpretWithConfiguredProvider('先讀兵書，再到市集做生意',[],[],new AbortController().signal);
+    expect(candidate.interpretationSource).toContain('mock');expect(candidate.actions.map(item=>item.intent)).toEqual(['耕讀自持','經商營生']);expect(calls).toEqual(['/api/health']);
+  });
+  it('真實供應者候選須限制在遊戲允許目標並等待玩家確認',async()=>{
+    const targets=[{id:'p-1',name:'陳伯和',alive:true,present:true}];const candidate={actions:[{intent:'遊歷鄉里',order:1,targetId:'p-1',targetName:'陳伯和',method:'拜訪',condition:null}],questions:[],unsupported:[],unparsedText:''};
+    vi.stubGlobal('fetch',async(input:string)=>input==='/api/health'?new Response(JSON.stringify({provider:'openai'}),{status:200}):new Response(JSON.stringify(candidate),{status:200}));
+    const result=await interpretWithConfiguredProvider('拜訪陳伯和',[],targets,new AbortController().signal);
+    expect(result.interpretationSource).toContain('OpenAI');expect(result.actions[0]).toMatchObject({intent:'遊歷鄉里',order:1,targetId:'p-1',targetName:'陳伯和',method:'拜訪'});expect(result.needsConfirmation).toBe(true);
+  });
+  it('AI 解析服務失敗時回退確定性解析並明確標示來源',async()=>{
+    vi.stubGlobal('fetch',async(input:string)=>input==='/api/health'?new Response(JSON.stringify({provider:'openai'}),{status:200}):new Response(JSON.stringify({error:'上限'}),{status:429}));
+    const result=await interpretWithConfiguredProvider('讀兵書',[],[],new AbortController().signal);
+    expect(result.actions[0]?.intent).toBe('耕讀自持');expect(result.interpretationSource).toContain('本機確定性回退');
+  });
+  it('取消真實解析請求會中止等待並保留為未結算候選',async()=>{
+    const controller=new AbortController();vi.stubGlobal('fetch',async(input:string,options?:RequestInit):Promise<Response>=>{
+      if(input==='/api/health')return new Response(JSON.stringify({provider:'openai'}),{status:200});
+      return new Promise<Response>((_resolve,reject)=>{if(options?.signal?.aborted)reject(new DOMException('Aborted','AbortError'));else options?.signal?.addEventListener('abort',()=>reject(new DOMException('Aborted','AbortError')));});
+    });
+    const pending=interpretWithConfiguredProvider('讀兵書',[],[],controller.signal);await Promise.resolve();await Promise.resolve();controller.abort();await expect(pending).rejects.toThrow();
   });
 });

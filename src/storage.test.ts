@@ -48,6 +48,34 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(replay(reloaded.saves[0].events)).toEqual(reloaded.saves[0].state);
   });
 
+  it('第四階段 v6 存檔可由 IndexedDB 載入、續玩、重播並再次儲存', async () => {
+    const start=makeSave('phase4-v6-roundtrip');
+    const phase4=dispatch(start.state,{version:ENGINE_VERSION,commandId:'phase4-v6-policy-time',expectedRevision:start.state.revision,worldlineId:start.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:40}});
+    expect(phase4.state?.phase4?.year).toBe(184);
+    expect(phase4.event?.type).toBe('Phase4Changed');
+    const original:SaveFile={...start,events:[...start.events,phase4.event!],state:phase4.state!};
+    const originalJson=toJson(original);
+    await commitWorldline(original,noHistory);
+
+    const loaded=(await loadWorkspace()).saves.find(save=>save.worldlineId===original.worldlineId)!;
+    expect(loaded.version).toBe(6);
+    expect(loaded.events).toEqual(original.events);
+    expect(replay(loaded.events)).toEqual(loaded.state);
+    expect(loaded.state.phase4?.day).toBe(40);
+
+    const next=dispatch(loaded.state,{version:ENGINE_VERSION,commandId:'phase4-v6-continue',expectedRevision:loaded.state.revision,worldlineId:loaded.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持'],supplement:''});
+    expect(next.state?.turn).toBe(1);
+    const continued:SaveFile={format:'shenzhou-save',version:6,worldlineId:loaded.worldlineId,events:[...loaded.events,next.event!],state:next.state!};
+    expect(replay(continued.events)).toEqual(continued.state);
+    await commitWorldline(continued,noHistory);
+
+    const reloaded=(await loadWorkspace()).saves.find(save=>save.worldlineId===continued.worldlineId)!;
+    expect(reloaded).toEqual(continued);
+    expect(verifySave(toJson(reloaded))).toEqual(continued);
+    expect(replay(reloaded.events)).toEqual(reloaded.state);
+    expect(toJson(original)).toBe(originalJson);
+  });
+
   it('舊版第一階段存檔先封存原檔，再遷移並可續玩', async () => {
     const legacy = makeLegacySave('migration-world', 10);
     const db = await openSaveDb();
