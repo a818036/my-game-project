@@ -1,13 +1,15 @@
-import { applyEvent, LEGACY_ENGINE_VERSION, replay, type GameEvent, type GameState, type OpeningHistory } from './engine';
+import { applyEvent, ENGINE_VERSION, LEGACY_ENGINE_VERSION, PHASE2_ENGINE_VERSION, replay, type GameEvent, type GameState, type OpeningHistory } from './engine';
 import { migrationPhase2State } from './phase2';
+import { createInnateModel } from './innate';
 
 const DB = 'shenzhou-three-kingdoms';
 const DB_VERSION = 2;
 const WORLDS = 'worldlines';
 const META = 'profile';
 export interface LegacySaveFile { format: 'shenzhou-save'; version: 2; worldlineId: string; events: GameEvent[]; state: GameState; }
-export interface SaveFile { format: 'shenzhou-save'; version: 3; worldlineId: string; events: GameEvent[]; state: GameState; }
-export type AnySaveFile = SaveFile | LegacySaveFile;
+export interface Phase2SaveFile { format: 'shenzhou-save'; version: 3; worldlineId: string; events: GameEvent[]; state: GameState; }
+export interface SaveFile { format: 'shenzhou-save'; version: 4; worldlineId: string; events: GameEvent[]; state: GameState; }
+export type AnySaveFile = SaveFile | Phase2SaveFile | LegacySaveFile;
 export interface SaveProfile extends OpeningHistory { activeWorldlineId: string | null; }
 export interface WorkspaceSnapshot { saves: SaveFile[]; profile: SaveProfile; }
 
@@ -51,14 +53,14 @@ export async function loadWorkspace(): Promise<WorkspaceSnapshot> {
       db.close();
       try {
         const migrated = rawSaves.map(migrateSaveFile);
-        const changed = migrated.filter((_entry, index) => rawSaves[index].version === 2);
+        const changed = migrated.filter((_entry, index) => rawSaves[index].version !== 4);
         if (changed.length) {
           const writeDb = await openSaveDb();
           await new Promise<void>((done, fail) => {
             const write = writeDb.transaction([WORLDS, META], 'readwrite');
             changed.forEach((entry) => {
               const original = rawSaves.find((candidate) => candidate.worldlineId === entry.worldlineId)!;
-              write.objectStore(META).put(original, `legacy:${entry.worldlineId}:v2`);
+              write.objectStore(META).put(original, `legacy:${entry.worldlineId}:v${original.version}`);
               write.objectStore(WORLDS).put(entry);
             });
             write.oncomplete = () => { writeDb.close(); done(); };
@@ -74,7 +76,7 @@ export async function loadWorkspace(): Promise<WorkspaceSnapshot> {
   });
 }
 
-export async function commitWorldline(save: SaveFile, history: OpeningHistory, makeActive = true, migrationBackup?: LegacySaveFile): Promise<void> {
+export async function commitWorldline(save: SaveFile, history: OpeningHistory, makeActive = true, migrationBackup?: AnySaveFile): Promise<void> {
   const db = await openSaveDb();
   return new Promise((resolve, reject) => {
     const tx = db.transaction([WORLDS, META], 'readwrite');
@@ -82,7 +84,7 @@ export async function commitWorldline(save: SaveFile, history: OpeningHistory, m
       tx.objectStore(WORLDS).put(save);
       tx.objectStore(META).put({ regions: history.regions.slice(-3), surnames: history.surnames.slice(-3) }, 'openingHistory');
       if (makeActive) tx.objectStore(META).put(save.worldlineId, 'activeWorldlineId');
-      if (migrationBackup) tx.objectStore(META).put(migrationBackup, `legacy:${save.worldlineId}:v2`);
+    if (migrationBackup) tx.objectStore(META).put(migrationBackup, `legacy:${save.worldlineId}:v${migrationBackup.version}`);
     } catch (error) { db.close(); reject(error); return; }
     tx.oncomplete = () => { db.close(); resolve(); };
     tx.onerror = () => { db.close(); reject(tx.error); };
@@ -108,7 +110,7 @@ export async function activateWorldline(worldlineId: string): Promise<void> {
 export function toJson(save: SaveFile): string { return JSON.stringify(save, null, 2); }
 export function parseSave(text: string): AnySaveFile {
   const value = JSON.parse(text) as AnySaveFile;
-  if (value.format !== 'shenzhou-save' || ![2, 3].includes(value.version) || !value.worldlineId || !Array.isArray(value.events) || !value.state || value.state.worldlineId !== value.worldlineId) throw new Error('存檔格式或版本不符');
+  if (value.format !== 'shenzhou-save' || ![2, 3, 4].includes(value.version) || !value.worldlineId || !Array.isArray(value.events) || !value.state || value.state.worldlineId !== value.worldlineId) throw new Error('存檔格式或版本不符');
   return value;
 }
 
@@ -119,21 +121,28 @@ function stable(value: unknown): string {
 }
 
 export function migrateSaveFile(raw: AnySaveFile): SaveFile {
-  if (raw.version === 3) {
+  if (raw.version === 4) {
     const current = replay(raw.events);
-    if (!current || stable(current) !== stable(raw.state)) throw new Error('存檔狀態與事件重播結果不一致');
+    if (!current || stable(current) !== stable(raw.state) || current.engineVersion !== ENGINE_VERSION) throw new Error('存檔狀態與事件重播結果不一致');
     return raw;
   }
-  const legacyState = replay(raw.events);
-  if (!legacyState || stable(legacyState) !== stable(raw.state) || legacyState.engineVersion !== LEGACY_ENGINE_VERSION) throw new Error('舊存檔事件重播不一致，未改動原存檔');
-  const event: GameEvent = { version: 2, eventId: `${raw.worldlineId}:upgrade-v2`, commandId: `${raw.worldlineId}:upgrade-v2`, commandHash: 'upgrade-v2', revision: legacyState.revision + 1, type: 'WorldlineUpgraded', payload: { phase2: migrationPhase2State(legacyState.character.name, legacyState.character.birthYear, legacyState.character.family, legacyState.character.potential, legacyState.character.money, legacyState.character.age) } };
-  const state = applyEvent(legacyState, event);
-  return { format: 'shenzhou-save', version: 3, worldlineId: raw.worldlineId, events: [...raw.events, event], state };
+  let state = replay(raw.events);
+  if (!state || stable(state) !== stable(raw.state)) throw new Error('舊存檔事件重播不一致，未改動原存檔');
+  const events = [...raw.events];
+  if (raw.version === 2) {
+    if (state.engineVersion !== LEGACY_ENGINE_VERSION) throw new Error('第一階段存檔版本不符');
+    const phase2Event: GameEvent = { version: PHASE2_ENGINE_VERSION, eventId: `${raw.worldlineId}:upgrade-v2`, commandId: `${raw.worldlineId}:upgrade-v2`, commandHash: 'upgrade-v2', revision: state.revision + 1, type: 'WorldlineUpgraded', payload: { phase2: migrationPhase2State(state.character.name, state.character.birthYear, state.character.family, state.character.potential, state.character.money, state.character.age) } };
+    state = applyEvent(state,phase2Event);events.push(phase2Event);
+  }
+  if (state.engineVersion !== PHASE2_ENGINE_VERSION || !state.phase2) throw new Error('第二階段存檔版本不符');
+  const innateEvent: GameEvent = { version: ENGINE_VERSION, eventId: `${raw.worldlineId}:upgrade-v3`, commandId: `${raw.worldlineId}:upgrade-v3`, commandHash: 'upgrade-v3', revision: state.revision + 1, type: 'InnateSystemUpgraded', payload: { innate:createInnateModel(state.phase2,state.character.birthYear,state.character.home) } };
+  state = applyEvent(state,innateEvent);events.push(innateEvent);
+  return { format:'shenzhou-save',version:4,worldlineId:raw.worldlineId,events,state };
 }
 
 export function verifySave(text: string): SaveFile {
   const save = parseSave(text);
-  if (save.version === 2) {
+  if (save.version !== 4) {
     const legacy = replay(save.events);
     if (!legacy || stable(legacy) !== stable(save.state)) throw new Error('舊存檔狀態與事件重播結果不一致');
     return migrateSaveFile(save);
