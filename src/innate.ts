@@ -14,8 +14,9 @@ export const OFFICIAL_ABILITIES: readonly AbilityId[] = [
 export type IllusionDistribution = '單體'|'萬軍共夢'|'千軍異夢';
 export type RealityDepth = '惑感'|'入實'|'五感實相';
 export type HarmIntent = '非致命'|'致命';
-export interface InnateSubject { id: string; fear: number; trauma: string[]; injuries: string[]; disease: string[]; physiologicalAge: number; bodyChanges: string[]; grantedAbilities:string[]; sensesLost: boolean; morale: number; willingness: number; location: string; alive: boolean; }
-export interface StoredObject { id: string; name: string; quantity: number; ownerId: string; custodianId: string; location: string; kind: '物品'|'人類活體'|'人類屍體'|'其他生命'; intact: boolean; disassembled?:boolean; reachable?:boolean; decay?: string; motionBlocked?: boolean; structural?: string; }
+export type BodySystem = '神經'|'肌力'|'肌腱關節'|'循環'|'心肺'|'疼痛'|'平衡'|'反射'|'恢復';
+export interface InnateSubject { id: string; fear: number; trauma: string[]; injuries: string[]; disease: string[]; physiologicalAge: number; bodyChanges: string[]; grantedAbilities:string[]; sensesLost: boolean; morale: number; willingness: number; location: string; alive: boolean; /** v1-compatible optional physiology detail */ bodySystems?: Partial<Record<BodySystem, number>>; }
+export interface StoredObject { id: string; name: string; quantity: number; ownerId: string; custodianId: string; location: string; kind: '物品'|'人類活體'|'人類屍體'|'其他生命'; intact: boolean; disassembled?:boolean; reachable?:boolean; decay?: string; motionBlocked?: boolean; structural?: string; bearerId?:string; }
 export interface InnateConsequence { id: string; turn: number; ability: AbilityId; targets: string[]; excluded: string[]; title: string; direct: string[]; secondary: string[]; intent?: HarmIntent; }
 export interface ActiveCurse { id: string; targetId: string; ability: '妖術・伏地'|'萬軍伏地'; intensity: number; startedTurn: number; active: boolean; accruedInjuries: number; }
 export interface InnateModel {
@@ -39,8 +40,8 @@ export type InnateAction =
  | { type:'Contact'; source:string; target:string; harmful:boolean; distanceMeters?:number }
  | { type:'Diagnose'; targetId:string }
  | { type:'Heal'; targetId:string; injuryIndex?:number; diseaseIndex?:number }
- | { type:'Rejuvenate'; targetId:string; years:number }
- | { type:'Improve'; targetId:string; change:string }
+ | { type:'Rejuvenate'; targetId:string; years:number; consent?:boolean }
+ | { type:'Improve'; targetId:string; change:string; system?:BodySystem; amount?:number }
  | { type:'GrantGift'; targetId:string; abilityName:string }
  | { type:'SendThought'; recipientId:string; text:string }
  | { type:'ShareVision'; targetIds:string[] }
@@ -51,12 +52,13 @@ export type InnateAction =
 
 export function createInnateModel(phase2: Phase2Model, birthYear:number, location:string): InnateModel {
   const subjects: InnateModel['subjects'] = {};
-  for (const person of phase2.persons) subjects[person.id] = { id:person.id, fear:0, trauma:[], injuries:[], disease:[], physiologicalAge:Math.max(0,birthYear-person.birthYear), bodyChanges:[],grantedAbilities:[],sensesLost:false,morale:50,willingness:50,location:person.alive?location:'亡者紀錄', alive:person.alive };
+  for (const person of phase2.persons) subjects[person.id] = { id:person.id, fear:0, trauma:[], injuries:[], disease:[], physiologicalAge:Math.max(0,birthYear-person.birthYear), bodyChanges:[],grantedAbilities:[],sensesLost:false,morale:50,willingness:50,location:person.alive?location:'亡者紀錄', alive:person.alive, bodySystems:{神經:50,肌力:50,肌腱關節:50,循環:50,心肺:50,疼痛:50,平衡:50,反射:50,恢復:50} };
   const initialObjects: StoredObject[] = phase2.items.map((item) => ({ id:item.id, name:item.item, quantity:item.quantity, ownerId:item.ownerId, custodianId:item.custodianId, location:item.locationId, kind:'物品', intact:true,reachable:true }));
   initialObjects.push({ id:'example-grain-store',name:'家中倉糧（示例）',quantity:20,ownerId:'opening-family-0',custodianId:'opening-family-0',location:'家宅',kind:'物品',intact:true,reachable:true });
   initialObjects.push({ id:'example-damaged-tool',name:'損壞農具（示例）',quantity:1,ownerId:'opening-family-0',custodianId:'opening-family-0',location:'家宅',kind:'物品',intact:false,reachable:true });
   initialObjects.push({ id:'example-remote-cargo',name:'遠方府庫糧貨（示例）',quantity:50,ownerId:'county',custodianId:'county',location:'遠方府庫',kind:'物品',intact:true,reachable:false });
   initialObjects.push({ id:'example-horse',name:'家中馬匹（其他生命示例）',quantity:1,ownerId:'opening-family-0',custodianId:'opening-family-0',location,kind:'其他生命',intact:true,reachable:true });
+  initialObjects.push({ id:'example-enemy-shield',name:'敵方木盾（示例）',quantity:1,ownerId:'example-clerk',custodianId:'example-clerk',location,kind:'物品',intact:true,reachable:true,bearerId:'example-clerk' });
   for (const person of phase2.persons) initialObjects.push({id:`person-body-${person.id}`,name:`${person.name}（人類${person.alive?'活體':'屍體'}）`,quantity:1,ownerId:person.id,custodianId:person.id,location:person.alive?location:'亡者紀錄',kind:person.alive?'人類活體':'人類屍體',intact:true,reachable:true});
   return { version:1, subjects, objects:initialObjects, subspace:[], consequences:[],curses:[],convergence:{active:false,allowedContacts:[],radiusMeters:2},anchored:false,visions:[],messages:[],truthsKnown:[],forecasts:[],environmentalEvents:[] };
 }
@@ -135,10 +137,10 @@ export function applyInnateAction(source:InnateModel,action:InnateAction,turn:nu
     }
     case 'SetConvergence': m.convergence={active:action.active,allowedContacts:[...new Set(action.allowedContacts)],radiusMeters:2};result(m,turn,'軒轅極限收斂',[],[] ,action.active?'個人防禦已開啟':'個人防禦已關閉',[`只保護主角個人約 ${m.convergence.radiusMeters}m 範圍；沒有護盾值`,action.active?'有害物質／能量在範圍內無法傷及主角；僅指定接觸可通行':'防護停止']);return m;
     case 'Contact': {const distance=action.distanceMeters??1;if(!Number.isFinite(distance)||distance<0)throw new Error('接觸距離無效');const allowed=m.convergence.allowedContacts.includes(action.source)||m.convergence.allowedContacts.includes(action.target);const inRange=distance<=m.convergence.radiusMeters;const blocked=m.convergence.active&&action.harmful&&inRange&&!allowed;result(m,turn,'軒轅極限收斂',[action.source,action.target],[] ,blocked?'有害接觸被阻':!inRange?'超出個人防護範圍':'接觸依選擇性通行成立',[blocked?`距離 ${distance}m，在個人防護範圍內且未造成傷害`:`距離 ${distance}m：${action.source} → ${action.target}`]);return m;}
-    case 'Diagnose': {const s=subject(m,action.targetId);const findings=[...s.injuries,...s.disease];const text=findings.length?findings.join('；'):'目前沒有可診出的傷勢或疾病';m.truthsKnown.push(`${action.targetId}診斷：${text}`);result(m,turn,'軒轅觀世',[action.targetId],[],'診斷完成',[text]);return m;}
+    case 'Diagnose': {const s=subject(m,action.targetId);const findings=[...s.injuries,...s.disease];const systems=Object.entries(s.bodySystems??{}).map(([system,value])=>`${system}狀態 ${value}/100`);const text=[findings.length?findings.join('；'):'目前沒有可診出的傷勢或疾病',...systems].join('；');m.truthsKnown.push(`${action.targetId}診斷：${text}`);result(m,turn,'軒轅觀世',[action.targetId],[],'診斷完成',[text]);return m;}
     case 'Heal': {const s=subject(m,action.targetId);if(!s.alive)throw new Error('天醫敕生不能復活亡者');let healed:string|undefined;if(action.injuryIndex!==undefined)healed=s.injuries.splice(action.injuryIndex,1)[0];else if(action.diseaseIndex!==undefined)healed=s.disease.splice(action.diseaseIndex,1)[0];else if(s.injuries.length)healed=s.injuries.shift();else if(s.disease.length)healed=s.disease.shift();if(!healed)throw new Error('沒有指定可治療的傷勢或疾病');result(m,turn,'天醫敕生',[action.targetId],[],'治療完成',[`${healed} 已修復`]);return m;}
-    case 'Rejuvenate': {const s=subject(m,action.targetId);if(!s.alive||!Number.isInteger(action.years)||action.years<1)throw new Error('回春目標或幅度無效');s.physiologicalAge=Math.max(0,s.physiologicalAge-action.years);result(m,turn,'歲月回春',[action.targetId],[],'生理狀態回春',[`生理年齡減少 ${action.years} 年；實際出生年與實歲不變`]);return m;}
-    case 'Improve': {const s=subject(m,action.targetId);if(!s.alive||!action.change.trim())throw new Error('能力改善目標或內容無效');s.bodyChanges.push(action.change.trim());result(m,turn,'百脈敕令',[action.targetId],[],'受術者身體能力改善',[`${action.change.trim()}；改善屬於受術者，不會複製為主角天生技`]);return m;}
+    case 'Rejuvenate': {const s=subject(m,action.targetId);if(!s.alive||!Number.isInteger(action.years)||action.years<1)throw new Error('回春目標或幅度無效');if(action.targetId!=='protagonist'&&!action.consent)throw new Error('具有自主意志的受術者須先同意回春');const before=s.physiologicalAge;s.physiologicalAge=Math.max(0,before-action.years);const applied=before-s.physiologicalAge;result(m,turn,'歲月回春',[action.targetId],[],'生理狀態回春',[`生理年齡減少 ${applied} 年；實際出生年、實歲、記憶與人格不變`]);return m;}
+    case 'Improve': {const s=subject(m,action.targetId);if(!s.alive||!action.change.trim())throw new Error('能力改善目標或內容無效');const system=action.system,amount=action.amount;const applied=!!system&&amount!==undefined;if(applied){if(!Number.isInteger(amount)||amount<1||amount>25)throw new Error('百脈改善幅度須為 1 至 25');const systems=s.bodySystems??(s.bodySystems={});const before=systems[system]??50;systems[system]=Math.min(100,before+amount);s.bodyChanges.push(`${system} ${before}→${systems[system]}`);}else s.bodyChanges.push(action.change.trim());result(m,turn,'百脈敕令',[action.targetId],[],'受術者身體能力改善',[`${applied?`${system}狀態提升 ${amount} 點；`:''}${action.change.trim()}；改善屬於受術者，不會複製為主角天生技`]);return m;}
     case 'GrantGift': {const s=subject(m,action.targetId);if(!s.alive||!action.abilityName.trim())throw new Error('封授目標或能力名稱無效');s.grantedAbilities.push(action.abilityName.trim());result(m,turn,'百脈敕令・封將',[action.targetId],[],'能力成果授予受術者',[`${action.abilityName.trim()} 登記於受術者本人；主角沒有因此取得新天生技`]);return m;}
     case 'SendThought': {subject(m,action.recipientId);if(!action.text.trim())throw new Error('傳音內容不可空白');m.messages.push({turn,recipientId:action.recipientId,text:action.text.trim(),arrived:true});result(m,turn,'軒轅傳音',[action.recipientId],[],'單向傳音抵達',[`訊息已抵達；不會自動產生對方回話`]);return m;}
     case 'ShareVision': {const targets=ids(action.targetIds,[]);if(!targets.length)throw new Error('請選擇共視對象');for(const id of targets)subject(m,id);m.visions.push({turn,targetIds:targets,location:scene.location,sceneText:scene.text});result(m,turn,'軒轅傳音・天下共視',targets,[],'共視直播成立',[`分享當下 ${scene.location} 的實際場景`]);return m;}

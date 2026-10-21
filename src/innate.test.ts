@@ -116,6 +116,19 @@ describe('v1.10 天生技可重播行為',()=>{
     expect(()=>applyInnateAction(broken,{type:'Disassemble',objectIds:['example-grain-store'],excluded:[]},1,scene,state.phase2!)).toThrow('已分解');
   });
 
+  it('A20：萬解只拆敵方盾牌器物，持盾者不受直接傷害；雷電環境效應獨立結算',()=>{
+    const state=world();const bearerBefore=state.innate!.subjects['example-clerk'];
+    const disassembled=applyInnateAction(state.innate!,{type:'Disassemble',objectIds:['example-enemy-shield'],excluded:[]},1,scene,state.phase2!);
+    const shield=disassembled.objects.find(item=>item.id==='example-enemy-shield')!;
+    expect(shield.disassembled).toBe(true);expect(shield.bearerId).toBe('example-clerk');
+    expect(disassembled.subjects['example-clerk']).toEqual(bearerBefore);
+    expect(()=>applyInnateAction(disassembled,{type:'Disassemble',objectIds:['example-enemy-shield'],excluded:[]},2,scene,state.phase2!)).toThrow('已分解');
+    const lightning=applyInnateAction(state.innate!,{type:'Lightning',ability:'軒轅天罰',targets:['example-clerk'],excluded:[],intensity:2,intent:'非致命',environment:'落點旁的潮濕鐵欄導電；未直擊者受強光與雷聲驚嚇',suppressSecondary:false},1,scene,state.phase2!);
+    expect(lightning.subjects['example-clerk'].alive).toBe(true);
+    expect(lightning.consequences.at(-1)?.direct[0]).toContain('直接雷擊');
+    expect(lightning.consequences.at(-1)?.secondary[0]).toContain('潮濕鐵欄導電');
+  });
+
   it('極限收斂只攔個人有害接觸，沒有可耗盡的護盾值，選擇性接觸成立',()=>{
     const state=world();let model=applyInnateAction(state.innate!,{type:'SetConvergence',active:true,allowedContacts:['opening-family-0']},0,scene,state.phase2!);
     model=applyInnateAction(model,{type:'Contact',source:'example-clerk',target:'protagonist',harmful:true},0,scene,state.phase2!);
@@ -133,11 +146,27 @@ describe('v1.10 天生技可重播行為',()=>{
     model=applyInnateAction(model,{type:'Heal',targetId:'example-clerk'},0,scene,state.phase2!);expect(model.subjects['example-clerk'].injuries).toEqual([]);
     const realAge=state.phase2!.persons.find(person=>person.id==='example-clerk')!.birthYear;
     const bodyAge=model.subjects['example-clerk'].physiologicalAge;
-    model=applyInnateAction(model,{type:'Rejuvenate',targetId:'example-clerk',years:5},0,scene,state.phase2!);expect(model.subjects['example-clerk'].physiologicalAge).toBe(bodyAge-5);
+    model=applyInnateAction(model,{type:'Rejuvenate',targetId:'example-clerk',years:5,consent:true},0,scene,state.phase2!);expect(model.subjects['example-clerk'].physiologicalAge).toBe(bodyAge-5);
     expect(state.phase2!.persons.find(person=>person.id==='example-clerk')!.birthYear).toBe(realAge);
     model=applyInnateAction(model,{type:'Improve',targetId:'example-clerk',change:'耐力提升'},0,scene,state.phase2!);expect(model.subjects['example-clerk'].bodyChanges).toContain('耐力提升');
     model=applyInnateAction(model,{type:'GrantGift',targetId:'example-clerk',abilityName:'識字能力'},0,scene,state.phase2!);expect(model.subjects['example-clerk'].grantedAbilities).toContain('識字能力');expect(model.subjects.protagonist.grantedAbilities).toEqual([]);
     model.subjects['example-clerk'].alive=false;expect(()=>applyInnateAction(model,{type:'Heal',targetId:'example-clerk'},0,scene,state.phase2!)).toThrow('不能復活');
+  });
+
+  it('A22：回春與百脈更新可診斷的生理系統，效果只歸受術者且有明確邊界',()=>{
+    const state=world();let model=structuredClone(state.innate!);const originalAge=model.subjects['example-clerk'].physiologicalAge;
+    model=applyInnateAction(model,{type:'Improve',targetId:'example-clerk',change:'改善長途耐力',system:'心肺',amount:15},0,scene,state.phase2!);
+    expect(model.subjects['example-clerk'].bodySystems?.心肺).toBe(65);
+    expect(model.subjects.protagonist.bodySystems?.心肺).toBe(50);
+    expect(()=>applyInnateAction(model,{type:'Improve',targetId:'example-clerk',change:'改善',system:'心肺',amount:26},0,scene,state.phase2!)).toThrow('1 至 25');
+    expect(()=>applyInnateAction(model,{type:'Rejuvenate',targetId:'example-clerk',years:5},0,scene,state.phase2!)).toThrow('須先同意');
+    model=applyInnateAction(model,{type:'Rejuvenate',targetId:'example-clerk',years:5,consent:true},0,scene,state.phase2!);
+    expect(model.subjects['example-clerk'].physiologicalAge).toBe(Math.max(0,originalAge-5));
+    expect(model.subjects['example-clerk'].bodySystems?.心肺).toBe(65);
+    model=applyInnateAction(model,{type:'Diagnose',targetId:'example-clerk'},0,scene,state.phase2!);
+    expect(model.truthsKnown.at(-1)).toContain('心肺狀態 65/100');
+    const dead=structuredClone(model);dead.subjects['example-clerk'].alive=false;
+    expect(()=>applyInnateAction(dead,{type:'Rejuvenate',targetId:'example-clerk',years:5},0,scene,state.phase2!)).toThrow('無效');
   });
 
   it('傳音單向抵達，共視取當下場景，推演明示未知仍未知',()=>{
