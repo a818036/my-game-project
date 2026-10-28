@@ -30,7 +30,7 @@ export function inspectLifePlan(state:GameState,ids:string[],paceDays=1):{choice
   return{choices,days:choices.reduce((n,c)=>n+c.days,0),errors};
 }
 export type InputKind='question'|'objection'|'dialogue'|'action'|'mixed'|'unclear';
-export interface InteractionResult {kind:InputKind;answer:string;choiceIds:string[];questions:string[];source?:string;speakerName?:string;}
+export interface InteractionResult {kind:InputKind;answer:string;choiceIds:string[];questions:string[];source?:string;speakerName?:string;speakerId?:string;}
 export function currentRulerFact(year:number):string|null{
   if(year>=168&&year<=188)return `西元 ${year} 年，東漢皇帝是漢靈帝劉宏（《後漢書·孝靈帝紀》）。`;
   if(year===189)return '西元 189 年內皇位數度更替：先是漢少帝劉辯即位，後為漢獻帝劉協。本原型只用年級史實與簡化月曆，無法據此判定模型中的當下是哪位皇帝。資料見《後漢書·孝靈帝紀》《孝獻帝紀》。';

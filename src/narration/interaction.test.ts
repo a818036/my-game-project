@@ -27,4 +27,14 @@ describe('即時人物對話',()=>{
     const unclear=await understandInput('「你好」',current,new AbortController().signal);expect(unclear.answer).toContain('縣亭佐吏');expect(fetchMock).not.toHaveBeenCalled();
     const absent=await understandInput('對母親說：你好',current,new AbortController().signal);expect(absent.answer).toContain('目前不在場');expect(fetchMock).not.toHaveBeenCalled();
   });
+  it('同一在場人物的後續對話只帶入該人物最近的短期交談前文',async()=>{
+    const current=state(),history=[{speakerId:'example-clerk',speakerName:'縣亭佐吏',playerText:'今日可好？',npcText:'今日尚好。'}];
+    const fetchMock=vi.fn(async(_input:RequestInfo|URL,init?:RequestInit)=>{
+      const payload=JSON.parse(String(init?.body));expect(payload.history).toEqual([{role:'player',text:'今日可好？'},{role:'npc',text:'今日尚好。'}]);
+      expect(JSON.stringify(payload)).not.toContain('opening-father');
+      return new Response(JSON.stringify({speakerId:'example-clerk',text:'尚可。'}),{status:200,headers:{'X-Narration-Provider':'chatgpt','Content-Type':'application/json'}});
+    });vi.stubGlobal('fetch',fetchMock);
+    const result=await understandInput('對縣亭佐吏說：那你近來忙些什麼？',current,new AbortController().signal,history);
+    expect(result).toMatchObject({kind:'dialogue',speakerId:'example-clerk',speakerName:'縣亭佐吏',answer:'尚可。'});expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

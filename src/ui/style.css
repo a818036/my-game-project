@@ -129,6 +129,8 @@ body{background:linear-gradient(180deg,#efe6d4 0,#f7f1e4 38rem,#f2eadb 100%);col
 .intents>.caption{padding:8px 0;border-top:1px dotted #cbb99a}
 .plan-review{margin:16px 0;padding:14px 16px;border-left:3px solid var(--seal);background:#f0dfd2;color:#512c23}
 .plan-review p,.plan-review li{font-size:16px!important;line-height:1.65}
+.conversation-turn{margin:10px 0;padding:8px 12px;border-left:2px solid #b9986a;background:#f8eddf}
+.conversation-turn p{margin:4px 0}
 .wide{margin-top:12px}
 .continue{display:block;margin:8px auto 0;border:0;border-bottom:1px solid #cbb99a;background:transparent;color:var(--wood);padding:8px 4px}
 .log{border-top:1px solid var(--rule);padding-top:12px}
