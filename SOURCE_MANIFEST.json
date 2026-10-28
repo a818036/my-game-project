@@ -3,7 +3,7 @@
   "projectName": "三國志",
   "sourceProjectUrl": "https://chatgpt.com/g/g-p-6a1e86fa52a48191b6c80165b5e5344d/project",
   "targetRepository": "https://github.com/a818036/my-game-project",
-  "provenance": "Latest project files located in ChatGPT; originals copied unchanged into this package. User confirmed baseline v3.15/v1.10.",
+  "provenance": "Original manuals copied unchanged into this package. Rules v3.16 was supplied by the user on 2026-10-28 and is the active rules baseline; skills v1.10 remains active.",
   "remoteRepositoryModified": false,
   "files": [
     {
@@ -19,6 +19,13 @@
       "sha256": "c30b9b1e64bfff24f2827f0a0f791f667edc5a4686cd520c8529af746d4f48a4",
       "bytes": 140121,
       "lines": 2509
+    },
+    {
+      "path": "docs/source/神洲三國_規則手冊_v3.16.md",
+      "version": "3.16",
+      "sha256": "042ee27fc3e6bf373db7851ce8ad38c5448978c58bb36dfc292c89d046cc5832",
+      "bytes": 159764,
+      "lines": 2750
     }
   ]
 }

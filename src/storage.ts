@@ -1,4 +1,4 @@
-import { applyEvent, ENGINE_VERSION, LEGACY_ENGINE_VERSION, PHASE2_ENGINE_VERSION, replay, type GameEvent, type GameState, type OpeningHistory } from './engine';
+import { applyEvent, ENGINE_VERSION, LEGACY_ENGINE_VERSION, PHASE2_ENGINE_VERSION, RULES_VERSION, SOURCE_HASHES, replay, type GameEvent, type GameState, type OpeningHistory } from './engine';
 import { migrationPhase2State } from './phase2';
 import { createInnateModel } from './innate';
 import { PHASE4_CONTENT_VERSION } from './phase4';
@@ -127,12 +127,14 @@ export function migrateSaveFile(raw: AnySaveFile): SaveFile {
   if (raw.version === 6) {
     let current = replay(raw.events);
     if (!current || stable(current) !== stable(raw.state) || current.engineVersion !== ENGINE_VERSION) throw new Error('存檔狀態與事件重播結果不一致');
+    const events = [...raw.events];
     if(current.phase4&&current.phase4.contentVersion!==PHASE4_CONTENT_VERSION){
       const event:GameEvent={version:ENGINE_VERSION,eventId:`${raw.worldlineId}:${current.revision+1}`,commandId:`${raw.worldlineId}:phase4-content-${PHASE4_CONTENT_VERSION}`,commandHash:`phase4-content-${PHASE4_CONTENT_VERSION}`,revision:current.revision+1,type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}};
       current=applyEvent(current,event);
-      return {...raw,events:[...raw.events,event],state:current};
+      events.push(event);
     }
-    return raw;
+    current=appendCurrentRuleSourceUpdate(current,events,raw.worldlineId);
+    return events.length===raw.events.length?raw:{...raw,events,state:current};
   }
   let state = replay(raw.events);
   if (!state || stable(state) !== stable(raw.state)) throw new Error('舊存檔事件重播不一致，未改動原存檔');
@@ -155,7 +157,14 @@ export function migrateSaveFile(raw: AnySaveFile): SaveFile {
   const worldUpgrade: GameEvent = {version:5,eventId:`${raw.worldlineId}:upgrade-v5`,commandId:`${raw.worldlineId}:upgrade-v5`,commandHash:'upgrade-v5',revision:state.revision+1,type:'EngineUpgraded'};
   state=applyEvent(state,worldUpgrade);events.push(worldUpgrade);
   if(state.phase4&&state.phase4.contentVersion!==PHASE4_CONTENT_VERSION){const contentUpdate:GameEvent={version:ENGINE_VERSION,eventId:`${raw.worldlineId}:${state.revision+1}`,commandId:`${raw.worldlineId}:phase4-content-${PHASE4_CONTENT_VERSION}`,commandHash:`phase4-content-${PHASE4_CONTENT_VERSION}`,revision:state.revision+1,type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}};state=applyEvent(state,contentUpdate);events.push(contentUpdate);}
+  state=appendCurrentRuleSourceUpdate(state,events,raw.worldlineId);
   return { format:'shenzhou-save',version:6,worldlineId:raw.worldlineId,events,state };
+}
+
+function appendCurrentRuleSourceUpdate(state:GameState,events:GameEvent[],worldlineId:string):GameState{
+  if(state.rulesVersion===RULES_VERSION&&stable(state.sourceHashes)===stable(SOURCE_HASHES))return state;
+  const event:GameEvent={version:ENGINE_VERSION,eventId:`${worldlineId}:${state.revision+1}`,commandId:`${worldlineId}:rules-${RULES_VERSION}`,commandHash:`rules-${RULES_VERSION}-${SOURCE_HASHES.rules}`,revision:state.revision+1,type:'RulesUpdated',payload:{fromVersion:state.rulesVersion,toVersion:RULES_VERSION,sourceHashes:SOURCE_HASHES}};
+  const updated=applyEvent(state,event);events.push(event);return updated;
 }
 
 export function verifySave(text: string): SaveFile {

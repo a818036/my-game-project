@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { indexedDB } from 'fake-indexeddb';
-import { applyEvent, createOpeningFacts, createStartEvent, dispatch, ENGINE_VERSION, LEGACY_ENGINE_VERSION, replay, type GameCommand, type GameEvent, type OpeningHistory } from './engine';
+import { applyEvent, createOpeningFacts, createStartEvent, dispatch, ENGINE_VERSION, LEGACY_ENGINE_VERSION, RULES_VERSION, SOURCE_HASHES, replay, type GameCommand, type GameEvent, type OpeningHistory } from './engine';
 import { commitWorldline, loadWorkspace, openSaveDb, parseSave, toJson, verifySave, assertSlotCompatible, type LegacySaveFile, type SaveFile } from './storage';
 import { dispatch as dispatchV3 } from './engine.v3';
 
@@ -78,14 +78,21 @@ describe('A05／A06 存檔交易與重播', () => {
 
   it('舊 v6 歷史內容版只追加一次更新事件，保留原事件並將當年新增節點接入重播',async()=>{
     const current=makeSave('phase6-content-migration');const originalStart=current.events[0];if(originalStart.type!=='WorldCreated')throw new Error('expected opening event');
-    const {phase4ContentVersion:_contentVersion,...legacyPayload}=originalStart.payload;
+    const {phase4ContentVersion:_contentVersion,rulesVersion:_rulesVersion,sourceHashes:_sourceHashes,...legacyPayload}=originalStart.payload;
     const legacyStart:GameEvent={...originalStart,payload:legacyPayload};
     const oldState=applyEvent(null,legacyStart)!;
     const old:SaveFile={...current,events:[legacyStart],state:oldState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(legacyStart);
-    expect(migrated.events).toHaveLength(2);
+    expect(migrated.events).toHaveLength(3);
     expect(migrated.events[1].type).toBe('Phase4ContentUpdated');
+    expect(migrated.events[2]).toMatchObject({type:'RulesUpdated',payload:{fromVersion:'3.15',toVersion:RULES_VERSION,sourceHashes:SOURCE_HASHES}});
+    expect(migrated.state.rulesVersion).toBe(RULES_VERSION);
+    expect(migrated.state.sourceHashes).toEqual(SOURCE_HASHES);
+    const rulesUpdate=migrated.events[2];if(rulesUpdate.type!=='RulesUpdated')throw new Error('expected rules update event');
+    const forgedRulesEvent={...rulesUpdate,payload:{...rulesUpdate.payload,sourceHashes:{...SOURCE_HASHES,rules:'0'.repeat(64)}}};
+    const afterContentUpdate=applyEvent(oldState,migrated.events[1]);
+    expect(()=>applyEvent(afterContentUpdate,forgedRulesEvent)).toThrow('規則來源升級事件無效');
     expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-17');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='yellow-turban-184')?.status).toBe('triggered');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='palace-succession-189')?.status).toBe('pending');
@@ -103,6 +110,7 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='han-zhong-campaign-215')?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
+    expect(verifySave(toJson(migrated)).events).toHaveLength(migrated.events.length);
     await commitWorldline(old,noHistory);const loaded=await loadWorkspace();expect(loaded.saves[0]).toEqual(migrated);
     const archiveDb=await openSaveDb();const archived=await new Promise<SaveFile|undefined>((resolve,reject)=>{const tx=archiveDb.transaction('profile','readonly');const request=tx.objectStore('profile').get(`legacy:${old.worldlineId}:v6-phase4-scenario-1`);request.onsuccess=()=>resolve(request.result as SaveFile|undefined);request.onerror=()=>reject(request.error);});archiveDb.close();expect(archived).toEqual(old);
   });

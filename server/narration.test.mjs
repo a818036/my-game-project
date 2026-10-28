@@ -12,6 +12,10 @@ describe('第五階段・伺服器敘事代理',()=>{
     const result=await openAiNarration(current,{apiKey:'test-only',fetchImpl:async(_url,options)=>{expect(JSON.parse(options.body).instructions).toContain('不等於身體成年');return new Response(JSON.stringify({output_text:'',output:[{content:[{type:'output_text',text:JSON.stringify(output)}]}]}));}});
     expect(result).toEqual(output);
   });
+  it('v3.16 喜劇文風只在有根據時啟用，保留記憶、悲劇與資訊防火牆',async()=>{
+    const result=await openAiNarration(payload,{apiKey:'test-only',fetchImpl:async(_url,options)=>{const {instructions}=JSON.parse(options.body);expect(instructions).toContain('沒有條件就寫正劇');expect(instructions).toContain('不得臆造人物動機、誤讀、成本、傳聞、記憶');expect(instructions).toContain('同類回彈需要輸入中有相關前情');expect(instructions).toContain('嚴肅傷亡與創傷保留重量');return new Response(JSON.stringify({output_text:JSON.stringify(mockNarration(payload))}),{status:200});}});
+    expect(result).toEqual(mockNarration(payload));
+  });
   it('mock 只根據已結算事件形成範本且不洩漏玩家視野給人物',()=>{
     const ids=validateNarrationPayload(payload),output=validateNarrationOutput(mockNarration(payload),ids,payload);
     expect(output.paragraphs[0]).toContain('收入錢 5');

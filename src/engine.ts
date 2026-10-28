@@ -11,12 +11,18 @@ import {resolveYoungLife} from './lifeReducer';
 export const ENGINE_VERSION = 5;
 export const LEGACY_ENGINE_VERSION = 1;
 export const PHASE2_ENGINE_VERSION = 2;
-export const RULES_VERSION = '3.15';
+export const RULES_VERSION = '3.16';
 export const SKILLS_VERSION = '1.10';
-export const SOURCE_HASHES = {
+export const LEGACY_RULES_VERSION = '3.15';
+export const LEGACY_SOURCE_HASHES = {
   rules: 'c30b9b1e64bfff24f2827f0a0f791f667edc5a4686cd520c8529af746d4f48a4',
   skills: 'd1d9ee7687b5bcb6ab1e4899e0d2ac62c22ee34bcd72900df78e4cb436cc7a80',
 } as const;
+export const SOURCE_HASHES = {
+  rules: '042ee27fc3e6bf373db7851ce8ad38c5448978c58bb36dfc292c89d046cc5832',
+  skills: 'd1d9ee7687b5bcb6ab1e4899e0d2ac62c22ee34bcd72900df78e4cb436cc7a80',
+} as const;
+export type SourceHashes = { rules: string; skills: string };
 // Leave enough in-world turns for a 184-born timeline to reach Phase 4's
 // 190/191 historical events through ordinary 30-day actions.
 export const MAX_TURNS = 120;
@@ -33,7 +39,7 @@ export interface OpeningHistory { regions: string[]; surnames: string[]; }
 export interface Character {
   name: string; birthYear: number; age: number; home: string; surname: string; family: FamilyMember[];
   background: string; health: string; potential: Record<Stat, number>; growth: Record<'study'|'practice'|'social', number>;
-  profile: { rules: typeof RULES_VERSION; skills: typeof SKILLS_VERSION; modernMemory: true; expertise: readonly string[]; personality: readonly string[]; abilitiesStatus: 'catalogued-not-implemented'|'phase-three-partial' };
+  profile: { rules: string; skills: string; modernMemory: true; expertise: readonly string[]; personality: readonly string[]; abilitiesStatus: 'catalogued-not-implemented'|'phase-three-partial' };
   money: number; reputation: number; contacts: string[];
 }
 export interface World { seed: number; worldlineId: string; year: number; month: number; eventCount: number; }
@@ -43,7 +49,7 @@ export interface ActionRecord { lifeChoices?:string[]; turn: number; intent: Int
 export interface Summary { turn: number; kind: '小記'|'大記'; text: string; }
 export interface PendingDecision { id: string; kind: string; }
 export interface GameState {
-  schemaVersion: number; engineVersion: number; rulesVersion: string; skillsVersion: string; sourceHashes: typeof SOURCE_HASHES;
+  schemaVersion: number; engineVersion: number; rulesVersion: string; skillsVersion: string; sourceHashes: SourceHashes;
   status: 'playing'|'complete'; turn: number; revision: number; worldlineId: string; character: Character; world: World;
   trend: string; historicalNodes: string[]; backend: { personnelChecks: number; talentChecks: number; historyChecks: number; trendChecks: number; personnel: string[]; talents: string[] };
   accounts: AccountBook; ledger: LedgerEntry[]; actions: ActionRecord[]; summaries: Summary[]; pendingDecisions: PendingDecision[]; appliedCommands: Record<string, string>;
@@ -56,7 +62,7 @@ function historicalRescueSubject(location:string):InnateModel['subjects'][string
 function syncHistoricalPatient(source:InnateModel,phase4:Phase4Model):InnateModel{const innate=structuredClone(source),patient=innate.subjects['sun-jian'],person=phase4.historicalPersons.find(p=>p.id==='sun-jian'),node=phase4.nodes.find(n=>n.contentId==='sun-jian-death-191');if(!patient||!person)return innate;if(!person.alive){patient.alive=false;patient.location='亡者紀錄';return innate;}patient.location=person.location;if(node?.status==='triggered'&&!patient.injuries.some(injury=>injury.includes('死亡節點情境'))){patient.injuries.unshift('前線危重傷勢（死亡節點情境示例）');patient.lifeThreatened=true;}return innate;}
 export type GameEvent =
   | {version:5;eventId:string;commandId:string;commandHash:string;revision:number;type:'LifePlanResolved';payload:{policyVersion:1;choiceIds:string[];supplement:string;paceDays?:number}}
-  | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldCreated'; payload: { worldlineId: string; name: string; seed: number; facts: OpeningFacts; phase4ContentVersion?:string } }
+  | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldCreated'; payload: { worldlineId: string; name: string; seed: number; facts: OpeningFacts; phase4ContentVersion?:string; rulesVersion?:string; sourceHashes?:SourceHashes } }
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'IntentResolved'; payload: { intent: Intent } }
   | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string } }
   | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string; executedIntents: Intent[]; elapsedDays: number; interruptions: string[]; interruptedIntent?:Intent; freeTextActions?:PlannedActionDetail[] } }
@@ -68,7 +74,8 @@ export type GameEvent =
   | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'EngineUpgraded' }
   | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'EngineUpgraded' }
   | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase4Changed'; payload: { action: Phase4Action } }
-  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase4ContentUpdated'; payload:{contentVersion:string} };
+  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase4ContentUpdated'; payload:{contentVersion:string} }
+  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'RulesUpdated'; payload:{fromVersion:string;toVersion:string;sourceHashes:SourceHashes} };
 export type GameCommand =
   | {version:5;commandId:string;expectedRevision:number;worldlineId:string;type:'SubmitLifePlan';choiceIds:string[];supplement:string;paceDays?:number}
   | { version: number; commandId: string; expectedRevision: number; type: 'StartGame'; name: string; seed: number; facts: OpeningFacts }
@@ -121,7 +128,7 @@ export function createOpeningFacts(seed: number, birthYear: number, history: Ope
 }
 export function createStartEvent(command: Extract<GameCommand,{type:'StartGame'}>): GameEvent {
   const worldlineId = `wl-${command.commandId}`;
-  return { version: command.version, eventId: `${worldlineId}:1`, commandId: command.commandId, commandHash: fingerprint(command), revision: 1, type: 'WorldCreated', payload: { worldlineId, name: command.name.trim(), seed: command.seed >>> 0, facts: command.facts, ...(command.version===ENGINE_VERSION?{phase4ContentVersion:PHASE4_CONTENT_VERSION}:{}) } };
+  return { version: command.version, eventId: `${worldlineId}:1`, commandId: command.commandId, commandHash: fingerprint(command), revision: 1, type: 'WorldCreated', payload: { worldlineId, name: command.name.trim(), seed: command.seed >>> 0, facts: command.facts, ...(command.version===ENGINE_VERSION?{phase4ContentVersion:PHASE4_CONTENT_VERSION,rulesVersion:RULES_VERSION,sourceHashes:SOURCE_HASHES}:{}) } };
 }
 function fingerprint(command: GameCommand): string {
   return JSON.stringify(command.type === 'StartGame'
@@ -159,13 +166,15 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
       throw new Error('世界線建立事件只能是事件流第一筆');
     }
     const { facts, name, worldlineId, seed } = event.payload;
+    const rulesVersion=event.payload.rulesVersion??LEGACY_RULES_VERSION;
+    const sourceHashes=event.payload.sourceHashes??LEGACY_SOURCE_HASHES;
     if (!name.trim() || !Number.isInteger(facts.birthYear) || facts.birthYear < 160 || facts.birthYear > 184 || !Number.isInteger(seed) || !REGIONS.includes(facts.birthRegion as typeof REGIONS[number])) throw new Error('開局資料無效');
     const newState: GameState = {
-      schemaVersion: event.version >= 2 ? event.version : 1, engineVersion: event.version, rulesVersion: RULES_VERSION, skillsVersion: SKILLS_VERSION, sourceHashes: SOURCE_HASHES,
+      schemaVersion: event.version >= 2 ? event.version : 1, engineVersion: event.version, rulesVersion, skillsVersion: SKILLS_VERSION, sourceHashes,
       status: 'playing', turn: 0, revision: 1, worldlineId, character: {
         name, birthYear: facts.birthYear, age: 0, home: facts.birthRegion, surname: facts.surname, family: facts.family,
         background: facts.background, health: facts.health, potential: facts.potential, growth: { study: 0, practice: 0, social: 0 },
-        profile: { rules: RULES_VERSION, skills: SKILLS_VERSION, modernMemory: true, expertise: modernExpertise, personality, abilitiesStatus: event.version===ENGINE_VERSION?'phase-three-partial':'catalogued-not-implemented' },
+        profile: { rules: rulesVersion, skills: SKILLS_VERSION, modernMemory: true, expertise: modernExpertise, personality, abilitiesStatus: event.version===ENGINE_VERSION?'phase-three-partial':'catalogued-not-implemented' },
         money: 12, reputation: 0, contacts: [],
       },
       world: { seed, worldlineId, year: facts.birthYear, month: 1, eventCount: 0 }, trend: '新生於鄉里，天下仍在自行運轉。', historicalNodes: [],
@@ -183,6 +192,10 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     throw new Error('事件 commandId 重複但內容不一致');
   }
   if (event.revision !== state.revision + 1) throw new Error('事件版本序列不連續');
+  if(event.type==='RulesUpdated'){
+    if(event.version!==ENGINE_VERSION||state.rulesVersion!==event.payload.fromVersion||event.payload.toVersion!==RULES_VERSION||event.payload.sourceHashes.rules!==SOURCE_HASHES.rules||event.payload.sourceHashes.skills!==SOURCE_HASHES.skills)throw new Error('規則來源升級事件無效');
+    return {...state,revision:event.revision,rulesVersion:event.payload.toVersion,sourceHashes:event.payload.sourceHashes,character:{...state.character,profile:{...state.character.profile,rules:event.payload.toVersion}},appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash}};
+  }
   if(event.type==='Phase4ContentUpdated'){
     if(event.version!==ENGINE_VERSION||!state.phase4)throw new Error('歷史內容更新不適用於此存檔');
     const phase4=upgradePhase4Content(state.phase4,event.payload.contentVersion);
