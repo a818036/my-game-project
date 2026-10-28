@@ -27,6 +27,13 @@ describe('即時人物對話',()=>{
     const unclear=await understandInput('「你好」',current,new AbortController().signal);expect(unclear.answer).toContain('縣亭佐吏');expect(fetchMock).not.toHaveBeenCalled();
     const absent=await understandInput('對母親說：你好',current,new AbortController().signal);expect(absent.answer).toContain('目前不在場');expect(fetchMock).not.toHaveBeenCalled();
   });
+  it('重大能力救援、戰爭與主權指令走專用入口，不送到模型或轉成生活行動',async()=>{
+    const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    const result=await understandInput('請直接治療已經死亡的孫堅，並批准永久割讓潁川郡。',current,new AbortController().signal);
+    expect(result).toMatchObject({kind:'unclear',choiceIds:[],source:'重大操作保護'});expect(result.answer).toContain('沒有建立任何行動候選');expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);
+    const question=await understandInput('可以用天生技救援孫堅嗎？',current,new AbortController().signal);
+    expect(question).toMatchObject({kind:'question',choiceIds:[],source:'重大操作專用入口'});expect(fetchMock).not.toHaveBeenCalled();
+  });
   it('同一在場人物的後續對話只帶入該人物最近的短期交談前文',async()=>{
     const current=state(),history=[{speakerId:'example-clerk',speakerName:'縣亭佐吏',playerText:'今日可好？',npcText:'今日尚好。'}];
     const fetchMock=vi.fn(async(_input:RequestInfo|URL,init?:RequestInit)=>{

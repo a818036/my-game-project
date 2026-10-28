@@ -35,6 +35,7 @@ async function answerDialogue(text:string,state:GameState,signal:AbortSignal,his
 export async function understandInput(text:string,state:GameState,signal:AbortSignal,history:DialogueExchange[]=[]):Promise<InteractionResult>{
   const local=localInteraction(text,state);
   if(local.kind==='dialogue')return answerDialogue(text,state,signal,history);
+  if(local.source==='重大操作保護'||local.source==='重大操作專用入口')return local;
   const factualAnswer=answerKnownRulerQuestion(text,state);
   if(factualAnswer)return {...factualAnswer,source:'已核對的遊戲年表'};
   const trendAnswer=answerKnownTrendQuestion(text,state);
