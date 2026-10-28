@@ -6,6 +6,11 @@ export interface HistoricalDivisionIndexEntry {
   commanderyCount: number;
 }
 
+export const HAN_DIVISION_SOURCE_URLS = {
+  inspectorDivisions: 'https://zh.wikisource.org/zh-hans/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7118',
+  sili: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
+} as const;
+
 /**
  * Counts as stated in Hou Hanshu, Treatise 28 (12 outer inspector divisions),
  * with the Sili commanderies listed separately in Treatise 19.
