@@ -113,6 +113,13 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,old.events.length)).toEqual(old.events);expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='yellow-turban-184')).toMatchObject({status:'resolved',resolvedYear:184});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='palace-succession-189')).toMatchObject({status:'resolved',resolvedYear:189});expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('黃巾起事'))).toBe(false);expect(replay(migrated.events)).toEqual(migrated.state);
   });
 
+  it('舊 v6 scenario v4 長局升至 v5 保留事件前綴且不回溯 234、249 節點',()=>{
+    const current=makeSave('phase6-v5-nonretroactive');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');const {phase4ContentVersion:_version,...payload}=start.payload;const legacyStart:GameEvent={...start,payload};let state=applyEvent(null,legacyStart)!;const events:GameEvent[]=[legacyStart];
+    for(const [index,contentVersion] of ['phase4-scenario-2','phase4-scenario-3','phase4-scenario-4'].entries()){const revision=state.revision+1;const update:GameEvent={version:ENGINE_VERSION,eventId:`${state.worldlineId}:${revision}`,commandId:`phase6-v${index+2}`,commandHash:`phase6-v${index+2}`,revision,type:'Phase4ContentUpdated',payload:{contentVersion}};state=applyEvent(state,update);events.push(update);}
+    for(let index=0,remaining=76*360;remaining>0;index++){const days=Math.min(3600,remaining);const advance=dispatch(state,{version:ENGINE_VERSION,commandId:`phase6-old-v4-advance-${index}`,expectedRevision:state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});state=advance.state!;events.push(advance.event!);remaining-=days;}expect(state.phase4?.year).toBe(260);const oldPrefix=[...events];const oldSave:SaveFile={...current,events,state};
+    const migrated=verifySave(toJson(oldSave));expect(migrated.events.slice(0,oldPrefix.length)).toEqual(oldPrefix);for(const [id,year] of [['zhuge-liang-dies-234',234],['gaopingling-249',249]] as const)expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)).toMatchObject({status:'resolved',resolvedYear:year,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('諸葛亮病卒')||event.detail.includes('高平陵政局轉折'))).toBe(false);expect(replay(migrated.events)).toEqual(migrated.state);
+  });
+
   it('舊版第一階段存檔先封存原檔，再遷移並可續玩', async () => {
     const legacy = makeLegacySave('migration-world', 10);
     const db = await openSaveDb();
