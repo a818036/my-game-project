@@ -31,9 +31,22 @@ export function inspectLifePlan(state:GameState,ids:string[],paceDays=1):{choice
 }
 export type InputKind='question'|'objection'|'dialogue'|'action'|'mixed'|'unclear';
 export interface InteractionResult {kind:InputKind;answer:string;choiceIds:string[];questions:string[];source?:string;}
+export function currentRulerFact(year:number):string|null{
+  if(year>=168&&year<=188)return `西元 ${year} 年，東漢皇帝是漢靈帝劉宏（《後漢書·孝靈帝紀》）。`;
+  if(year===189)return '西元 189 年內皇位數度更替：先是漢少帝劉辯即位，後為漢獻帝劉協。本原型只用年級史實與簡化月曆，無法據此判定模型中的當下是哪位皇帝。資料見《後漢書·孝靈帝紀》《孝獻帝紀》。';
+  if(year>=190&&year<220)return `西元 ${year} 年，東漢皇帝是漢獻帝劉協（《後漢書·孝獻帝紀》）。`;
+  return null;
+}
+export function answerKnownRulerQuestion(text:string,state:GameState):InteractionResult|null{
+  const clean=text.trim();
+  if(!/(皇帝|天子|君主)/.test(clean)||!/(誰|何人|哪位|是誰)/.test(clean)||/(然後|接著|再去)/.test(clean))return null;
+  const fact=currentRulerFact(state.world.year);
+  return {kind:'question',answer:fact??`目前是西元 ${state.world.year} 年；這份原型的史實年表尚未涵蓋該年的皇帝資料，我不臆測答案。`,choiceIds:[],questions:[]};
+}
 export function localInteraction(text:string,state:GameState):InteractionResult{
   const clean=text.trim(),catalog=lifeChoices(state);
   if((/[?？]/.test(clean)&&/然後|接著|再去/.test(clean))||/不要|先別|不去|不做|除非|如果|若是/.test(clean))return{kind:'mixed',answer:'這段話包含條件、否定或不同用途，需要先拆開確認，沒有執行任何一部分。',choiceIds:[],questions:['請先說明要查詢的問題，或單獨列出這次確定要做的行動。']};
+  const rulerAnswer=answerKnownRulerQuestion(clean,state);if(rulerAnswer)return rulerAnswer;
   if(/幾歲|年齡|多大/.test(clean)&&!/(然後|接著|再去)/.test(clean))return {kind:/才|怎麼|為什麼|不合理/.test(clean)?'objection':'question',answer:`你目前 ${currentAge(state)} 歲 ${Math.max(0,state.world.month-1)} 個月。現代記憶不代表身體成年，普通生活選項會依當下階段安排；天生技仍依各自規則處理。`,choiceIds:[],questions:[]};
   if(/不合理|沒邏輯|有問題|怎麼會|為什麼/.test(clean))return{kind:'objection',answer:'這是對情境的質疑，並非行動指令。我會保留目前狀態；請指出不合理的人物、行動或結果。',choiceIds:[],questions:[]};
   if(/[?？]|能不能|可不可以|可以嗎|在哪|現在能|能做什麼/.test(clean))return{kind:'question',answer:`目前在${state.phase2?.scene.location??state.character.home}。可確認的生活選項：${catalog.map(c=>c.label).join('、')}。其他能力請使用天生技操作台；詢問不會執行已勾選行動。`,choiceIds:[],questions:[]};

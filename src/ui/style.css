@@ -40,7 +40,7 @@ body{color:#211c16;background:radial-gradient(ellipse at 50% 0%,#f5eddc 0,#e8ddc
 .quiet{border-color:#8a7657;color:#392d20}.quiet:hover{border-color:#8e3329;color:#8e3329}
 .round,.tag{color:#5d4c37;border-color:#9a8667}.worldline{color:#554834}.worldline code,.seed-box code{color:#71342d}
 .seed-box,.intent,.opening-preview,.plan-review{background:#efe5d1;border-color:#a38c66;color:#2b241b}
-.intent:hover,.intent.selected{background:#e9dcc1;border-color:#8e3329}.intent-icon{background:#ded0b3;color:#7b3028}.intent small{color:#594b38}.intent b{color:#8e3329}
+.intent:hover,.intent.selected{background:#e9dcc1;border-color:#8e3329}.intent small{color:#594b38}.intent b{color:#8e3329}
 .start-card input:not([type=checkbox]),.start-card select,.phase-panel select,.phase-panel input,.phase-panel textarea,.name-dialog input,.supplement-label textarea{background:#fffaf0;color:#241d16;border-color:#9c896c}
 .phase-panel label,.start-card label,.name-dialog label{color:#382d21}
 .caption,.muted,.family-list small,.item-row small,.log li p,.contacts,footer{color:#625744}
@@ -120,7 +120,6 @@ body{background:linear-gradient(180deg,#efe6d4 0,#f7f1e4 38rem,#f2eadb 100%);col
 .intent:hover{background:#efe3cf;border-color:#9e8664}
 .intent.selected{background:#efe3cf;border-color:#9b3328;box-shadow:inset 3px 0 var(--seal)}
 .intent input{width:20px;height:20px;margin:2px 0;accent-color:var(--seal);flex:none}
-.intent-icon{width:30px;height:30px;background:#e8dcc5;color:var(--seal);font-size:18px}
 .intent strong{display:block;color:var(--ink);font-size:17px!important}
 .intent small{display:block;color:#65543f;font-size:16px!important;line-height:1.5}
 .intent>b{font-size:15px!important;color:var(--seal);white-space:nowrap}

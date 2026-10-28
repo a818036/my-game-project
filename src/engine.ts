@@ -5,6 +5,9 @@ import { advanceInnate, applyInnateAction, createInnateModel, type InnateAction,
 import { applyEvent as applyLegacyEvent, type GameEvent as LegacyGameEvent, type GameState as LegacyGameState } from './engine.v3';
 import { advancePhase4, applyPhase4Action, createPhase4Model, ENGINEERING, recordInnateDeathRescue, type Phase4Action, type Phase4Model } from './phase4';
 
+import {inspectLifePlan} from './life';
+import {resolveYoungLife} from './lifeReducer';
+
 export const ENGINE_VERSION = 5;
 export const LEGACY_ENGINE_VERSION = 1;
 export const PHASE2_ENGINE_VERSION = 2;
@@ -36,7 +39,7 @@ export interface Character {
 export interface World { seed: number; worldlineId: string; year: number; month: number; eventCount: number; }
 export interface LedgerEntry extends AccountEntry { turn: number; }
 export interface PlannedActionDetail { intent:Intent; order:number; targetId?:string; targetName?:string; method?:string; condition?:'目標仍在場'; }
-export interface ActionRecord { turn: number; intent: Intent; intents?: Intent[]; title: string; details: string; supplement?: string; freeTextActions?:PlannedActionDetail[]; elapsedDays?: number; interruptions?: string[]; }
+export interface ActionRecord { lifeChoices?:string[]; turn: number; intent: Intent|'幼年日常'; intents?: Intent[]; title: string; details: string; supplement?: string; freeTextActions?:PlannedActionDetail[]; elapsedDays?: number; interruptions?: string[]; }
 export interface Summary { turn: number; kind: '小記'|'大記'; text: string; }
 export interface PendingDecision { id: string; kind: string; }
 export interface GameState {
@@ -52,6 +55,7 @@ export interface GameState {
 function historicalRescueSubject(location:string):InnateModel['subjects'][string]{return{id:'sun-jian',fear:0,trauma:[],injuries:[],disease:[],physiologicalAge:0,bodyChanges:[],grantedAbilities:[],sensesLost:false,morale:50,willingness:50,location,alive:true,lifeThreatened:false,bodySystems:{神經:50,肌力:50,肌腱關節:50,循環:50,心肺:50,疼痛:50,感官:50,平衡:50,反射:50,動作協調:50,疲勞處理:50,恢復:50}};}
 function syncHistoricalPatient(source:InnateModel,phase4:Phase4Model):InnateModel{const innate=structuredClone(source),patient=innate.subjects['sun-jian'],person=phase4.historicalPersons.find(p=>p.id==='sun-jian'),node=phase4.nodes.find(n=>n.contentId==='sun-jian-death-191');if(!patient||!person)return innate;if(!person.alive){patient.alive=false;patient.location='亡者紀錄';return innate;}patient.location=person.location;if(node?.status==='triggered'&&!patient.injuries.some(injury=>injury.includes('死亡節點情境'))){patient.injuries.unshift('前線危重傷勢（死亡節點情境示例）');patient.lifeThreatened=true;}return innate;}
 export type GameEvent =
+  | {version:5;eventId:string;commandId:string;commandHash:string;revision:number;type:'LifePlanResolved';payload:{policyVersion:1;choiceIds:string[];supplement:string;paceDays?:number}}
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldCreated'; payload: { worldlineId: string; name: string; seed: number; facts: OpeningFacts } }
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'IntentResolved'; payload: { intent: Intent } }
   | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string } }
@@ -65,6 +69,7 @@ export type GameEvent =
   | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'EngineUpgraded' }
   | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase4Changed'; payload: { action: Phase4Action } };
 export type GameCommand =
+  | {version:5;commandId:string;expectedRevision:number;worldlineId:string;type:'SubmitLifePlan';choiceIds:string[];supplement:string;paceDays?:number}
   | { version: number; commandId: string; expectedRevision: number; type: 'StartGame'; name: string; seed: number; facts: OpeningFacts }
   | { version: number; commandId: string; expectedRevision: number; worldlineId: string; type: 'ChooseIntent'; intent: Intent }
   | { version: 5; commandId: string; expectedRevision: number; worldlineId: string; type: 'SubmitActionPlan'; intents: Intent[]; supplement: string; freeTextActions?:PlannedActionDetail[] }
@@ -120,7 +125,7 @@ export function createStartEvent(command: Extract<GameCommand,{type:'StartGame'}
 function fingerprint(command: GameCommand): string {
   return JSON.stringify(command.type === 'StartGame'
     ? { type: command.type, name: command.name.trim(), seed: command.seed >>> 0, facts: command.facts, expectedRevision: command.expectedRevision }
-    : { type: command.type, worldlineId: command.worldlineId, payload: command.type === 'ChooseIntent' ? command.intent : command.type === 'SubmitActionPlan' ? { intents: command.intents, supplement: command.supplement } : command.type === 'RecordActionNote' ? command.text : command.type === 'Phase2Action' || command.type === 'InnateAction' || command.type === 'Phase4Action' ? command.action : null, expectedRevision: command.expectedRevision });
+    : { type: command.type, worldlineId: command.worldlineId, payload: command.type === 'SubmitLifePlan' ? {choiceIds:command.choiceIds,supplement:command.supplement,...(command.paceDays!==undefined?{paceDays:command.paceDays}:{})} : command.type === 'ChooseIntent' ? command.intent : command.type === 'SubmitActionPlan' ? { intents: command.intents, supplement: command.supplement } : command.type === 'RecordActionNote' ? command.text : command.type === 'Phase2Action' || command.type === 'InnateAction' || command.type === 'Phase4Action' ? command.action : null, expectedRevision: command.expectedRevision });
 }
 export function applyEvent(state: GameState | null, event: GameEvent): GameState {
   // Event versions 1–3 retain their original reducers. Version 4 remains readable
@@ -177,6 +182,13 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     throw new Error('事件 commandId 重複但內容不一致');
   }
   if (event.revision !== state.revision + 1) throw new Error('事件版本序列不連續');
+  if(event.type==='LifePlanResolved'){
+    if(!event.eventId.startsWith(`${state.worldlineId}:`))throw new Error('世界線不符');
+    const next=resolveYoungLife(state,event);
+    if(next.innate&&next.phase4)next.innate=syncHistoricalPatient(next.innate,next.phase4);
+    if(next.turn%5===0)next.summaries=[...state.summaries,makeSummary(next.turn,next.character,next.world,next.actions,next.ledger)];
+    return next;
+  }
   if (event.type === 'ActionNoteRecorded') {
     if (![4,ENGINE_VERSION].includes(event.version) || !event.payload.text.trim()) throw new Error('補充說明不可為空白');
     return { ...state, revision:event.revision, actionNotes:[...(state.actionNotes ?? []), { turn:state.turn, revision:event.revision, text:event.payload.text.trim() }], appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash} };
@@ -188,7 +200,8 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     const innate=state.innate?syncHistoricalPatient(state.innate,phase4):undefined;
     const phase2=structuredClone(state.phase2);
     for(const person of phase2.persons){const office=phase4.offices.find(o=>o.holderId===person.id);if(office)person.office=office.title;else if(phase4.offices.some(o=>o.appointment?.personId===person.id)||phase4.offices.some(o=>o.holderId!==person.id&&person.office===o.title))person.office='白身';}
-    return {...state,revision:event.revision,phase4,phase2,...(innate?{innate}:{}),world:{...state.world,year:phase4.year,month:phase4.month},appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash}};
+    const age=Math.max(0,phase4.year-state.character.birthYear);
+    return {...state,revision:event.revision,phase4,phase2:{...phase2,age},character:{...state.character,age},...(innate?{innate}:{}),world:{...state.world,year:phase4.year,month:phase4.month},appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash}};
   }
   if (event.type === 'Phase2Changed') {
     if (![ENGINE_VERSION,4,PHASE2_ENGINE_VERSION,3].includes(event.version) || !state.phase2) throw new Error('第二階段命令不適用於此版本存檔');
@@ -405,6 +418,16 @@ export function dispatch(state: GameState | null, command: GameCommand): { state
     if(!state.phase4||!state.phase2)throw new Error('此存檔尚未升級第四階段');
     const event:GameEvent={version:ENGINE_VERSION,eventId:`${state.worldlineId}:${state.revision+1}`,commandId:command.commandId,commandHash:fingerprint(command),revision:state.revision+1,type:'Phase4Changed',payload:{action:command.action}};
     return {state:applyEvent(state,event),event,duplicate:false};
+  }
+  if(command.type==='SubmitLifePlan'){
+    const plan=inspectLifePlan(state,command.choiceIds,command.paceDays);if(plan.errors.length)throw new Error(plan.errors.join(' '));
+    if(state.character.age>=15){
+      const intents=plan.choices.map(c=>c.intent!);const errors=inspectActionPlan(intents).conflicts;if(errors.length)throw new Error(errors.join(' '));
+      const event:GameEvent={version:5,eventId:`${state.worldlineId}:${state.revision+1}`,commandId:command.commandId,commandHash:fingerprint(command),revision:state.revision+1,type:'ActionPlanResolved',payload:{intents,supplement:command.supplement,...plannedTimeline(state,intents)}};
+      return{state:applyEvent(state,event),event,duplicate:false};
+    }
+    const event:GameEvent={version:5,eventId:`${state.worldlineId}:${state.revision+1}`,commandId:command.commandId,commandHash:fingerprint(command),revision:state.revision+1,type:'LifePlanResolved',payload:{policyVersion:1,choiceIds:[...command.choiceIds],supplement:command.supplement,...(command.paceDays!==undefined?{paceDays:command.paceDays}:{})}};
+    return{state:applyEvent(state,event),event,duplicate:false};
   }
   if (command.type === 'SubmitActionPlan') {
     if (!command.intents.length) throw new Error('行動計畫至少須勾選一項行動');

@@ -56,7 +56,7 @@ npm.cmd run dev
 
 第四階段提供小型可玩的歷史與軍政切片，不是完整三國沙盒。現有雙線案例已實作指揮分工、唯一部隊位置、兵力守恆與跨線調動；未完成的是多戰區內容規模、逐兵模擬、完整敵軍 AI、天候／地形全資料。政策不是完整稅制或市場模型。史實人物與事件只列有來源的少量案例；示例名稱、日期精度及未完成內容列在 [第四階段內容表](docs/HISTORY_CONTENT.md)。
 
-第五階段真實 ChatGPT 登入、模型選擇、解析和敘事外呼已各通過一次短案例；串流文字缺漏已修正。廣泛自由文字與敘事品質仍未驗收。`/api/interaction` 分類詢問、質疑、對話及行動，使用當前年齡／地點／在場者與四項可行候選；行動仍由玩家確認及規則引擎結算。完整 NPC 對話、長局資料與所有成人目標／路線仍待擴充。詳見 [驗收案例](docs/ACCEPTANCE.md)、[真實 AI 驗收準備](docs/PHASE5_REAL_AI_ACCEPTANCE.md) 與 [敘事品質評估](docs/NARRATION_EVALUATION.md)。
+第五階段真實 ChatGPT 登入、模型選擇、解析和敘事外呼已各通過一次短案例；串流文字缺漏已修正。廣泛自由文字與敘事品質仍未驗收。互動理解使用當前年齡／地點／在場者與四項可行候選；可核對的「現在皇帝是誰」查詢由年級史實表直接回答，避免模型在缺少資料時答非所問。其他詢問、質疑、對話及行動由 `/api/interaction` 分類；行動仍由玩家確認及規則引擎結算。完整 NPC 對話、長局資料與所有成人目標／路線仍待擴充。詳見 [驗收案例](docs/ACCEPTANCE.md)、[真實 AI 驗收準備](docs/PHASE5_REAL_AI_ACCEPTANCE.md) 與 [敘事品質評估](docs/NARRATION_EVALUATION.md)。
 
 第三階段逐能力細節與缺口分類見 [docs/ABILITY_COVERAGE.md](docs/ABILITY_COVERAGE.md)，驗收案例見 [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md)。若清冊仍列原文明定直接效果未完成，PR 不得以測試通過數量宣稱第三階段出口已完成。
 
