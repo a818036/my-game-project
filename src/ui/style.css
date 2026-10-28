@@ -172,3 +172,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .chatgpt-connection p { line-height: 1.7; }
 .chatgpt-connection select { max-width: 100%; width: 100%; }
 .chatgpt-connection .button-row { flex-wrap: wrap; }
+.skip-link{position:fixed;top:8px;left:-10000px;z-index:30;padding:10px 14px;background:#8e3329;color:#fffaf0;font-weight:700;border:2px solid #fffaf0}
+.skip-link:focus{left:8px;outline:3px solid #8e3329;outline-offset:3px}
+#main-content:focus,#start-content:focus{outline:none}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

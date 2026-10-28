@@ -76,6 +76,31 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(toJson(original)).toBe(originalJson);
   });
 
+  it('舊 v6 歷史內容版只追加一次更新事件，保留原事件並將當年新增節點接入重播',async()=>{
+    const current=makeSave('phase6-content-migration');const originalStart=current.events[0];if(originalStart.type!=='WorldCreated')throw new Error('expected opening event');
+    const {phase4ContentVersion:_contentVersion,...legacyPayload}=originalStart.payload;
+    const legacyStart:GameEvent={...originalStart,payload:legacyPayload};
+    const oldState=applyEvent(null,legacyStart)!;
+    const old:SaveFile={...current,events:[legacyStart],state:oldState};
+    const migrated=verifySave(toJson(old));
+    expect(migrated.events[0]).toEqual(legacyStart);
+    expect(migrated.events).toHaveLength(2);
+    expect(migrated.events[1].type).toBe('Phase4ContentUpdated');
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-2');
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='yellow-turban-184')?.status).toBe('triggered');
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='palace-succession-189')?.status).toBe('pending');
+    expect(replay(migrated.events)).toEqual(migrated.state);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+    await commitWorldline(old,noHistory);const loaded=await loadWorkspace();expect(loaded.saves[0]).toEqual(migrated);
+    const archiveDb=await openSaveDb();const archived=await new Promise<SaveFile|undefined>((resolve,reject)=>{const tx=archiveDb.transaction('profile','readonly');const request=tx.objectStore('profile').get(`legacy:${old.worldlineId}:v6-phase4-scenario-1`);request.onsuccess=()=>resolve(request.result as SaveFile|undefined);request.onerror=()=>reject(request.error);});archiveDb.close();expect(archived).toEqual(old);
+  });
+
+  it('歷史內容更新不回溯觸發早於存檔年份的事件',()=>{
+    const current=makeSave('phase6-no-retroactive-content');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');const {phase4ContentVersion:_version,...payload}=start.payload;const oldStart:GameEvent={...start,payload};const initial=applyEvent(null,oldStart)!;
+    const advanced=dispatch(initial,{version:ENGINE_VERSION,commandId:'phase6-old-world-advance',expectedRevision:initial.revision,worldlineId:initial.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:6*360}});const old:SaveFile={...current,events:[oldStart,advanced.event!],state:advanced.state!};
+    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,old.events.length)).toEqual(old.events);expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='yellow-turban-184')).toMatchObject({status:'resolved',resolvedYear:184});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='palace-succession-189')).toMatchObject({status:'resolved',resolvedYear:189});expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('黃巾起事'))).toBe(false);expect(replay(migrated.events)).toEqual(migrated.state);
+  });
+
   it('舊版第一階段存檔先封存原檔，再遷移並可續玩', async () => {
     const legacy = makeLegacySave('migration-world', 10);
     const db = await openSaveDb();
@@ -109,7 +134,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const oldState=applyEvent(null,oldStart)!;
     const v3={format:'shenzhou-save' as const,version:3 as const,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
     const migrated=verifySave(JSON.stringify(v3));
-    expect(migrated.version).toBe(6);expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events.at(-2)?.type).toBe('EngineUpgraded');expect(migrated.events.at(-1)?.type).toBe('EngineUpgraded');
+    expect(migrated.version).toBe(6);expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events.some(event=>event.type==='Phase4ContentUpdated')).toBe(true);expect(migrated.events.filter(event=>event.type==='EngineUpgraded')).toHaveLength(2);
     expect(migrated.state.innate).toBeDefined();expect(migrated.state.turn).toBe(oldState.turn);expect(replay(migrated.events)).toEqual(migrated.state);
   });
 
@@ -122,7 +147,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(JSON.stringify(old));
     expect(migrated.version).toBe(6);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events.at(-1)?.type).toBe('EngineUpgraded');
+    expect(migrated.events.some(event=>event.type==='Phase4ContentUpdated')).toBe(true);
     expect(migrated.state.turn).toBe(old.state.turn);
     expect(replay(migrated.events)).toEqual(migrated.state);
   });

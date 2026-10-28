@@ -1,6 +1,7 @@
 import { applyEvent, ENGINE_VERSION, LEGACY_ENGINE_VERSION, PHASE2_ENGINE_VERSION, replay, type GameEvent, type GameState, type OpeningHistory } from './engine';
 import { migrationPhase2State } from './phase2';
 import { createInnateModel } from './innate';
+import { PHASE4_CONTENT_VERSION } from './phase4';
 
 const DB = 'shenzhou-three-kingdoms';
 const DB_VERSION = 2;
@@ -55,14 +56,14 @@ export async function loadWorkspace(): Promise<WorkspaceSnapshot> {
       db.close();
       try {
         const migrated = rawSaves.map(migrateSaveFile);
-        const changed = migrated.filter((_entry, index) => rawSaves[index].version !== 6);
+        const changed = migrated.filter((entry, index) => stable(entry) !== stable(rawSaves[index]));
         if (changed.length) {
           const writeDb = await openSaveDb();
           await new Promise<void>((done, fail) => {
             const write = writeDb.transaction([WORLDS, META], 'readwrite');
             changed.forEach((entry) => {
               const original = rawSaves.find((candidate) => candidate.worldlineId === entry.worldlineId)!;
-              write.objectStore(META).put(original, `legacy:${entry.worldlineId}:v${original.version}`);
+              write.objectStore(META).put(original, `legacy:${entry.worldlineId}:v${original.version}${original.version===6?`-${original.state.phase4?.contentVersion??'unknown'}`:''}`);
               write.objectStore(WORLDS).put(entry);
             });
             write.oncomplete = () => { writeDb.close(); done(); };
@@ -124,8 +125,13 @@ function stable(value: unknown): string {
 
 export function migrateSaveFile(raw: AnySaveFile): SaveFile {
   if (raw.version === 6) {
-    const current = replay(raw.events);
+    let current = replay(raw.events);
     if (!current || stable(current) !== stable(raw.state) || current.engineVersion !== ENGINE_VERSION) throw new Error('存檔狀態與事件重播結果不一致');
+    if(current.phase4&&current.phase4.contentVersion!==PHASE4_CONTENT_VERSION){
+      const event:GameEvent={version:ENGINE_VERSION,eventId:`${raw.worldlineId}:${current.revision+1}`,commandId:`${raw.worldlineId}:phase4-content-${PHASE4_CONTENT_VERSION}`,commandHash:`phase4-content-${PHASE4_CONTENT_VERSION}`,revision:current.revision+1,type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}};
+      current=applyEvent(current,event);
+      return {...raw,events:[...raw.events,event],state:current};
+    }
     return raw;
   }
   let state = replay(raw.events);
@@ -148,19 +154,13 @@ export function migrateSaveFile(raw: AnySaveFile): SaveFile {
   if (state.engineVersion !== 4) throw new Error('第三階段存檔引擎版本不符');
   const worldUpgrade: GameEvent = {version:5,eventId:`${raw.worldlineId}:upgrade-v5`,commandId:`${raw.worldlineId}:upgrade-v5`,commandHash:'upgrade-v5',revision:state.revision+1,type:'EngineUpgraded'};
   state=applyEvent(state,worldUpgrade);events.push(worldUpgrade);
+  if(state.phase4&&state.phase4.contentVersion!==PHASE4_CONTENT_VERSION){const contentUpdate:GameEvent={version:ENGINE_VERSION,eventId:`${raw.worldlineId}:${state.revision+1}`,commandId:`${raw.worldlineId}:phase4-content-${PHASE4_CONTENT_VERSION}`,commandHash:`phase4-content-${PHASE4_CONTENT_VERSION}`,revision:state.revision+1,type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}};state=applyEvent(state,contentUpdate);events.push(contentUpdate);}
   return { format:'shenzhou-save',version:6,worldlineId:raw.worldlineId,events,state };
 }
 
 export function verifySave(text: string): SaveFile {
   const save = parseSave(text);
-  if (save.version !== 6) {
-    const legacy = replay(save.events);
-    if (!legacy || stable(legacy) !== stable(save.state)) throw new Error('舊存檔狀態與事件重播結果不一致');
-    return migrateSaveFile(save);
-  }
-  const restored = replay(save.events);
-  if (!restored || restored.worldlineId !== save.worldlineId || stable(restored) !== stable(save.state)) throw new Error('存檔狀態與事件重播結果不一致');
-  return save;
+  return migrateSaveFile(save);
 }
 export function assertSlotCompatible(existing: SaveFile | undefined, candidate: SaveFile): void {
   if (existing && stable(existing) !== stable(candidate)) throw new Error('此世界線 ID 已存在不同存檔，未覆蓋舊資料');

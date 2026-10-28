@@ -3,7 +3,7 @@ import { developTalent, historicalNodeAt, resolvePersonnel, runPersonnelEngine, 
 import { advancePhase2, applyPhase2Action, createPhase2Model, type Phase2Action, type Phase2Model } from './phase2';
 import { advanceInnate, applyInnateAction, createInnateModel, type InnateAction, type InnateModel } from './innate';
 import { applyEvent as applyLegacyEvent, type GameEvent as LegacyGameEvent, type GameState as LegacyGameState } from './engine.v3';
-import { advancePhase4, applyPhase4Action, createPhase4Model, ENGINEERING, recordInnateDeathRescue, type Phase4Action, type Phase4Model } from './phase4';
+import { advancePhase4, applyPhase4Action, createPhase4Model, ENGINEERING, PHASE4_CONTENT_VERSION, PHASE4_LEGACY_CONTENT_VERSION, recordInnateDeathRescue, upgradePhase4Content, type Phase4Action, type Phase4Model } from './phase4';
 
 import {inspectLifePlan} from './life';
 import {resolveYoungLife} from './lifeReducer';
@@ -56,7 +56,7 @@ function historicalRescueSubject(location:string):InnateModel['subjects'][string
 function syncHistoricalPatient(source:InnateModel,phase4:Phase4Model):InnateModel{const innate=structuredClone(source),patient=innate.subjects['sun-jian'],person=phase4.historicalPersons.find(p=>p.id==='sun-jian'),node=phase4.nodes.find(n=>n.contentId==='sun-jian-death-191');if(!patient||!person)return innate;if(!person.alive){patient.alive=false;patient.location='亡者紀錄';return innate;}patient.location=person.location;if(node?.status==='triggered'&&!patient.injuries.some(injury=>injury.includes('死亡節點情境'))){patient.injuries.unshift('前線危重傷勢（死亡節點情境示例）');patient.lifeThreatened=true;}return innate;}
 export type GameEvent =
   | {version:5;eventId:string;commandId:string;commandHash:string;revision:number;type:'LifePlanResolved';payload:{policyVersion:1;choiceIds:string[];supplement:string;paceDays?:number}}
-  | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldCreated'; payload: { worldlineId: string; name: string; seed: number; facts: OpeningFacts } }
+  | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'WorldCreated'; payload: { worldlineId: string; name: string; seed: number; facts: OpeningFacts; phase4ContentVersion?:string } }
   | { version: number; eventId: string; commandId: string; commandHash: string; revision: number; type: 'IntentResolved'; payload: { intent: Intent } }
   | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string } }
   | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'ActionPlanResolved'; payload: { intents: Intent[]; supplement: string; executedIntents: Intent[]; elapsedDays: number; interruptions: string[]; interruptedIntent?:Intent; freeTextActions?:PlannedActionDetail[] } }
@@ -67,7 +67,8 @@ export type GameEvent =
   | { version: 4 | 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'InnateChanged'; payload: { action: InnateAction } }
   | { version: 4; eventId: string; commandId: string; commandHash: string; revision: number; type: 'EngineUpgraded' }
   | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'EngineUpgraded' }
-  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase4Changed'; payload: { action: Phase4Action } };
+  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase4Changed'; payload: { action: Phase4Action } }
+  | { version: 5; eventId: string; commandId: string; commandHash: string; revision: number; type: 'Phase4ContentUpdated'; payload:{contentVersion:string} };
 export type GameCommand =
   | {version:5;commandId:string;expectedRevision:number;worldlineId:string;type:'SubmitLifePlan';choiceIds:string[];supplement:string;paceDays?:number}
   | { version: number; commandId: string; expectedRevision: number; type: 'StartGame'; name: string; seed: number; facts: OpeningFacts }
@@ -120,7 +121,7 @@ export function createOpeningFacts(seed: number, birthYear: number, history: Ope
 }
 export function createStartEvent(command: Extract<GameCommand,{type:'StartGame'}>): GameEvent {
   const worldlineId = `wl-${command.commandId}`;
-  return { version: command.version, eventId: `${worldlineId}:1`, commandId: command.commandId, commandHash: fingerprint(command), revision: 1, type: 'WorldCreated', payload: { worldlineId, name: command.name.trim(), seed: command.seed >>> 0, facts: command.facts } };
+  return { version: command.version, eventId: `${worldlineId}:1`, commandId: command.commandId, commandHash: fingerprint(command), revision: 1, type: 'WorldCreated', payload: { worldlineId, name: command.name.trim(), seed: command.seed >>> 0, facts: command.facts, ...(command.version===ENGINE_VERSION?{phase4ContentVersion:PHASE4_CONTENT_VERSION}:{}) } };
 }
 function fingerprint(command: GameCommand): string {
   return JSON.stringify(command.type === 'StartGame'
@@ -136,7 +137,7 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     if (!state || event.revision !== state.revision + 1) throw new Error('階段引擎升級事件無效');
     if (event.version === 4 && state.engineVersion !== 3) throw new Error('第三階段引擎升級事件無效');
     if (event.version === 5 && (state.engineVersion !== 4 || state.phase4)) throw new Error('第四階段引擎升級事件無效');
-    if (event.version === 5) return { ...state, schemaVersion:5, engineVersion:5, phase4:createPhase4Model(state.world.year,state.world.month,state.phase2?.persons.map(p=>({id:p.id,name:p.name,alive:p.alive,location:p.id==='protagonist'?state.phase2!.scene.location:'地方（未定位）',office:p.office}))??[]), revision:event.revision, appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash} };
+    if (event.version === 5) return { ...state, schemaVersion:5, engineVersion:5, phase4:createPhase4Model(state.world.year,state.world.month,state.phase2?.persons.map(p=>({id:p.id,name:p.name,alive:p.alive,location:p.id==='protagonist'?state.phase2!.scene.location:'地方（未定位）',office:p.office}))??[],PHASE4_LEGACY_CONTENT_VERSION), revision:event.revision, appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash} };
     const innate = state.innate ? {
       ...state.innate,
       lightningZones: state.innate.lightningZones ?? [], scenarioUnits: state.innate.scenarioUnits ?? [],
@@ -173,7 +174,7 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     };
     if (event.version >= 2) newState.phase2 = createPhase2Model(name, facts.birthYear, facts.family, facts.potential);
     if (event.version === ENGINE_VERSION && newState.phase2) newState.innate = createInnateModel(newState.phase2, facts.birthYear, facts.birthRegion);
-    if (event.version === ENGINE_VERSION) newState.phase4 = createPhase4Model(facts.birthYear,1,newState.phase2?.persons.map(p=>({id:p.id,name:p.name,alive:p.alive,location:p.id==='protagonist'?'家宅・庭院':'地方（未定位）',office:p.office}))??[]);
+    if (event.version === ENGINE_VERSION) newState.phase4 = createPhase4Model(facts.birthYear,1,newState.phase2?.persons.map(p=>({id:p.id,name:p.name,alive:p.alive,location:p.id==='protagonist'?'家宅・庭院':'地方（未定位）',office:p.office}))??[],event.payload.phase4ContentVersion??PHASE4_LEGACY_CONTENT_VERSION);
     return newState;
   }
   if (!state) throw new Error('事件流缺少世界線建立事件');
@@ -182,6 +183,12 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
     throw new Error('事件 commandId 重複但內容不一致');
   }
   if (event.revision !== state.revision + 1) throw new Error('事件版本序列不連續');
+  if(event.type==='Phase4ContentUpdated'){
+    if(event.version!==ENGINE_VERSION||!state.phase4)throw new Error('歷史內容更新不適用於此存檔');
+    const phase4=upgradePhase4Content(state.phase4,event.payload.contentVersion);
+    const innate=state.innate?syncHistoricalPatient(state.innate,phase4):undefined;
+    return {...state,revision:event.revision,phase4,...(innate?{innate}:{}),appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash}};
+  }
   if(event.type==='LifePlanResolved'){
     if(!event.eventId.startsWith(`${state.worldlineId}:`))throw new Error('世界線不符');
     const next=resolveYoungLife(state,event);
