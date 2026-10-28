@@ -93,7 +93,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const forgedRulesEvent={...rulesUpdate,payload:{...rulesUpdate.payload,sourceHashes:{...SOURCE_HASHES,rules:'0'.repeat(64)}}};
     const afterContentUpdate=applyEvent(oldState,migrated.events[1]);
     expect(()=>applyEvent(afterContentUpdate,forgedRulesEvent)).toThrow('規則來源升級事件無效');
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-17');
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-18');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='yellow-turban-184')?.status).toBe('triggered');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='palace-succession-189')?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='emperor-relocates-xu-196')?.status).toBe('pending');
@@ -108,6 +108,9 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='tong-pass-campaign-211')?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='yi-province-surrender-214')?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='han-zhong-campaign-215')?.status).toBe('pending');
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='cao-crowned-king-of-wei-216')?.status).toBe('pending');
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='jianan-epidemic-217')?.status).toBe('pending');
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='hou-yin-rebellion-218')?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
     expect(verifySave(toJson(migrated)).events).toHaveLength(migrated.events.length);
