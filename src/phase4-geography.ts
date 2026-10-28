@@ -9,7 +9,14 @@ export interface HistoricalDivisionIndexEntry {
 export const HAN_DIVISION_SOURCE_URLS = {
   inspectorDivisions: 'https://zh.wikisource.org/zh-hans/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7118',
   sili: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
+  yingchuan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7110',
 } as const;
+
+/** A source-ordered county-name sample, not a complete or year-specific map. */
+export const HAN_YINGCHUAN_COUNTY_NAMES = [
+  '陽翟', '襄', '襄城', '昆陽', '定陵', '舞陽', '郾', '臨潁', '潁陽',
+  '潁陰', '許', '新汲', '焉陵', '長社', '陽城', '父城', '輪氏',
+] as const;
 
 /**
  * Counts as stated in Hou Hanshu, Treatise 28 (12 outer inspector divisions),

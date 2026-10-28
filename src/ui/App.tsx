@@ -5,7 +5,7 @@ import { activateWorldline, assertSlotCompatible, commitWorldline, loadWorkspace
 import { kinshipTerm, STAT_NAMES, type AccountName, type AssetName, type Phase2Action, type RelationshipKind } from '../phase2';
 import { EXAMPLE_LANGUAGE, OFFICIAL_ABILITIES, sampleLightningContext, type AbilityCombinationId, type AbilityId, type HarmIntent, type IllusionDistribution, type InnateAction, type RealityDepth } from '../innate';
 import { ENGINEERING, HISTORY_CONTENT, type ControlLevel, type Phase4Action, type PolicyId, type WarUnit } from '../phase4';
-import { HAN_DIVISION_INDEX, HAN_DIVISION_SOURCE_URLS, HAN_INSPECTOR_COMMANDERY_TOTAL, HAN_INSPECTOR_DIVISION_COUNT } from '../phase4-geography';
+import { HAN_DIVISION_INDEX, HAN_DIVISION_SOURCE_URLS, HAN_INSPECTOR_COMMANDERY_TOTAL, HAN_INSPECTOR_DIVISION_COUNT, HAN_YINGCHUAN_COUNTY_NAMES } from '../phase4-geography';
 import { characterAgeLabel } from '../narration/status';
 import { ChatGptConnection } from './ChatGptConnection';
 import { buildNarrationPayload, fetchNarration, templateNarration, type NarrationPayload, type NarrationResult } from '../narration/client';
@@ -219,7 +219,7 @@ export default function App() {
   if (!ready) return <main className="loading">正在開啟你的世界線……</main>;
   if (!state || newTimeline) return <main className="start-page"><a className="skip-link" href="#start-content">跳至主要內容</a><section id="start-content" className="start-card" tabIndex={-1}>
     <ChatGptConnection />
-    <p className="eyebrow">東漢・出生確認　｜　第五階段開發中原型</p><h1>神洲三國</h1><p className="lead">先確認你的名字與出生結果，再從出生之年展開一條獨立世界線。</p>
+    <p className="eyebrow">東漢・出生確認　｜　第六階段開發中原型</p><h1>神洲三國</h1><p className="lead">先確認你的名字與出生結果，再從出生之年展開一條獨立世界線。</p>
     <label className="reader-control">閱讀字體　{fontSize}px<input type="range" min="16" max="24" step="1" value={fontSize} onChange={(event)=>setFontSize(Number(event.target.value))} /></label>
     <label>名字（不含姓氏）<input maxLength={16} value={name} onChange={(e) => { setName(e.target.value); setConfirmed(false); }} placeholder="輸入主角名字" /></label>
     {name.trim() && <>
@@ -323,7 +323,8 @@ export default function App() {
       <section className="phase4-subsection" aria-labelledby="han-geography-heading"><h3 id="han-geography-heading">東漢州部索引・史料摘要</h3>
         <p>《後漢書》所載 {HAN_INSPECTOR_DIVISION_COUNT} 州刺史部合計 {HAN_INSPECTOR_COMMANDERY_TOTAL} 郡國；司隸校尉部另列七郡。這是行政層級索引，不是精確對應某一遊戲年份的疆界圖；州郡不會因此成為可控制領地。</p>
         <ul className="division-index" aria-label="東漢州部與郡國數索引">{HAN_DIVISION_INDEX.map((division)=><li key={division.id}><b>{division.name}</b><span>{division.divisionType}・{division.commanderyCount} 郡國</span></li>)}</ul>
-        <p className="caption">史料：《後漢書》卷一一八〈百官志五〉記建武十八年外十二州刺史設置，並列十二部郡國數；卷一〇九〈郡國志一〉列司隸河南尹、河內、河東、弘農、京兆、左馮翊、右扶風七部。各段記述年代與制度背景不完全相同，本表不拼成單一年份的行政地圖，也未納入縣級邊界、座標、路線或勢力歸屬。</p>
+        <details className="county-index-details"><summary>展開潁川郡縣名錄（史料所列十七城）</summary><p className="caption">《後漢書》卷一一〇〈志第二十·郡國志二十〉在潁川郡條下列十七城。此處照錄名稱與次序，未補座標、疆界或控制者，也不表示它們同時對應某一遊戲年份。</p><ol className="county-index" aria-label="後漢書所列潁川郡十七城">{HAN_YINGCHUAN_COUNTY_NAMES.map((name)=><li key={name}>{name}</li>)}</ol><p className="caption"><a href={HAN_DIVISION_SOURCE_URLS.yingchuan} target="_blank" rel="noreferrer">查閱《後漢書》卷一一〇〈郡國志二十〉潁川郡條</a></p></details>
+        <p className="caption">州部史料：《後漢書》卷一一八〈百官志五〉記建武十八年外十二州刺史設置，並列十二部郡國數；卷一〇九〈郡國志一〉列司隸河南尹、河內、河東、弘農、京兆、左馮翊、右扶風七部。各段記述年代與制度背景不完全相同，本表不拼成單一年份的行政地圖；縣名錄只是潁川一郡的局部名錄，不含縣級邊界、座標、路線或勢力歸屬。</p>
         <p className="caption"><a href={HAN_DIVISION_SOURCE_URLS.inspectorDivisions} target="_blank" rel="noreferrer">查閱《後漢書》卷一一八</a> ・ <a href={HAN_DIVISION_SOURCE_URLS.sili} target="_blank" rel="noreferrer">查閱《後漢書》卷一〇九</a></p>
       </section>
       <section className="phase4-subsection"><h3>歷史節點・跨年自動處理</h3>{phase4.nodes.map((node)=>{const content=HISTORY_CONTENT.find(item=>item.id===node.contentId),subject=content?.historicalPersonId&&phase4.historicalPersons.find(person=>person.id===content.historicalPersonId),windowDays=ENGINEERING.deathInterventionWindowDaysByEvent[node.contentId]??0;return <div className="item-row" key={node.contentId}><span><b>{content?.title}</b><small>{content?.precision}級日期・{node.status}・{node.carrier}</small><small>{content?.source}</small></span>{node.status==='triggered'&&content?.kind==='death'&&subject&&windowDays>0&&<button className="quiet" disabled={busy||phase4.playerLocation!==subject.location||phase4.medicalSupplies<1} onClick={()=>{if(window.confirm(`確認主角本人已在${subject.name}所在前線，使用一份一般醫療物資直接救治？此事件介入窗為 ${windowDays} 個模型日；天生技治療另行操作，不消耗此物資。`))phase4Action({type:'InterveneDeath',nodeId:node.contentId,personId:subject.id,method:'一般醫療',location:phase4.playerLocation});}}>一般醫療救援（耗一份物資）</button>}</div>;})}
