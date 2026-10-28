@@ -128,7 +128,7 @@ describe('ROADMAP 第一階段：正式驗收案例', () => {
     const initial=start('action-supplement');
     const sent=dispatch(initial.state,{version:ENGINE_VERSION,commandId:'plan-with-note',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持'],supplement:'如果下雨，就先到市場。'});
     expect(sent.state?.turn).toBe(1);expect(sent.state?.actions.at(-1)?.supplement).toContain('如果下雨');
-    expect(sent.state?.actions.at(-1)?.details).toContain('未解析為執行條件');expect(sent.state?.character.growth.study).toBe(initial.state.character.growth.study+1);
+    expect(sent.state?.actions.at(-1)?.details).toContain('補充說明未解析，原文已保存');expect(sent.state?.actions.at(-1)?.supplement).toBe('如果下雨，就先到市場。');expect(sent.state?.character.growth.study).toBe(initial.state.character.growth.study+1);
   });
 
   it('A41 同一計畫命令快速重送只結算一次，保存事件不重複扣款或推進後台',()=>{

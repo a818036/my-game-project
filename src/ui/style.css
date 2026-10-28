@@ -40,7 +40,7 @@ body{color:#211c16;background:radial-gradient(ellipse at 50% 0%,#f5eddc 0,#e8ddc
 .quiet{border-color:#8a7657;color:#392d20}.quiet:hover{border-color:#8e3329;color:#8e3329}
 .round,.tag{color:#5d4c37;border-color:#9a8667}.worldline{color:#554834}.worldline code,.seed-box code{color:#71342d}
 .seed-box,.intent,.opening-preview,.plan-review{background:#efe5d1;border-color:#a38c66;color:#2b241b}
-.intent:hover,.intent.selected{background:#e9dcc1;border-color:#8e3329}.intent-icon{background:#ded0b3;color:#7b3028}.intent small{color:#594b38}.intent b{color:#8e3329}
+.intent:hover,.intent.selected{background:#e9dcc1;border-color:#8e3329}.intent small{color:#594b38}.intent b{color:#8e3329}
 .start-card input:not([type=checkbox]),.start-card select,.phase-panel select,.phase-panel input,.phase-panel textarea,.name-dialog input,.supplement-label textarea{background:#fffaf0;color:#241d16;border-color:#9c896c}
 .phase-panel label,.start-card label,.name-dialog label{color:#382d21}
 .caption,.muted,.family-list small,.item-row small,.log li p,.contacts,footer{color:#625744}
@@ -120,7 +120,6 @@ body{background:linear-gradient(180deg,#efe6d4 0,#f7f1e4 38rem,#f2eadb 100%);col
 .intent:hover{background:#efe3cf;border-color:#9e8664}
 .intent.selected{background:#efe3cf;border-color:#9b3328;box-shadow:inset 3px 0 var(--seal)}
 .intent input{width:20px;height:20px;margin:2px 0;accent-color:var(--seal);flex:none}
-.intent-icon{width:30px;height:30px;background:#e8dcc5;color:var(--seal);font-size:18px}
 .intent strong{display:block;color:var(--ink);font-size:17px!important}
 .intent small{display:block;color:#65543f;font-size:16px!important;line-height:1.5}
 .intent>b{font-size:15px!important;color:var(--seal);white-space:nowrap}
@@ -130,6 +129,8 @@ body{background:linear-gradient(180deg,#efe6d4 0,#f7f1e4 38rem,#f2eadb 100%);col
 .intents>.caption{padding:8px 0;border-top:1px dotted #cbb99a}
 .plan-review{margin:16px 0;padding:14px 16px;border-left:3px solid var(--seal);background:#f0dfd2;color:#512c23}
 .plan-review p,.plan-review li{font-size:16px!important;line-height:1.65}
+.conversation-turn{margin:10px 0;padding:8px 12px;border-left:2px solid #b9986a;background:#f8eddf}
+.conversation-turn p{margin:4px 0}
 .wide{margin-top:12px}
 .continue{display:block;margin:8px auto 0;border:0;border-bottom:1px solid #cbb99a;background:transparent;color:var(--wood);padding:8px 4px}
 .log{border-top:1px solid var(--rule);padding-top:12px}
@@ -160,3 +161,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 @media(max-width:560px){.game-shell{padding:0 16px}.topbar{align-items:flex-start;flex-direction:column;gap:10px}.top-actions{justify-content:flex-start;width:100%}.top-actions select{flex:1 1 100%;max-width:none}.reader-control.compact{flex:1 1 100%;justify-content:space-between}.top-actions button{flex:1 1 auto}.hero{padding:20px 0 16px}.hero .eyebrow{font-size:16px!important;line-height:1.55}.hero h1{font-size:34px}.hero h1 small{display:block;margin:4px 0 0}.layout{padding-top:20px;gap:24px}.main-column,.side-column{gap:18px}.story-panel .speech{padding-left:13px;margin:15px 0}.intent-grid{grid-template-columns:minmax(0,1fr)}.intent{min-height:76px}.panel-heading{align-items:flex-start}.intents{padding:19px 14px}.profile{grid-template-columns:1fr 1fr}.feature-nav{position:relative}.feature-nav button{min-width:62px;padding:10px 6px}.button-row>*{flex:1 1 auto}.form-grid{grid-template-columns:minmax(0,1fr)}.notice{left:12px;right:12px;bottom:12px}.log li{grid-template-columns:30px minmax(0,1fr)}}
 .notice{position:static;z-index:auto;margin:12px 0 0;max-width:none;box-shadow:none;border:0;border-left:3px solid #9b3328;padding:10px 12px;background:#f0dfd2;color:#512c23}
 .notice button{margin-left:10px;background:transparent;border:0;color:inherit;font-size:20px!important}
+.ai-narrative{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #d8c8ae}
+.narrative-paragraph{max-width:72ch;margin:.9rem 0;font-size:var(--reader-size,18px);line-height:1.7}
+.narrative-suggestions{color:var(--ink-soft)}
+.ai-narrative .button-row{display:flex;flex-wrap:wrap;gap:.7rem}
+.plan-review .conflict{color:#8f291e}
+
+.chatgpt-connection { margin: 1rem 0; padding: 1rem; border-bottom: 1px solid var(--line, #c8baa5); overflow-wrap: anywhere; }
+.chatgpt-connection summary { cursor: pointer; font-weight: 600; }
+.chatgpt-connection p { line-height: 1.7; }
+.chatgpt-connection select { max-width: 100%; width: 100%; }
+.chatgpt-connection .button-row { flex-wrap: wrap; }

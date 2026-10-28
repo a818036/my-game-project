@@ -3,8 +3,8 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_CONTENT_VERSION = 'phase4-scenario-1';
-export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
- travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2,
+export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; playerVisitTrustGain:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
+ travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, playerVisitTrustGain:2,
  // Engineering choice for the single named historical sample; this is not a general rule.
  deathInterventionWindowDaysByEvent:{'sun-jian-death-191':30},
 };

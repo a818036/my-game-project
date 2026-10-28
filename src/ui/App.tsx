@@ -1,9 +1,13 @@
+import {LifeActionPanel} from './LifeActionPanel';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { createOpeningFacts, dispatch, ENGINE_VERSION, INTENTS, inspectActionPlan, MAX_TURNS, SKILLS_VERSION, SOURCE_HASHES, type GameCommand, type Intent } from '../engine';
+import { createOpeningFacts, dispatch, ENGINE_VERSION, SKILLS_VERSION, SOURCE_HASHES, type GameCommand } from '../engine';
 import { activateWorldline, assertSlotCompatible, commitWorldline, loadWorkspace, parseSave, toJson, verifySave, type SaveFile, type WorkspaceSnapshot } from '../storage';
 import { kinshipTerm, STAT_NAMES, type AccountName, type AssetName, type Phase2Action, type RelationshipKind } from '../phase2';
 import { EXAMPLE_LANGUAGE, OFFICIAL_ABILITIES, sampleLightningContext, type AbilityCombinationId, type AbilityId, type HarmIntent, type IllusionDistribution, type InnateAction, type RealityDepth } from '../innate';
 import { ENGINEERING, HISTORY_CONTENT, type ControlLevel, type Phase4Action, type PolicyId, type WarUnit } from '../phase4';
+import { characterAgeLabel } from '../narration/status';
+import { ChatGptConnection } from './ChatGptConnection';
+import { buildNarrationPayload, fetchNarration, templateNarration, type NarrationPayload, type NarrationResult } from '../narration/client';
 
 const blankWorkspace: WorkspaceSnapshot = { saves: [], profile: { regions: [], surnames: [], activeWorldlineId: null } };
 const DEDICATED_ABILITY_OPERATIONS = new Set<AbilityId>(['軒轅幻術・五感天幕','全幻術系強制執行通則','萬軍共夢','千軍異夢','惑感','入實','五感實相','五感盡失','神識威壓','妖術・伏地','萬軍伏地','全雷霆系強制敘事通則','軒轅天罰','地走雷','雷震','萬雷震軍','天雷禁域','天雷破城','軒轅天罰・雷海','百脈敕令','百脈敕令・封將','萬疫敕令','軒轅觀世','天醫敕生','歲月回春','軒轅傳音','軒轅傳音・天下共視','軒轅閃','軒轅藏界','軒轅極限收斂','萬解','霸者橫攔','霸者橫攔・摧關','霸者橫攔・撼陣','霸者橫攔・霸王擲','霸者橫攔・不動','霸骨天成','山河薪火','薪火不滅','群星入懷','萬民歸心','萬軍如臂']);
@@ -48,10 +52,9 @@ export default function App() {
   const [messageText, setMessageText] = useState('家中一切安好，地方消息稍後再報。');
   const [messageTarget, setMessageTarget] = useState('');
   const [injuryDraft, setInjuryDraft] = useState('行旅擦傷（示例）');
-  const [selectedIntents, setSelectedIntents] = useState<Intent[]>([]);
-  const [supplement, setSupplement] = useState('');
-  const [planReview, setPlanReview] = useState(false);
-  const [planConflicts, setPlanConflicts] = useState<string[]>([]);
+  const [narrative,setNarrative]=useState<NarrationResult|null>(null);
+  const [narrationPending,setNarrationPending]=useState(false);
+  const [narrationError,setNarrationError]=useState('');
   const [fontSize, setFontSize] = useState(() => Number(localStorage.getItem('shenzhou-font-size')) || 18);
   const [activePanel, setActivePanel] = useState<'人物'|'家產'|'天生技'|'軍政'|'記事'>('人物');
   const [abilityMode, setAbilityMode] = useState('幻術');
@@ -93,6 +96,8 @@ export default function App() {
   const [bodyImprovement, setBodyImprovement] = useState(10);
   const [rejuvenationConsent, setRejuvenationConsent] = useState(false);
   const busyRef = useRef(false);
+  const narrationAbort=useRef<AbortController|null>(null);
+  const narrationPayload=useRef<NarrationPayload|null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const activeSave = workspace.saves.find((save) => save.worldlineId === workspace.profile.activeWorldlineId) ?? null;
   const state = activeSave?.state ?? null;
@@ -108,6 +113,14 @@ export default function App() {
   useEffect(() => { document.documentElement.style.setProperty('--reader-size', `${fontSize}px`); localStorage.setItem('shenzhou-font-size', String(fontSize)); }, [fontSize]);
 
   useEffect(() => { loadWorkspace().then(setWorkspace).catch(() => setNotice('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。')).finally(() => setReady(true)); }, []);
+  useEffect(()=>()=>{narrationAbort.current?.abort();},[]);
+
+  async function generateNarrative(payload:NarrationPayload){
+    narrationAbort.current?.abort();const controller=new AbortController();narrationAbort.current=controller;narrationPayload.current=payload;setNarrationPending(true);setNarrationError('');
+    try{setNarrative(await fetchNarration(payload,controller.signal));}
+    catch(error){setNarrative(templateNarration(payload));setNarrationError(error instanceof Error?error.message:'敘事服務失敗；已使用範本。');}
+    finally{setNarrationPending(false);}
+  }
 
   async function run(command: GameCommand): Promise<boolean> {
     if (busyRef.current) return false;
@@ -126,29 +139,13 @@ export default function App() {
         : workspace.profile;
       await commitWorldline(save, nextProfile, true);
       setWorkspace((old) => ({ saves: [...old.saves.filter((entry) => entry.worldlineId !== worldlineId), save], profile: { ...nextProfile, activeWorldlineId: worldlineId } }));
+      if(['SubmitLifePlan','SubmitActionPlan','Phase2Action','InnateAction','Phase4Action'].includes(command.type))await generateNarrative(buildNarrationPayload(result.state,result.event));
       setNewTimeline(false); setConfirmed(false); const interruptions=result.state.actions.at(-1)?.interruptions??[];const deathWindowOpen=result.state.phase4?.nodes.some(node=>node.status==='triggered'&&HISTORY_CONTENT.find(content=>content.id===node.contentId)?.kind==='death')??false;setNotice(interruptions.length?(deathWindowOpen?`行動已中斷；死亡節點介入窗口開啟：${interruptions.join('；')}`:`行動已因重大節點中斷：${interruptions.join('；')}`):'本回合已保存。');
       return true;
     } catch (error) {
       setNotice(error instanceof Error ? `未保存任何變更：${error.message}` : '保存失敗；原世界線保持不變。');
       return false;
     } finally { busyRef.current = false; setBusy(false); }
-  }
-  async function submitActionPlan(confirmedReview = false) {
-    if (!state || busyRef.current) return;
-    const cleanNote = supplement.trim();
-    if (!selectedIntents.length && !cleanNote) { setNotice('請至少勾選一項行動，或填寫補充說明。'); return; }
-    const plan = inspectActionPlan(selectedIntents);
-    setPlanConflicts(plan.conflicts);
-    if (plan.conflicts.length) { setPlanReview(true); setNotice('行動計畫有衝突，請調整後再送出。'); return; }
-    if (!selectedIntents.length) {
-      if (!confirmedReview) { setPlanReview(true); setNotice('補充說明尚無可可靠辨識的條件；請確認只保存為備註，不推進時間。'); return; }
-      const ok = await run({ version:ENGINE_VERSION, commandId:commandId(), expectedRevision:state.revision, worldlineId:state.worldlineId, type:'RecordActionNote', text:cleanNote });
-      if (ok) { setSupplement(''); setPlanReview(false); }
-      return;
-    }
-    if (cleanNote && !confirmedReview) { setPlanReview(true); setNotice('補充文字目前不會被解讀；請確認只執行勾選項目並將文字保存為備註。'); return; }
-    const ok = await run({ version:ENGINE_VERSION, commandId:commandId(), expectedRevision:state.revision, worldlineId:state.worldlineId, type:'SubmitActionPlan', intents:[...selectedIntents], supplement:cleanNote });
-    if (ok) { setSelectedIntents([]); setSupplement(''); setPlanReview(false); setPlanConflicts([]); }
   }
   function phaseAction(action: Phase2Action) {
     if (!state) return;
@@ -220,7 +217,8 @@ export default function App() {
 
   if (!ready) return <main className="loading">正在開啟你的世界線……</main>;
   if (!state || newTimeline) return <main className="start-page"><section className="start-card">
-    <p className="eyebrow">東漢・出生確認　｜　第四階段示例原型</p><h1>神洲三國</h1><p className="lead">先確認你的名字與出生結果，再從出生之年展開一條獨立世界線。</p>
+    <ChatGptConnection />
+    <p className="eyebrow">東漢・出生確認　｜　第五階段開發中原型</p><h1>神洲三國</h1><p className="lead">先確認你的名字與出生結果，再從出生之年展開一條獨立世界線。</p>
     <label className="reader-control">閱讀字體　{fontSize}px<input type="range" min="16" max="24" step="1" value={fontSize} onChange={(event)=>setFontSize(Number(event.target.value))} /></label>
     <label>名字（不含姓氏）<input maxLength={16} value={name} onChange={(e) => { setName(e.target.value); setConfirmed(false); }} placeholder="輸入主角名字" /></label>
     {name.trim() && <>
@@ -237,32 +235,23 @@ export default function App() {
   </section></main>;
 
   const c = state.character, w = state.world;
-  const nextCommand = (type: 'Continue' | 'ChooseIntent', intent?: typeof INTENTS[number]): GameCommand => type === 'Continue'
-    ? { version: ENGINE_VERSION, commandId: commandId(), expectedRevision: state.revision, worldlineId: state.worldlineId, type: 'Continue' }
-    : { version: ENGINE_VERSION, commandId: commandId(), expectedRevision: state.revision, worldlineId: state.worldlineId, type: 'ChooseIntent', intent: intent! };
+  const nextCommand = (_type: 'Continue'): GameCommand => ({ version: ENGINE_VERSION, commandId: commandId(), expectedRevision: state.revision, worldlineId: state.worldlineId, type: 'Continue' });
   return <main className="game-shell">
+    <ChatGptConnection />
     <header className="topbar"><div><span className="brand-mark">神</span><strong>神洲三國</strong><span className="tag">示例原型</span></div><div className="top-actions">
       <label className="reader-control compact">字體 {fontSize}px<input aria-label="調整閱讀字體大小" type="range" min="16" max="24" step="1" value={fontSize} onChange={(event)=>setFontSize(Number(event.target.value))} /></label>
       <select aria-label="切換世界線" value={state.worldlineId} onChange={(e) => void switchTimeline(e.target.value)}>{workspace.saves.map((save) => <option key={save.worldlineId} value={save.worldlineId}>{saveName(save)}</option>)}</select>
       <button className="quiet" onClick={() => { setNewTimeline(true); setConfirmed(false); }}>新建世界線</button><button className="quiet" onClick={() => exportSave()}>匯出</button><button className="quiet" onClick={() => fileRef.current?.click()}>匯入</button><input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(e) => void importSave(e.target.files?.[0])} />
     </div></header>
-    <section className="hero"><div><p className="eyebrow">{turnInterval(c.birthYear, state.turn, w.year, w.month, state.phase4?.dayOfMonth ?? 1, state.phase4?.day, state.actions.at(-1)?.elapsedDays ?? 90)}　｜　第 {state.turn} 回合</p><p className="location-line">所在・{phase2?.scene.location ?? c.home}</p><h1>{c.name}<small>　{c.age} 歲・出生於 {c.home}</small></h1><p>{c.background}（示例）・{c.health}</p></div></section>
+    <section className="hero"><div><p className="eyebrow">{turnInterval(c.birthYear, state.turn, w.year, w.month, state.phase4?.dayOfMonth ?? 1, state.phase4?.day, state.actions.at(-1)?.elapsedDays ?? 90)}　｜　第 {state.turn} 回合</p><p className="location-line">所在・{phase2?.scene.location ?? c.home}</p><h1>{c.name}<small>　{characterAgeLabel(state)}・出生於 {c.home}</small></h1><p>{c.background}（示例）・{c.health}</p></div></section>
     <div className="layout"><section className="main-column">
       {phase2 && <article className="panel scene-panel story-panel"><div className="section-kicker">眼前</div><p className="scene-place"><b>{phase2.scene.location}</b><span>第 {phase2.scene.turn} 回合・在場 {phase2.scene.presentIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</span></p><p className="scene-arrivals">新到：{phase2.scene.enteredIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}；離去：{phase2.scene.leftIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</p>
-        {phase2.scene.speeches.map((speech, index) => <p className="speech" key={`${speech.speakerId}-${index}`}><b>{speech.label}：</b>「{speech.text}」</p>)}</article>}
+        {phase2.scene.speeches.map((speech, index) => <p className="speech" key={`${speech.speakerId}-${index}`}><b>{speech.label}：</b>「{speech.text}」</p>)}
+        {narrative&&<section className="ai-narrative" aria-live="polite"><div className="section-kicker">本回合敘事・{narrationPending?'生成中':narrationError?'範本回退':narrative.source==='mock'?'本機 mock':narrative.source==='chatgpt'?'ChatGPT 訂閱生成':narrative.source==='openai'?'供應者生成':'範本'}</div>{narrative.paragraphs.map((paragraph,index)=><p className="narrative-paragraph" key={`p-${index}`}>{paragraph}</p>)}{(()=>{const spoken=new Set(phase2.scene.speeches.map(item=>item.speakerId));return narrative.dialogue.map((line,index)=>{const speaker=phase2.persons.find(person=>person.id===line.speakerId);if(!speaker||!phase2.scene.presentIds.includes(speaker.id))return null;const age=Math.max(0,(state?.world.year??speaker.birthYear)-speaker.birthYear);const prior=spoken.has(speaker.id);spoken.add(speaker.id);return <p className="speech" key={`d-${index}`}><b>{prior?speaker.name:`${speaker.name}（${age}歲，${speaker.office||'白身'}）`}：</b>「{line.text}」</p>;});})()}{narrative.suggestions.length>0&&<p className="narrative-suggestions">可考慮：{narrative.suggestions.join('；')}</p>}{narrationError&&<p className="notice" role="status">{narrationError}</p>}<div className="button-row">{narrationPending&&<button className="quiet" onClick={()=>narrationAbort.current?.abort()}>取消敘事生成</button>}{!narrationPending&&narrationError&&<button className="quiet" onClick={()=>{if(narrationPayload.current)void generateNarrative(narrationPayload.current);}}>重試敘事（不重跑行動）</button>}</div></section>}</article>}
       {phase2?.worldUpdates.length ? <article className="panel folds"><details><summary>收合世界外事件・自動後台</summary>{phase2.worldUpdates.slice(-4).map((update, index) => <p key={`${state.worldlineId}-world-${index}`}>{update}</p>)}</details></article> : null}
       {state.historicalNodes.length > 0 && <article className="panel trend"><div className="section-kicker">歷史節點・示例</div>{state.historicalNodes.slice(-2).map((node, i) => <p key={i}>{node}</p>)}</article>}
-      {state.status === 'playing' ? <article className="panel intents"><div className="panel-heading"><div><div className="section-kicker">本回合行動</div><h2>安排一份行動計畫</h2></div><span className="round">{state.turn} / {MAX_TURNS}</span></div>
-        {state.turn === 10 && <p className="milestone">已完成第一段十回合大記，世界線仍可繼續。</p>}
-        <div className="intent-grid">{INTENTS.map((intent, i) => <label className={`intent ${selectedIntents.includes(intent)?'selected':''}`} key={intent}><input type="checkbox" checked={selectedIntents.includes(intent)} disabled={busy} onChange={(event)=>setSelectedIntents((current)=>event.target.checked?[...current,intent]:current.filter((entry)=>entry!==intent))} /><span className="intent-icon">{['禾', '士', '市', '行'][i]}</span><span><strong>{intent}</strong><small>{['耕作與讀書，累積家計及學習經驗', '訪求地方人物，交遊不等於登用成功', '往返市集，盈虧依交易結算', '遊歷附近村落，支出盤纏並聽聞消息'][i]}</small></span><b aria-hidden="true">{selectedIntents.includes(intent)?'已選':'勾選'}</b></label>)}</div>
-        <label className="supplement-label">補充說明<textarea value={supplement} disabled={busy} rows={4} onChange={(event)=>setSupplement(event.target.value)} placeholder="可填寫行動順序、對象、方式、條件或其他註解；目前不會自動解讀。" /></label>
-        <p className="caption">一份計畫會依各項行動需要的時間安排先後，不會因多選而重複推進整個回合。勾選只更新計畫，不會立即執行。</p>
-        {(planReview || planConflicts.length>0) && <section className="plan-review" aria-live="polite"><b>送出前確認</b>{planConflicts.length>0&&<ul>{planConflicts.map((conflict,index)=><li key={index}>{conflict}</li>)}</ul>}{supplement.trim()&&<p>補充文字尚未解析。確認後只會保存為備註，不會當成執行條件。</p>}{!selectedIntents.length&&supplement.trim()&&<p>沒有勾選行動，因此確認只保存備註，不消耗回合或資源。</p>}<div className="button-row"><button className="primary" disabled={busy||planConflicts.length>0} onClick={()=>void submitActionPlan(true)}>{selectedIntents.length?'確認並送出行動':'只保存補充說明'}</button><button className="quiet" disabled={busy} onClick={()=>{setPlanReview(false);setPlanConflicts([]);}}>返回調整</button></div></section>}
-        <button className="primary wide" disabled={busy||(!selectedIntents.length&&!supplement.trim())} onClick={()=>void submitActionPlan()}>{busy?'保存行動計畫中…':'送出行動'}</button>
-        <button className="continue" disabled={busy} onClick={() => void run(nextCommand('Continue'))}>繼續目前人生（不推進時間、不批准待決事項）</button>
-        {notice&&<div className="notice" role="status">{notice}<button aria-label="關閉提示" onClick={()=>setNotice('')}>×</button></div>}
-      </article> : <article className="panel finish"><div className="section-kicker">第一人生階段示例完成</div><h2>這條世界線已保存。</h2><p>{state.summaries.at(-1)?.text}</p><button className="quiet" onClick={() => { setNewTimeline(true); setConfirmed(false); }}>建立另一條世界線</button></article>}
-      <article className="panel log"><details><summary>旅程紀錄・{state.actions.length} 回合</summary>{state.actions.length ? <ol>{state.actions.slice().reverse().map((action) => <li key={action.turn}><span className="log-turn">{String(action.turn).padStart(2, '0')}</span><div><strong>{action.title}</strong><p>{action.details}</p></div></li>)}</ol> : <p className="muted">新生後的第一個決策節點由你選擇。</p>}</details></article>
+      {state.status === 'playing' ? <><LifeActionPanel key={state.worldlineId} state={state} busy={busy||narrationPending} onRun={run}/><button className="continue" disabled={busy} onClick={()=>void run(nextCommand('Continue'))}>繼續目前人生（不推進時間）</button>{notice&&<p role="status" className="notice">{notice}</p>}</> : <article className="panel finish"><div className="section-kicker">第一人生階段示例完成</div><h2>這條世界線已保存。</h2><p>{state.summaries.at(-1)?.text}</p><button className="quiet" onClick={() => { setNewTimeline(true); setConfirmed(false); }}>建立另一條世界線</button></article>}
+      <article className="panel log"><details><summary>旅程紀錄・{state.actions.length} 回合</summary>{state.actions.length ? <ol>{state.actions.slice().reverse().map((action) => <li key={action.turn}><span className="log-turn">{String(action.turn).padStart(2, '0')}</span><div><strong>{action.title}</strong><p>{action.details}</p>{action.supplement&&<p className="caption">補充說明原文：{action.supplement}</p>}</div></li>)}</ol> : <p className="muted">新生後的第一個決策節點由你選擇。</p>}</details></article>
     </section><aside className="side-column">
       <nav className="feature-nav" aria-label="遊戲資料與操作"><div className="section-kicker">查閱與行動</div>{(['人物','家產','天生技','軍政','記事'] as const).map(panel=><button key={panel} className={activePanel===panel?'active':''} aria-pressed={activePanel===panel} onClick={()=>setActivePanel(panel)}>{panel}<span aria-hidden="true">›</span></button>)}</nav>
       <article className="panel profile"><div className="section-kicker">人物與潛質・示例</div><div className="stat"><span>私錢</span><strong>{c.money}</strong></div><div className="stat"><span>聲望（示例）</span><strong>{c.reputation}</strong></div><div className="skills">{Object.entries(c.potential).map(([stat, value]) => <span key={stat}>{stat} <b>{value}</b></span>)}</div><p className="contacts">學習／實務／交遊經驗：{c.growth.study}／{c.growth.practice}／{c.growth.social}</p><p className="caption">以上潛質不是出生即具備的成熟五維。</p><details><summary>家庭與背景</summary>{c.family.map((person) => <p key={person.role}>{person.role}：{person.name}</p>)}<p>健康：{c.health}</p><p>地方：{c.home}・{c.background}</p></details><details><summary>天生技能力範圍</summary><p>v{SKILLS_VERSION}・目前提供第三階段小型情境；各能力可操作範圍與後續世界資料見覆蓋表。</p></details></article>
@@ -352,3 +341,4 @@ export default function App() {
     <footer>神洲三國・第四階段示例原型　<span>自動保存・事件版本 {state.engineVersion}</span></footer>
   </main>;
 }
+
