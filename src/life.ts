@@ -43,6 +43,10 @@ export function answerKnownRulerQuestion(text:string,state:GameState):Interactio
   const fact=currentRulerFact(state.world.year);
   return {kind:'question',answer:fact??`目前是西元 ${state.world.year} 年；這份原型的史實年表尚未涵蓋該年的皇帝資料，我不臆測答案。`,choiceIds:[],questions:[]};
 }
+export function answerKnownTrendQuestion(text:string,state:GameState):InteractionResult|null{
+  if(!/(天下大勢|天下局勢|時局|政局|外面.{0,4}消息|最近.{0,4}消息)/.test(text))return null;
+  return {kind:'question',answer:`目前畫面上的天下來報是：「${state.trend}」這是原型每回合更新的示例消息，不是完整史實資料；沒有提供更多遠方詳情。`,choiceIds:[],questions:[]};
+}
 export function localInteraction(text:string,state:GameState):InteractionResult{
   const clean=text.trim(),catalog=lifeChoices(state);
   if((/[?？]/.test(clean)&&/然後|接著|再去/.test(clean))||/不要|先別|不去|不做|除非|如果|若是/.test(clean))return{kind:'mixed',answer:'這段話包含條件、否定或不同用途，需要先拆開確認，沒有執行任何一部分。',choiceIds:[],questions:['請先說明要查詢的問題，或單獨列出這次確定要做的行動。']};

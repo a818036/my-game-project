@@ -1,15 +1,17 @@
 import type {GameState} from '../engine';
-import {answerKnownRulerQuestion,currentRulerFact,lifeChoices,localInteraction,type InteractionResult} from '../life';
+import {answerKnownRulerQuestion,answerKnownTrendQuestion,currentRulerFact,lifeChoices,localInteraction,type InteractionResult} from '../life';
 export async function understandInput(text:string,state:GameState,signal:AbortSignal):Promise<InteractionResult>{
   const factualAnswer=answerKnownRulerQuestion(text,state);
   if(factualAnswer)return {...factualAnswer,source:'已核對的遊戲年表'};
+  const trendAnswer=answerKnownTrendQuestion(text,state);
+  if(trendAnswer)return {...trendAnswer,source:'目前世界線的天下來報'};
   const deterministic=localInteraction(text,state);
   if(deterministic.kind==='action')return {...deterministic,source:'已辨識的明確生活行動；確認後執行'};
   const choices=lifeChoices(state);
   try{
     const health=await fetch('/api/health',{signal});if(!health.ok)throw new Error('無法連線');
     const {provider}=await health.json();if(provider==='mock')return{...localInteraction(text,state),source:'本機理解'};
-    const context={age:state.character.age,monthAge:Math.max(0,state.world.month-1),year:state.world.year,currentRulerFact:currentRulerFact(state.world.year),location:state.phase2?.scene.location??state.character.home,presentNames:(state.phase2?.persons??[]).filter(p=>p.id!=='protagonist'&&p.alive&&state.phase2?.scene.presentIds.includes(p.id)).map(p=>p.name)};
+    const context={age:state.character.age,monthAge:Math.max(0,state.world.month-1),year:state.world.year,currentRulerFact:currentRulerFact(state.world.year),currentTrend:state.trend,location:state.phase2?.scene.location??state.character.home,presentNames:(state.phase2?.persons??[]).filter(p=>p.id!=='protagonist'&&p.alive&&state.phase2?.scene.presentIds.includes(p.id)).map(p=>p.name)};
     const response=await fetch('/api/interaction',{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({text,context,choices:choices.map(({id,label,description,days})=>({id,label,description,days}))})});
     const result=await response.json();if(!response.ok)throw new Error(result.error??'理解服務失敗');
     if(!['question','objection','dialogue','action','mixed','unclear'].includes(result.kind)||typeof result.answer!=='string'||!Array.isArray(result.choiceIds)||result.choiceIds.some((id:unknown)=>!choices.some(c=>c.id===id))||!Array.isArray(result.questions)||result.questions.some((q:unknown)=>typeof q!=='string')||result.kind!=='action'&&result.choiceIds.length)throw new Error('互動回覆格式無效');
