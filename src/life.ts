@@ -42,6 +42,7 @@ export function currentRulerFact(year:number):string|null{
   if(year>=168&&year<=188)return `西元 ${year} 年，東漢皇帝是漢靈帝劉宏（《後漢書·孝靈帝紀》）。`;
   if(year===189)return '西元 189 年內皇位數度更替：先是漢少帝劉辯即位，後為漢獻帝劉協。本原型只用年級史實與簡化月曆，無法據此判定模型中的當下是哪位皇帝。資料見《後漢書·孝靈帝紀》《孝獻帝紀》。';
   if(year>=190&&year<220)return `西元 ${year} 年，東漢皇帝是漢獻帝劉協（《後漢書·孝獻帝紀》）。`;
+  if(year===220)return '西元 220 年，漢獻帝劉協禪位於魏王曹丕，漢魏政權更替；本原型只記年級節點，不表示遊戲模型月對應禪代日期。資料見《三國志》卷二〈魏書·文帝紀〉。';
   return null;
 }
 export function answerKnownRulerQuestion(text:string,state:GameState):InteractionResult|null{

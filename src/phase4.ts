@@ -3,8 +3,8 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-3';
-const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2',PHASE4_CONTENT_VERSION] as const;
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-4';
+const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3',PHASE4_CONTENT_VERSION] as const;
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; playerVisitTrustGain:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, playerVisitTrustGain:2,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -21,6 +21,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'emperor-relocates-xu-196',kind:'event',title:'獻帝遷都許縣',startYear:196,endYear:196,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉記建安元年秋車駕西出洛陽、曹操迎奉並都許；本模型只採年級精度。',causes:['imperial-court-relocation'],carrier:'漢廷與曹操勢力（歷史事件）',description:'洛陽殘破後，朝廷遷往許縣一帶；節點不模擬完整遷徙路線或官署人口。',introducedIn:'phase4-scenario-3' },
   { id:'red-cliffs-208',kind:'event',title:'赤壁交戰',startYear:208,endYear:208,precision:'year',source:'《三國志》卷四十七〈吳主傳〉記建安十三年周瑜、程普與劉備軍於赤壁擊敗曹軍；本內容包採年級精度。',causes:['southern-alliance','cao-southward-campaign'],carrier:'孫劉聯軍與曹軍（歷史事件）',description:'建安十三年赤壁交戰形成重要戰局變化；不推演完整戰場、兵力或地點爭議。',introducedIn:'phase4-scenario-3' },
   { id:'wei-han-transition-220',kind:'event',title:'漢魏禪代',startYear:220,endYear:220,precision:'year',source:'《三國志》卷二〈魏書·文帝紀〉載延康元年漢帝禪位於魏王；本內容包採年級精度。',causes:['han-dynasty-abdication'],carrier:'漢帝與魏王朝廷（歷史事件）',description:'延康元年禪代標記漢魏政權更替；不自動令玩家世界統一或結局。',introducedIn:'phase4-scenario-3' },
+  { id:'shu-surrenders-263',kind:'event',title:'蜀漢降魏',startYear:263,endYear:263,precision:'year',source:'《三國志》卷四〈魏書·三少帝紀〉記景元四年冬劉禪詣鄧艾降，巴蜀平；本內容包採年級精度。',causes:['shu-han-surrender'],carrier:'劉禪與蜀漢朝廷（歷史事件）',description:'景元四年蜀漢政權向魏投降；不模擬完整戰役、地方抵抗或個別人物命運。',introducedIn:'phase4-scenario-4' },
+  { id:'wei-jin-transition-265',kind:'event',title:'魏晉禪代',startYear:265,endYear:265,precision:'year',source:'《晉書》卷三〈帝紀第三·武帝紀〉記泰始元年魏帝禪位，司馬炎受禪；本內容包採年級精度。',causes:['wei-dynasty-abdication'],carrier:'魏帝與晉王司馬炎（歷史事件）',description:'泰始元年魏晉政權更替；不自動替玩家選擇陣營或結局。',introducedIn:'phase4-scenario-4' },
+  { id:'wu-surrenders-280',kind:'event',title:'孫吳降晉',startYear:280,endYear:280,precision:'year',source:'《三國志》卷四十八〈吳書·孫皓傳〉記天紀四年王濬受孫皓之降；本內容包採年級精度。',causes:['wu-dynasty-surrender'],carrier:'孫皓與孫吳朝廷（歷史事件）',description:'天紀四年孫吳向晉投降，三國鼎立告終；不替玩家世界自動結算統一或人生結局。',introducedIn:'phase4-scenario-4' },
   { id:'coalition-190',kind:'event',title:'關東州郡合兵討董（節點）',startYear:190,endYear:190,precision:'year',source:'《後漢書》卷七十二〈董卓列傳〉、卷七十五〈劉焉袁術呂布列傳〉；《三國志》卷六〈董卓傳〉。年月細節依所引版本，內容包只採年級精度。',causes:['dong-zhuo-central-control','regional-arms-resistance'],carrier:'關東州郡與在地盟軍（示例承載群）',carriersByCause:{'dong-zhuo-central-control':'仍受中央控制的武裝與官署（因果承載示例）','regional-arms-resistance':'仍維持武裝的州郡勢力（因果承載示例）'},description:'中央控制與州郡武裝對立仍存，可能形成聯兵危機。若核心原因已消失則取消；承載者須對應仍存在的原因。' },
   { id:'sun-jian-death-191',kind:'death',title:'孫堅死亡硬節點',startYear:191,endYear:191,precision:'year',source:'《三國志》卷四十六〈吳書一·孫破虜討逆傳〉；此內容包僅取 191 年年級精度，不主張精確月日。',causes:['campaign-risk'],carrier:'孫堅',historicalPersonId:'sun-jian',description:'無直接、充分且成功的救援介入時，須在史實年級窗口退場。一般治療能力或局勢改變不算介入。' },
   { id:'sample-local-vacancy',kind:'event',title:'郡府文書職缺（示例）',startYear:184,endYear:300,precision:'year',source:'本專案示例情境，非史實人物／職缺。',causes:['local-office-vacancy'],carrier:'示例郡府',description:'已標明為示例的人事內容，用於驗證遞補流程。',example:true },
