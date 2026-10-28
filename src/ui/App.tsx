@@ -1,11 +1,11 @@
+import {LifeActionPanel} from './LifeActionPanel';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { createOpeningFacts, dispatch, ENGINE_VERSION, INTENTS, inspectActionPlan, MAX_TURNS, SKILLS_VERSION, SOURCE_HASHES, type GameCommand, type Intent } from '../engine';
+import { createOpeningFacts, dispatch, ENGINE_VERSION, SKILLS_VERSION, SOURCE_HASHES, type GameCommand } from '../engine';
 import { activateWorldline, assertSlotCompatible, commitWorldline, loadWorkspace, parseSave, toJson, verifySave, type SaveFile, type WorkspaceSnapshot } from '../storage';
 import { kinshipTerm, STAT_NAMES, type AccountName, type AssetName, type Phase2Action, type RelationshipKind } from '../phase2';
 import { EXAMPLE_LANGUAGE, OFFICIAL_ABILITIES, sampleLightningContext, type AbilityCombinationId, type AbilityId, type HarmIntent, type IllusionDistribution, type InnateAction, type RealityDepth } from '../innate';
 import { ENGINEERING, HISTORY_CONTENT, type ControlLevel, type Phase4Action, type PolicyId, type WarUnit } from '../phase4';
-import { interpretWithConfiguredProvider, validateFreeTextCandidate, type FreeTextCandidate } from '../narration/actions';
-import { answerAgeQuestion, characterAgeLabel, isAgeQuestion } from '../narration/status';
+import { characterAgeLabel } from '../narration/status';
 import { ChatGptConnection } from './ChatGptConnection';
 import { buildNarrationPayload, fetchNarration, templateNarration, type NarrationPayload, type NarrationResult } from '../narration/client';
 
@@ -52,16 +52,9 @@ export default function App() {
   const [messageText, setMessageText] = useState('家中一切安好，地方消息稍後再報。');
   const [messageTarget, setMessageTarget] = useState('');
   const [injuryDraft, setInjuryDraft] = useState('行旅擦傷（示例）');
-  const [selectedIntents, setSelectedIntents] = useState<Intent[]>([]);
-  const [supplement, setSupplement] = useState('');
-  const [planReview, setPlanReview] = useState(false);
-  const [statusAnswer,setStatusAnswer]=useState<{text:string;worldlineId:string;revision:number}|null>(null);
-  const [planConflicts, setPlanConflicts] = useState<string[]>([]);
-  const [freeTextCandidate,setFreeTextCandidate]=useState<FreeTextCandidate|null>(null);
   const [narrative,setNarrative]=useState<NarrationResult|null>(null);
   const [narrationPending,setNarrationPending]=useState(false);
   const [narrationError,setNarrationError]=useState('');
-  const [actionParsing,setActionParsing]=useState(false);
   const [fontSize, setFontSize] = useState(() => Number(localStorage.getItem('shenzhou-font-size')) || 18);
   const [activePanel, setActivePanel] = useState<'人物'|'家產'|'天生技'|'軍政'|'記事'>('人物');
   const [abilityMode, setAbilityMode] = useState('幻術');
@@ -104,7 +97,6 @@ export default function App() {
   const [rejuvenationConsent, setRejuvenationConsent] = useState(false);
   const busyRef = useRef(false);
   const narrationAbort=useRef<AbortController|null>(null);
-  const actionParseAbort=useRef<AbortController|null>(null);
   const narrationPayload=useRef<NarrationPayload|null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const activeSave = workspace.saves.find((save) => save.worldlineId === workspace.profile.activeWorldlineId) ?? null;
@@ -117,12 +109,11 @@ export default function App() {
   const selectedRelation = phase2?.relationships.find((entry) => entry.personId === relationTarget) ?? phase2?.relationships[0];
   const selectedContact = livingContacts.find((person) => person.id === messageTarget) ?? livingContacts[0];
   const preview = useMemo(() => createOpeningFacts(seed, birthYear, workspace.profile), [seed, birthYear, workspace.profile]);
-  const reviewIntents=[...(freeTextCandidate?.actions.slice().sort((a,b)=>a.order-b.order).map(action=>action.intent)??[]),...selectedIntents.filter(intent=>!(freeTextCandidate?.actions.some(action=>action.intent===intent)??false))];
 
   useEffect(() => { document.documentElement.style.setProperty('--reader-size', `${fontSize}px`); localStorage.setItem('shenzhou-font-size', String(fontSize)); }, [fontSize]);
 
   useEffect(() => { loadWorkspace().then(setWorkspace).catch(() => setNotice('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。')).finally(() => setReady(true)); }, []);
-  useEffect(()=>()=>{narrationAbort.current?.abort();actionParseAbort.current?.abort();},[]);
+  useEffect(()=>()=>{narrationAbort.current?.abort();},[]);
 
   async function generateNarrative(payload:NarrationPayload){
     narrationAbort.current?.abort();const controller=new AbortController();narrationAbort.current=controller;narrationPayload.current=payload;setNarrationPending(true);setNarrationError('');
@@ -148,66 +139,13 @@ export default function App() {
         : workspace.profile;
       await commitWorldline(save, nextProfile, true);
       setWorkspace((old) => ({ saves: [...old.saves.filter((entry) => entry.worldlineId !== worldlineId), save], profile: { ...nextProfile, activeWorldlineId: worldlineId } }));
-      if(['SubmitActionPlan','Phase2Action','InnateAction','Phase4Action'].includes(command.type))await generateNarrative(buildNarrationPayload(result.state,result.event));
+      if(['SubmitLifePlan','SubmitActionPlan','Phase2Action','InnateAction','Phase4Action'].includes(command.type))await generateNarrative(buildNarrationPayload(result.state,result.event));
       setNewTimeline(false); setConfirmed(false); const interruptions=result.state.actions.at(-1)?.interruptions??[];const deathWindowOpen=result.state.phase4?.nodes.some(node=>node.status==='triggered'&&HISTORY_CONTENT.find(content=>content.id===node.contentId)?.kind==='death')??false;setNotice(interruptions.length?(deathWindowOpen?`行動已中斷；死亡節點介入窗口開啟：${interruptions.join('；')}`:`行動已因重大節點中斷：${interruptions.join('；')}`):'本回合已保存。');
       return true;
     } catch (error) {
       setNotice(error instanceof Error ? `未保存任何變更：${error.message}` : '保存失敗；原世界線保持不變。');
       return false;
     } finally { busyRef.current = false; setBusy(false); }
-  }
-  async function submitActionPlan(confirmedReview = false) {
-    if (!state || busyRef.current) return;
-    const cleanNote = supplement.trim();
-    const answer=answerAgeQuestion(cleanNote,state);
-    if(answer){setStatusAnswer({text:answer,worldlineId:state.worldlineId,revision:state.revision});setPlanReview(false);setFreeTextCandidate(null);setPlanConflicts([]);setNotice('已回答年齡詢問；勾選項目仍保留，沒有執行。');return;}
-    setStatusAnswer(null);
-    if (!selectedIntents.length && !cleanNote) { setNotice('請至少勾選一項行動，或填寫補充說明。'); return; }
-    if(cleanNote&&!confirmedReview){
-      busyRef.current=true;setBusy(true);setActionParsing(true);const controller=new AbortController();actionParseAbort.current=controller;
-      try{
-        const targets=[...(phase2?.persons.map(person=>({id:person.id,name:person.name,alive:person.alive,present:phase2.scene.presentIds.includes(person.id)}))??[]),...(phase4?.candidates.map(person=>({id:person.id,name:person.name,alive:true,present:false,recruitable:['available','competing'].includes(person.status)}))??[])];
-        const candidate=await interpretWithConfiguredProvider(cleanNote,selectedIntents,targets,controller.signal);
-        const effective=[...candidate.actions.slice().sort((a,b)=>a.order-b.order).map(action=>action.intent),...selectedIntents.filter(intent=>!candidate.actions.some(action=>action.intent===intent))];
-        const conflicts=[...candidate.conflicts,...inspectActionPlan(effective).conflicts].filter((value,index,array)=>array.indexOf(value)===index);
-        setFreeTextCandidate(candidate);setPlanConflicts(conflicts);setPlanReview(true);
-        setNotice(candidate.interpretationSource?.startsWith('本機確定性回退')?'真實解析未完成，已改用本機解析結果供你檢視；未確認前不會執行。':'請檢視解析候選與衝突；確認前不會執行。');
-      }catch(error){setNotice(error instanceof Error?`解析已取消或失敗；文字與勾選仍保留：${error.message}`:'解析已取消；文字與勾選仍保留。');}
-      finally{actionParseAbort.current=null;setActionParsing(false);busyRef.current=false;setBusy(false);}
-      return;
-    }
-    const targets=[...(phase2?.persons.map(person=>({id:person.id,name:person.name,alive:person.alive,present:phase2.scene.presentIds.includes(person.id)}))??[]),...(phase4?.candidates.map(person=>({id:person.id,name:person.name,alive:true,present:false,recruitable:['available','competing'].includes(person.status)}))??[])];
-    const candidate=cleanNote?freeTextCandidate:null;
-    const parsedIntents=(candidate?.actions??[]).slice().sort((a,b)=>a.order-b.order).map(action=>action.intent);
-    const effectiveIntents=[...parsedIntents,...selectedIntents.filter(intent=>!parsedIntents.includes(intent))];
-    const plan = inspectActionPlan(effectiveIntents);
-    setPlanConflicts(plan.conflicts);
-    if(candidate){setFreeTextCandidate(candidate);}
-    if (plan.conflicts.length) { setPlanReview(true); setNotice('行動計畫有衝突，請調整後再送出。'); return; }
-    if (!effectiveIntents.length) {
-      if (!confirmedReview) { setPlanReview(true); setNotice('補充說明尚無可可靠辨識的條件；請確認只保存為備註，不推進時間。'); return; }
-      const ok = await run({ version:ENGINE_VERSION, commandId:commandId(), expectedRevision:state.revision, worldlineId:state.worldlineId, type:'RecordActionNote', text:cleanNote });
-      if (ok) { setSupplement(''); setPlanReview(false); }
-      return;
-    }
-    if(cleanNote&&candidate&&(candidate.questions.length||candidate.unsupported.length)){
-      if(!confirmedReview){setPlanReview(true);setNotice('自由文字仍有待澄清項目；請修正文字，或明確選擇只執行勾選項目並保存為備註。');return;}
-      setNotice('這段文字尚未解析；若要繼續，請只保存為備註或修改文字。');return;
-    }
-    if (cleanNote && !confirmedReview) { setPlanReview(true); setNotice('請先檢視系統理解的候選行動；確認後才會交由規則引擎驗證。'); return; }
-    if(candidate)try{validateFreeTextCandidate(candidate,selectedIntents,targets);}catch(error){setNotice(error instanceof Error?error.message:'候選行動未通過規則驗證');return;}
-    const ok = await run({ version:ENGINE_VERSION, commandId:commandId(), expectedRevision:state.revision, worldlineId:state.worldlineId, type:'SubmitActionPlan', intents:effectiveIntents, supplement:cleanNote, ...(candidate?.actions.length?{freeTextActions:candidate.actions}:{}) });
-    if (ok) { setSelectedIntents([]); setSupplement(''); setPlanReview(false); setPlanConflicts([]);setFreeTextCandidate(null); }
-  }
-  async function submitCheckedOnly(){
-    if(!state||!selectedIntents.length||busyRef.current)return;
-    const ok=await run({version:ENGINE_VERSION,commandId:commandId(),expectedRevision:state.revision,worldlineId:state.worldlineId,type:'SubmitActionPlan',intents:[...selectedIntents],supplement:supplement.trim()});
-    if(ok){setSelectedIntents([]);setSupplement('');setPlanReview(false);setPlanConflicts([]);setFreeTextCandidate(null);}
-  }
-  async function saveSupplementOnly(){
-    if(!state||!supplement.trim()||busyRef.current)return;
-    const ok=await run({version:ENGINE_VERSION,commandId:commandId(),expectedRevision:state.revision,worldlineId:state.worldlineId,type:'RecordActionNote',text:supplement.trim()});
-    if(ok){setSupplement('');setPlanReview(false);setFreeTextCandidate(null);setPlanConflicts([]);}
   }
   function phaseAction(action: Phase2Action) {
     if (!state) return;
@@ -297,9 +235,7 @@ export default function App() {
   </section></main>;
 
   const c = state.character, w = state.world;
-  const nextCommand = (type: 'Continue' | 'ChooseIntent', intent?: typeof INTENTS[number]): GameCommand => type === 'Continue'
-    ? { version: ENGINE_VERSION, commandId: commandId(), expectedRevision: state.revision, worldlineId: state.worldlineId, type: 'Continue' }
-    : { version: ENGINE_VERSION, commandId: commandId(), expectedRevision: state.revision, worldlineId: state.worldlineId, type: 'ChooseIntent', intent: intent! };
+  const nextCommand = (_type: 'Continue'): GameCommand => ({ version: ENGINE_VERSION, commandId: commandId(), expectedRevision: state.revision, worldlineId: state.worldlineId, type: 'Continue' });
   return <main className="game-shell">
     <ChatGptConnection />
     <header className="topbar"><div><span className="brand-mark">神</span><strong>神洲三國</strong><span className="tag">示例原型</span></div><div className="top-actions">
@@ -314,106 +250,247 @@ export default function App() {
         {narrative&&<section className="ai-narrative" aria-live="polite"><div className="section-kicker">本回合敘事・{narrationPending?'生成中':narrationError?'範本回退':narrative.source==='mock'?'本機 mock':narrative.source==='chatgpt'?'ChatGPT 訂閱生成':narrative.source==='openai'?'供應者生成':'範本'}</div>{narrative.paragraphs.map((paragraph,index)=><p className="narrative-paragraph" key={`p-${index}`}>{paragraph}</p>)}{(()=>{const spoken=new Set(phase2.scene.speeches.map(item=>item.speakerId));return narrative.dialogue.map((line,index)=>{const speaker=phase2.persons.find(person=>person.id===line.speakerId);if(!speaker||!phase2.scene.presentIds.includes(speaker.id))return null;const age=Math.max(0,(state?.world.year??speaker.birthYear)-speaker.birthYear);const prior=spoken.has(speaker.id);spoken.add(speaker.id);return <p className="speech" key={`d-${index}`}><b>{prior?speaker.name:`${speaker.name}（${age}歲，${speaker.office||'白身'}）`}：</b>「{line.text}」</p>;});})()}{narrative.suggestions.length>0&&<p className="narrative-suggestions">可考慮：{narrative.suggestions.join('；')}</p>}{narrationError&&<p className="notice" role="status">{narrationError}</p>}<div className="button-row">{narrationPending&&<button className="quiet" onClick={()=>narrationAbort.current?.abort()}>取消敘事生成</button>}{!narrationPending&&narrationError&&<button className="quiet" onClick={()=>{if(narrationPayload.current)void generateNarrative(narrationPayload.current);}}>重試敘事（不重跑行動）</button>}</div></section>}</article>}
       {phase2?.worldUpdates.length ? <article className="panel folds"><details><summary>收合世界外事件・自動後台</summary>{phase2.worldUpdates.slice(-4).map((update, index) => <p key={`${state.worldlineId}-world-${index}`}>{update}</p>)}</details></article> : null}
       {state.historicalNodes.length > 0 && <article className="panel trend"><div className="section-kicker">歷史節點・示例</div>{state.historicalNodes.slice(-2).map((node, i) => <p key={i}>{node}</p>)}</article>}
-      {state.status === 'playing' ? <article className="panel intents"><div className="panel-heading"><div><div className="section-kicker">本回合行動</div><h2>安排一份行動計畫</h2></div><span className="round">{state.turn} / {MAX_TURNS}</span></div>
-        {state.turn === 10 && <p className="milestone">已完成第一段十回合大記，世界線仍可繼續。</p>}
-        <div className="intent-grid">{INTENTS.map((intent, i) => <label className={`intent ${selectedIntents.includes(intent)?'selected':''}`} key={intent}><input type="checkbox" checked={selectedIntents.includes(intent)} disabled={busy} onChange={(event)=>{setSelectedIntents((current)=>event.target.checked?[...current,intent]:current.filter((entry)=>entry!==intent));setFreeTextCandidate(null);setPlanReview(false);}} /><span className="intent-icon">{['禾', '士', '市', '行'][i]}</span><span><strong>{intent}</strong><small>{['耕作與讀書，累積家計及學習經驗', '訪求地方人物，交遊不等於登用成功', '往返市集，盈虧依交易結算', '遊歷附近村落，支出盤纏並聽聞消息'][i]}</small></span><b aria-hidden="true">{selectedIntents.includes(intent)?'已選':'勾選'}</b></label>)}</div>
-        <label className="supplement-label">補充說明<textarea value={supplement} disabled={busy} rows={4} onChange={(event)=>{setSupplement(event.target.value);setStatusAnswer(null);setFreeTextCandidate(null);setPlanReview(false);}} placeholder="可填寫行動順序、對象、方式、條件；也可輸入「我幾歲？」查詢年齡，不推進時間。" /></label>
-        <p className="caption">一份計畫會依各項行動需要的時間安排先後，不會因多選而重複推進整個回合。勾選只更新計畫，不會立即執行。</p>
-        {statusAnswer&&statusAnswer.worldlineId===state.worldlineId&&statusAnswer.revision===state.revision&&<section className="plan-review" role="status"><b>現況查詢・不推進時間</b><p>{statusAnswer.text}</p></section>}
-        {(planReview || planConflicts.length>0) && <section className="plan-review" aria-live="polite"><b>理解結果・送出前確認</b>{selectedIntents.length>0&&<p>已勾選：{selectedIntents.join('、')}</p>}{freeTextCandidate&&<><p>解析方式：{freeTextCandidate.interpretationSource??'本機規則解析'}</p><p>文字候選：{freeTextCandidate.understood}</p><p>依此順序結算：{reviewIntents.map((intent,index)=>`${index+1}. ${intent}`).join('；')}</p>{freeTextCandidate.questions.map((question,index)=><p className="conflict" key={`q-${index}`}>{question}</p>)}{freeTextCandidate.unsupported.map((message,index)=><p className="conflict" key={`u-${index}`}>{message}</p>)}</>}{planConflicts.length>0&&<ul>{planConflicts.map((conflict,index)=><li key={index}>{conflict}</li>)}</ul>}{supplement.trim()&&<p>補充文字會一併保存。只有上列可驗證候選會成為執行條件；其他內容不會假稱已執行。</p>}{!selectedIntents.length&&!(freeTextCandidate?.actions.length)&&supplement.trim()&&<p>沒有可執行的勾選或文字行動；確認後只保存為備註，不推進時間。</p>}<div className="button-row">{(!freeTextCandidate||(!freeTextCandidate.questions.length&&!freeTextCandidate.unsupported.length))&&<button className="primary" disabled={busy||planConflicts.length>0} onClick={()=>void submitActionPlan(true)}>{selectedIntents.length||freeTextCandidate?.actions.length?'確認並送出理解結果':'只保存補充說明'}</button>}{(freeTextCandidate?.questions.length||freeTextCandidate?.unsupported.length)&&selectedIntents.length>0&&<button className="primary" disabled={busy||planConflicts.length>0} onClick={()=>void submitCheckedOnly()}>只執行勾選項目，文字存為備註</button>}{(freeTextCandidate?.questions.length||freeTextCandidate?.unsupported.length)&&!selectedIntents.length&&<button className="primary" disabled={busy} onClick={()=>void saveSupplementOnly()}>只保存備註，不執行文字行動</button>}<button className="quiet" disabled={busy} onClick={()=>{setPlanReview(false);setPlanConflicts([]);}}>返回調整</button></div></section>}
-        <button className="primary wide" disabled={busy||narrationPending||(!selectedIntents.length&&!supplement.trim())} onClick={()=>void submitActionPlan()}>{actionParsing?'解析文字候選中…':busy?'結算行動並生成故事中…':isAgeQuestion(supplement)?'詢問年齡（不執行勾選行動）':'送出行動'}</button>
-        {actionParsing&&<button className="quiet" onClick={()=>actionParseAbort.current?.abort()}>取消行動解析（保留文字與勾選）</button>}
-        <button className="continue" disabled={busy} onClick={() => void run(nextCommand('Continue'))}>繼續目前人生（不推進時間、不批准待決事項）</button>
-        {notice&&<div className="notice" role="status">{notice}<button aria-label="關閉提示" onClick={()=>setNotice('')}>×</button></div>}
-      </article> : <article className="panel finish"><div className="section-kicker">第一人生階段示例完成</div><h2>這條世界線已保存。</h2><p>{state.summaries.at(-1)?.text}</p><button className="quiet" onClick={() => { setNewTimeline(true); setConfirmed(false); }}>建立另一條世界線</button></article>}
-      <article className="panel log"><details><summary>旅程紀錄・{state.actions.length} 回合</summary>{state.actions.length ? <ol>{state.actions.slice().reverse().map((action) => <li key={action.turn}><span className="log-turn">{String(action.turn).padStart(2, '0')}</span><div><strong>{action.title}</strong><p>{action.details}</p>{action.supplement&&<p className="caption">補充說明原文：{action.supplement}</p>}</div></li>)}</ol> : <p className="muted">新生後的第一個決策節點由你選擇。</p>}</details></article>
-    </section><aside className="side-column">
-      <nav className="feature-nav" aria-label="遊戲資料與操作"><div className="section-kicker">查閱與行動</div>{(['人物','家產','天生技','軍政','記事'] as const).map(panel=><button key={panel} className={activePanel===panel?'active':''} aria-pressed={activePanel===panel} onClick={()=>setActivePanel(panel)}>{panel}<span aria-hidden="true">›</span></button>)}</nav>
-      <article className="panel profile"><div className="section-kicker">人物與潛質・示例</div><div className="stat"><span>私錢</span><strong>{c.money}</strong></div><div className="stat"><span>聲望（示例）</span><strong>{c.reputation}</strong></div><div className="skills">{Object.entries(c.potential).map(([stat, value]) => <span key={stat}>{stat} <b>{value}</b></span>)}</div><p className="contacts">學習／實務／交遊經驗：{c.growth.study}／{c.growth.practice}／{c.growth.social}</p><p className="caption">以上潛質不是出生即具備的成熟五維。</p><details><summary>家庭與背景</summary>{c.family.map((person) => <p key={person.role}>{person.role}：{person.name}</p>)}<p>健康：{c.health}</p><p>地方：{c.home}・{c.background}</p></details><details><summary>天生技能力範圍</summary><p>v{SKILLS_VERSION}・目前提供第三階段小型情境；各能力可操作範圍與後續世界資料見覆蓋表。</p></details></article>
-      <article className="panel trend news-strip"><div className="section-kicker">天下來報</div><p>{state.trend}</p><span className="caption">範本消息・每回合更新</span></article>
-      {activePanel==='天生技'&&innate && phase2 && <article className="panel folds phase-panel ability-panel"><details><summary>天生技操作台・可驗證的情境</summary>
-        <p className="caption">選擇目標、排除對象與強度。未支援的操作會明確拒絕且不消耗回合；範本結果不包含 AI 推演。</p>
-        <label>能力操作<select value={abilityMode} onChange={(event)=>setAbilityMode(event.target.value)}>{['幻術','神識威壓','伏地詛咒','雷霆','萬疫敕令','五感盡失','霸力／人心能力','藏界收納','藏界取出','軒轅閃移動','藏界＋軒轅閃運送','萬解','極限收斂','診斷','治療','回春','百脈改善','封將','單向傳音','天下共視','萬象推演','其他正式能力','能力組合式'].map((mode)=><option key={mode}>{mode}</option>)}</select></label>
-        <label>人物／生命目標<select value={abilityTarget} onChange={(event)=>setAbilityTarget(event.target.value)}>{phase2.persons.map((person)=><option key={person.id} value={person.id}>{person.name}（{person.alive?'在世':'已故'}）</option>)}{phase4?.historicalPersons.map(person=><option key={person.id} value={person.id}>{person.name}（史實情境・{person.alive?'在世':'已故'}）</option>)}{innate.subjects['example-horse']&&<option value="example-horse">家中馬匹（其他生命示例）</option>}</select></label>
-        <label>多目標選擇（支援群體分發）<select multiple value={abilityTargets} onChange={(event)=>setAbilityTargets(Array.from(event.target.selectedOptions,option=>option.value))}>{phase2.persons.map((person)=><option key={person.id} value={person.id}>{person.name}（{person.alive?'在世':'已故'}）</option>)}{phase4?.historicalPersons.map(person=><option key={person.id} value={person.id}>{person.name}（史實情境・{person.alive?'在世':'已故'}）</option>)}</select></label>
-        <label>排除對象<select value={abilityExclude} onChange={(event)=>setAbilityExclude(event.target.value)}><option value="">不排除</option>{phase2.persons.map((person)=><option key={person.id} value={person.id}>{person.name}</option>)}</select></label>
-        <label>強度<select value={abilityIntensity} onChange={(event)=>setAbilityIntensity(Number(event.target.value) as 1|2|3)}><option value={1}>低</option><option value={2}>中</option><option value={3}>高</option></select></label>
-        {abilityMode==='幻術' && <><label>分發模式<select value={illusionDistribution} onChange={(event)=>setIllusionDistribution(event.target.value as IllusionDistribution)}><option>單體</option><option>萬軍共夢</option><option>千軍異夢</option></select></label><label>實相深度<select value={illusionDepth} onChange={(event)=>setIllusionDepth(event.target.value as RealityDepth)}><option>惑感</option><option>入實</option><option>五感實相</option></select></label><label>幻境內容範本<select value={illusionContent} onChange={(event)=>setIllusionContent(event.target.value as typeof illusionContent)}>{['假軍令','火海','假道路','假敵我','箭雨'].map(content=><option key={content}>{content}</option>)}</select></label>{illusionDistribution==='千軍異夢'&&<p className="caption">各目標依選擇的起始範本輪替不同內容，測試方向混亂與個別感官；只供小型情境觀察。</p>}<label>傷害意圖<select value={harmIntent} onChange={(event)=>setHarmIntent(event.target.value as HarmIntent)}><option>非致命</option><option>致命</option></select></label><label>次生事故補充（選填）<input value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} placeholder="例如：目標為躲避而跌落台階" /></label>{abilityText&&<label>事故結果<select value={accidentOutcome} onChange={(event)=>setAccidentOutcome(event.target.value as '無傷'|'受傷'|'致命')}><option>無傷</option><option>受傷</option><option>致命</option></select></label>}<button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Illusion',ability:illusionDistribution==='萬軍共夢'?'萬軍共夢':illusionDistribution==='千軍異夢'?'千軍異夢':'軒轅幻術・五感天幕',targets:abilityTargets.length?abilityTargets:[abilityTarget],excluded:abilityExclude?[abilityExclude]:[],distribution:illusionDistribution,depth:illusionDepth,intent:harmIntent,severity:abilityIntensity,content:illusionContent,accident:abilityText||undefined,accidentOutcome:abilityText?accidentOutcome:undefined})}>結算所選幻術</button></>}
-        {abilityMode==='神識威壓' && <><label>創傷程度<select id="trauma-select"><option>短暫</option><option>持續</option><option>深層</option></select></label><button className="quiet" disabled={busy} onClick={()=>{const trauma=(document.getElementById('trauma-select') as HTMLSelectElement).value as '短暫'|'持續'|'深層';useInnate({type:'Pressure',targets:abilityTargets.length?abilityTargets:[abilityTarget],excluded:abilityExclude?[abilityExclude]:[],intensity:abilityIntensity,trauma});}}>施展神識威壓</button></>}
-        {abilityMode==='雷霆' && <><label>雷霆能力<select value={lightningAbility} onChange={(event)=>setLightningAbility(event.target.value as AbilityId)}>{['軒轅天罰','地走雷','雷震','萬雷震軍','天雷禁域','天雷破城','軒轅天罰・雷海'].map(ability=><option key={ability}>{ability}</option>)}</select></label><label>結構化場景<select value={lightningPreset} onChange={(event)=>setLightningPreset(event.target.value as typeof lightningPreset)}><option value="乾燥庭院">乾燥開闊庭院</option><option value="雨中木舍">雨中木造聚落</option><option value="潮濕金屬陣地">潮濕地面、金屬裝備與密集陣地</option><option value="石砌關門">石砌關門及近旁守者</option></select></label><p className="caption">旁人距離、遮蔽、金屬裝備、騎乘與構造資料由場景範本帶入；結果依施術意圖自動結算。此處不是自由文字觸發器。禁域與雷海會持續，直到明確解除。</p><label className="inline-check"><input type="checkbox" checked={suppressSecondary} onChange={(event)=>setSuppressSecondary(event.target.checked)} />明確控制並壓制次生環境影響（禁域／雷海不啟動持續雷場）</label><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Lightning',ability:lightningAbility as Extract<AbilityId,'軒轅天罰'|'地走雷'|'雷震'|'萬雷震軍'|'天雷禁域'|'天雷破城'|'軒轅天罰・雷海'>,targets:abilityTargets.length?abilityTargets:[abilityTarget],excluded:abilityExclude?[abilityExclude]:[],intensity:abilityIntensity,intent:harmIntent,scene:sampleLightningContext(lightningPreset,phase2?.scene.presentIds??[],abilityTargets,innate?.objects??[]),suppressSecondary})}>結算雷霆與環境後果</button>{(innate.lightningZones??[]).filter(zone=>zone.active).map(zone=><div className="item-row" key={zone.id}><span>{zone.ability}・{zone.location}・持續第 {zone.turnsApplied} 次結算</span><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'ReleaseLightningZone',zoneId:zone.id})}>明確解除雷域</button></div>)}</>}
-        {abilityMode==='萬疫敕令' && <><label>疾病內容<input value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} placeholder="指定要施疫或處理的疾病狀態" /></label><label>能力操作<select value={diseaseMode} onChange={(event)=>setDiseaseMode(event.target.value as typeof diseaseMode)}>{['施疫','壓制','治療','阻止惡化'].map(mode=><option key={mode}>{mode}</option>)}</select></label><button className="quiet" disabled={busy||!abilityText.trim()} onClick={()=>useInnate({type:'Disease',targets:abilityTargets.length?abilityTargets:[abilityTarget],excluded:abilityExclude?[abilityExclude]:[],disease:abilityText,intensity:abilityIntensity,mode:diseaseMode})}>結算萬疫敕令・{diseaseMode}</button></>}
-        {abilityMode==='五感盡失' && <><p className="caption">可對單人或目前勾選的多人封閉全部五感；目標排除獨立，效果會持續至各自明確解除。</p><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'SenseSeal',targetId:abilityTarget,targets:abilityTargets.length?abilityTargets:[abilityTarget],excluded:abilityExclude?[abilityExclude]:[]})}>使所選目標五感失去作用</button>{abilityTargets.filter(id=>innate.subjects[id]?.sensesLost).map(id=><button key={id} className="quiet" disabled={busy} onClick={()=>useInnate({type:'RestoreSenses',targetId:id})}>明確解除 {phase2.persons.find(person=>person.id===id)?.name} 的五感封鎖</button>)}</>}
-        {abilityMode==='封將' && <><p className="caption">小型情境效果：直接封鎖目標發力、握持、騎乘與戰鬥姿勢；不以意志或名將身分免疫，不造成必需外傷。效果持續至明確解除。</p><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'SealGeneral',targetId:abilityTarget})}>封鎖目標戰鬥生理功能</button>{innate.subjects[abilityTarget]?.functionalImpairments?.some(item=>item.startsWith('百脈封將'))&&<button className="quiet" disabled={busy} onClick={()=>useInnate({type:'ReleaseSeal',targetId:abilityTarget})}>明確解除封將</button>}</>}
-        {abilityMode==='霸力／人心能力' && <><label>具體能力<select value={forceAbility} onChange={(event)=>setForceAbility(event.target.value as AbilityId)}>{['霸者橫攔','霸者橫攔・摧關','霸者橫攔・撼陣','霸者橫攔・霸王擲','霸者橫攔・不動','霸骨天成','山河薪火','薪火不滅','群星入懷','萬民歸心','萬軍如臂'].map(ability=><option key={ability}>{ability}</option>)}</select></label>{['萬軍如臂','霸者橫攔・撼陣'].includes(forceAbility)?<><label>示例部隊<select id="unit-target">{(innate.scenarioUnits?.length?innate.scenarioUnits:[{id:'example-squad',name:'鄉亭護糧隊（示例）',members:40,location:phase2.scene.location,morale:50,cohesion:50,fatigue:0,order:'待命',orderDetail:'' as const}]).map(unit=><option key={unit.id} value={unit.id}>{unit.name}・{unit.members}人・{unit.location}・士氣 {unit.morale}・隊形 {unit.cohesion}・疲勞 {unit.fatigue}</option>)}</select></label>{forceAbility==='萬軍如臂'&&<><label>軍令<select value={unitCommand} onChange={event=>setUnitCommand(event.target.value as typeof unitCommand)}>{['前進','固守','撤退','護送'].map(order=><option key={order}>{order}</option>)}</select></label><label>目標位置／任務<input value={abilityText} onChange={event=>setAbilityText(event.target.value)} placeholder="例如：渡口東側" /></label></>}</>:<label>施力／作用目標<input value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} placeholder="例如：城門示例結構／主角身體強化" /></label>}<button className="quiet" disabled={busy} onClick={()=>{const unitId=['萬軍如臂','霸者橫攔・撼陣'].includes(forceAbility)?(document.getElementById('unit-target') as HTMLSelectElement).value:undefined;useInnate({type:'Force',ability:forceAbility as Extract<AbilityId,'霸者橫攔'|'霸者橫攔・摧關'|'霸者橫攔・撼陣'|'霸者橫攔・霸王擲'|'霸者橫攔・不動'|'霸骨天成'|'山河薪火'|'薪火不滅'|'群星入懷'|'萬民歸心'|'萬軍如臂'>,targets:abilityTargets.length?abilityTargets:[abilityTarget],excluded:abilityExclude?[abilityExclude]:[],objectId:unitId??abilityObject,instruction:abilityText||'依目標選擇作出明確能力干涉',intensity:abilityIntensity,...(forceAbility==='萬軍如臂'?{unitCommand}:{})});}}>執行所選能力案例</button>{forceAbility==='薪火不滅'&&(innate.loyaltyNetworks??[]).map(network=><div className="item-row" key={network.id}><span>忠誠網絡：{network.members.join('、')}・{network.active?'聯絡中':'受創中斷'}・重聚 {network.reconnections} 次</span>{network.active&&<button className="quiet" disabled={busy} onClick={()=>useInnate({type:'DisruptNetwork',networkId:network.id})}>小型案例：模擬組織受創</button>}</div>)}{innate.talentLeads?.map(lead=><p className="caption" key={lead.id}>人才線索（示例）：{lead.name}・{lead.craft}・{lead.location}・接觸意願 {lead.approachWillingness}・第 {lead.discoveredTurn} 回合發現</p>)}{innate.scenarioUnits?.map(unit=><p className="caption" key={unit.id}>{unit.name}：{unit.members}人・{unit.location}・士氣 {unit.morale}／隊形 {unit.cohesion}／疲勞 {unit.fatigue}・軍令 {unit.order}</p>)}<p className="caption">小型公共支持狀態：{innate.communitySupport??50}。人心效果不會改寫忠誠、人格或拒絕權。</p></>}
-        {abilityMode==='伏地詛咒' && <><label>詛咒類型<select value={curseAbility} onChange={(event)=>setCurseAbility(event.target.value as '妖術・伏地'|'萬軍伏地')}><option>妖術・伏地</option><option>萬軍伏地</option></select></label><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Curse',ability:curseAbility,targets:abilityTargets.length?abilityTargets:[abilityTarget],excluded:abilityExclude?[abilityExclude]:[],intensity:abilityIntensity,turn:state.turn})}>成立持續性詛咒</button>{innate.curses.filter((curse)=>curse.active).map((curse)=><button key={curse.id} className="quiet" disabled={busy} onClick={()=>useInnate({type:'ReleaseCurse',curseId:curse.id})}>解除 {phase2.persons.find(person=>person.id===curse.targetId)?.name} 的詛咒（已累傷保留）</button>)}</>}
-        {['藏界收納','藏界取出','藏界＋軒轅閃運送','萬解'].includes(abilityMode) && <><label>物品／生命對象<select multiple={abilityMode==='藏界收納'||abilityMode==='萬解'} value={abilityMode==='藏界收納'||abilityMode==='萬解'?abilityObjectTargets:abilityObject} onChange={(event)=>{const values=Array.from(event.target.selectedOptions,option=>option.value);setAbilityObject(values[0]??abilityObject);if(abilityMode==='藏界收納'||abilityMode==='萬解')setAbilityObjectTargets(values);}}>{innate.objects.map((object)=><option key={object.id} value={object.id}>{object.name} ×{object.quantity}・{object.kind}・{object.location}{!object.intact?'・已損壞':''}{object.disassembled?'・已分解':''}</option>)}</select></label>{abilityMode==='藏界收納'&&<><p className="caption">按 Ctrl／Command 可複選物資；所有對象先整批驗證，再一次收納，不設容量或負重上限。</p><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Store',objectId:abilityObjectTargets[0]??abilityObject,objectIds:abilityObjectTargets})}>收納所選物資</button></>}{abilityMode==='藏界取出'&&<><label>取出位置<input value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} placeholder="例如：軍營糧倉" /></label><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Retrieve',objectId:abilityObject,location:abilityText||'主角身旁'})}>取出指定物資</button></>}{abilityMode==='藏界＋軒轅閃運送'&&<><label>目的地<input value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} placeholder="例如：前線軍營" /></label><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Flash',location:abilityText||'前線軍營',bringIds:[abilityObject]})}>主角親自閃現運送</button></>}{abilityMode==='萬解'&&<><p className="caption">可多選明確器物；排除對象會保持完整，持有者不受萬解直接作用。</p><label>明確排除物品<select multiple value={disassemblyExcluded} onChange={event=>setDisassemblyExcluded(Array.from(event.target.selectedOptions,option=>option.value))}>{innate.objects.map(object=><option key={object.id} value={object.id}>{object.name}・{object.kind}</option>)}</select></label><label>次生後果（選填）<input value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} placeholder="例如：支撐梁失效，旁側牆面坍落" /></label><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Disassemble',objectIds:abilityObjectTargets.length?abilityObjectTargets:[abilityObject],excluded:disassemblyExcluded,secondary:abilityText||undefined})}>分解所選物品</button></>}</>}
-        {abilityMode==='軒轅閃移動'&&<><label>目的地<input value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} placeholder="輸入主角親自到達的位置" /></label><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Flash',location:abilityText||'前往指定地點',bringIds:[]})}>主角獨自閃現</button></>}
-        {abilityMode==='極限收斂' && <><label>允許一般接觸對象<select id="contact-select">{phase2.persons.map((person)=><option key={person.id} value={person.id}>{person.name}</option>)}</select></label><button className="quiet" disabled={busy} onClick={()=>{const allowed=(document.getElementById('contact-select') as HTMLSelectElement).value;useInnate({type:'SetConvergence',active:!innate.convergence.active,allowedContacts:[allowed]});}}>{innate.convergence.active?'關閉':'開啟'}個人防禦（無護盾值）</button><p>狀態：{innate.convergence.active?'開啟':'關閉'}・個人感應約 {innate.convergence.radiusMeters}m・允許接觸：{innate.convergence.allowedContacts.join('、')||'無'}</p><label>測試接觸類型<select value={contactHazard} onChange={event=>setContactHazard(event.target.value as typeof contactHazard)}>{['有害物質','有害能量','有害接觸','一般友善接觸'].map(type=><option key={type}>{type}</option>)}</select></label><label>接觸／攻擊距離（公尺）<input type="number" min="0" max="20" step="0.5" value={contactDistance} onChange={event=>setContactDistance(Number(event.target.value))} /></label><button className="quiet" disabled={busy||!innate.convergence.active} onClick={()=>useInnate({type:'Contact',source:abilityTarget,target:'protagonist',harmful:contactHazard!=='一般友善接觸',hazardType:contactHazard,distanceMeters:contactDistance})}>測試所選接觸</button></>}
-        {abilityMode==='診斷'&&<button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Diagnose',targetId:abilityTarget})}>診斷人物當前狀態</button>}
-        {abilityMode==='治療'&&<><p className="caption">天醫敕生直接修復已建模傷病，不消耗一般醫療物資、沒有額外冷卻或次數。若孫堅已進入死亡節點窗口，主角需親臨同一地點並成功治癒危重傷勢；真正死亡後不可用此能力復活。</p><button className="quiet" disabled={busy||(abilityTarget==='sun-jian'?!phase4?.historicalPersons.find(p=>p.id==='sun-jian')?.alive:!innate.subjects[abilityTarget]?.alive)} onClick={()=>useInnate({type:'Heal',targetId:abilityTarget})}>天醫敕生：治療一項現存傷勢／疾病</button></>}
-        {abilityMode==='回春'&&<><label>生理回春年數<input type="number" min="1" max="80" value={Number(abilityText)||5} onChange={(event)=>setAbilityText(event.target.value)} /></label>{abilityTarget!=='protagonist'&&<label className="inline-check"><input type="checkbox" checked={rejuvenationConsent} onChange={(event)=>setRejuvenationConsent(event.target.checked)} />受術者已明確同意回春（示例操作）</label>}<button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Rejuvenate',targetId:abilityTarget,years:Number(abilityText)||5,consent:abilityTarget==='protagonist'||rejuvenationConsent})}>施展歲月回春</button></>}
-        {abilityMode==='百脈改善'&&<><label>改善項目<select value={bodySystem} onChange={(event)=>setBodySystem(event.target.value as typeof bodySystem)}>{['神經','肌力','肌腱關節','循環','心肺','疼痛','感官','平衡','反射','動作協調','疲勞處理','恢復'].map(system=><option key={system}>{system}</option>)}</select></label><label>改善幅度<input type="number" min="1" max="25" value={bodyImprovement} onChange={(event)=>setBodyImprovement(Number(event.target.value))} /></label><label>敘事備註<input value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} placeholder="例如：改善長途行走耐力" /></label><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'Improve',targetId:abilityTarget,system:bodySystem,amount:bodyImprovement,change:abilityText||`${bodySystem}狀態改善`})}>改善受術者能力</button></>}
-        {abilityMode==='單向傳音'&&<><label>傳音內容<textarea value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} /></label><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'SendThought',recipientId:abilityTarget,text:abilityText})}>傳送單向訊息</button></>}
-        {abilityMode==='天下共視'&&<button className="quiet" disabled={busy} onClick={()=>useInnate({type:'ShareVision',targetIds:[abilityTarget]})}>分享當前實際場景</button>}
-        {abilityMode==='萬象推演'&&<><label>推演問題<input value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} /></label><p className="caption">使用帳目、關係、部隊與傷勢的已知結構化狀態列條件分支；不預知人物選擇或未知政局。</p><button className="quiet" disabled={busy||!abilityText.trim()} onClick={()=>{const assets=Object.entries(phase2.assetBalances).flatMap(([asset,accounts])=>Object.entries(accounts).map(([account,balance])=>{const last=phase2.assetLedger.filter(entry=>entry.asset===asset&&(entry.from===account||entry.to===account)).at(-1);return {name:`${asset}/${account}`,balance,lastDelta:last?(last.to===account?last.amount:-last.amount):0};}));useInnate({type:'Predict',question:abilityText,evidence:'',structuredEvidence:{assets,relationships:phase2.relationships.map(relation=>({personId:relation.personId,trust:relation.trust,loyalty:relation.loyalty,fear:relation.fear,grievances:relation.grievances.length})),units:(innate.scenarioUnits??[]).map(unit=>({name:unit.name,location:unit.location,order:unit.order,morale:unit.morale,cohesion:unit.cohesion,fatigue:unit.fatigue})),injuries:phase2.injuries.map(injury=>({label:injury.label,elapsedTurns:injury.elapsedTurns,active:injury.active}))}});}}>推演已知多領域狀態並標示不確定</button></>}
-        {abilityMode==='其他正式能力'&&<><label>正式能力<select value={otherAbility} onChange={(event)=>setOtherAbility(event.target.value as AbilityId)}>{OFFICIAL_ABILITIES.map((ability)=><option key={ability} value={ability}>{ability} — {ability==='軒轅之命'?'開局被動已掛載':DEDICATED_ABILITY_OPERATIONS.has(ability)?'有專屬案例（請選對應操作）':['照膽','軒轅萬語'].includes(ability)?'可由本欄操作':'尚未實作'}</option>)}</select></label>{otherAbility==='軒轅萬語'&&<><label>聽／說／讀／寫<select value={languageMode} onChange={event=>setLanguageMode(event.target.value as typeof languageMode)}>{['聽','說','讀','寫'].map(mode=><option key={mode}>{mode}</option>)}</select></label><label>小型示例詞庫<select value={languageName} onChange={event=>setLanguageName(event.target.value)}><option value={EXAMPLE_LANGUAGE.name}>{EXAMPLE_LANGUAGE.name}</option></select></label><p className="caption">聽／讀範例：na＝糧食、sala＝水、mira＝平安。說／寫請輸入上述中文詞義；未收錄詞句會明確拒絕，不假稱翻譯成功。</p></>}<label>{otherAbility==='軒轅萬語'?'語句內容':'操作備註'}<textarea value={abilityText} onChange={(event)=>setAbilityText(event.target.value)} /></label><button className="quiet" disabled={busy} onClick={()=>useInnate({type:'UsePower',ability:otherAbility,targetIds:[abilityTarget],excluded:abilityExclude?[abilityExclude]:[],intensity:abilityIntensity,instruction:abilityText,languageMode:otherAbility==='軒轅萬語'?languageMode:undefined,language:otherAbility==='軒轅萬語'?languageName:undefined})}>嘗試操作（未支援者會拒絕結算）</button></>}
-        {abilityMode==='能力組合式'&&<><label>原文組合<select value={combination} onChange={(event)=>setCombination(event.target.value as AbilityCombinationId)}>{['壓陣止戰','破城而不屠城','天下公開示威','名將級身體重塑','回春','跨天下親自處理突發事件','行走的無限軍需庫'].map(item=><option key={item}>{item}</option>)}</select></label><p className="caption">組合會按順序呼叫底層能力 resolver；任一步驟缺目標、受術者同意或現有傷病時整份事件拒絕，不假稱成功。軍政規模仍是小型情境。</p>{['破城而不屠城','名將級身體重塑','回春'].includes(combination)&&<label>物件／受術者<input value={abilityObject} onChange={event=>setAbilityObject(event.target.value)} /></label>}<button className="quiet" disabled={busy} onClick={submitCombination}>依原文組合實際執行</button></>}
-        <p>主角所在位置：{innate.subjects.protagonist.location}・場景：{phase2.scene.location}</p>
-        <details><summary>物件位置、數量、所有權與保管</summary>{innate.objects.map(object=><p key={object.id}>{object.name} ×{object.quantity}・{object.location}・所有人 {object.ownerId}・保管人 {object.custodianId}{object.disassembled?'・已分解':''}{!object.intact?'・已損壞':''}</p>)}</details>
-        {innate.consequences.slice(-5).reverse().map((entry)=><article className="effect-card" key={entry.id}><b>第 {entry.turn} 回合・{entry.ability}：{entry.title}</b>{entry.direct.map((text,index)=><p key={index}>直接：{text}</p>)}{entry.secondary.map((text,index)=><p key={index}>次生：{text}</p>)}</article>)}
-        {innate.languageActs?.slice(-4).reverse().map((act,index)=><p className="caption" key={`${act.turn}-${index}`}>第 {act.turn} 回合・軒轅萬語／{act.mode}・{act.language}・「{act.text}」→「{act.renderedText}」</p>)}
-        {Object.values(innate.subjects).map((person)=>{const roster=phase2.persons.find(entry=>entry.id===person.id);if(!roster&&person.id!=='example-horse')return null;const relation=phase2.relationships.find(entry=>entry.personId===person.id);return <p className="caption" key={person.id}>{roster?.name??'家中馬匹（其他生命示例）'}・實歲 {roster?state.world.year-roster.birthYear:'示例'}／生理年齡 {person.physiologicalAge}・生理系統 {Object.entries(person.bodySystems??{}).map(([system,value])=>`${system} ${value}`).join('、')||'未建模'}・恐懼 {person.fear}・創傷 {person.trauma.map((label,index)=>`${label}${person.traumaCourse?.[index]?`（程度 ${person.traumaCourse[index].severity}、已經過 ${person.traumaCourse[index].elapsedDays} 日）`:''}`).join('、')||'無'}・幻術感官 {person.sensoryEffects?.map(effect=>`${effect.distribution}「${effect.content}」影響${effect.channels.join('、')}至第 ${effect.expiresTurn} 回合`).join('；')||'無'}・傷勢 {person.injuries.join('、')||'無'}・疾病 {person.diseaseCourse?.map(course=>`${course.name}（強度 ${course.intensity}、未控制 ${course.elapsedDays}日${course.controlled?'、已控制':''}）`).join('、')||person.disease.join('、')||'無'}・五感 {person.sensesLost?'失去作用':'正常'}・生理／戰鬥限制 {person.functionalImpairments?.join('、')||'無'}・累積損害 {person.accumulatedHarm??0}{person.lifeThreatened?'・有死亡風險':''}・短暫效應 {person.temporaryEffects?.map(effect=>effect.label).join('、')||'無'}{relation?`・忠誠 ${relation.loyalty}`:''}</p>;})}
-      </details></article>}
-      {phase2 && <>
-        {activePanel==='人物'&&<>
-        <article className="panel folds phase-panel"><details><summary>家庭圖譜與玩家命名</summary><p className="caption">血親、收養與婚姻分開建邊；死亡人物留在圖譜，但不再列為在場人物。</p><ul className="family-list">{phase2.persons.map((person) => <li key={person.id} className={!person.alive ? 'deceased' : ''}><span><b>{person.name}</b><small>{kinshipTerm(phase2, person.id)}・生年 {person.birthYear}{person.alive ? `・${person.office}` : `・已故 ${person.deathYear} 年`}</small></span>{person.id !== 'protagonist' && person.alive && <button className="quiet tiny" onClick={() => { if (window.confirm(`記錄「${person.name}」於西元 ${w.year} 年逝世？人物與親屬紀錄會保留。`)) phaseAction({ type:'MarkDeath', personId:person.id, deathYear:w.year }); }}>記錄逝世</button>}</li>)}</ul>
-          <label>連結對象<select value={familyAnchor} onChange={(event) => setFamilyAnchor(event.target.value)}>{phase2.persons.map((person) => <option key={person.id} value={person.id}>{person.name}（{person.alive ? '在世' : '已故'}）</option>)}</select></label>
-          <div className="button-row"><button className="quiet" onClick={() => requestName('血親子女')}>玩家為孩子命名</button><button className="quiet" onClick={() => requestName('收養子女')}>收養並命名</button><button className="quiet" onClick={() => requestName('婚姻')}>建立婚姻</button><button className="quiet" onClick={() => requestName('血親手足')}>新增血親手足</button><button className="quiet" onClick={() => requestName('血親父母')}>新增血親長輩</button></div>
-        </details></article>
-        <article className="panel folds phase-panel"><details><summary>五維、潛力與普通技能</summary><p>潛力傾向：{Object.entries(phase2.potential).map(([key, value]) => `${key} ${value}`).join('・')}</p>{phase2.stats ? <><p>一般五維：{Object.entries(phase2.stats).map(([key, value]) => `${key} ${value}`).join('・')}</p>{STAT_NAMES.map((stat) => <button className="quiet tiny" key={stat} disabled={busy || phase2.stats![stat] >= 100} onClick={() => phaseAction({ type:'TrainStat', stat, turn:state.turn })}>訓練{stat} +1</button>)}</> : <><p className="caption">主角目前 {phase2.age} 歲；童年只記錄潛力與訓練經驗，不生成成熟五維。年滿 15 歲後才可選擇原型成年評估。</p>{phase2.age >= 15 && <button className="quiet" disabled={busy} onClick={() => phaseAction({ type:'InitializeAdultStats' })}>確認成年五維示例評估</button>}</>}
-          <p>普通核心技能 {phase2.coreSkills.length}／5</p><ul>{phase2.coreSkills.map((skill) => <li key={skill.id}>{skill.name}・{skill.rank}・實務記錄 {skill.practice}</li>)}</ul><label>練習／增列普通核心技能<input value={skillDraft} onChange={(event) => setSkillDraft(event.target.value)} maxLength={24} placeholder="例如：讀書、農政、騎術" /></label><button className="quiet" disabled={busy || !skillDraft.trim() || phase2.coreSkills.length >= 5 && !phase2.coreSkills.some((skill) => skill.name === skillDraft.trim())} onClick={() => { const skill = skillDraft.trim(); phaseAction({ type:'PracticeSkill', skillId:`skill-${skill}`, name:skill, turn:state.turn }); }}>記錄一次練習</button><p className="caption">普通技能上限五項；天生技獨立列管。清冊中已支援案例可在天生技操作台使用。{phase2.innateAbilities.length ? `已記錄天生技 ${phase2.innateAbilities.length} 項，不占普通技能名額。` : ''}</p><details><summary>成長紀錄・{phase2.practiceLog.length} 項</summary>{phase2.practiceLog.slice(-12).map((entry, index) => <p key={index}>第 {entry.turn} 回合・{entry.focus}：{entry.note}</p>)}</details>{phase2.overrideRecords.map((record) => <p className="caption" key={record}>{record}</p>)}</details></article>
-        <article className="panel folds phase-panel"><details><summary>信任、忠誠、恐懼與恩怨</summary>{phase2.relationships.length > 0 ? <><label>人物<select value={selectedRelation?.personId ?? ''} onChange={(event) => setRelationTarget(event.target.value)}>{phase2.relationships.map((relation) => <option key={relation.personId} value={relation.personId}>{phase2.persons.find((person) => person.id === relation.personId)?.name}</option>)}</select></label>{selectedRelation && <><p>信任 {selectedRelation.trust}・忠誠 {selectedRelation.loyalty}・恐懼 {selectedRelation.fear}</p><div className="button-row"><button className="quiet tiny" onClick={() => phaseAction({ type:'AdjustRelation', personId:selectedRelation.personId, axis:'trust', delta:3, reason:'共同生活與守信', turn:state.turn })}>建立信任 +3</button><button className="quiet tiny" onClick={() => phaseAction({ type:'AdjustRelation', personId:selectedRelation.personId, axis:'loyalty', delta:3, reason:'履約與共同利益', turn:state.turn })}>履約忠誠 +3</button><button className="quiet tiny" onClick={() => phaseAction({ type:'AdjustRelation', personId:selectedRelation.personId, axis:'fear', delta:3, reason:'示例威嚇反應', turn:state.turn })}>威嚇恐懼 +3</button><button className="quiet tiny" onClick={() => { const text=window.prompt('記錄具體恩怨：'); if (text?.trim()) phaseAction({ type:'RecordGrievance', personId:selectedRelation.personId, text, turn:state.turn }); }}>記錄恩怨</button></div><p className="caption">四者分開保存；恐懼變化不會改寫忠誠。恩怨：{selectedRelation.grievances.map((item) => item.text).join('、') || '尚無'}</p></>}</> : <p>尚無可記錄關係的人物。</p>}</details></article>
-        </>}
-        {activePanel==='家產'&&<>
-        <article className="panel folds phase-panel"><details><summary>多資產帳簿與物品保管</summary><div className="asset-grid">{Object.entries(phase2.assetBalances).map(([asset, balances]) => <p key={asset}><b>{asset}</b>：{Object.entries(balances).map(([account, amount]) => `${account} ${amount}`).join('・')}</p>)}</div><label>資產<select value={assetName} onChange={(event) => setAssetName(event.target.value as AssetName)}>{(['錢','糧','貨物','馬匹','書籍'] as AssetName[]).map((asset) => <option key={asset}>{asset}</option>)}</select></label><div className="form-grid"><label>來源<select value={assetFrom} onChange={(event) => setAssetFrom(event.target.value as AccountName|'market')}>{(['private','family','public','military','sovereign','market'] as const).map((account) => <option key={account}>{account}</option>)}</select></label><label>去向<select value={assetTo} onChange={(event) => setAssetTo(event.target.value as AccountName|'market')}>{(['private','family','public','military','sovereign','market'] as const).map((account) => <option key={account}>{account}</option>)}</select></label></div><div className="form-grid"><label>數量<input type="number" min="1" step="1" value={assetAmount} onChange={(event) => setAssetAmount(Number(event.target.value))} /></label><label>事由<input value={assetMemo} onChange={(event) => setAssetMemo(event.target.value)} /></label></div><button className="quiet" disabled={busy} onClick={() => phaseAction({ type:'TransferAsset', asset:assetName, amount:assetAmount, from:assetFrom, to:assetTo, memo:assetMemo, turn:state.turn, id:commandId() })}>登錄收支</button><button className="quiet" disabled={busy} onClick={() => phaseAction({ type:'RecalculateMoneyAccounts' })}>依可靠流水重算錢帳</button><div className="ledger">{phase2.assetLedger.slice(-10).map((entry) => <div key={entry.id}><span>第 {entry.turn} 回合・{entry.memo}</span><span>{entry.from} → {entry.to}・{entry.asset} {entry.amount}</span></div>)}</div><h4>物品所有權／保管</h4>{phase2.items.map((item) => <div className="item-row" key={item.id}><span>{item.item} ×{item.quantity}<small>所有人：{phase2.persons.find((person) => person.id === item.ownerId)?.name ?? item.ownerId}；保管人：{phase2.persons.find((person) => person.id === item.custodianId)?.name ?? item.custodianId}；位置：{item.locationId}</small></span><button className="quiet tiny" onClick={() => phaseAction({ type:'ChangeCustody', itemId:item.id, custodianId:'protagonist', locationId:'主角隨身' })}>交主角保管</button></div>)}</details></article>
-        </>}
-        {activePanel==='人物'&&<>
-        <article className="panel folds phase-panel"><details><summary>通訊與消息抵達</summary>{selectedContact && <><label>收件人<select value={selectedContact.id} onChange={(event) => setMessageTarget(event.target.value)}>{livingContacts.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}</select></label><label>訊息<textarea value={messageText} onChange={(event) => setMessageText(event.target.value)} rows={2} /></label><div className="button-row"><button className="quiet" disabled={busy} onClick={() => phaseAction({ type:'SendMessage', id:commandId(), recipientId:selectedContact.id, channel:'軒轅傳音示例', text:messageText, turn:state.turn })}>傳送單向即時訊息</button><button className="quiet" disabled={busy} onClick={() => phaseAction({ type:'SendMessage', id:commandId(), recipientId:selectedContact.id, channel:'書信', text:messageText, turn:state.turn })}>寄信（兩回合路程）</button></div></>}{phase2.messages.slice(-8).map((message) => <p key={message.id}>{phase2.persons.find((person) => person.id === message.recipientId)?.name}・{message.channel}：第 {message.sentTurn} 回合送出，第 {message.arrivalTurn} 回合{message.arrived ? '已抵達' : '尚在途中'}。{message.text}</p>)}<p className="caption">傳音操作以指定收件者的單向語意案例呈現；完整收件者世界資料與 AI 回應尚未建成。</p></details></article>
-        <article className="panel folds phase-panel"><details><summary>持續傷勢與目擊資訊</summary><label>記錄一項示例傷勢<input value={injuryDraft} onChange={(event) => setInjuryDraft(event.target.value)} /></label><div className="button-row"><button className="quiet" onClick={() => phaseAction({ type:'AddInjury', injury:{ id:commandId(), label:injuryDraft.trim() || '示例傷勢', severity:'輕', startedTurn:state.turn, elapsedTurns:0, active:true } })}>記錄持續傷勢</button>{selectedContact && <button className="quiet" onClick={() => phaseAction({ type:'RecordObservation', observation:{ id:commandId(), witnessId:selectedContact.id, turn:state.turn, observation:'目擊一件物品短暫消失後回到主角身旁。', known:['親眼所見物品消失並出現'], unknown:['能力名稱','容量','全部限制'] } })}>記錄目擊一次異象</button>}</div>{phase2.injuries.map((injury) => <div className="item-row" key={injury.id}><span>{injury.label}・{injury.severity}傷・持續 {injury.elapsedTurns} 回合・{injury.active ? '仍在恢復' : '已處置'}</span>{injury.active && <button className="quiet tiny" onClick={() => phaseAction({ type:'TreatInjury', injuryId:injury.id })}>記錄處置完成</button>}</div>)}{phase2.observations.map((observation) => <p key={observation.id}>{phase2.persons.find((person) => person.id === observation.witnessId)?.name}於第 {observation.turn} 回合所知：{observation.known.join('；')}。未知：{observation.unknown.join('、')}。</p>)}<p className="caption">傷勢每回合累積時間，只有明確記錄處置後才結束。目擊者只知道當次觀察，不獲得能力名稱、容量或後台限制。</p></details></article>
-        </>}
-      </>}
-      {activePanel==='記事'&&<>
-      {state.summaries.length > 0 && <article className="panel summary"><div className="section-kicker">五／十／十五／二十回合摘要</div>{state.summaries.map((summary) => <details key={summary.turn}><summary>第 {summary.turn} 回合・{summary.kind}</summary><p>{summary.text}</p></details>)}</article>}
-      <article className="panel folds"><details><summary>開發模式：事件、種子與來源</summary><p>目前：{state.status === 'playing' ? '進行中' : '已完成'}・第 {state.turn} 回合</p><p>世界線：{w.worldlineId}・種子 {w.seed}・revision {state.revision}</p><p>日期：西元 {w.year} 年 {w.month} 月／{era(w.year)}</p><p>自動後台檢查：人事 {state.backend.personnelChecks}・人才 {state.backend.talentChecks}・歷史 {state.backend.historyChecks}・天下 {state.backend.trendChecks}</p><p>來源摘要：規則 {SOURCE_HASHES.rules.slice(0,12)}…・天生技 {SOURCE_HASHES.skills.slice(0,12)}…</p><p>待決決策不會由「繼續」批准；本原型尚無待決決策流程。</p><p>RNG 抽樣序列由種子及回合決定，可經事件重播。</p></details>
-        <details><summary>收合帳簿・多帳戶</summary><p>私帳 {state.accounts.private}・家帳 {state.accounts.family}・公帑 {state.accounts.public}・軍府 {state.accounts.military}・主君 {state.accounts.sovereign}</p><div className="ledger">{state.ledger.map((entry) => <div key={entry.id}><span>第 {entry.turn} 回合・{entry.memo}</span><span>{entry.from} → {entry.to}・{entry.asset} {entry.amount}</span></div>)}</div><p className="caption">物資代管保留 ownerId，保管人與位置另記；不代表第一階段已實作完整天生技效果。</p></details>
-      </article>
-      <article className="panel folds"><details><summary>收合自動後台示例</summary><p>人事：{state.backend.personnel.at(-1)}</p><p>待接觸人才：{state.backend.talents.at(-1) ?? '本回合無新示例候選'}</p><p>四個引擎每回合都執行檢查；示例名單不代表完整歷史資料。</p></details></article>
-      {(state.actionNotes?.length??0)>0&&<article className="panel folds"><details><summary>已保存的補充說明</summary>{state.actionNotes!.map((note)=><p key={note.revision}>第 {note.turn} 回合備註：{note.text}</p>)}</details></article>}
-      <p className="caption side-caption">四引擎與天生技提供可操作的小型情境；自由文字解讀、完整歷史節點及軍政世界資料仍待後續階段。</p>
-      </>}
-    {activePanel==='軍政'&&phase4 && phase2 && <article className="panel folds phase-panel phase4-panel"><details><summary>歷史、軍政與重大決策</summary>
-      <p><b>世界日期：</b>西元 {phase4.year} 年 {phase4.month} 月 {phase4.dayOfMonth} 日・經歷 {phase4.day} 日。玩家位置：{phase4.playerLocation}；前線救治物資：{phase4.medicalSupplies} 份。</p>
-      <p className="caption">小型內容包 {phase4.contentVersion}。歷史資料註明來源與日期精度；郡縣、候選人才、路線與戰役單位皆為示例，不代表完整三國資料庫。工程參數見覆蓋規格。</p>
-      <section className="phase4-subsection"><h3>歷史節點・跨年自動處理</h3>{phase4.nodes.map((node)=>{const content=HISTORY_CONTENT.find(item=>item.id===node.contentId),subject=content?.historicalPersonId&&phase4.historicalPersons.find(person=>person.id===content.historicalPersonId),windowDays=ENGINEERING.deathInterventionWindowDaysByEvent[node.contentId]??0;return <div className="item-row" key={node.contentId}><span><b>{content?.title}</b><small>{content?.precision}級日期・{node.status}・{node.carrier}</small><small>{content?.source}</small></span>{node.status==='triggered'&&content?.kind==='death'&&subject&&windowDays>0&&<button className="quiet" disabled={busy||phase4.playerLocation!==subject.location||phase4.medicalSupplies<1} onClick={()=>{if(window.confirm(`確認主角本人已在${subject.name}所在前線，使用一份一般醫療物資直接救治？此事件介入窗為 ${windowDays} 個模型日；天生技治療另行操作，不消耗此物資。`))phase4Action({type:'InterveneDeath',nodeId:node.contentId,personId:subject.id,method:'一般醫療',location:phase4.playerLocation});}}>一般醫療救援（耗一份物資）</button>}</div>;})}
-      {phase4.nodes.filter(node=>node.status==='triggered'&&HISTORY_CONTENT.find(content=>content.id===node.contentId)?.kind==='death').map(node=>{const content=HISTORY_CONTENT.find(item=>item.id===node.contentId),windowDays=ENGINEERING.deathInterventionWindowDaysByEvent[node.contentId]??0;return windowDays>0&&<p className="caption" role="status" key={`death-window-${node.contentId}`}>{content?.title}已進入此事件設定的 {windowDays} 個模型日介入窗口；須由主角在目標所在地直接成功救治。一般醫療耗一份物資；已具救治能力的天生技不耗一般物資。窗口關閉且死亡落實後，普通治療與無復活效果的天生技均不能救回。</p>;})}
-      <p className="caption">可直接處理一般事件的核心原因；每項處理會留下因果紀錄。死亡硬節點不出現在此列表，不能靠移除一般原因取消。</p>{phase4.causes.filter(c=>['dong-zhuo-central-control','regional-arms-resistance'].includes(c)).map(c=><div className="item-row" key={c}><span>{c==='dong-zhuo-central-control'?'董卓控制中央（事件因果）':'州郡武裝對立（事件因果）'}</span><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'ResolveCause',causeId:c,reason:c==='dong-zhuo-central-control'?'本世界線已完成中央權力交接（示例政治行動）':'玩家勢力以具體協議化解州郡武裝對立（示例政治行動）'})}>記錄已完成的因果處理</button></div>)}</section>
-      <div className="phase4-subsection"><h3>官職、人材與勢力競爭</h3><label>示例職缺<select value={p4Office} onChange={e=>setP4Office(e.target.value)}>{phase4.offices.map(o=><option key={o.id} value={o.id}>{o.title}・{o.holderId?'已任':'空缺'}{o.appointment?'・交接中':''}</option>)}</select></label><label>任命人選<select value={p4Person} onChange={e=>setP4Person(e.target.value)}>{phase2.persons.filter(p=>p.alive).map(p=><option key={p.id} value={p.id}>{p.name}・{p.office}</option>)}{phase4.candidates.filter(c=>c.status==='recruited').map(c=><option key={c.id} value={c.id}>{c.name}・已登用人才（示例）</option>)}</select></label><button className="quiet" disabled={busy||!!phase4.offices.find(o=>o.id===p4Office)?.holderId||!!phase4.offices.find(o=>o.id===p4Office)?.appointment} onClick={()=>phase4Action({type:'Appoint',officeId:p4Office,personId:p4Person})}>任命並按路程等待到任</button>
-      <label>人才線索<select value={p4Candidate} onChange={e=>setP4Candidate(e.target.value)}>{phase4.candidates.map(c=><option key={c.id} value={c.id}>{c.name}・{c.specialty}・{c.status}・意願 {c.willingness}</option>)}</select></label><button className="quiet" disabled={busy||['recruited','refused','approached'].includes(phase4.candidates.find(c=>c.id===p4Candidate)?.status??'')} onClick={()=>phase4Action({type:'Recruit',candidateId:p4Candidate})}>提出招攬（等待本人回應）</button>{phase4.candidates.map(c=><p className="caption" key={c.id}>{c.name}・{c.status}・目前勢力：{c.faction}・{c.example?'示例人物':''}</p>)}
-      </div>
-      <div className="phase4-subsection"><h3>政策、五層控制與普通運輸</h3><label>地區<select id="p4-territory"><option value="sample-county">潁川東部路線・郡縣示例</option><option value="sample-market">許縣至潁川驛路（示例）</option></select></label><label>政策<select value={p4Policy} onChange={e=>setP4Policy(e.target.value as PolicyId)}>{['屯田與水利','減徵與賑濟','互市與道路','軍糧徵調'].map(x=><option key={x}>{x}</option>)}</select></label><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'SetPolicy',territoryId:(document.getElementById('p4-territory') as HTMLSelectElement).value,policy:p4Policy})}>施行政策（按月結算）</button><label>下一層控制<select value={p4Control} onChange={e=>setP4Control(e.target.value as ControlLevel)}>{['名義影響','軍事進入','初步接收','穩定治理','完全實控'].map(x=><option key={x}>{x}</option>)}</select></label><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'SetControl',territoryId:(document.getElementById('p4-territory') as HTMLSelectElement).value,control:p4Control})}>逐級建立控制狀態</button>
-      <p>{phase4.territories.map(t=><span key={t.id} className="p4-chip">{t.name}・{t.control}・糧 {t.grain}・人口 {t.population}・支持 {t.support}</span>)}</p><label>普通糧運量<input id="p4-quantity" type="number" min="1" max="100" defaultValue="20" /></label><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'SendConvoy',routeId:'route-county-market',owner:'家族帳・示例',item:'糧',quantity:Number((document.getElementById('p4-quantity') as HTMLInputElement).value),from:phase4.routes[0].from,to:phase4.routes[0].to})}>沿驛路運糧（按日抵達）</button>{phase4.convoys.map(c=><p className="caption" key={c.id}>{c.quantity} {c.item}・{c.from} → {c.to}・{c.status}・尚需 {c.daysRemaining} 日・所有者 {c.owner}</p>)}
-      </div>
-      <div className="phase4-subsection"><h3>雙線調度示例</h3>{!phase4.campaign&&<button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'StartMultiFrontExample'})}>建立兩線編制與獨立指揮</button>}{phase4.campaign&&<><p className="caption">總帥只負戰區決策，不另加兵力；各部有唯一位置。調動先從原線除名，抵達前標為行軍中，兵力不重複計入。</p>{phase4.campaign.fronts.map(front=><section className="front-row" key={front.id}><h4>{front.name}</h4><p>戰區總指揮：{front.overallCommanderName}；地點：{front.location}</p>{front.unitIds.map(id=>{const unit=phase4.campaign!.units.find(entry=>entry.id===id)!;const target=phase4.campaign!.fronts.find(entry=>entry.id!==front.id)!;return <div className="item-row" key={id}><span>{unit.commanderName}・現役 {unit.strength}／預備 {unit.reserve}・位置 {unit.location}</span><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'TransferBetweenFronts',unitId:id,toFrontId:target.id})}>調往{target.name}（依路程到達）</button></div>;})}</section>)}{phase4.campaign.transfers.map(transfer=><p className="caption" key={transfer.id}>{transfer.unitId}調動中・尚需 {Math.max(0,transfer.arrivalDay-phase4.day)} 日；離開原線後不計入其他戰線。</p>)}</>}</div>
-      <div className="phase4-subsection"><h3>戰役示例・單一部隊清冊</h3>{!phase4.battle&&<button className="quiet" disabled={busy} onClick={()=>{const units:WarUnit[]=[{id:'blue-vanguard',faction:'郡縣守備（示例）',commanderId:'captain-blue',commanderName:'守備校尉・示例',location:'汝南渡口（示例）',strength:4000,reserve:1000,supply:5,morale:70,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命'},{id:'red-vanguard',faction:'來犯部隊（示例）',commanderId:'captain-red',commanderName:'前軍校尉・示例',location:'汝南渡口（示例）',strength:5000,reserve:0,supply:4,morale:65,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命'}];phase4Action({type:'StartBattle',id:commandId(),location:'汝南渡口・前線（示例）',units,protagonistPresent:true});}}>進入萬人級戰役示例（主角親臨）</button>}
-      {phase4.battle&&<><p>{phase4.battle.location}・第 {phase4.battle.rounds} 輪・{phase4.battle.status}・主角{phase4.battle.protagonistPresent?'親臨':'未親臨'}。總指揮：{phase4.battle.overallCommander.name}（不直接領一軍）</p><ul>{phase4.battle.units.map(u=><li key={u.id}>{u.commanderName}・{u.faction}・位置 {u.location}・地形 {u.terrain}・現役 {u.strength}・預備 {u.reserve}・糧 {u.supply}・士氣 {u.morale}・疲勞 {u.fatigue}・傷亡 死 {u.killed}／傷 {u.wounded}／潰 {u.routed}・{u.order}<button className="quiet tiny" disabled={busy||phase4.battle!.status!=='active'} onClick={()=>phase4Action({type:'Retreat',unitId:u.id})}>本部撤退</button></li>)}</ul><button className="quiet" disabled={busy||phase4.battle.status!=='active'} onClick={()=>phase4Action({type:'BattleRound',orders:Object.fromEntries(phase4.battle!.units.map((u,i)=>[u.id,i===0?'防守':'進攻']))})}>結算一輪：守軍防守、來犯部隊進攻</button>{phase4.battle.logs.map((log,i)=><p className="p4-log" key={i}>{log}</p>)}</>}</div>
-      <div className="phase4-subsection"><h3>主權草案與結局</h3><label>談判提出的具體條款<textarea value={p4Treaty} onChange={e=>setP4Treaty(e.target.value)} /></label><label>涉及領地<select value={p4TreatyTerritory} onChange={e=>setP4TreatyTerritory(e.target.value)}>{phase4.territories.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></label><label>條款生效後的控制者<input value={p4TreatySuccessor} onChange={e=>setP4TreatySuccessor(e.target.value)} /></label><button className="quiet" disabled={busy||!p4Treaty.trim()||!p4TreatySuccessor.trim()} onClick={()=>phase4Action({type:'DraftTreaty',id:commandId(),proposer:'鄰近勢力使節（示例）',clauses:[{id:'land-clause',text:p4Treaty.trim(),sovereign:true,territoryId:p4TreatyTerritory,successorOwner:p4TreatySuccessor.trim()}]})}>保存草案（不改主權）</button>{phase4.treaties.filter(t=>['draft','pending-player'].includes(t.status)).map(t=><div className="p4-decision" key={t.id}><p><b>待決條款：</b>{t.clauses.map(c=>{const territory=phase4.territories.find(x=>x.id===c.territoryId);return `${c.text}${c.sovereign?`（${territory?.name??'領地未明'} → ${c.successorOwner??'承接者未明'}）`:''}`;}).join('；')}・狀態 {t.status}</p>{t.clauses.some(c=>c.sovereign)&&<p className="caption">永久主權條款；「談判」「繼續」與送出行動均不批准。批准按鈕會再次要求確認。</p>}<button className="primary" disabled={busy} onClick={()=>{if(window.confirm(`你要明確批准以下條款嗎？\n${t.clauses.map(c=>c.text).join('；')}\n批准後會變更所列領地控制者。`))phase4Action({type:'DecideTreaty',treatyId:t.id,decision:'approve'});}}>明確批准條款</button><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'DecideTreaty',treatyId:t.id,decision:'reject'})}>拒絕條款</button></div>)}
-      <button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'SetUnified',unified:true})}>記錄完成統一（開啟善後，不自動結局）</button>{phase4.ending==='pending'&&<><p>天下已統一，善後與人生仍繼續。</p><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'ContinueAfterUnification'})}>選擇繼續人生</button><button className="primary" disabled={busy} onClick={()=>{const ending=window.prompt('請輸入你選擇的結局方向：');if(ending?.trim())phase4Action({type:'ChooseEnding',ending});}}>玩家選擇結局…</button></>}{phase4.chosenEnding&&<p>玩家選擇結局：{phase4.chosenEnding}</p>}</div>
-      <div className="phase4-subsection"><h3>事件與來源</h3>{phase4.eventLedger.slice(-12).map(event=><p className="p4-log" key={event.id}>西元 {event.year} 年 {event.month} 月 {event.dayOfMonth} 日・{event.type}：{event.detail}{event.source?`【${event.source}】`:''}</p>)}{phase4.policiesLog.slice(-4).map((log,i)=><p className="caption" key={`policy-${i}`}>{log}</p>)}{phase4.externalUpdates.slice(-4).map((log,i)=><p className="caption" key={`external-${i}`}>天下外部動態：{log}</p>)}</div>
-      <details><summary>開發模式：行動時間與中斷規則</summary><p className="caption">耕讀 30 日、訪求 7 日、經商 10 日、遊歷 14 日是可調工程參數；一般重大事件在完成當前行動後中斷後續安排，死亡節點則在出現介入窗口的當日中斷，未完成行動不結算。天生技直接移動與普通驛路運輸分開記錄。</p></details>
-    </details></article>}
-    </aside></div>
-    {phase2?.pendingNames[0] && <div className="modal-backdrop"><section className="name-dialog" role="dialog" aria-modal="true" aria-labelledby="name-dialog-title"><div className="section-kicker">玩家命名權・待決</div><h2 id="name-dialog-title">請為「{phase2.pendingNames[0].role}」命名</h2><p>命名完成前，此人物不會加入正式家族圖。</p><label>姓名<input autoFocus maxLength={20} value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} /></label><button className="primary" disabled={!nameDraft.trim() || busy} onClick={finalizeName}>確認姓名</button></section></div>}
-    <footer>神洲三國・第四階段示例原型　<span>自動保存・事件版本 {state.engineVersion}</span></footer>
-  </main>;
+      {state.status === 'playing' ? <><LifeActionPanel key={state.worldlineId} state={state} busy={busy||narrationPending} onRun={run}/><button className="continue" disabled={busy} onClick={()=>void run(nextCommand('Continue'))}>繼續目前人生（不推進時間）</button>{notice&&<p role="status" className="notice">{notice}</p>}</> : <article className="panel finish"><div className="section-kicker">第一人生階段示…21714 tokens truncated…ffice='白身';}
+    const age=Math.max(0,phase4.year-state.character.birthYear);
+    return {...state,revision:event.revision,phase4,phase2:{...phase2,age},character:{...state.character,age},...(innate?{innate}:{}),world:{...state.world,year:phase4.year,month:phase4.month},appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash}};
+  }
+  if (event.type === 'Phase2Changed') {
+    if (![ENGINE_VERSION,4,PHASE2_ENGINE_VERSION,3].includes(event.version) || !state.phase2) throw new Error('第二階段命令不適用於此版本存檔');
+    const phase2 = applyPhase2Action(state.phase2, event.payload.action);
+    let innate=state.innate;
+    let phase4=state.phase4;
+    if(innate&&event.payload.action.type==='MarkDeath'){
+      const personId=event.payload.action.personId;innate=structuredClone(innate);
+      if(innate.subjects[personId]){innate.subjects[personId].alive=false;innate.subjects[personId].location='亡者紀錄';}
+      const body=innate.objects.find(object=>object.id===`person-body-${personId}`);if(body){body.kind='人類屍體';body.location='亡者紀錄';}
+    }
+    if(phase4&&event.payload.action.type==='MarkDeath'){
+      const deceasedId=event.payload.action.personId;phase4=structuredClone(phase4);const office=phase4.offices.find(entry=>entry.holderId===deceasedId);if(office){office.holderId=null;office.vacancySince=phase4.day;phase4.externalUpdates.push(`${office.title}因任職者亡故出缺，繼任程序啟動。`);}
+    }
+    const changed = { ...state, revision: event.revision, phase2, ...(innate?{innate}:{}), ...(phase4?{phase4}:{}), appliedCommands: { ...state.appliedCommands, [event.commandId]: event.commandHash } };
+    if (event.payload.action.type === 'TransferAsset' && event.payload.action.asset === '錢') {
+      const action = event.payload.action;
+      const result = applyAccountEntry(state.accounts, { id:event.eventId, eventId:event.eventId, turn:action.turn, asset:'錢', amount:action.amount, from:action.from, to:action.to, memo:action.memo });
+      if (result.accounts.private !== phase2.assetBalances.錢.private) throw new Error('私帳金額與多資產帳簿不一致');
+      return { ...changed, character: { ...state.character, money: result.accounts.private }, accounts: result.accounts, ledger: [...state.ledger, result.entry] };
+    }
+    if (event.payload.action.type === 'RecalculateMoneyAccounts') {
+      const accounts = rebuildAccountBook(state.ledger);
+      const balances = { ...phase2.assetBalances.錢, ...accounts };
+      return { ...changed, character: { ...state.character, money: accounts.private }, accounts, phase2: { ...phase2, assetBalances: { ...phase2.assetBalances, 錢: balances } } };
+    }
+    return changed;
+  }
+  if (event.type === 'InnateChanged') {
+    if (![4,ENGINE_VERSION].includes(event.version) || !state.phase2 || !state.innate) throw new Error('此世界線尚未完成天生技系統遷移');
+    const scene = state.phase2.scene;
+    const action=event.payload.action;const sourceInnate=structuredClone(state.innate);if(action.type==='Heal'&&action.targetId==='sun-jian'&&!sourceInnate.subjects['sun-jian']&&state.phase4){sourceInnate.subjects['sun-jian']=historicalRescueSubject(state.phase4.historicalPersons.find(p=>p.id==='sun-jian')?.location??'長江中游（節點資料）');Object.assign(sourceInnate,syncHistoricalPatient(sourceInnate,state.phase4));}
+    const sunInjuriesBefore=sourceInnate.subjects['sun-jian']?.injuries.length??0;
+    const innate = applyInnateAction(sourceInnate,event.payload.action,state.turn, {location:scene.location,presentIds:scene.presentIds,text:state.actions.at(-1)?.details ?? '場景尚無已記錄正文'},state.phase2);
+    let phase2 = state.phase2;
+    const actionSteps:InnateAction[]=action.type==='Combination'?action.steps:[action];
+    const flashStep=actionSteps.find((step):step is Extract<InnateAction,{type:'Flash'}>=>step.type==='Flash');
+    if(flashStep){
+      const carriedPeople=flashStep.bringIds.map(id=>innate.objects.find(object=>object.id===id)).filter(object=>object?.kind==='人類活體').map(object=>object!.id.replace(/^person-body-/,''));
+      const presentIds=['protagonist',...carriedPeople];
+      phase2={...phase2,scene:{...phase2.scene,location:flashStep.location,presentIds,enteredIds:presentIds,leftIds:phase2.scene.presentIds.filter(id=>!presentIds.includes(id))}};
+    }
+    if(actionSteps.some(step=>['Store','Retrieve','Flash'].includes(step.type))){
+      const moved=new Map(innate.objects.map(object=>[object.id,object]));
+      phase2={...phase2,items:phase2.items.map(item=>{const object=moved.get(item.id);return object?{...item,ownerId:object.ownerId,custodianId:object.custodianId,locationId:object.location,quantity:object.quantity}:item;})};
+    }
+    let phase4=state.phase4&&flashStep?{...state.phase4,playerLocation:innate.subjects.protagonist.location}:state.phase4;
+    const healingSteps=actionSteps.filter((step):step is Extract<InnateAction,{type:'Heal'}>=>step.type==='Heal');
+    if(phase4&&healingSteps.some(step=>step.targetId==='sun-jian')&&innate.subjects['sun-jian'].injuries.length<sunInjuriesBefore)phase4=recordInnateDeathRescue(phase4,'sun-jian',true);
+    if(phase4)Object.assign(innate,syncHistoricalPatient(innate,phase4));
+    const lethalIllusion=action.type==='Illusion'&&action.intent==='致命'&&((action.severity===3&&(action.depth==='入實'||action.depth==='五感實相'))||action.accidentOutcome==='致命');
+    const lethalLightning=action.type==='Lightning'&&action.intent==='致命'&&action.intensity===3;
+    if(lethalIllusion||lethalLightning){
+      const deadIds=action.targets.filter(id=>!action.excluded.includes(id));
+      const cause=lethalIllusion?(action.type==='Illusion'&&action.accidentOutcome==='致命'&&!(action.severity===3&&(action.depth==='入實'||action.depth==='五感實相'))?'幻術次生事故致命傷':'幻術實相致命直接傷害'):'雷霆致命直接傷害';
+      phase2={...phase2,persons:phase2.persons.map(person=>deadIds.includes(person.id)&&person.alive?{...person,alive:false,deathYear:state.world.year,deathCause:cause}:person),scene:{...phase2.scene,presentIds:phase2.scene.presentIds.filter(id=>!deadIds.includes(id))}};
+      for(const id of deadIds){const body=innate.objects.find(object=>object.id===`person-body-${id}`);if(body){body.kind='人類屍體';body.location='亡者紀錄';}if(innate.subjects[id])innate.subjects[id].location='亡者紀錄';}
+    }
+    return { ...state, revision:event.revision, innate, phase2, ...(phase4?{phase4}:{}), appliedCommands:{...state.appliedCommands,[event.commandId]:event.commandHash} };
+  }
+  const turnLimit = event.version === LEGACY_ENGINE_VERSION ? 20 : MAX_TURNS;
+  if (state.status === 'complete' && !(event.version === ENGINE_VERSION && state.schemaVersion >= 2) || state.turn >= turnLimit) throw new Error('本段旅程已結束');
+  const intents: Intent[] | null = event.type === 'IntentResolved' ? [event.payload.intent] : event.type === 'ActionPlanResolved' ? (event.version===ENGINE_VERSION&&event.payload.executedIntents?event.payload.executedIntents:event.payload.intents) : null;
+  const interruptedOnly=event.version===ENGINE_VERSION&&event.type==='ActionPlanResolved'&&intents?.length===0&&!!event.payload.interruptedIntent&&event.payload.interruptions.length>0;
+  if (!intents || intents.length === 0&&!interruptedOnly || intents.some((intent) => !INTENTS.includes(intent)) || !event.eventId.startsWith(`${state.worldlineId}:`)) throw new Error('回合事件無效或屬於其他世界線');
+  if (event.type === 'ActionPlanResolved' && (![4,ENGINE_VERSION].includes(event.version) || inspectActionPlan(intents).conflicts.length > 0)) throw new Error('行動計畫有衝突，請先調整');
+  const freeTextActions=event.type==='ActionPlanResolved'&&event.version===ENGINE_VERSION?(event.payload.freeTextActions??[]).filter(detail=>intents.includes(detail.intent)):[];
+  for(const detail of freeTextActions){
+    if(!intents.includes(detail.intent)||!Number.isInteger(detail.order)||detail.order<1)throw new Error('自由文字候選行動未包含於已確認計畫');
+    if(detail.method&&!({耕讀自持:['讀書','讀兵書','讀經','抄書','耕作','耕田'],訪求人才:['訪求人才','訪賢','尋訪人才','尋才','招攬','延請','登門延請','訪問'],經商營生:['經商營生','經商','做生意','買賣','交易','擺攤','市集'],遊歷鄉里:['遊歷鄉里','遊歷','走訪','遊訪','探訪','拜訪','探望','出門走走']} as Record<Intent,string[]>)[detail.intent].includes(detail.method))throw new Error('文字行動方式尚未支援');
+    if(detail.condition&&detail.condition!=='目標仍在場')throw new Error('文字行動條件尚未支援');
+    if(detail.targetId&&detail.intent==='訪求人才'&&!state.phase4?.candidates.some(candidate=>candidate.id===detail.targetId&&candidate.name===detail.targetName&&['available','competing'].includes(candidate.status)))throw new Error('指定人才目前不可招攬');
+    if(detail.targetId&&detail.intent==='遊歷鄉里'&&!state.phase2?.persons.some(person=>person.id===detail.targetId&&person.name===detail.targetName&&person.alive&&state.phase2?.scene.presentIds.includes(person.id)))throw new Error('指定人物不在可拜訪的當前場景');
+    if(detail.targetId&&!['訪求人才','遊歷鄉里'].includes(detail.intent))throw new Error('此行動尚不支援指定目標');
+    if(detail.condition==='目標仍在場'&&(!detail.targetId||!state.phase2?.scene.presentIds.includes(detail.targetId)))throw new Error('行動條件不成立：目標目前不在場');
+  }
+  const turn = state.turn + 1;
+  const elapsedDays=event.version===ENGINE_VERSION&&event.type==='ActionPlanResolved'?event.payload.elapsedDays:intents.reduce((sum,intent)=>sum+ACTION_DURATION_DAYS[intent],0);
+  const interruptions=event.version===ENGINE_VERSION&&event.type==='ActionPlanResolved'?event.payload.interruptions:[];
+  let phase4 = event.version===ENGINE_VERSION&&state.phase4 ? advancePhase4(state.phase4,elapsedDays) : state.phase4;
+  if(phase4)for(const detail of freeTextActions)if(detail.intent==='訪求人才'&&detail.targetId){phase4=applyPhase4Action(phase4,{type:'Recruit',candidateId:detail.targetId},state.phase2?.persons.map(person=>({id:person.id,name:person.name,alive:person.alive,office:person.office,location:state.phase2?.scene.location??''}))??[]);}
+  let moneyDelta = 0, reputationDelta = 0;
+  const moneyDeltas: Array<{ intent:Intent; amount:number; memo:string }> = [];
+  let character = { ...state.character, growth: { ...state.character.growth }, contacts: [...state.character.contacts] };
+  const outcomes: string[] = [];
+  for (const intent of intents) {
+    const roll = random(state.world.seed, turn * 7 + INTENTS.indexOf(intent));
+    switch (intent) {
+      case '耕讀自持': { const income = roll > .82 ? 4 : 2; moneyDelta += income; moneyDeltas.push({intent,amount:income,memo:`田畝與書卷・家計收入 ${income}`}); outcomes.push(`田畝與書卷：學習經驗增加，家計收入錢 ${income}`); break; }
+      case '訪求人才': { const target=freeTextActions.find(detail=>detail.intent==='訪求人才'&&detail.targetId);if(target){const status=phase4?.candidates.find(candidate=>candidate.id===target.targetId)?.status;outcomes.push(status==='approached'?`已向指定人才 ${target.targetName} 正式提出招攬；本人回應仍待後續結算`:`指定人才 ${target.targetName} 已被競爭勢力先行延請，招攬未成功`);}else{const result = resolvePersonnel(character, state.world.seed, turn, roll); character = result.character; reputationDelta += result.reputationDelta; outcomes.push(`${result.title}：${result.details}`);} break; }
+      case '經商營生': { const trade = roll > .24 ? 5 : -2; moneyDelta += trade; moneyDeltas.push({intent,amount:trade,memo:`市集營生・${trade > 0 ? `收入 ${trade}` : '貨損支出 2'}`}); outcomes.push(`市集營生：${trade > 0 ? `收入錢 ${trade}` : '貨物折損，支出錢 2'}`); break; }
+      case '遊歷鄉里': { moneyDelta -= 1; moneyDeltas.push({intent,amount:-1,memo:'行走鄉里・旅費支出 1'}); const rep = roll > .48 ? 1 : 0; reputationDelta += rep; const target=freeTextActions.find(detail=>detail.intent==='遊歷鄉里'&&detail.targetId);outcomes.push(`行走鄉里：${target?`拜訪${target.targetName}，信任 +${ENGINEERING.playerVisitTrustGain}`:'探訪村落'}，支出旅費錢 1${rep ? '，鄉里聲望 +1' : ''}`); break; }
+    }
+  }
+  moneyDelta = Math.max(-character.money, moneyDelta);
+  const recordedIntents=event.type==='ActionPlanResolved'?event.payload.intents:intents;
+  const interruptedIntent=event.type==='ActionPlanResolved'&&event.version===ENGINE_VERSION?event.payload.interruptedIntent:undefined;
+  const title = intents.length === 0 ? `重大節點中斷：${interruptedIntent??''}` : intents.length === 1 ? ({'耕讀自持':'田畝與書卷','訪求人才':'訪求人才','經商營生':'市集營生','遊歷鄉里':'行走鄉里'} as Record<Intent,string>)[intents[0]] : `行動計畫：${intents.join('、')}`;
+  const supplement = event.type === 'ActionPlanResolved' ? event.payload.supplement.trim() : '';
+  const resolvedText=freeTextActions.map(detail=>`${detail.order}. ${detail.intent}${detail.targetName?`・對象 ${detail.targetName}`:''}${detail.method?`・方式 ${detail.method}`:''}${detail.condition?`・條件 ${detail.condition}`:''}`).join('；');
+  const supplementRecord=event.type==='ActionPlanResolved'&&event.payload.supplement.trim()?freeTextActions.length?'；補充說明原文已保存於本條紀錄；僅已確認候選條件參與結算':'；補充說明未解析，原文已保存於本條紀錄':'';
+  const details = `${outcomes.join('；')|| (interruptedOnly?`「${interruptedIntent}」尚未完成，未結算其收益或資源`: '')}${resolvedText?`；已確認文字行動：${resolvedText}`:''}${supplementRecord}`;
+  const finalDetails = `${details}${event.version===ENGINE_VERSION?`；本計畫推進 ${elapsedDays} 日${interruptions.length?`，遇重大節點後中斷：${interruptions.join('；')}`:''}`:''}`;
+  character.money += moneyDelta; character.reputation += reputationDelta;
+  for (const intent of intents) character = developTalent(character, intent, random(state.world.seed, turn * 7 + INTENTS.indexOf(intent)));
+  const year = phase4?.year ?? state.world.year + (turn % 4 === 0 ? 1 : 0), month = phase4?.month ?? ((turn * 3) % 12) + 1;
+  character.age = year - character.birthYear;
+  const personnel = runPersonnelEngine(state.backend.personnel, turn);
+  const talent = runTalentEngine(state.backend.talents, state.world.seed, turn);
+  const node = historicalNodeAt(turn), trend = trendForTurn(state.world.seed, turn);
+  let accounts = state.accounts;
+  const newLedger: LedgerEntry[] = [];
+  for (const [index, change] of moneyDeltas.entries()) {
+    const amount = Math.abs(change.amount);
+    if (!amount) continue;
+    const paid = Math.min(amount, accounts.private);
+    if (change.amount < 0 && paid === 0) continue;
+    const entry = applyAccountEntry(accounts, { id:`${event.eventId}:asset:${index}`, eventId:event.eventId, turn, asset:'錢', amount:change.amount > 0 ? amount : paid, from:change.amount > 0 ? 'market' : 'private', to:change.amount > 0 ? 'private' : 'market', memo:change.memo });
+    accounts = entry.accounts; newLedger.push(entry.entry);
+  }
+  const ledger = newLedger.length ? [...state.ledger, ...newLedger] : state.ledger;
+  const actions = [...state.actions, { turn, intent:intents[0]??recordedIntents[0], intents:[...recordedIntents], title, details:finalDetails, ...(supplement ? { supplement } : {}), ...(freeTextActions.length?{freeTextActions}:{}), ...(event.version===ENGINE_VERSION?{elapsedDays,interruptions}: {}) }];
+  const summaries = turn % 5 === 0 ? [...state.summaries, makeSummary(turn, character, state.world, actions, ledger)] : state.summaries;
+  let phase2 = event.version >= PHASE2_ENGINE_VERSION && state.phase2 ? advancePhase2(state.phase2, turn, year, intents.join('＋'), character.money, event.eventId,event.version===ENGINE_VERSION?elapsedDays:undefined) : state.phase2;
+  if(phase2)for(const detail of freeTextActions)if(detail.intent==='遊歷鄉里'&&detail.targetId){const relation=phase2.relationships.find(record=>record.personId===detail.targetId);if(relation)phase2=applyPhase2Action(phase2,{type:'AdjustRelation',personId:detail.targetId,axis:'trust',delta:ENGINEERING.playerVisitTrustGain,reason:`依玩家已確認的${detail.method??'拜訪'}行動建立交往`,turn});}
+  let innate = event.version >= 4 && state.innate ? advanceInnate(state.innate,turn,event.version===ENGINE_VERSION?elapsedDays:undefined,year) : state.innate;
+  if(innate&&phase4)innate=syncHistoricalPatient(innate,phase4);
+  if(phase2&&phase4){phase2=structuredClone(phase2);for(const person of phase2.persons){const assigned=phase4.offices.find(office=>office.holderId===person.id);if(assigned)person.office=assigned.title;else if(phase4.offices.some(office=>office.title===person.office))person.office='白身';}}
+  if (phase2 && turn % 5 === 0) {
+    const summary = summaries.at(-1)!;
+    summary.text += `；成長記錄 ${phase2.practiceLog.length} 項、持續傷勢 ${phase2.injuries.filter((injury) => injury.active).length} 項、關係人物 ${phase2.relationships.length} 位`;
+  }
+  return {
+    ...state, schemaVersion: event.version >= PHASE2_ENGINE_VERSION ? event.version : state.schemaVersion, engineVersion: event.version >= PHASE2_ENGINE_VERSION ? event.version : state.engineVersion, status: turn === turnLimit ? 'complete' : 'playing', turn, revision: event.revision,
+    character, world: { ...state.world, year, month, eventCount: state.world.eventCount + 1 }, trend,
+    historicalNodes: node ? [...state.historicalNodes, node] : state.historicalNodes,
+    backend: { personnelChecks: state.backend.personnelChecks + 1, talentChecks: state.backend.talentChecks + 1, historyChecks: state.backend.historyChecks + 1, trendChecks: state.backend.trendChecks + 1, personnel: personnel.messages.length ? personnel.messages : state.backend.personnel, talents: talent.names },
+    accounts, ledger, actions, summaries, appliedCommands: { ...state.appliedCommands, [event.commandId]: event.commandHash }, ...(phase2 ? { phase2 } : {}), ...(innate ? { innate } : {}), ...(phase4?{phase4}:{}),
+  };
 }
+export function makeSummary(turn: number, c: Character, world: World, actions: ActionRecord[], ledger: LedgerEntry[]): Summary {
+  const period = actions.filter((entry) => entry.turn > turn - 5 && entry.turn <= turn).map((entry) => `${entry.turn}回合:${entry.title}`).join('、');
+  const kind = turn % 10 === 0 ? '大記' : '小記';
+  const finance = ledger.filter((entry) => entry.turn > turn - 5 && entry.turn <= turn).map((entry) => entry.memo).join('；');
+  return { turn, kind, text: `第 ${turn} 回合${kind}（${world.year}年）：${c.name}生於${c.home}，現年 ${c.age} 歲、私錢 ${c.money}；本段行動：${period || '無'}；帳務：${finance || '無資產異動'}。` };
+}
+export const ACTION_PLAN_EFFORT_BUDGET = 2;
+const ACTION_EFFORT: Record<Intent, number> = { '耕讀自持':1, '訪求人才':2, '經商營生':1, '遊歷鄉里':2 };
+export const ACTION_DURATION_DAYS: Record<Intent,number> = {'耕讀自持':30,'訪求人才':7,'經商營生':10,'遊歷鄉里':14};
+function plannedTimeline(state:GameState,intents:Intent[]):{executedIntents:Intent[];elapsedDays:number;interruptions:string[];interruptedIntent?:Intent}{
+ let timeline=state.phase4;const executedIntents:Intent[]=[];let elapsedDays=0;const interruptions:string[]=[];
+ for(let index=0;index<intents.length;index++){
+  const intent=intents[index],days=ACTION_DURATION_DAYS[intent];let actionEvent:string|undefined;
+  for(let day=0;day<days;day++){
+   if(!timeline){elapsedDays++;continue;}
+   const before=timeline.eventLedger.length;timeline=advancePhase4(timeline,1);elapsedDays++;
+   const newEvents=timeline.eventLedger.slice(before),deathWindow=newEvents.find(e=>e.type==='死亡硬節點觸發');
+   if(deathWindow){interruptions.push(`${deathWindow.type}：${deathWindow.detail}`);return{executedIntents,elapsedDays,interruptions,interruptedIntent:intent};}
+   const major=newEvents.find(e=>['史實事件形成','史實事件取消','死亡硬節點落實'].includes(e.type));if(major)actionEvent??=`${major.type}：${major.detail}`;
+  }
+  executedIntents.push(intent);
+  if(actionEvent){interruptions.push(actionEvent);return{executedIntents,elapsedDays,interruptions,...(intents[index+1]?{interruptedIntent:intents[index+1]}:{})};}
+ }
+ return {executedIntents,elapsedDays,interruptions};
+}
+export function inspectActionPlan(intents: Intent[]): { effort: number; conflicts: string[] } {
+  const conflicts: string[] = [];
+  if (new Set(intents).size !== intents.length) conflicts.push('同一行動重複勾選，請移除重複項目。');
+  const effort = intents.reduce((sum, intent) => sum + (ACTION_EFFORT[intent] ?? 99), 0);
+  if (effort > ACTION_PLAN_EFFORT_BUDGET) conflicts.push(`本回合可用行動時間為 ${ACTION_PLAN_EFFORT_BUDGET} 點，所選行動需要 ${effort} 點；請調整計畫。`);
+  if (intents.includes('遊歷鄉里') && intents.some((intent) => intent !== '遊歷鄉里')) conflicts.push('遊歷鄉里會離開家宅；與同回合留在家宅耕讀或市集營生有地點衝突。');
+  if (intents.includes('訪求人才') && intents.includes('遊歷鄉里')) conflicts.push('訪求人才與遊歷鄉里都需要外出安排，無法在此示例的一回合內保證行程相容。');
+  return { effort, conflicts:[...new Set(conflicts)] };
+}
+export function dispatch(state: GameState | null, command: GameCommand): { state: GameState | null; event: GameEvent | null; duplicate: boolean } {
+  if (command.version !== ENGINE_VERSION) throw new Error(`不支援的命令版本：${command.version}`);
+  const known = state?.appliedCommands[command.commandId];
+  if (known) {
+    const expected = fingerprint(command);
+    if (known === expected) return { state, event: null, duplicate: true };
+    throw new Error('commandId 已用於不同命令');
+  }
+  if (command.type === 'Continue') {
+    if (!state || command.worldlineId !== state.worldlineId) throw new Error('目前沒有可繼續的世界線');
+    if (command.expectedRevision !== state.revision) throw new Error('狀態版本已更新，請重新檢視');
+    // Continue only closes the current narrative pause; it neither advances time nor accepts any pending decision.
+    return { state, event: null, duplicate: false };
+  }
+  if (command.type === 'RecordActionNote') {
+    if (!state || command.worldlineId !== state.worldlineId || command.expectedRevision !== state.revision) throw new Error('補充說明所屬世界線或版本已變更');
+    if (!command.text.trim()) throw new Error('補充說明不可為空白');
+    const event: GameEvent = { version:ENGINE_VERSION, eventId:`${state.worldlineId}:${state.revision+1}`, commandId:command.commandId, commandHash:fingerprint(command), revision:state.revision+1, type:'ActionNoteRecorded', payload:{text:command.text.trim()} };
+    return { state:applyEvent(state,event), event, duplicate:false };
+  }
+  if (command.type === 'StartGame') {
+    if (state) throw new Error('請先切換到新世界線');
+    if (command.expectedRevision !== 0) throw new Error('新局版本必須從零開始');
+    const event = createStartEvent(command);
+    return { state: applyEvent(null, event), event, duplicate: false };
+  }
+  if (!state || command.worldlineId !== state.worldlineId) throw new Error('命令世界線不符');
+  if (command.expectedRevision !== state.revision) throw new Error('狀態版本已更新，請重新檢視');
+  if (command.type === 'Phase2Action') {
+    if (!state.phase2) throw new Error('此世界線尚未完成第二階段存檔遷移');
+    const event: GameEvent = { version: ENGINE_VERSION, eventId: `${state.worldlineId}:${state.revision + 1}`, commandId: command.commandId, commandHash: fingerprint(command), revision: state.revision + 1, type: 'Phase2Changed', payload: { action: command.action } };
+    return { state: applyEvent(state, event), event, duplicate: false };
+  }
+  if (command.type === 'InnateAction') {
+    if (!state.innate || !state.phase2) throw new Error('此存檔尚未升級天生技系統');
+    const event: GameEvent = { version: ENGINE_VERSION, eventId: `${state.worldlineId}:${state.revision + 1}`, commandId: command.commandId, commandHash: fingerprint(command), revision: state.revision + 1, type: 'InnateChanged', payload: { action: command.action } };
+    return { state: applyEvent(state,event), event, duplicate:false };
+  }
+  if (command.type === 'Phase4Action') {
+    if(!state.phase4||!state.phase2)throw new Error('此存檔尚未升級第四階段');
+    const event:GameEvent={version:ENGINE_VERSION,eventId:`${state.worldlineId}:${state.revision+1}`,commandId:command.commandId,commandHash:fingerprint(command),revision:state.revision+1,type:'Phase4Changed',payload:{action:command.action}};
+    return {state:applyEvent(state,event),event,duplicate:false};
+  }
+  if(command.type==='SubmitLifePlan'){
+    const plan=inspectLifePlan(state,command.choiceIds,command.paceDays);if(plan.errors.length)throw new Error(plan.errors.join(' '));
+    if(state.character.age>=15){
+      const intents=plan.choices.map(c=>c.intent!);const errors=inspectActionPlan(intents).conflicts;if(errors.length)throw new Error(errors.join(' '));
+      const event:GameEvent={version:5,eventId:`${state.worldlineId}:${state.revision+1}`,commandId:command.commandId,commandHash:fingerprint(command),revision:state.revision+1,type:'ActionPlanResolved',payload:{intents,supplement:command.supplement,...plannedTimeline(state,intents)}};
+      return{state:applyEvent(state,event),event,duplicate:false};
+    }
+    const event:GameEvent={version:5,eventId:`${state.worldlineId}:${state.revision+1}`,commandId:command.commandId,commandHash:fingerprint(command),revision:state.revision+1,type:'LifePlanResolved',payload:{policyVersion:1,choiceIds:[...command.choiceIds],supplement:command.supplement,...(command.paceDays!==undefined?{paceDays:command.paceDays}:{})}};
+    return{state:applyEvent(state,event),event,duplicate:false};
+  }
+  if (command.type === 'SubmitActionPlan') {
+    if (!command.intents.length) throw new Error('行動計畫至少須勾選一項行動');
+    const plan = inspectActionPlan(command.intents);
+    if (plan.conflicts.length) throw new Error(plan.conflicts.join(' '));
+    const schedule=plannedTimeline(state,command.intents);
+    const event: GameEvent = { version:ENGINE_VERSION, eventId:`${state.worldlineId}:${state.revision+1}`, commandId:command.commandId, commandHash:fingerprint(command), revision:state.revision+1, type:'ActionPlanResolved', payload:{intents:[...command.intents],supplement:command.supplement,...schedule,...(command.freeTextActions?{freeTextActions:command.freeTextActions}:{})} };
+    return { state:applyEvent(state,event), event, duplicate:false };
+  }
+  if (!INTENTS.includes(command.intent)) throw new Error('無效的生活意圖');
+  const event: GameEvent = { version: ENGINE_VERSION, eventId: `${state.worldlineId}:${state.revision + 1}`, commandId: command.commandId, commandHash: fingerprint(command), revision: state.revision + 1, type: 'IntentResolved', payload: { intent: command.intent } };
+  return { state: applyEvent(state, event), event, duplicate: false };
+}
+export function replay(events: GameEvent[]): GameState | null { return events.reduce<GameState | null>((state, event) => applyEvent(state, event), null); }
 

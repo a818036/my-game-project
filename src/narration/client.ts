@@ -1,4 +1,5 @@
 import type { GameEvent, GameState, PlannedActionDetail } from '../engine';
+import {currentAge} from '../life';
 
 export interface NarrationPayload {
   eventBatchId:string;
@@ -16,11 +17,11 @@ export function buildNarrationPayload(state:GameState,event:GameEvent):Narration
     return{id:npc.id,name:npc.name,age:Math.max(0,state.world.year-npc.birthYear),office:npc.office,present:true as const,knownFacts:observations.filter(item=>item.witnessId===id).flatMap(item=>item.known)};
   });
   const latest=state.actions.at(-1);let settledEvents:NarrationPayload['settledEvents']=[];
-  if(event.type==='ActionPlanResolved'&&latest)settledEvents=[{turn:latest.turn,title:latest.title,details:latest.supplement?latest.details.replaceAll(latest.supplement,'').replace(/；補充說明[^；]*/g,''):latest.details,...(latest.freeTextActions?{resolvedActions:latest.freeTextActions}:{})}];
+  if((event.type==='ActionPlanResolved'||event.type==='LifePlanResolved')&&latest)settledEvents=[{turn:latest.turn,title:latest.title,details:latest.supplement?latest.details.replaceAll(latest.supplement,'').replace(/；補充說明[^；]*/g,''):latest.details,...(latest.freeTextActions?{resolvedActions:latest.freeTextActions}:{})}];
   else if(event.type==='Phase4Changed'){const entry=state.phase4?.eventLedger.at(-1);if(entry)settledEvents=[{turn:state.turn+1,title:entry.type,details:entry.detail}];}
   else if(event.type==='InnateChanged'){const consequence=state.innate?.consequences.at(-1);if(consequence)settledEvents=[{turn:state.turn+1,title:consequence.title,details:[...consequence.direct,...consequence.secondary].join('；')}];}
   else if(event.type==='Phase2Changed')settledEvents=[{turn:state.turn+1,title:'人物與家產變更',details:'人物、關係或家產命令已由規則引擎結算；未公開欄位不提供給敘事。'}];
-  return{eventBatchId:event.eventId,protagonist:{name:state.character.name,age:state.character.age,ageMonths:Math.max(0,state.world.month-1),birthYear:state.character.birthYear,modernMemory:state.character.profile.modernMemory},settledEvents,playerView:{location:state.phase2?.scene.location??state.character.home,trend:state.trend,knownFacts},visibleNpcs};
+  return{eventBatchId:event.eventId,protagonist:{name:state.character.name,age:currentAge(state),ageMonths:Math.max(0,state.world.month-1),birthYear:state.character.birthYear,modernMemory:state.character.profile.modernMemory},settledEvents,playerView:{location:state.phase2?.scene.location??state.character.home,trend:state.trend,knownFacts},visibleNpcs};
 }
 export function templateNarration(payload:NarrationPayload):NarrationResult{
   const action=payload.settledEvents.at(-1);

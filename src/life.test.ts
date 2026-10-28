@@ -1,0 +1,56 @@
+import {describe,it,expect} from 'vitest';
+import {createOpeningFacts,dispatch,ENGINE_VERSION,replay,type GameCommand,type GameEvent} from './engine';
+import {inspectLifePlan,lifeChoices,localInteraction} from './life';
+import {toJson,parseSave,migrateSaveFile} from './storage';
+function start(){const facts=createOpeningFacts(81,184,{regions:[],surnames:[]});return dispatch(null,{version:ENGINE_VERSION,type:'StartGame',name:'測試',seed:81,facts,commandId:'life-start',expectedRevision:0});}
+describe('人生情境計畫',()=>{
+  it('嬰兒沒有成人選項；成年有不同選項；偽造成人 ID 被引擎拒絕',()=>{
+    const state=start().state!;expect(lifeChoices(state).map(c=>c.id)).toEqual(['observe','listen','reflect','rest']);
+    expect(lifeChoices({...state,character:{...state.character,age:15}}).map(c=>c.id)).toContain('adult-trade');
+    expect(()=>dispatch(state,{version:5,type:'SubmitLifePlan',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:'bad',choiceIds:['adult-trade'],supplement:''})).toThrow('情境');
+    expect(inspectLifePlan(state,['observe','observe']).errors).not.toEqual([]);
+  });
+  it('四項複選一次結算，時間可追溯，無收入、外出、代辦、成熟五維或虛構訪客',()=>{
+    const state=start().state!,before=structuredClone(state);
+    const command:GameCommand={version:5,type:'SubmitLifePlan',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:'four',choiceIds:['observe','listen','reflect','rest'],supplement:'我想慢慢觀察'};
+    const {state:next,event}=dispatch(state,command);expect(next!.turn).toBe(1);expect(next!.phase4!.day-state.phase4!.day).toBe(4);
+    expect(next!.character.money).toBe(state.character.money);expect(next!.accounts).toEqual(state.accounts);expect(next!.ledger).toEqual(state.ledger);
+    expect(next!.phase2!.scene.location).toBe(state.phase2!.scene.location);expect(next!.phase2!.scene.enteredIds).toEqual([]);expect(next!.phase2!.scene.speeches).toEqual([]);
+    expect(next!.phase2!.stats).toBeNull();expect(next!.character.growth.study).toBe(2);expect(next!.backend.historyChecks).toBe(1);
+    expect(state).toEqual(before);expect(event!.type).toBe('LifePlanResolved');expect(dispatch(next!,command).duplicate).toBe(true);
+    expect(()=>dispatch(next!,{...command,choiceIds:['rest']})).toThrow('commandId');
+    expect(()=>dispatch(next!,{...command,commandId:'stale'})).toThrow('版本');
+  });
+  it('保留舊事件前綴，新增情境事件可重播及匯出再載入，第五回合有摘要',()=>{
+    const initial=start(),events:GameEvent[]=[initial.event!];let state=initial.state!;
+    const legacy=dispatch(state,{version:5,type:'SubmitActionPlan',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:'old',intents:['耕讀自持'],supplement:''});state=legacy.state!;events.push(legacy.event!);
+    const prefix=JSON.stringify(events);
+    for(let i=0;i<4;i++){const next=dispatch(state,{version:5,type:'SubmitLifePlan',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:`life-${i}`,choiceIds:['rest'],supplement:''});state=next.state!;events.push(next.event!);}
+    expect(JSON.stringify(events.slice(0,2))).toBe(prefix);expect(replay(events)).toEqual(state);expect(state.summaries.at(-1)?.turn).toBe(5);
+    expect(migrateSaveFile(parseSave(toJson({format:'shenzhou-save',version:6,worldlineId:state.worldlineId,events,state}))).state).toEqual(state);
+  });
+  it('詢問、質疑、對話、否定與混合句均不產生行動，不修改狀態',()=>{
+    const state=start().state!,before=structuredClone(state);
+    for(const text of ['我才幾歲就叫我經商？','我能做什麼？','對母親說你好','我幾歲？然後再去經商','不要觀察眼前']){const r=localInteraction(text,state);expect(r.kind).not.toBe('action');expect(r.choiceIds).toEqual([]);}
+    expect(localInteraction('我要觀察眼前',state).choiceIds).toEqual(['observe']);expect(state).toEqual(before);
+  });
+  it('能力命令不經普通人生階段選項過濾',()=>{
+    const state=start().state!;expect(inspectLifePlan(state,['軒轅閃']).errors.length).toBeGreaterThan(0);
+    const next=dispatch(state,{version:5,type:'InnateAction',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:'flash-baby',action:{type:'Flash',location:'庭院另一側',bringIds:[]}}).state!;
+    expect(next.phase2!.scene.location).toBe('庭院另一側');expect(next.character.age).toBe(0);
+    const rested=dispatch(next,{version:5,type:'SubmitLifePlan',worldlineId:next.worldlineId,expectedRevision:next.revision,commandId:'rest-there',choiceIds:['rest'],supplement:''}).state!;
+    expect(rested.phase2!.scene.location).toBe('庭院另一側');expect(rested.phase4!.playerLocation).toBe('庭院另一側');
+  });
+  it('長期日常可跨年，逐日遇死亡節點中斷，未完成項目不給經驗',()=>{
+    let state=start().state!;
+    state=dispatch(state,{version:5,type:'Phase4Action',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:'near-node',action:{type:'AdvanceDays',days:7*360-1}}).state!;
+    const before=state.character.growth.study;
+    const next=dispatch(state,{version:5,type:'SubmitLifePlan',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:'long',choiceIds:['observe','rest'],supplement:'',paceDays:90}).state!;
+    expect(next.actions.at(-1)?.elapsedDays).toBe(1);expect(next.actions.at(-1)?.interruptions?.length).toBe(1);expect(next.character.growth.study).toBe(before);
+    expect(next.character.age).toBe(7);expect(next.phase4!.nodes.find(n=>n.contentId==='sun-jian-death-191')?.status).toBe('triggered');
+    const arrived=dispatch(next,{version:5,type:'InnateAction',worldlineId:next.worldlineId,expectedRevision:next.revision,commandId:'rescue-arrive',action:{type:'Flash',location:'長江中游（節點資料）',bringIds:[]}}).state!;
+    const healed=dispatch(arrived,{version:5,type:'InnateAction',worldlineId:arrived.worldlineId,expectedRevision:arrived.revision,commandId:'rescue-heal',action:{type:'Heal',targetId:'sun-jian'}}).state!;
+    expect(healed.phase4!.nodes.find(n=>n.contentId==='sun-jian-death-191')?.status).toBe('broken');
+    expect(()=>dispatch(next,{version:5,type:'SubmitLifePlan',worldlineId:next.worldlineId,expectedRevision:next.revision,commandId:'bad-pace',choiceIds:['rest'],supplement:'',paceDays:999})).toThrow('時間');
+  });
+});

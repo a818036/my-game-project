@@ -1,3 +1,4 @@
+import {interpretInteraction,validateInteractionPayload} from './interaction.mjs';
 import http from 'node:http';
 import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
@@ -47,9 +48,9 @@ return http.createServer(async(req,res)=>{
     }catch(error){res.writeHead(400);res.end(JSON.stringify({error:error instanceof Error?error.message:'登入操作失敗'}));}return;
   }
   if(req.method==='GET'&&req.url==='/api/health'){res.writeHead(200);res.end(JSON.stringify({ok:true,provider:PROVIDER,model:PROVIDER==='mock'?'mock':PROVIDER==='chatgpt'?'account-selected':MODEL,remainingProviderRequests:Math.max(0,MAX_PROVIDER_REQUESTS-providerRequests),maxOutputTokens:PROVIDER==='chatgpt'?null:MAX_OUTPUT_TOKENS}));return;}
-  if(req.method==='POST'&&req.url==='/api/interpret'){
+  if(req.method==='POST'&&['/api/interpret','/api/interaction'].includes(req.url)){
     const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(new Error('行動解析逾時')),30000);res.on('close',()=>{if(!res.writableEnded)controller.abort(new Error('玩家已取消行動解析'));});
-    try{let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>12000)throw new Error('行動解析文字超過安全上限');}const payload=JSON.parse(raw);validateInterpretationPayload(payload);if(PROVIDER==='mock')throw new Error('目前為 mock 模式；行動由本機確定性解析器處理。');const result=await openAiInterpretation(payload,providerOptions(controller.signal));res.setHeader('X-Action-Parser',PROVIDER);res.writeHead(200);res.end(JSON.stringify(result));}
+    try{let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>12000)throw new Error('行動解析文字超過安全上限');}const payload=JSON.parse(raw);const interaction=req.url==='/api/interaction';(interaction?validateInteractionPayload:validateInterpretationPayload)(payload);if(PROVIDER==='mock')throw new Error('目前為 mock 模式；行動由本機確定性解析器處理。');const result=await (interaction?interpretInteraction:openAiInterpretation)(payload,providerOptions(controller.signal));res.setHeader('X-Action-Parser',PROVIDER);res.writeHead(200);res.end(JSON.stringify(result));}
     catch(error){const aborted=controller.signal.aborted;res.writeHead(aborted?504:400);res.end(JSON.stringify({error:aborted?'行動解析逾時或已取消。':error instanceof Error?error.message:'行動解析失敗'}));}
     finally{clearTimeout(timeout);}return;
   }
