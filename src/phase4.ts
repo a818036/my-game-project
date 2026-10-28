@@ -3,8 +3,8 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-4';
-const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3',PHASE4_CONTENT_VERSION] as const;
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-5';
+const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3','phase4-scenario-4',PHASE4_CONTENT_VERSION] as const;
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; playerVisitTrustGain:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, playerVisitTrustGain:2,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -24,6 +24,8 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'shu-surrenders-263',kind:'event',title:'蜀漢降魏',startYear:263,endYear:263,precision:'year',source:'《三國志》卷四〈魏書·三少帝紀〉記景元四年冬劉禪詣鄧艾降，巴蜀平；本內容包採年級精度。',causes:['shu-han-surrender'],carrier:'劉禪與蜀漢朝廷（歷史事件）',description:'景元四年蜀漢政權向魏投降；不模擬完整戰役、地方抵抗或個別人物命運。',introducedIn:'phase4-scenario-4' },
   { id:'wei-jin-transition-265',kind:'event',title:'魏晉禪代',startYear:265,endYear:265,precision:'year',source:'《晉書》卷三〈帝紀第三·武帝紀〉記泰始元年魏帝禪位，司馬炎受禪；本內容包採年級精度。',causes:['wei-dynasty-abdication'],carrier:'魏帝與晉王司馬炎（歷史事件）',description:'泰始元年魏晉政權更替；不自動替玩家選擇陣營或結局。',introducedIn:'phase4-scenario-4' },
   { id:'wu-surrenders-280',kind:'event',title:'孫吳降晉',startYear:280,endYear:280,precision:'year',source:'《三國志》卷四十八〈吳書·孫皓傳〉記天紀四年王濬受孫皓之降；本內容包採年級精度。',causes:['wu-dynasty-surrender'],carrier:'孫皓與孫吳朝廷（歷史事件）',description:'天紀四年孫吳向晉投降，三國鼎立告終；不替玩家世界自動結算統一或人生結局。',introducedIn:'phase4-scenario-4' },
+  { id:'zhuge-liang-dies-234',kind:'event',title:'諸葛亮病卒於渭濱',startYear:234,endYear:234,precision:'year',source:'《三國志》卷三十五〈蜀書·諸葛亮傳〉記青龍二年秋諸葛亮病卒；本內容包採年級精度，不將史料秋季換算為模型月份。',causes:['zhuge-liang-death'],carrier:'諸葛亮（歷史人物）',description:'記錄五丈原時期諸葛亮病卒的年級節點；不模擬戰役細節、蜀漢後續軍政或其他人物命運。',introducedIn:'phase4-scenario-5' },
+  { id:'gaopingling-249',kind:'event',title:'高平陵政局轉折',startYear:249,endYear:249,precision:'year',source:'《三國志》卷四〈魏書·三少帝紀〉記嘉平元年曹芳謁高平陵後，太傅司馬懿奏免曹爽兄弟等官；本內容包採年級精度，不將漢魏曆日映射為模型月份。',causes:['cao-wei-power-struggle'],carrier:'曹魏朝廷與司馬懿、曹爽（歷史事件）',description:'記錄曹魏朝廷權力格局轉折；不模擬政變過程、完整司法處置或勢力控制變化。',introducedIn:'phase4-scenario-5' },
   { id:'coalition-190',kind:'event',title:'關東州郡合兵討董（節點）',startYear:190,endYear:190,precision:'year',source:'《後漢書》卷七十二〈董卓列傳〉、卷七十五〈劉焉袁術呂布列傳〉；《三國志》卷六〈董卓傳〉。年月細節依所引版本，內容包只採年級精度。',causes:['dong-zhuo-central-control','regional-arms-resistance'],carrier:'關東州郡與在地盟軍（示例承載群）',carriersByCause:{'dong-zhuo-central-control':'仍受中央控制的武裝與官署（因果承載示例）','regional-arms-resistance':'仍維持武裝的州郡勢力（因果承載示例）'},description:'中央控制與州郡武裝對立仍存，可能形成聯兵危機。若核心原因已消失則取消；承載者須對應仍存在的原因。' },
   { id:'sun-jian-death-191',kind:'death',title:'孫堅死亡硬節點',startYear:191,endYear:191,precision:'year',source:'《三國志》卷四十六〈吳書一·孫破虜討逆傳〉；此內容包僅取 191 年年級精度，不主張精確月日。',causes:['campaign-risk'],carrier:'孫堅',historicalPersonId:'sun-jian',description:'無直接、充分且成功的救援介入時，須在史實年級窗口退場。一般治療能力或局勢改變不算介入。' },
   { id:'sample-local-vacancy',kind:'event',title:'郡府文書職缺（示例）',startYear:184,endYear:300,precision:'year',source:'本專案示例情境，非史實人物／職缺。',causes:['local-office-vacancy'],carrier:'示例郡府',description:'已標明為示例的人事內容，用於驗證遞補流程。',example:true },
