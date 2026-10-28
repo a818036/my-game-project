@@ -3,8 +3,8 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-7';
-const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3','phase4-scenario-4','phase4-scenario-5','phase4-scenario-6',PHASE4_CONTENT_VERSION] as const;
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-8';
+const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3','phase4-scenario-4','phase4-scenario-5','phase4-scenario-6','phase4-scenario-7',PHASE4_CONTENT_VERSION] as const;
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; playerVisitTrustGain:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, playerVisitTrustGain:2,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -25,6 +25,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'liu-bei-proclaims-emperor-221',kind:'event',title:'劉備於成都即皇帝位',startYear:221,endYear:221,precision:'year',source:'《三國志》卷三十二〈蜀書·先主傳〉記章武元年劉備於成都武擔之南即皇帝位；本內容包採年級精度。',causes:['shu-han-imperial-proclamation'],carrier:'劉備與蜀漢朝廷（歷史事件）',description:'記錄劉備建立蜀漢政權的稱帝節點；不替玩家選擇陣營，也不模擬完整建國制度。',introducedIn:'phase4-scenario-6' },
   { id:'yiling-campaign-222',kind:'event',title:'夷陵戰局逆轉',startYear:222,endYear:222,precision:'year',source:'《三國志》卷三十二〈蜀書·先主傳〉記章武二年夏六月陸議於猇亭大破先主軍；本內容包採年級精度。',causes:['yiling-campaign-defeat'],carrier:'劉備軍與孫權軍（歷史事件）',description:'記錄夷陵戰局及蜀軍退卻，不模擬完整戰役、損失數據或領土控制。',introducedIn:'phase4-scenario-7' },
   { id:'liu-bei-dies-223',kind:'event',title:'劉備崩於永安宮',startYear:223,endYear:223,precision:'year',source:'《三國志》卷三十二〈蜀書·先主傳〉記章武三年先主殂於永安宮；本內容包採年級精度，不處理史料日期疑點或映射為模型月日。',causes:['liu-bei-death-historical'],carrier:'劉備與蜀漢朝廷（歷史事件）',description:'記錄劉備去世及蜀漢朝廷交接背景，不模擬完整託孤過程或人物後續命運。',introducedIn:'phase4-scenario-7' },
+  { id:'zhuge-liang-first-northern-expedition-228',kind:'event',title:'諸葛亮首次北伐與街亭失利',startYear:228,endYear:228,precision:'year',source:'《三國志》卷三十五〈蜀書·諸葛亮傳〉記建興六年諸葛亮出祁山，馬謖與張郃戰於街亭而敗；本內容包採年級精度。',causes:['shu-first-northern-expedition'],carrier:'蜀漢軍與曹魏軍（歷史事件）',description:'記錄首次北伐與街亭失利，不模擬完整戰役、兵力或對各郡控制的改變。',introducedIn:'phase4-scenario-8' },
   { id:'sun-quan-proclaims-emperor-229',kind:'event',title:'孫權即皇帝位',startYear:229,endYear:229,precision:'year',source:'《三國志》卷四十七〈吳主傳〉記黃龍元年夏四月孫權於南郊即皇帝位；本內容包採年級精度。',causes:['wu-imperial-proclamation'],carrier:'孫權與孫吳朝廷（歷史事件）',description:'記錄孫吳稱帝節點；不模擬完整稱帝儀式、外交或各地政權控制。',introducedIn:'phase4-scenario-7' },
   { id:'zhuge-liang-dies-234',kind:'event',title:'諸葛亮病卒於渭濱',startYear:234,endYear:234,precision:'year',source:'《三國志》卷三十五〈蜀書·諸葛亮傳〉記青龍二年秋諸葛亮病卒；本內容包採年級精度，不將史料秋季換算為模型月份。',causes:['zhuge-liang-death'],carrier:'諸葛亮（歷史人物）',description:'記錄五丈原時期諸葛亮病卒的年級節點；不模擬戰役細節、蜀漢後續軍政或其他人物命運。',introducedIn:'phase4-scenario-5' },
   { id:'gaopingling-249',kind:'event',title:'高平陵政局轉折',startYear:249,endYear:249,precision:'year',source:'《三國志》卷四〈魏書·三少帝紀〉記嘉平元年曹芳謁高平陵後，太傅司馬懿奏免曹爽兄弟等官；本內容包採年級精度，不將漢魏曆日映射為模型月份。',causes:['cao-wei-power-struggle'],carrier:'曹魏朝廷與司馬懿、曹爽（歷史事件）',description:'記錄曹魏朝廷權力格局轉折；不模擬政變過程、完整司法處置或勢力控制變化。',introducedIn:'phase4-scenario-5' },
