@@ -11,6 +11,18 @@ describe('第五階段 HTTP mock 整合',()=>{
       const retry=await fetch(`${root}/api/narration`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sample)});expect(await retry.json()).toEqual(result);
     }finally{await new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve()));}
   });
+  it('mock 人物對話只回覆指定在場人物，且不改動遊戲狀態',async()=>{
+    const server=createNarrationServer({provider:'mock'});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const address=server.address();if(!address||typeof address==='string')throw new Error('test server did not bind');const root=`http://127.0.0.1:${address.port}`;
+    const dialogue={text:'早安，近來可好？',protagonist:{name:'主角',age:0,ageMonths:2},scene:{location:'家宅'},npc:{id:'father',name:'父親',age:30,role:'父親',office:'白身',knownFacts:['主角正在家宅']}};
+    try{const response=await fetch(`${root}/api/dialogue`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dialogue)});const result=await response.json();expect(response.status).toBe(200);expect(response.headers.get('X-Narration-Provider')).toBe('mock');expect(result).toMatchObject({speakerId:'father'});expect(result.text).toContain('父親');expect(result.text).not.toContain('家宅');
+      const invalid=await fetch(`${root}/api/dialogue`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...dialogue,npc:{...dialogue.npc,playerSecrets:['secret']}})});expect(invalid.status).toBe(400);
+    }finally{await new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve()));}
+  });
+  it('真實人物對話使用獨立結構並保留指定發言者',async()=>{
+    let request;const fakeFetch=async(_url,options)=>{request=JSON.parse(options.body);return new Response(JSON.stringify({output_text:JSON.stringify({reply:'父親含笑頷首，說：「我一切安好。」'})}),{status:200});};
+    const server=createNarrationServer({provider:'openai',apiKey:'test-only',fetchImpl:fakeFetch});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const address=server.address();if(!address||typeof address==='string')throw new Error('test server did not bind');const root=`http://127.0.0.1:${address.port}`;
+    try{const response=await fetch(`${root}/api/dialogue`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:'父親近來可好',protagonist:{name:'主角',age:0,ageMonths:1},scene:{location:'家宅'},npc:{id:'father',name:'父親',age:30,role:'父親',office:'白身',knownFacts:[]}})});expect(response.status).toBe(200);expect(await response.json()).toEqual({speakerId:'father',text:'父親含笑頷首，說：「我一切安好。」'});expect(request.text.format.name).toBe('shenzhou_npc_dialogue');expect(request.instructions).toContain('不得使用天下消息');}finally{await new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve()));}
+  });
   it('同一事件批次併發重試只送出一次供應者請求',async()=>{
     let calls=0;const output={paragraphs:['收入錢 5 已記錄'],dialogue:[],suggestions:[]};const fakeFetch=async()=>{calls++;await new Promise(resolve=>setTimeout(resolve,40));return new Response(JSON.stringify({output_text:JSON.stringify(output)}),{status:200,headers:{'Content-Type':'application/json'}});};
     const server=createNarrationServer({provider:'openai',apiKey:'test-only',fetchImpl:fakeFetch});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const address=server.address();if(!address||typeof address==='string')throw new Error('test server did not bind');const url=`http://127.0.0.1:${address.port}/api/narration`;

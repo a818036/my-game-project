@@ -4,7 +4,7 @@ import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {createChatGptSession,chatGptFetchAdapter} from './chatgpt.mjs';
-import {mockNarration,openAiInterpretation,openAiNarration,validateInterpretationPayload,validateNarrationOutput,validateNarrationPayload} from './narration.mjs';
+import {mockNarration,openAiDialogue,openAiInterpretation,openAiNarration,validateDialoguePayload,validateDialogueOutput,validateInterpretationPayload,validateNarrationOutput,validateNarrationPayload} from './narration.mjs';
 
 try{for(const line of readFileSync('.env','utf8').split(/\r?\n/)){const match=line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);if(match&&!match[1].startsWith('#')&&process.env[match[1]]===undefined)process.env[match[1]]=match[2].replace(/^(['"])(.*)\1$/,'$2');}}catch{}
 export function createNarrationServer(options={}){
@@ -48,6 +48,14 @@ return http.createServer(async(req,res)=>{
     }catch(error){res.writeHead(400);res.end(JSON.stringify({error:error instanceof Error?error.message:'登入操作失敗'}));}return;
   }
   if(req.method==='GET'&&req.url==='/api/health'){res.writeHead(200);res.end(JSON.stringify({ok:true,provider:PROVIDER,model:PROVIDER==='mock'?'mock':PROVIDER==='chatgpt'?'account-selected':MODEL,remainingProviderRequests:Math.max(0,MAX_PROVIDER_REQUESTS-providerRequests),maxOutputTokens:PROVIDER==='chatgpt'?null:MAX_OUTPUT_TOKENS}));return;}
+  if(req.method==='POST'&&req.url==='/api/dialogue'){
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(new Error('人物對話逾時')),30000);res.on('close',()=>{if(!res.writableEnded)controller.abort(new Error('玩家已取消人物對話'));});
+    try{let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>8000)throw new Error('對話文字超過安全上限');}const payload=JSON.parse(raw),speakerId=validateDialoguePayload(payload);
+      const result=PROVIDER==='mock'?{speakerId,text:`${payload.npc.name}聽完後答道：「我聽明白了。此事我所知有限，你願意再說說最想問的是哪一點嗎？」`}:await openAiDialogue(payload,providerOptions(controller.signal));
+      const checked=validateDialogueOutput({reply:result.text},speakerId);res.setHeader('X-Narration-Provider',PROVIDER);res.writeHead(200);res.end(JSON.stringify(checked));
+    }catch(error){const aborted=controller.signal.aborted;res.writeHead(aborted?504:400);res.end(JSON.stringify({error:aborted?'人物對話已逾時或取消。':error instanceof Error?error.message:'人物對話失敗'}));}
+    finally{clearTimeout(timeout);}return;
+  }
   if(req.method==='POST'&&['/api/interpret','/api/interaction'].includes(req.url)){
     const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(new Error('行動解析逾時')),30000);res.on('close',()=>{if(!res.writableEnded)controller.abort(new Error('玩家已取消行動解析'));});
     try{let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>12000)throw new Error('行動解析文字超過安全上限');}const payload=JSON.parse(raw);const interaction=req.url==='/api/interaction';(interaction?validateInteractionPayload:validateInterpretationPayload)(payload);if(PROVIDER==='mock')throw new Error('目前為 mock 模式；行動由本機確定性解析器處理。');const result=await (interaction?interpretInteraction:openAiInterpretation)(payload,providerOptions(controller.signal));res.setHeader('X-Action-Parser',PROVIDER);res.writeHead(200);res.end(JSON.stringify(result));}

@@ -6,7 +6,7 @@ function start(){const facts=createOpeningFacts(81,184,{regions:[],surnames:[]})
 describe('人生情境計畫',()=>{
   it('嬰兒沒有成人選項；成年有不同選項；偽造成人 ID 被引擎拒絕',()=>{
     const state=start().state!;expect(lifeChoices(state).map(c=>c.id)).toEqual(['observe','listen','reflect','rest']);
-    expect(lifeChoices({...state,character:{...state.character,age:15}}).map(c=>c.id)).toContain('adult-trade');
+    expect(lifeChoices({...state,world:{...state.world,year:state.character.birthYear+15}}).map(c=>c.id)).toContain('adult-trade');
     expect(()=>dispatch(state,{version:5,type:'SubmitLifePlan',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:'bad',choiceIds:['adult-trade'],supplement:''})).toThrow('情境');
     expect(inspectLifePlan(state,['observe','observe']).errors).not.toEqual([]);
   });
@@ -32,6 +32,7 @@ describe('人生情境計畫',()=>{
   it('詢問、質疑、對話、否定與混合句均不產生行動，不修改狀態',()=>{
     const state=start().state!,before=structuredClone(state);
     for(const text of ['我才幾歲就叫我經商？','我能做什麼？','對母親說你好','我幾歲？然後再去經商','不要觀察眼前']){const r=localInteraction(text,state);expect(r.kind).not.toBe('action');expect(r.choiceIds).toEqual([]);}
+    expect(localInteraction('對父親說：不要擔心',state).kind).toBe('dialogue');
     expect(localInteraction('我要觀察眼前',state).choiceIds).toEqual(['observe']);expect(state).toEqual(before);
   });
   it('能力命令不經普通人生階段選項過濾',()=>{
