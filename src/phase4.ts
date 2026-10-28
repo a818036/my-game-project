@@ -109,7 +109,26 @@ function processHistoryNode(m:Phase4Model,node:HistoryNode){const content=nodeCo
  else {const remaining=content.causes.filter(c=>m.causes.includes(c));if(remaining.length===0){node.status='cancelled';node.resolvedYear=m.year;pushEvent(m,'史實事件取消',`${content.title}的核心原因已消失，事件不再強行發生。`,content.source);}else{node.status='triggered';node.resolvedYear=m.year;const carrier=remaining.length===content.causes.length?content.carrier:remaining.map(c=>content.carriersByCause?.[c]).filter((x):x is string=>Boolean(x)).join('、');node.carrier=carrier||content.carrier;pushEvent(m,'史實事件形成',`${content.title}由${node.carrier}承載；原因仍存 ${remaining.join('、')}。`,content.source);}}
 }
 function processYear(m:Phase4Model){if(m.year>=190){const candidate=m.candidates.find(c=>c.status==='available'||c.status==='approached');if(candidate){candidate.status='competing';candidate.faction='鄰近郡府（示例競爭勢力）';m.externalUpdates.push(`${candidate.name}先受鄰近郡府延請；招攬競爭依時間推進。`);}}for(const node of m.nodes)processHistoryNode(m,node);}
-export function upgradePhase4Content(source:Phase4Model,contentVersion:string):Phase4Model{if(!PHASE4_CONTENT_VERSIONS.includes(contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]))throw new Error('不支援的歷史內容版本');const model=structuredClone(source);const currentIndex=PHASE4_CONTENT_VERSIONS.indexOf(model.contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]),targetIndex=PHASE4_CONTENT_VERSIONS.indexOf(contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]);if(currentIndex>=targetIndex)return model;const known=new Set(model.nodes.map(node=>node.contentId));for(const content of HISTORY_CONTENT){if(known.has(content.id)||!contentVersionIncludes(contentVersion,content.introducedIn))continue;const node:HistoryNode={contentId:content.id,status:'pending',actualCause:[...content.causes],carrier:content.carrier,evidence:[]};model.nodes.push(node);if(content.introducedIn)model.causes.push(...content.causes);if(model.year>content.endYear){node.status='resolved';node.resolvedYear=content.endYear;node.evidence.push('此歷史內容於目前存檔日期後才加入；不回溯觸發。');}else processHistoryNode(model,node);}model.causes=[...new Set(model.causes)];model.contentVersion=contentVersion;return model;}
+export function upgradePhase4Content(source:Phase4Model,contentVersion:string):Phase4Model{
+ if(!PHASE4_CONTENT_VERSIONS.includes(contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]))throw new Error('不支援的歷史內容版本');
+ const model=structuredClone(source);
+ const currentIndex=PHASE4_CONTENT_VERSIONS.indexOf(model.contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]),targetIndex=PHASE4_CONTENT_VERSIONS.indexOf(contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]);
+ if(currentIndex>=targetIndex)return model;
+ const known=new Set(model.nodes.map(node=>node.contentId));
+ for(const content of HISTORY_CONTENT){
+  if(known.has(content.id)||!contentVersionIncludes(contentVersion,content.introducedIn))continue;
+  const node:HistoryNode={contentId:content.id,status:'pending',actualCause:[...content.causes],carrier:content.carrier,evidence:[]};
+  model.nodes.push(node);
+  if(content.introducedIn)model.causes.push(...content.causes);
+  if(model.year>content.endYear){node.status='resolved';node.resolvedYear=content.endYear;node.evidence.push('此歷史內容於目前存檔日期後才加入；不回溯觸發。');}
+  else processHistoryNode(model,node);
+ }
+ const contentOrder=new Map(HISTORY_CONTENT.map((content,index)=>[content.id,index]));
+ model.nodes.sort((a,b)=>(contentOrder.get(a.contentId)??Number.MAX_SAFE_INTEGER)-(contentOrder.get(b.contentId)??Number.MAX_SAFE_INTEGER));
+ model.causes=[...new Set(model.causes)];
+ model.contentVersion=contentVersion;
+ return model;
+}
 function contentVersionIncludes(version:string,introducedIn:string|undefined){if(!introducedIn)return true;const current=PHASE4_CONTENT_VERSIONS.indexOf(version as typeof PHASE4_CONTENT_VERSIONS[number]),required=PHASE4_CONTENT_VERSIONS.indexOf(introducedIn as typeof PHASE4_CONTENT_VERSIONS[number]);return current>=0&&required>=0&&current>=required;}
 function deathInterventionWindowDays(contentId:string){return Math.max(0,Math.floor(ENGINEERING.deathInterventionWindowDaysByEvent[contentId]??0));}
 function settleDeaths(m:Phase4Model){for(const node of m.nodes){const content=nodeContent(node.contentId);if(node.status!=='triggered'||content.kind!=='death'||node.triggeredDay===undefined||m.day-node.triggeredDay<deathInterventionWindowDays(node.contentId))continue;node.status='resolved';node.carrier=`${content.carrier}（退場紀錄）`;node.evidence.push('個別事件介入窗口內未發生直接、充分且成功的救援介入');const person=content.historicalPersonId&&m.historicalPersons.find(p=>p.id===content.historicalPersonId);if(person){person.alive=false;person.deathYear=m.year;person.deathCause='史實死亡硬節點（未被打破）';}pushEvent(m,'死亡硬節點落實',`${content.title}依此事件設定退場；保留唯一死亡紀錄，後續不得補殺。`,content.source);}}
