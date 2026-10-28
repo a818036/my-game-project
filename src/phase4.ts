@@ -3,8 +3,8 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-8';
-const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3','phase4-scenario-4','phase4-scenario-5','phase4-scenario-6','phase4-scenario-7',PHASE4_CONTENT_VERSION] as const;
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-9';
+const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3','phase4-scenario-4','phase4-scenario-5','phase4-scenario-6','phase4-scenario-7','phase4-scenario-8',PHASE4_CONTENT_VERSION] as const;
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; playerVisitTrustGain:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, playerVisitTrustGain:2,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -19,6 +19,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'yellow-turban-184',kind:'event',title:'黃巾起事',startYear:184,endYear:184,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉，中平元年二月記張角起事；本內容包保留年級精度，不換算為遊戲月份。',causes:['yellow-turban-uprising'],carrier:'張角及黃巾軍（歷史事件）',description:'中平元年黃巾起事。此年級節點只記錄事件，不模擬完整戰場或各地戰況。',introducedIn:'phase4-scenario-2' },
   { id:'palace-succession-189',kind:'event',title:'少帝與獻帝更替、董卓入朝',startYear:189,endYear:189,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉、卷九〈孝獻帝紀〉；本內容包採年級精度，不把漢曆月日映射到遊戲月。',causes:['palace-succession-crisis','dong-zhuo-central-control'],carrier:'朝廷與董卓勢力（歷史事件）',carriersByCause:{'palace-succession-crisis':'宮廷繼承危機（因果承載）','dong-zhuo-central-control':'董卓及其中央控制力量（因果承載）'},description:'189 年發生皇位更替，並見董卓權力上升；此節點不細化月日順序，也不代替完整朝廷模擬。',introducedIn:'phase4-scenario-2' },
   { id:'emperor-relocates-xu-196',kind:'event',title:'獻帝遷都許縣',startYear:196,endYear:196,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉記建安元年秋車駕西出洛陽、曹操迎奉並都許；本模型只採年級精度。',causes:['imperial-court-relocation'],carrier:'漢廷與曹操勢力（歷史事件）',description:'洛陽殘破後，朝廷遷往許縣一帶；節點不模擬完整遷徙路線或官署人口。',introducedIn:'phase4-scenario-3' },
+  { id:'guandu-campaign-200',kind:'event',title:'官渡之戰',startYear:200,endYear:200,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉建安五年記曹操與袁紹相拒官渡、烏巢糧運遭襲及袁軍潰敗；本內容包採年級精度，不推定遊戲模型月份。',causes:['guandu-campaign'],carrier:'曹操與袁紹（歷史事件）',description:'記錄曹操、袁紹於官渡相持後袁軍潰敗的年級節點；不模擬完整戰役、兵力、補給或勢力控制。',introducedIn:'phase4-scenario-9' },
   { id:'red-cliffs-208',kind:'event',title:'赤壁交戰',startYear:208,endYear:208,precision:'year',source:'《三國志》卷四十七〈吳主傳〉記建安十三年周瑜、程普與劉備軍於赤壁擊敗曹軍；本內容包採年級精度。',causes:['southern-alliance','cao-southward-campaign'],carrier:'孫劉聯軍與曹軍（歷史事件）',description:'建安十三年赤壁交戰形成重要戰局變化；不推演完整戰場、兵力或地點爭議。',introducedIn:'phase4-scenario-3' },
   { id:'guan-yu-falls-219',kind:'event',title:'荊州失守、關羽遇害',startYear:219,endYear:219,precision:'year',source:'《三國志》卷三十六〈蜀書·關張馬黃趙傳〉記建安二十四年關羽退軍後，孫權部將於臨沮截擊並斬關羽及其子平；本內容包按公元 219 年採年級精度。',causes:['jingzhou-campaign-collapse'],carrier:'孫權軍與關羽部（歷史事件）',description:'記錄荊州戰局逆轉及關羽遇害；不模擬完整戰役、各地控制權或後續人物命運。',introducedIn:'phase4-scenario-6' },
   { id:'wei-han-transition-220',kind:'event',title:'漢魏禪代',startYear:220,endYear:220,precision:'year',source:'《三國志》卷二〈魏書·文帝紀〉載延康元年漢帝禪位於魏王；本內容包採年級精度。',causes:['han-dynasty-abdication'],carrier:'漢帝與魏王朝廷（歷史事件）',description:'延康元年禪代標記漢魏政權更替；不自動令玩家世界統一或結局。',introducedIn:'phase4-scenario-3' },
