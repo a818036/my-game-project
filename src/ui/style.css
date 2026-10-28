@@ -165,6 +165,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .narrative-paragraph{max-width:72ch;margin:.9rem 0;font-size:var(--reader-size,18px);line-height:1.7}
 .narrative-suggestions{color:var(--ink-soft)}
 .ai-narrative .button-row{display:flex;flex-wrap:wrap;gap:.7rem}
+.plan-review h3{margin:0 0 .5rem;color:var(--wood)}
+.plan-review h3:focus{outline:3px solid var(--seal);outline-offset:3px}
 .plan-review .conflict{color:#8f291e}
 
 .chatgpt-connection { margin: 1rem 0; padding: 1rem; border-bottom: 1px solid var(--line, #c8baa5); overflow-wrap: anywhere; }
