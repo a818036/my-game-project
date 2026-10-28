@@ -3,8 +3,8 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-14';
-const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3','phase4-scenario-4','phase4-scenario-5','phase4-scenario-6','phase4-scenario-7','phase4-scenario-8','phase4-scenario-9','phase4-scenario-10','phase4-scenario-11','phase4-scenario-12','phase4-scenario-13',PHASE4_CONTENT_VERSION] as const;
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-15';
+const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3','phase4-scenario-4','phase4-scenario-5','phase4-scenario-6','phase4-scenario-7','phase4-scenario-8','phase4-scenario-9','phase4-scenario-10','phase4-scenario-11','phase4-scenario-12','phase4-scenario-13','phase4-scenario-14',PHASE4_CONTENT_VERSION] as const;
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; playerVisitTrustGain:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, playerVisitTrustGain:2,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -22,6 +22,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'lu-bu-xiapi-198',kind:'event',title:'下邳之戰與呂布敗亡',startYear:198,endYear:198,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉及卷三十二〈蜀書·先主傳〉記建安三年曹操征呂布、圍下邳並擒殺呂布；本內容包採年級精度。',causes:['lu-bu-downfall'],carrier:'曹操與呂布（歷史事件）',description:'記錄曹操圍下邳、呂布敗亡的年級節點；不模擬完整攻城、兵力、決水細節或徐州控制變化。',introducedIn:'phase4-scenario-10' },
   { id:'guandu-campaign-200',kind:'event',title:'官渡之戰',startYear:200,endYear:200,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉建安五年記曹操與袁紹相拒官渡、烏巢糧運遭襲及袁軍潰敗；本內容包採年級精度，不推定遊戲模型月份。',causes:['guandu-campaign'],carrier:'曹操與袁紹（歷史事件）',description:'記錄曹操、袁紹於官渡相持後袁軍潰敗的年級節點；不模擬完整戰役、兵力、補給或勢力控制。',introducedIn:'phase4-scenario-9' },
   { id:'yuan-shao-dies-202',kind:'event',title:'袁紹病卒與袁氏繼承',startYear:202,endYear:202,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉記官渡之敗後袁紹發病吐血，建安七年五月卒；本內容包採年級精度，不將史料月份映射為模型月份。',causes:['yuan-family-succession'],carrier:'袁紹與袁氏諸子（歷史事件）',description:'記錄袁紹去世及繼承轉折；不預設袁氏諸子後續結果，不模擬完整內戰或勢力疆界。',introducedIn:'phase4-scenario-11' },
+  { id:'yuan-brothers-conflict-203',kind:'event',title:'袁譚袁尚爭冀州',startYear:203,endYear:203,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉建安八年記袁譚、袁尚爭冀州，袁譚敗退平原並遣辛毗向曹操求援；本內容包採年級精度。',causes:['yuan-family-conflict'],carrier:'袁譚、袁尚與曹操（歷史事件）',description:'記錄袁氏兄弟衝突及袁譚求援的轉折；不把政治聯姻草議當成穩定控制，也不模擬完整戰役。',introducedIn:'phase4-scenario-15' },
   { id:'ye-falls-204',kind:'event',title:'鄴城陷落與袁氏河北局勢逆轉',startYear:204,endYear:204,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉建安九年記曹操圍鄴，審配敗而被擒斬，鄴城平定；本內容包採年級精度。',causes:['ye-siege-and-fall'],carrier:'曹操與袁氏守軍（歷史事件）',description:'記錄鄴城陷落及河北局勢轉折；不模擬完整圍城、人口損耗或郡縣控制。',introducedIn:'phase4-scenario-14' },
   { id:'yuan-tan-defeat-205',kind:'event',title:'袁譚敗亡與袁氏勢力轉折',startYear:205,endYear:205,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉建安十年春正月記曹操攻袁譚並斬之，袁熙、袁尚其後奔烏桓；本內容包採年級精度。',causes:['yuan-tan-defeat'],carrier:'曹操、袁譚與袁氏餘部（歷史事件）',description:'記錄袁譚敗亡及袁氏勢力轉折；不模擬完整戰役、兵力或河北控制細節。',introducedIn:'phase4-scenario-13' },
   { id:'white-wolf-mountain-207',kind:'event',title:'白狼山戰事與烏桓勢力轉折',startYear:207,endYear:207,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉建安十二年記曹操北征烏桓、白狼山交戰，蹋頓被斬，袁尚、袁熙奔遼東後為公孫康所斬；本內容包採年級精度。',causes:['wuhuan-northern-campaign'],carrier:'曹操、蹋頓與袁尚、袁熙（歷史事件）',description:'記錄北征烏桓及袁氏餘部轉折；不模擬完整行軍路線、兵力、戰場或塞外疆界。',introducedIn:'phase4-scenario-12' },
