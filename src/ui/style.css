@@ -165,3 +165,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .narrative-suggestions{color:var(--ink-soft)}
 .ai-narrative .button-row{display:flex;flex-wrap:wrap;gap:.7rem}
 .plan-review .conflict{color:#8f291e}
+
+.chatgpt-connection { margin: 1rem 0; padding: 1rem; border-bottom: 1px solid var(--line, #c8baa5); overflow-wrap: anywhere; }
+.chatgpt-connection summary { cursor: pointer; font-weight: 600; }
+.chatgpt-connection p { line-height: 1.7; }
+.chatgpt-connection select { max-width: 100%; width: 100%; }
+.chatgpt-connection .button-row { flex-wrap: wrap; }

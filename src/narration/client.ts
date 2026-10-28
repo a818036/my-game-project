@@ -6,7 +6,7 @@ export interface NarrationPayload {
   playerView:{location:string;trend:string;knownFacts:string[]};
   visibleNpcs:Array<{id:string;name:string;age:number;office:string;present:true;knownFacts:string[]}>;
 }
-export interface NarrationResult { paragraphs:string[]; dialogue:Array<{speakerId:string;text:string}>; suggestions:string[]; source?:'mock'|'openai'|'template'; }
+export interface NarrationResult { paragraphs:string[]; dialogue:Array<{speakerId:string;text:string}>; suggestions:string[]; source?:'mock'|'openai'|'chatgpt'|'template'; }
 export function buildNarrationPayload(state:GameState,event:GameEvent):NarrationPayload{
   const observations=state.phase2?.observations??[];
   const knownFacts=observations.filter(item=>item.witnessId==='protagonist').flatMap(item=>item.known);
@@ -38,5 +38,7 @@ export function validateNarrationResult(value:unknown,payload:NarrationPayload):
 export async function fetchNarration(payload:NarrationPayload,signal:AbortSignal):Promise<NarrationResult>{
   const response=await fetch('/api/narration',{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(typeof body.error==='string'?body.error:`敘事代理回應 ${response.status}`);}
-  return {...validateNarrationResult(await response.json(),payload),source:response.headers.get('X-Narration-Provider')==='openai'?'openai':'mock'};
+  const provider=response.headers.get('X-Narration-Provider');
+  return {...validateNarrationResult(await response.json(),payload),source:provider==='chatgpt'?'chatgpt':provider==='openai'?'openai':'mock'};
 }
+

@@ -5,6 +5,7 @@ import { kinshipTerm, STAT_NAMES, type AccountName, type AssetName, type Phase2A
 import { EXAMPLE_LANGUAGE, OFFICIAL_ABILITIES, sampleLightningContext, type AbilityCombinationId, type AbilityId, type HarmIntent, type IllusionDistribution, type InnateAction, type RealityDepth } from '../innate';
 import { ENGINEERING, HISTORY_CONTENT, type ControlLevel, type Phase4Action, type PolicyId, type WarUnit } from '../phase4';
 import { interpretWithConfiguredProvider, validateFreeTextCandidate, type FreeTextCandidate } from '../narration/actions';
+import { ChatGptConnection } from './ChatGptConnection';
 import { buildNarrationPayload, fetchNarration, templateNarration, type NarrationPayload, type NarrationResult } from '../narration/client';
 
 const blankWorkspace: WorkspaceSnapshot = { saves: [], profile: { regions: [], surnames: [], activeWorldlineId: null } };
@@ -273,6 +274,7 @@ export default function App() {
 
   if (!ready) return <main className="loading">正在開啟你的世界線……</main>;
   if (!state || newTimeline) return <main className="start-page"><section className="start-card">
+    <ChatGptConnection />
     <p className="eyebrow">東漢・出生確認　｜　第五階段開發中原型</p><h1>神洲三國</h1><p className="lead">先確認你的名字與出生結果，再從出生之年展開一條獨立世界線。</p>
     <label className="reader-control">閱讀字體　{fontSize}px<input type="range" min="16" max="24" step="1" value={fontSize} onChange={(event)=>setFontSize(Number(event.target.value))} /></label>
     <label>名字（不含姓氏）<input maxLength={16} value={name} onChange={(e) => { setName(e.target.value); setConfirmed(false); }} placeholder="輸入主角名字" /></label>
@@ -294,6 +296,7 @@ export default function App() {
     ? { version: ENGINE_VERSION, commandId: commandId(), expectedRevision: state.revision, worldlineId: state.worldlineId, type: 'Continue' }
     : { version: ENGINE_VERSION, commandId: commandId(), expectedRevision: state.revision, worldlineId: state.worldlineId, type: 'ChooseIntent', intent: intent! };
   return <main className="game-shell">
+    <ChatGptConnection />
     <header className="topbar"><div><span className="brand-mark">神</span><strong>神洲三國</strong><span className="tag">示例原型</span></div><div className="top-actions">
       <label className="reader-control compact">字體 {fontSize}px<input aria-label="調整閱讀字體大小" type="range" min="16" max="24" step="1" value={fontSize} onChange={(event)=>setFontSize(Number(event.target.value))} /></label>
       <select aria-label="切換世界線" value={state.worldlineId} onChange={(e) => void switchTimeline(e.target.value)}>{workspace.saves.map((save) => <option key={save.worldlineId} value={save.worldlineId}>{saveName(save)}</option>)}</select>
@@ -303,7 +306,7 @@ export default function App() {
     <div className="layout"><section className="main-column">
       {phase2 && <article className="panel scene-panel story-panel"><div className="section-kicker">眼前</div><p className="scene-place"><b>{phase2.scene.location}</b><span>第 {phase2.scene.turn} 回合・在場 {phase2.scene.presentIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</span></p><p className="scene-arrivals">新到：{phase2.scene.enteredIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}；離去：{phase2.scene.leftIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</p>
         {phase2.scene.speeches.map((speech, index) => <p className="speech" key={`${speech.speakerId}-${index}`}><b>{speech.label}：</b>「{speech.text}」</p>)}
-        {narrative&&<section className="ai-narrative" aria-live="polite"><div className="section-kicker">本回合敘事・{narrationPending?'生成中':narrationError?'範本回退':narrative.source==='mock'?'本機 mock':narrative.source==='openai'?'供應者生成':'範本'}</div>{narrative.paragraphs.map((paragraph,index)=><p className="narrative-paragraph" key={`p-${index}`}>{paragraph}</p>)}{(()=>{const spoken=new Set(phase2.scene.speeches.map(item=>item.speakerId));return narrative.dialogue.map((line,index)=>{const speaker=phase2.persons.find(person=>person.id===line.speakerId);if(!speaker||!phase2.scene.presentIds.includes(speaker.id))return null;const age=Math.max(0,(state?.world.year??speaker.birthYear)-speaker.birthYear);const prior=spoken.has(speaker.id);spoken.add(speaker.id);return <p className="speech" key={`d-${index}`}><b>{prior?speaker.name:`${speaker.name}（${age}歲，${speaker.office||'白身'}）`}：</b>「{line.text}」</p>;});})()}{narrative.suggestions.length>0&&<p className="narrative-suggestions">可考慮：{narrative.suggestions.join('；')}</p>}{narrationError&&<p className="notice" role="status">{narrationError}</p>}<div className="button-row">{narrationPending&&<button className="quiet" onClick={()=>narrationAbort.current?.abort()}>取消敘事生成</button>}{!narrationPending&&narrationError&&<button className="quiet" onClick={()=>{if(narrationPayload.current)void generateNarrative(narrationPayload.current);}}>重試敘事（不重跑行動）</button>}</div></section>}</article>}
+        {narrative&&<section className="ai-narrative" aria-live="polite"><div className="section-kicker">本回合敘事・{narrationPending?'生成中':narrationError?'範本回退':narrative.source==='mock'?'本機 mock':narrative.source==='chatgpt'?'ChatGPT 訂閱生成':narrative.source==='openai'?'供應者生成':'範本'}</div>{narrative.paragraphs.map((paragraph,index)=><p className="narrative-paragraph" key={`p-${index}`}>{paragraph}</p>)}{(()=>{const spoken=new Set(phase2.scene.speeches.map(item=>item.speakerId));return narrative.dialogue.map((line,index)=>{const speaker=phase2.persons.find(person=>person.id===line.speakerId);if(!speaker||!phase2.scene.presentIds.includes(speaker.id))return null;const age=Math.max(0,(state?.world.year??speaker.birthYear)-speaker.birthYear);const prior=spoken.has(speaker.id);spoken.add(speaker.id);return <p className="speech" key={`d-${index}`}><b>{prior?speaker.name:`${speaker.name}（${age}歲，${speaker.office||'白身'}）`}：</b>「{line.text}」</p>;});})()}{narrative.suggestions.length>0&&<p className="narrative-suggestions">可考慮：{narrative.suggestions.join('；')}</p>}{narrationError&&<p className="notice" role="status">{narrationError}</p>}<div className="button-row">{narrationPending&&<button className="quiet" onClick={()=>narrationAbort.current?.abort()}>取消敘事生成</button>}{!narrationPending&&narrationError&&<button className="quiet" onClick={()=>{if(narrationPayload.current)void generateNarrative(narrationPayload.current);}}>重試敘事（不重跑行動）</button>}</div></section>}</article>}
       {phase2?.worldUpdates.length ? <article className="panel folds"><details><summary>收合世界外事件・自動後台</summary>{phase2.worldUpdates.slice(-4).map((update, index) => <p key={`${state.worldlineId}-world-${index}`}>{update}</p>)}</details></article> : null}
       {state.historicalNodes.length > 0 && <article className="panel trend"><div className="section-kicker">歷史節點・示例</div>{state.historicalNodes.slice(-2).map((node, i) => <p key={i}>{node}</p>)}</article>}
       {state.status === 'playing' ? <article className="panel intents"><div className="panel-heading"><div><div className="section-kicker">本回合行動</div><h2>安排一份行動計畫</h2></div><span className="round">{state.turn} / {MAX_TURNS}</span></div>
@@ -407,3 +410,4 @@ export default function App() {
     <footer>神洲三國・第四階段示例原型　<span>自動保存・事件版本 {state.engineVersion}</span></footer>
   </main>;
 }
+

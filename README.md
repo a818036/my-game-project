@@ -93,3 +93,9 @@ Chromium 實際操作檢查：相同姓名、世界線種子、191 年節點與�
 畫面證據：[桌面改版前](docs/screenshots/pr4-before-desktop.png)、[桌面改版後](docs/screenshots/pr4-after-desktop.png)、[手機改版前](docs/screenshots/pr4-before-mobile.png)、[手機改版後](docs/screenshots/pr4-after-mobile.png)、[手機行動表單壓力測試](docs/screenshots/pr4-ui-validation-mobile.png)、[桌面行動表單壓力測試](docs/screenshots/pr4-ui-validation-desktop.png)、[長篇正文桌面](docs/screenshots/pr4-ui-long-story-desktop.png)與[手機](docs/screenshots/pr4-ui-long-story-mobile.png)。死亡窗口於第 84 回合的[桌面](docs/screenshots/pr4-death-window-desktop.png)與[手機](docs/screenshots/pr4-death-window-mobile.png)畫面另存。
 
 目前沒有部署的遊戲預覽站。從本機啟動後可用 `http://localhost:5173` 試玩；同一區網手機可連線至開發電腦的區網 IP 與 Vite 埠號。
+
+
+## ChatGPT 訂閱登入（本機個人使用）
+
+已加入官方 OAuth 訂閱模式，不需要 OPENAI_API_KEY。執行 npm.cmd run narration:chatgpt，再開啟遊戲的「AI 連線設定」登入與選擇模型。API 與 mock 模式保留，不自動切換付費模式。完整流程、資格、額度邊界與待本人驗證項目見 [訂閱登入指南](docs/CHATGPT_SUBSCRIPTION.md)。
+

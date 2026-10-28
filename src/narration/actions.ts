@@ -81,7 +81,7 @@ export async function interpretWithConfiguredProvider(text:string,selected:Inten
   try{
     const health=await fetch('/api/health',{signal});if(!health.ok)throw new Error('無法確認行動解析服務狀態');
     const status=await health.json() as {provider?:string};
-    if(status.provider!=='openai')return {...local(),interpretationSource:'本機確定性解析（mock 模式）'};
+    if(!['openai','chatgpt'].includes(status.provider??''))return {...local(),interpretationSource:'本機確定性解析（mock 模式）'};
     const response=await fetch('/api/interpret',{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({text,selectedIntents:selected,targets})});
     const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(typeof result.error==='string'?result.error:`解析服務回應 ${response.status}`);
     if(!result||typeof result!=='object'||Object.keys(result).some(key=>!['actions','questions','unsupported','unparsedText'].includes(key))||!Array.isArray(result.actions)||!Array.isArray(result.questions)||!Array.isArray(result.unsupported)||typeof result.unparsedText!=='string')throw new Error('供應者行動解析格式無效');
@@ -104,3 +104,4 @@ export async function interpretWithConfiguredProvider(text:string,selected:Inten
     const candidate=local();candidate.interpretationSource=`本機確定性回退（AI 解析失敗：${error instanceof Error?error.message:'未知錯誤'}）`;return candidate;
   }
 }
+
