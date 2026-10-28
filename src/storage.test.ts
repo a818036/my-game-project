@@ -86,13 +86,20 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.events[0]).toEqual(legacyStart);
     expect(migrated.events).toHaveLength(2);
     expect(migrated.events[1].type).toBe('Phase4ContentUpdated');
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-2');
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-3');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='yellow-turban-184')?.status).toBe('triggered');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='palace-succession-189')?.status).toBe('pending');
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='emperor-relocates-xu-196')?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
     await commitWorldline(old,noHistory);const loaded=await loadWorkspace();expect(loaded.saves[0]).toEqual(migrated);
     const archiveDb=await openSaveDb();const archived=await new Promise<SaveFile|undefined>((resolve,reject)=>{const tx=archiveDb.transaction('profile','readonly');const request=tx.objectStore('profile').get(`legacy:${old.worldlineId}:v6-phase4-scenario-1`);request.onsuccess=()=>resolve(request.result as SaveFile|undefined);request.onerror=()=>reject(request.error);});archiveDb.close();expect(archived).toEqual(old);
+  });
+
+  it('較早的 phase4-scenario-2 更新事件在新內容版本中仍可重播並接續升級',()=>{
+    const current=makeSave('phase6-version-chain');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');const {phase4ContentVersion:_version,...payload}=start.payload;const legacyStart:GameEvent={...start,payload};let state=applyEvent(null,legacyStart)!;const events:GameEvent[]=[legacyStart];
+    const update2:GameEvent={version:ENGINE_VERSION,eventId:`${state.worldlineId}:2`,commandId:'phase4-content-v2',commandHash:'phase4-content-v2',revision:2,type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-2'}};state=applyEvent(state,update2);events.push(update2);expect(state.phase4?.nodes.some(node=>node.contentId==='yellow-turban-184')).toBe(true);expect(state.phase4?.nodes.some(node=>node.contentId==='emperor-relocates-xu-196')).toBe(false);
+    const update3:GameEvent={version:ENGINE_VERSION,eventId:`${state.worldlineId}:3`,commandId:'phase4-content-v3',commandHash:'phase4-content-v3',revision:3,type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-3'}};state=applyEvent(state,update3);events.push(update3);expect(state.phase4?.nodes.some(node=>node.contentId==='emperor-relocates-xu-196')).toBe(true);expect(replay(events)).toEqual(state);
   });
 
   it('歷史內容更新不回溯觸發早於存檔年份的事件',()=>{
