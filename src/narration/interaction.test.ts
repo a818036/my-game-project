@@ -27,6 +27,11 @@ describe('即時人物對話',()=>{
     const unclear=await understandInput('「你好」',current,new AbortController().signal);expect(unclear.answer).toContain('縣亭佐吏');expect(fetchMock).not.toHaveBeenCalled();
     const absent=await understandInput('對母親說：你好',current,new AbortController().signal);expect(absent.answer).toContain('目前不在場');expect(fetchMock).not.toHaveBeenCalled();
   });
+  it('玩家詢問指定年份的史實時直接引用年表，不必連線模型或推進回合',async()=>{
+    const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    const result=await understandInput('西元 206 年發生了什麼事？',current,new AbortController().signal);
+    expect(result).toMatchObject({kind:'question',source:'已核對的遊戲年表'});expect(result.answer).toContain('高幹敗走與壺關平定');expect(result.answer).toContain('《三國志》卷一');expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
+  });
   it('重大能力救援、戰爭與主權指令走專用入口，不送到模型或轉成生活行動',async()=>{
     const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
     const result=await understandInput('請直接治療已經死亡的孫堅，並批准永久割讓潁川郡。',current,new AbortController().signal);

@@ -1,6 +1,6 @@
 import type {GameState} from '../engine';
 import type {Phase2Person} from '../phase2';
-import {answerKnownRulerQuestion,answerKnownTrendQuestion,currentAge,currentRulerFact,lifeChoices,localInteraction,type InteractionResult} from '../life';
+import {answerKnownHistoricalEventQuestion,answerKnownRulerQuestion,answerKnownTrendQuestion,currentAge,currentRulerFact,lifeChoices,localInteraction,type InteractionResult} from '../life';
 
 export interface DialogueExchange {speakerId:string;speakerName:string;playerText:string;npcText:string;}
 
@@ -40,6 +40,8 @@ export async function understandInput(text:string,state:GameState,signal:AbortSi
   if(factualAnswer)return {...factualAnswer,source:'已核對的遊戲年表'};
   const trendAnswer=answerKnownTrendQuestion(text,state);
   if(trendAnswer)return {...trendAnswer,source:'目前世界線的天下來報'};
+  const eventAnswer=answerKnownHistoricalEventQuestion(text,state);
+  if(eventAnswer)return {...eventAnswer,source:'已核對的遊戲年表'};
   const deterministic=local;
   if(deterministic.kind==='action')return {...deterministic,source:'已辨識的明確生活行動；確認後執行'};
   const choices=lifeChoices(state);

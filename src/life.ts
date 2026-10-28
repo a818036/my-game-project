@@ -1,4 +1,5 @@
 import type {GameState,Intent} from './engine';
+import {HISTORY_CONTENT} from './phase4';
 
 export interface LifeChoice {id:string;label:string;description:string;days:number;growth:'study'|'practice'|'social'|null;intent?:Intent;}
 // Versioned prototype policy, not biological or canonical ability limits.
@@ -56,6 +57,18 @@ export function answerKnownRulerQuestion(text:string,state:GameState):Interactio
 export function answerKnownTrendQuestion(text:string,state:GameState):InteractionResult|null{
   if(!/(天下大勢|天下局勢|時局|政局|外面.{0,4}消息|最近.{0,4}消息)/.test(text))return null;
   return {kind:'question',answer:`目前畫面上的天下來報是：「${state.trend}」這是原型每回合更新的示例消息，不是完整史實資料；沒有提供更多遠方詳情。`,choiceIds:[],questions:[]};
+}
+export function answerKnownHistoricalEventQuestion(text:string,state:GameState):InteractionResult|null{
+  if(!/(發生|事件|大事|史實|何事|什麼|哪些)/.test(text))return null;
+  const explicitYear=text.match(/(?:西元|公元)?\s*([1-9]\d{2,3})\s*年/);
+  const asksCurrentYear=/(今年|這年|這一年|目前這年|當年|現在這年)/.test(text);
+  if(!explicitYear&&!asksCurrentYear)return null;
+  const year=explicitYear?Number(explicitYear[1]):state.world.year;
+  const records=HISTORY_CONTENT.filter(item=>item.kind==='event'&&item.source.startsWith('《')&&item.startYear<=year&&item.endYear>=year);
+  const answer=records.length
+    ? `西元 ${year} 年已收錄的史實年級節點：${records.map(item=>`${item.title}。${item.description} 資料：${item.source}`).join('；')}`
+    : `目前年表尚未涵蓋西元 ${year} 年的具體史實；我不臆測。`;
+  return {kind:'question',answer,choiceIds:[],questions:[]};
 }
 export function localInteraction(text:string,state:GameState):InteractionResult{
   const clean=text.trim(),catalog=lifeChoices(state);
