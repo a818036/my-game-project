@@ -51,8 +51,8 @@ export function localInteraction(text:string,state:GameState):InteractionResult{
   if(/不合理|沒邏輯|有問題|怎麼會|為什麼/.test(clean))return{kind:'objection',answer:'這是對情境的質疑，並非行動指令。我會保留目前狀態；請指出不合理的人物、行動或結果。',choiceIds:[],questions:[]};
   if(/[?？]|能不能|可不可以|可以嗎|在哪|現在能|能做什麼/.test(clean))return{kind:'question',answer:`目前在${state.phase2?.scene.location??state.character.home}。可確認的生活選項：${catalog.map(c=>c.label).join('、')}。其他能力請使用天生技操作台；詢問不會執行已勾選行動。`,choiceIds:[],questions:[]};
   if(/^(對|向).*(說|問)|^「|^"/.test(clean))return{kind:'dialogue',answer:'已辨識為對話。這裡尚不直接代替 NPC 回話；請確認在場對象與想說的內容。對話不會被換成外出或經商。',choiceIds:[],questions:['目前先保留對話文字，未建立人物反應。']};
-  const stripped=clean.replace(/^(我想|我要|請|我)/,'').replace(/[。！!\s]/g,'');
-  const choices=catalog.filter(c=>stripped===c.label);
+  const stripped=clean.replace(/^(我想|我要|我決定|我選擇|請幫我|幫我|請|我)/,'').replace(/^(先|去|做|進行)/,'').replace(/[。！!\s]/g,'');
+  const choices=catalog.filter(c=>stripped===c.label||stripped===`一下${c.label}`||stripped===`去${c.label}`);
   if(choices.length===1)return{kind:'action',answer:'已辨識具體行動，確認後才執行。',choiceIds:choices.map(c=>c.id),questions:[]};
   return{kind:'unclear',answer:'目前無法可靠判斷這段話的意思，未執行任何行動。',choiceIds:[],questions:['請說明是在詢問、對話，還是要採取哪項行動。']};
 }

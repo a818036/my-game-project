@@ -3,6 +3,8 @@ import {answerKnownRulerQuestion,currentRulerFact,lifeChoices,localInteraction,t
 export async function understandInput(text:string,state:GameState,signal:AbortSignal):Promise<InteractionResult>{
   const factualAnswer=answerKnownRulerQuestion(text,state);
   if(factualAnswer)return {...factualAnswer,source:'已核對的遊戲年表'};
+  const deterministic=localInteraction(text,state);
+  if(deterministic.kind==='action')return {...deterministic,source:'已辨識的明確生活行動；確認後執行'};
   const choices=lifeChoices(state);
   try{
     const health=await fetch('/api/health',{signal});if(!health.ok)throw new Error('無法連線');
