@@ -44,6 +44,7 @@ export function currentRulerFact(year:number):string|null{
   if(year>=190&&year<220)return `西元 ${year} 年，東漢皇帝是漢獻帝劉協（《後漢書·孝獻帝紀》）。`;
   if(year===220)return '西元 220 年，漢獻帝劉協禪位於魏王曹丕，漢魏政權更替；本原型只記年級節點，不表示遊戲模型月對應禪代日期。資料見《三國志》卷二〈魏書·文帝紀〉。';
   if(year===221)return '西元 221 年，劉備於成都即皇帝位，建立蜀漢政權；本原型只記年級節點，不表示遊戲模型月對應即位日期。資料見《三國志》卷三十二〈蜀書·先主傳〉。';
+  if(year===229)return '西元 229 年，孫權於南郊即皇帝位，建立孫吳帝制；本原型只記年級節點，不表示遊戲模型月對應即位日期。資料見《三國志》卷四十七〈吳主傳〉。';
   return null;
 }
 export function answerKnownRulerQuestion(text:string,state:GameState):InteractionResult|null{
