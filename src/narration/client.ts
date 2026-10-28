@@ -2,6 +2,7 @@ import type { GameEvent, GameState, PlannedActionDetail } from '../engine';
 
 export interface NarrationPayload {
   eventBatchId:string;
+  protagonist?:{name:string;age:number;ageMonths:number;birthYear:number;modernMemory:boolean};
   settledEvents:Array<{turn:number;title:string;details:string;resolvedActions?:PlannedActionDetail[]}>;
   playerView:{location:string;trend:string;knownFacts:string[]};
   visibleNpcs:Array<{id:string;name:string;age:number;office:string;present:true;knownFacts:string[]}>;
@@ -19,7 +20,7 @@ export function buildNarrationPayload(state:GameState,event:GameEvent):Narration
   else if(event.type==='Phase4Changed'){const entry=state.phase4?.eventLedger.at(-1);if(entry)settledEvents=[{turn:state.turn+1,title:entry.type,details:entry.detail}];}
   else if(event.type==='InnateChanged'){const consequence=state.innate?.consequences.at(-1);if(consequence)settledEvents=[{turn:state.turn+1,title:consequence.title,details:[...consequence.direct,...consequence.secondary].join('；')}];}
   else if(event.type==='Phase2Changed')settledEvents=[{turn:state.turn+1,title:'人物與家產變更',details:'人物、關係或家產命令已由規則引擎結算；未公開欄位不提供給敘事。'}];
-  return{eventBatchId:event.eventId,settledEvents,playerView:{location:state.phase2?.scene.location??state.character.home,trend:state.trend,knownFacts},visibleNpcs};
+  return{eventBatchId:event.eventId,protagonist:{name:state.character.name,age:state.character.age,ageMonths:Math.max(0,state.world.month-1),birthYear:state.character.birthYear,modernMemory:state.character.profile.modernMemory},settledEvents,playerView:{location:state.phase2?.scene.location??state.character.home,trend:state.trend,knownFacts},visibleNpcs};
 }
 export function templateNarration(payload:NarrationPayload):NarrationResult{
   const action=payload.settledEvents.at(-1);
@@ -31,7 +32,7 @@ export function validateNarrationResult(value:unknown,payload:NarrationPayload):
   if(Object.keys(value).some(key=>!['paragraphs','dialogue','suggestions'].includes(key))||!Array.isArray(result.paragraphs)||!result.paragraphs.every(item=>typeof item==='string')||!Array.isArray(result.suggestions)||!result.suggestions.every(item=>typeof item==='string')||!Array.isArray(result.dialogue))throw new Error('敘事資料格式無效');
   const allowed=new Set(payload.visibleNpcs.map(person=>person.id));
   if(result.dialogue.some(line=>!line||typeof line.speakerId!=='string'||!allowed.has(line.speakerId)||typeof line.text!=='string'))throw new Error('敘事提及不在場或未知的發言者');
-  const facts=JSON.stringify(payload.settledEvents),numbers=new Set(facts.match(/\d+(?:\.\d+)?/g)??[]),text=[...result.paragraphs,...result.suggestions,...result.dialogue.map(line=>line.text)].join('\n');
+  const facts=JSON.stringify([payload.settledEvents,payload.protagonist]),numbers=new Set(facts.match(/\d+(?:\.\d+)?/g)??[]),text=[...result.paragraphs,...result.suggestions,...result.dialogue.map(line=>line.text)].join('\n');
   if((text.match(/\d+(?:\.\d+)?/g)??[]).some(number=>!numbers.has(number)))throw new Error('敘事包含結算紀錄中不存在的數字事實');
   return result as NarrationResult;
 }

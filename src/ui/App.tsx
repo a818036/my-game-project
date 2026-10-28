@@ -5,6 +5,7 @@ import { kinshipTerm, STAT_NAMES, type AccountName, type AssetName, type Phase2A
 import { EXAMPLE_LANGUAGE, OFFICIAL_ABILITIES, sampleLightningContext, type AbilityCombinationId, type AbilityId, type HarmIntent, type IllusionDistribution, type InnateAction, type RealityDepth } from '../innate';
 import { ENGINEERING, HISTORY_CONTENT, type ControlLevel, type Phase4Action, type PolicyId, type WarUnit } from '../phase4';
 import { interpretWithConfiguredProvider, validateFreeTextCandidate, type FreeTextCandidate } from '../narration/actions';
+import { answerAgeQuestion, characterAgeLabel, isAgeQuestion } from '../narration/status';
 import { ChatGptConnection } from './ChatGptConnection';
 import { buildNarrationPayload, fetchNarration, templateNarration, type NarrationPayload, type NarrationResult } from '../narration/client';
 
@@ -54,6 +55,7 @@ export default function App() {
   const [selectedIntents, setSelectedIntents] = useState<Intent[]>([]);
   const [supplement, setSupplement] = useState('');
   const [planReview, setPlanReview] = useState(false);
+  const [statusAnswer,setStatusAnswer]=useState<{text:string;worldlineId:string;revision:number}|null>(null);
   const [planConflicts, setPlanConflicts] = useState<string[]>([]);
   const [freeTextCandidate,setFreeTextCandidate]=useState<FreeTextCandidate|null>(null);
   const [narrative,setNarrative]=useState<NarrationResult|null>(null);
@@ -157,6 +159,9 @@ export default function App() {
   async function submitActionPlan(confirmedReview = false) {
     if (!state || busyRef.current) return;
     const cleanNote = supplement.trim();
+    const answer=answerAgeQuestion(cleanNote,state);
+    if(answer){setStatusAnswer({text:answer,worldlineId:state.worldlineId,revision:state.revision});setPlanReview(false);setFreeTextCandidate(null);setPlanConflicts([]);setNotice('已回答年齡詢問；勾選項目仍保留，沒有執行。');return;}
+    setStatusAnswer(null);
     if (!selectedIntents.length && !cleanNote) { setNotice('請至少勾選一項行動，或填寫補充說明。'); return; }
     if(cleanNote&&!confirmedReview){
       busyRef.current=true;setBusy(true);setActionParsing(true);const controller=new AbortController();actionParseAbort.current=controller;
@@ -302,7 +307,7 @@ export default function App() {
       <select aria-label="切換世界線" value={state.worldlineId} onChange={(e) => void switchTimeline(e.target.value)}>{workspace.saves.map((save) => <option key={save.worldlineId} value={save.worldlineId}>{saveName(save)}</option>)}</select>
       <button className="quiet" onClick={() => { setNewTimeline(true); setConfirmed(false); }}>新建世界線</button><button className="quiet" onClick={() => exportSave()}>匯出</button><button className="quiet" onClick={() => fileRef.current?.click()}>匯入</button><input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(e) => void importSave(e.target.files?.[0])} />
     </div></header>
-    <section className="hero"><div><p className="eyebrow">{turnInterval(c.birthYear, state.turn, w.year, w.month, state.phase4?.dayOfMonth ?? 1, state.phase4?.day, state.actions.at(-1)?.elapsedDays ?? 90)}　｜　第 {state.turn} 回合</p><p className="location-line">所在・{phase2?.scene.location ?? c.home}</p><h1>{c.name}<small>　{c.age} 歲・出生於 {c.home}</small></h1><p>{c.background}（示例）・{c.health}</p></div></section>
+    <section className="hero"><div><p className="eyebrow">{turnInterval(c.birthYear, state.turn, w.year, w.month, state.phase4?.dayOfMonth ?? 1, state.phase4?.day, state.actions.at(-1)?.elapsedDays ?? 90)}　｜　第 {state.turn} 回合</p><p className="location-line">所在・{phase2?.scene.location ?? c.home}</p><h1>{c.name}<small>　{characterAgeLabel(state)}・出生於 {c.home}</small></h1><p>{c.background}（示例）・{c.health}</p></div></section>
     <div className="layout"><section className="main-column">
       {phase2 && <article className="panel scene-panel story-panel"><div className="section-kicker">眼前</div><p className="scene-place"><b>{phase2.scene.location}</b><span>第 {phase2.scene.turn} 回合・在場 {phase2.scene.presentIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</span></p><p className="scene-arrivals">新到：{phase2.scene.enteredIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}；離去：{phase2.scene.leftIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</p>
         {phase2.scene.speeches.map((speech, index) => <p className="speech" key={`${speech.speakerId}-${index}`}><b>{speech.label}：</b>「{speech.text}」</p>)}
@@ -312,10 +317,11 @@ export default function App() {
       {state.status === 'playing' ? <article className="panel intents"><div className="panel-heading"><div><div className="section-kicker">本回合行動</div><h2>安排一份行動計畫</h2></div><span className="round">{state.turn} / {MAX_TURNS}</span></div>
         {state.turn === 10 && <p className="milestone">已完成第一段十回合大記，世界線仍可繼續。</p>}
         <div className="intent-grid">{INTENTS.map((intent, i) => <label className={`intent ${selectedIntents.includes(intent)?'selected':''}`} key={intent}><input type="checkbox" checked={selectedIntents.includes(intent)} disabled={busy} onChange={(event)=>{setSelectedIntents((current)=>event.target.checked?[...current,intent]:current.filter((entry)=>entry!==intent));setFreeTextCandidate(null);setPlanReview(false);}} /><span className="intent-icon">{['禾', '士', '市', '行'][i]}</span><span><strong>{intent}</strong><small>{['耕作與讀書，累積家計及學習經驗', '訪求地方人物，交遊不等於登用成功', '往返市集，盈虧依交易結算', '遊歷附近村落，支出盤纏並聽聞消息'][i]}</small></span><b aria-hidden="true">{selectedIntents.includes(intent)?'已選':'勾選'}</b></label>)}</div>
-        <label className="supplement-label">補充說明<textarea value={supplement} disabled={busy} rows={4} onChange={(event)=>{setSupplement(event.target.value);setFreeTextCandidate(null);setPlanReview(false);}} placeholder="可填寫行動順序、對象、方式、條件；文字會先解析成候選行動供你確認。" /></label>
+        <label className="supplement-label">補充說明<textarea value={supplement} disabled={busy} rows={4} onChange={(event)=>{setSupplement(event.target.value);setStatusAnswer(null);setFreeTextCandidate(null);setPlanReview(false);}} placeholder="可填寫行動順序、對象、方式、條件；也可輸入「我幾歲？」查詢年齡，不推進時間。" /></label>
         <p className="caption">一份計畫會依各項行動需要的時間安排先後，不會因多選而重複推進整個回合。勾選只更新計畫，不會立即執行。</p>
+        {statusAnswer&&statusAnswer.worldlineId===state.worldlineId&&statusAnswer.revision===state.revision&&<section className="plan-review" role="status"><b>現況查詢・不推進時間</b><p>{statusAnswer.text}</p></section>}
         {(planReview || planConflicts.length>0) && <section className="plan-review" aria-live="polite"><b>理解結果・送出前確認</b>{selectedIntents.length>0&&<p>已勾選：{selectedIntents.join('、')}</p>}{freeTextCandidate&&<><p>解析方式：{freeTextCandidate.interpretationSource??'本機規則解析'}</p><p>文字候選：{freeTextCandidate.understood}</p><p>依此順序結算：{reviewIntents.map((intent,index)=>`${index+1}. ${intent}`).join('；')}</p>{freeTextCandidate.questions.map((question,index)=><p className="conflict" key={`q-${index}`}>{question}</p>)}{freeTextCandidate.unsupported.map((message,index)=><p className="conflict" key={`u-${index}`}>{message}</p>)}</>}{planConflicts.length>0&&<ul>{planConflicts.map((conflict,index)=><li key={index}>{conflict}</li>)}</ul>}{supplement.trim()&&<p>補充文字會一併保存。只有上列可驗證候選會成為執行條件；其他內容不會假稱已執行。</p>}{!selectedIntents.length&&!(freeTextCandidate?.actions.length)&&supplement.trim()&&<p>沒有可執行的勾選或文字行動；確認後只保存為備註，不推進時間。</p>}<div className="button-row">{(!freeTextCandidate||(!freeTextCandidate.questions.length&&!freeTextCandidate.unsupported.length))&&<button className="primary" disabled={busy||planConflicts.length>0} onClick={()=>void submitActionPlan(true)}>{selectedIntents.length||freeTextCandidate?.actions.length?'確認並送出理解結果':'只保存補充說明'}</button>}{(freeTextCandidate?.questions.length||freeTextCandidate?.unsupported.length)&&selectedIntents.length>0&&<button className="primary" disabled={busy||planConflicts.length>0} onClick={()=>void submitCheckedOnly()}>只執行勾選項目，文字存為備註</button>}{(freeTextCandidate?.questions.length||freeTextCandidate?.unsupported.length)&&!selectedIntents.length&&<button className="primary" disabled={busy} onClick={()=>void saveSupplementOnly()}>只保存備註，不執行文字行動</button>}<button className="quiet" disabled={busy} onClick={()=>{setPlanReview(false);setPlanConflicts([]);}}>返回調整</button></div></section>}
-        <button className="primary wide" disabled={busy||narrationPending||(!selectedIntents.length&&!supplement.trim())} onClick={()=>void submitActionPlan()}>{actionParsing?'解析文字候選中…':busy?'結算行動並生成故事中…':'送出行動'}</button>
+        <button className="primary wide" disabled={busy||narrationPending||(!selectedIntents.length&&!supplement.trim())} onClick={()=>void submitActionPlan()}>{actionParsing?'解析文字候選中…':busy?'結算行動並生成故事中…':isAgeQuestion(supplement)?'詢問年齡（不執行勾選行動）':'送出行動'}</button>
         {actionParsing&&<button className="quiet" onClick={()=>actionParseAbort.current?.abort()}>取消行動解析（保留文字與勾選）</button>}
         <button className="continue" disabled={busy} onClick={() => void run(nextCommand('Continue'))}>繼續目前人生（不推進時間、不批准待決事項）</button>
         {notice&&<div className="notice" role="status">{notice}<button aria-label="關閉提示" onClick={()=>setNotice('')}>×</button></div>}

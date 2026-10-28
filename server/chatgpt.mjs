@@ -120,11 +120,26 @@ export function createChatGptSession({fetchImpl=fetch,store=createRegistrationSt
 export async function readCompletedResponse(response){
   if(!response.body)throw new Error('ChatGPT 未回傳串流');
   const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='',length=0,completed;
+  const parts=new Map();
+  function collect(event){
+    if(!['response.output_text.delta','response.output_text.done'].includes(event.type))return;
+    const output=event.output_index??0,content=event.content_index??0,key=`${output}:${content}`;
+    const part=parts.get(key)??{output,content,text:''};
+    if(event.type==='response.output_text.done'&&typeof event.text==='string')part.text=event.text;
+    else if(typeof event.delta==='string')part.text+=event.delta;
+    parts.set(key,part);
+  }
   try{while(true){const {value,done}=await reader.read();buffer+=decoder.decode(value,{stream:!done});length+=value?.length??0;if(length>1000000)throw new Error('ChatGPT 回應過長，已停止讀取。');
     let end;while((end=buffer.search(/\r?\n\r?\n/))>=0){const match=buffer.slice(end).match(/^\r?\n\r?\n/)[0];const frame=buffer.slice(0,end);buffer=buffer.slice(end+match.length);const data=frame.split(/\r?\n/).filter(l=>l.startsWith('data:')).map(l=>l.slice(5).trimStart()).join('\n');if(!data||data==='[DONE]')continue;const event=JSON.parse(data);
       if(event.type==='response.failed'||event.type==='error')throw new Error(messageFor(event.response?.error?.code??event.error?.code??event.code));
       if(event.type==='response.incomplete')throw new Error('ChatGPT 回應未完成，未採用部分內容。');
-      if(event.type==='response.completed')completed=event.response;
+      collect(event);
+      if(event.type==='response.completed'){
+        completed=event.response??{};
+        if(completed.status&&completed.status!=='completed')throw new Error('ChatGPT 回應未完成，未採用部分內容。');
+        const finalText=completed.output_text||completed.output?.flatMap(item=>item.content??[]).filter(content=>content.type==='output_text').map(content=>content.text??'').join('\n');
+        if(!finalText){const text=[...parts.values()].sort((a,b)=>a.output-b.output||a.content-b.content).map(part=>part.text).join('\n');if(text)completed={...completed,output_text:text};}
+      }
     }
     if(completed)return completed;if(done)break;
   }}finally{await reader.cancel().catch(()=>{});reader.releaseLock();}

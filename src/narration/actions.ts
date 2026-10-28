@@ -98,7 +98,7 @@ export async function interpretWithConfiguredProvider(text:string,selected:Inten
     const questions=[...result.questions];if(result.unparsedText.trim())questions.push(`尚未解析的文字：「${result.unparsedText.trim()}」；請澄清，或選擇只執行已勾選行動。`);
     const conflicts=inspectActionPlan([...selected,...actions.map(action=>action.intent)]).conflicts;
     const understood=actions.length?actions.slice().sort((a,b)=>a.order-b.order).map(action=>`${action.order}. ${action.intent}${action.targetName?`（目標：${action.targetName}）`:''}${action.method?`・方式：${action.method}`:''}${action.condition?`・條件：${action.condition}`:''}`).join('；'):'沒有可結算的文字行動';
-    return {actions,conflicts,questions,unsupported:result.unsupported,understood,needsConfirmation:true,interpretationSource:'OpenAI 結構化候選（仍待玩家確認）'};
+    return {actions,conflicts,questions,unsupported:result.unsupported,understood,needsConfirmation:true,interpretationSource:`${status.provider==='chatgpt'?'ChatGPT 訂閱':'OpenAI'}結構化候選（仍待玩家確認）`};
   }catch(error){
     if(signal.aborted)throw error;
     const candidate=local();candidate.interpretationSource=`本機確定性回退（AI 解析失敗：${error instanceof Error?error.message:'未知錯誤'}）`;return candidate;

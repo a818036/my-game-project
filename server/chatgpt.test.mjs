@@ -14,7 +14,7 @@ function fixture({scope='openid chatgpt.tokens.use.direct',expires=3600,streamEv
     if(url.endsWith('/.well-known/openid-configuration'))return json({issuer:'https://auth.openai.com',jwks_uri:'https://auth.openai.com/jwks',revocation_endpoint:'https://auth.openai.com/revoke'});
     if(url.endsWith('/oauth/token'))return json({access_token:'secret-access',refresh_token:'secret-refresh',id_token:'secret-id',scope,expires_in:expires});
     if(url.endsWith('/models'))return json({models:[{slug:'available',display_name:'可用模型',visibility:'list'},{slug:'hidden',display_name:'隱藏',visibility:'hidden'}]});
-    if(url.endsWith('/responses'))return stream(streamEvents??[{type:'response.completed',response:{output_text:JSON.stringify(candidate)}}]);
+    if(url.endsWith('/responses'))return stream(streamEvents??[{type:'response.output_text.delta',output_index:0,content_index:0,delta:JSON.stringify(candidate)},{type:'response.completed',response:{status:'completed',output:[]}}]);
     if(url.endsWith('/revoke'))return new Response('',{status:200});
     throw new Error('Unexpected URL');
   });
@@ -65,6 +65,21 @@ describe('ChatGPT 官方訂閱登入（離線假服務，不消耗額度）',()=
   it('不完整、缺完成事件和分塊串流正確處理',async()=>{
     await expect(readCompletedResponse(stream([{type:'response.incomplete'}]))).rejects.toThrow('未完成');await expect(readCompletedResponse(stream([{type:'response.output_text.delta',delta:'partial'}]))).rejects.toThrow('中斷');
     const text=`data: ${JSON.stringify({type:'response.completed',response:{output_text:'中文'}})}\r\n\r\n`;const bytes=new TextEncoder().encode(text);const body=new ReadableStream({start(c){for(let i=0;i<bytes.length;i+=3)c.enqueue(bytes.slice(i,i+3));c.close();}});expect(await readCompletedResponse(new Response(body))).toEqual({output_text:'中文'});
+  });
+  it('串流文字可只出現在 delta；done 與 completed 不可重複拼接',async()=>{
+    const events=[{type:'response.output_text.delta',output_index:0,content_index:0,delta:'中'},{type:'response.output_text.delta',output_index:0,content_index:0,delta:'文'},{type:'response.output_text.done',output_index:0,content_index:0,text:'中文'},{type:'response.completed',response:{status:'completed',output:[]}}];
+    const bytes=new TextEncoder().encode(events.map(e=>`data: ${JSON.stringify(e)}\r\n\r\n`).join(''));
+    const body=new ReadableStream({start(c){for(let i=0;i<bytes.length;i+=3)c.enqueue(bytes.slice(i,i+3));c.close();}});
+    expect((await readCompletedResponse(new Response(body))).output_text).toBe('中文');
+    const final={status:'completed',output:[{type:'message',content:[{type:'output_text',text:'中文'}]}]};
+    expect(await readCompletedResponse(stream([...events.slice(0,3),{type:'response.completed',response:final}]))).toEqual(final);
+  });
+  it('多個文字部分依索引排序，推理文字不當成答案，失敗不使用已有片段',async()=>{
+    const partial=[{type:'response.reasoning_text.delta',delta:'秘密推理'},{type:'response.output_text.done',output_index:1,content_index:0,text:'乙'},{type:'response.output_text.delta',output_index:0,content_index:0,delta:'甲'}];
+    expect((await readCompletedResponse(stream([...partial,{type:'response.completed',response:{output_text:''}}]))).output_text).toBe('甲\n乙');
+    await expect(readCompletedResponse(stream([...partial,{type:'response.incomplete'}]))).rejects.toThrow('未完成');
+    await expect(readCompletedResponse(stream(partial))).rejects.toThrow('中斷');
+    await expect(readCompletedResponse(stream([...partial,{type:'response.completed',response:{status:'incomplete'}}]))).rejects.toThrow('未完成');
   });
   it('HTTP 來源防護與無登入回退，不外呼模型',async()=>{
     const f=fixture(),server=createNarrationServer({provider:'chatgpt',chatgptSession:f.session});await new Promise(r=>server.listen(0,'127.0.0.1',r));const root=`http://127.0.0.1:${server.address().port}`;

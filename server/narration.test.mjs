@@ -3,6 +3,15 @@ import {mockNarration,openAiInterpretation,openAiNarration,validateInterpretatio
 
 const payload={eventBatchId:'event-1',settledEvents:[{turn:1,title:'經商營生',details:'市集營生收入錢 5'}],playerView:{location:'家宅',trend:'僅玩家可見的天下消息',knownFacts:[]},visibleNpcs:[{id:'person-1',name:'示例人物',age:20,office:'白身',present:true,knownFacts:['親眼所見市集往來']}]};
 describe('第五階段・伺服器敘事代理',()=>{
+  it('年齡上下文可驗證且不漏過額外秘密欄位；空 output_text 仍可讀取正式 output',async()=>{
+    const current={...payload,protagonist:{name:'主角',age:0,ageMonths:2,birthYear:184,modernMemory:true}};
+    expect(()=>validateNarrationPayload(current)).not.toThrow();
+    expect(()=>validateNarrationPayload({...current,protagonist:{...current.protagonist,secret:'hidden'}})).toThrow('年齡');
+    const output={paragraphs:['主角 0 歲 2 個月。'],dialogue:[],suggestions:[]};
+    expect(validateNarrationOutput(output,validateNarrationPayload(current),current)).toEqual(output);
+    const result=await openAiNarration(current,{apiKey:'test-only',fetchImpl:async(_url,options)=>{expect(JSON.parse(options.body).instructions).toContain('不等於身體成年');return new Response(JSON.stringify({output_text:'',output:[{content:[{type:'output_text',text:JSON.stringify(output)}]}]}));}});
+    expect(result).toEqual(output);
+  });
   it('mock 只根據已結算事件形成範本且不洩漏玩家視野給人物',()=>{
     const ids=validateNarrationPayload(payload),output=validateNarrationOutput(mockNarration(payload),ids,payload);
     expect(output.paragraphs[0]).toContain('收入錢 5');
@@ -34,3 +43,4 @@ describe('第五階段・伺服器敘事代理',()=>{
     const allowed=new Map();expect(()=>validateInterpretationOutput({...candidate,actions:[{...candidate.actions[0],intent:'永久割地'}]},allowed)).toThrow('未允許');
   });
 });
+
