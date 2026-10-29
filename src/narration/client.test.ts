@@ -42,16 +42,16 @@ describe('第五階段・敘事資訊分層與回應驗證',()=>{
     expect(()=>validateNarrationResult({paragraphs:['想起庭院讀書時讀完一卷兵書。'],dialogue:[],suggestions:[]},payload)).not.toThrow();
     expect(()=>validateNarrationResult({paragraphs:[],dialogue:[{speakerId:'opening-family-0',text:'我也記得讀完一卷兵書'}],suggestions:[]},payload)).toThrow('私人回憶');
   });
-  it('戰役旁白只取得已結算的戰場位置、命令與累計軍籍，不生成場景因果',()=>{
+  it('戰役旁白只取得已結算軍籍與明確場景預置，潛在因果標記為未觸發',()=>{
     const current=state();
-    const battle={id:'battle-test',location:'汝南渡口（示例）',startedDay:3,rounds:2,status:'active' as const,overallCommander:{id:'overall',name:'總指揮・示例',unitId:null},protagonistPresent:true,witnesses:['主角近旁目擊者（局部）'],logs:['第 2 輪：傷亡已回寫各部。'],units:[{id:'unit-test',faction:'郡縣守備（示例）',commanderId:'captain-test',commanderName:'守備校尉・示例',location:'渡口北側（示例）',strength:90,reserve:5,supply:2,morale:61,fatigue:20,terrain:'渡口',wounded:3,killed:2,routed:0,order:'防守' as const}]};
+    const battle={id:'battle-test',location:'汝南渡口（示例）',startedDay:3,rounds:2,status:'active' as const,overallCommander:{id:'overall',name:'總指揮・示例',unitId:null},protagonistPresent:true,witnesses:['主角近旁目擊者（局部）'],scene:{example:true,objects:[{id:'beam',label:'承重梁（示例）',location:'弩臺上',condition:'架設中'}],potentialChains:[{id:'beam-wall',fromObjectId:'beam',toObjectId:'盾牆',triggerCondition:'若承重梁斷裂',possibleEffect:'盾牆可能受衝擊；尚未結算',affectedUnitIds:['unit-test']}],observers:[{id:'rear',side:'後陣觀察者',location:'渡口後陣',visibility:'只能辨認旗號，不能看清前列'}]},logs:['第 2 輪：傷亡已回寫各部。'],units:[{id:'unit-test',faction:'郡縣守備（示例）',commanderId:'captain-test',commanderName:'守備校尉・示例',location:'渡口北側（示例）',strength:90,reserve:5,supply:2,morale:61,fatigue:20,terrain:'渡口',wounded:3,killed:2,routed:0,order:'防守' as const}]};
     const withBattle={...current,phase4:{...current.phase4!,battle,eventLedger:[...current.phase4!.eventLedger,{id:'battle-event',day:4,year:184,month:1,dayOfMonth:5,type:'戰役輪次',detail:'第 2 輪已結算。'}]}} as GameState;
     const event={version:ENGINE_VERSION as typeof ENGINE_VERSION,eventId:'battle-event',commandId:'battle-command',commandHash:'h',revision:2,type:'Phase4Changed' as const,payload:{action:{type:'BattleRound' as const,orders:{'unit-test':'防守' as const}}}};
     withBattle.phase4!.battle=battle;
     const payload=buildNarrationPayload(withBattle,event),details=payload.settledEvents[0].details;
     expect(details).toContain('汝南渡口（示例）');expect(details).toContain('渡口北側（示例）');expect(details).toContain('第 2 輪');
     expect(details).toContain('陣亡累計2');expect(details).toContain('受傷累計3');expect(details).toContain('命令防守');expect(details).toContain('回合紀錄：第 2 輪：傷亡已回寫各部。');
-    expect(details).not.toContain('承重梁');expect(details).not.toContain('連鎖崩毀');
+    expect(details).toContain('場景預置（示例）');expect(details).toContain('承重梁（示例）');expect(details).toContain('尚未觸發或結算');expect(details).toContain('後陣觀察者在渡口後陣');expect(details).not.toContain('承重梁已斷');expect(details).not.toContain('連鎖崩毀');
     expect(()=>validateNarrationResult({paragraphs:['此輪陣亡 2 人、受傷 3 人。'],dialogue:[],suggestions:[]},payload)).not.toThrow();
     expect(()=>validateNarrationResult({paragraphs:['此輪陣亡 200 人。'],dialogue:[],suggestions:[]},payload)).toThrow('不存在的數字事實');
   });

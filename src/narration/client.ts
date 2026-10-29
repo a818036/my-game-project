@@ -36,6 +36,7 @@ export function buildNarrationPayload(state:GameState,event:GameEvent):Narration
         const latestLog=battle.logs.at(-1);
         details+=`；戰場帳：${battle.location}；第 ${battle.rounds} 輪；主角${battle.protagonistPresent?'在場':'不在場'}${latestLog?`；回合紀錄：${latestLog}`:''}；各部狀態：${unitLedger}`;
       }
+      if(battle?.scene){const scene=battle.scene,objects=scene.objects.map(object=>`${object.label}在${object.location}（${object.condition}）`).join('；'),links=scene.potentialChains.map(link=>`${scene.objects.find(object=>object.id===link.fromObjectId)?.label??link.fromObjectId}→${scene.objects.find(object=>object.id===link.toObjectId)?.label??link.toObjectId}：若${link.triggerCondition}，${link.possibleEffect}；涉及部隊 ${link.affectedUnitIds.join('、')||'未指定'}；尚未觸發或結算`).join('；'),observers=scene.observers.map(observer=>`${observer.side}在${observer.location}：${observer.visibility}`).join('；');details+='；場景預置'+(scene.example?'（示例）':'')+'：'+objects+'；潛在因果鏈（條件未成立，不是已發生結果）：'+links+'；觀察位置與視線：'+observers;}
       settledEvents=[{turn:state.turn+1,title:entry.type,details}];
     }
   }
