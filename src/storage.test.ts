@@ -4,6 +4,7 @@ import { applyEvent, createOpeningFacts, createStartEvent, dispatch, ENGINE_VERS
 import { commitWorldline, loadWorkspace, openSaveDb, parseSave, toJson, verifySave, assertSlotCompatible, type LegacySaveFile, type SaveFile } from './storage';
 import { dispatch as dispatchV3 } from './engine.v3';
 import { buildNarrationPayload } from './narration/client';
+import { PHASE4_CONTENT_VERSION } from './phase4';
 
 const noHistory: OpeningHistory = { regions: [], surnames: [] };
 function makeSave(id = 'storage-world') {
@@ -109,7 +110,8 @@ describe('A05／A06 存檔交易與重播', () => {
     const forgedRulesEvent={...rulesUpdate,payload:{...rulesUpdate.payload,sourceHashes:{...SOURCE_HASHES,rules:'0'.repeat(64)}}};
     const afterContentUpdate=applyEvent(oldState,migrated.events[1]);
     expect(()=>applyEvent(afterContentUpdate,forgedRulesEvent)).toThrow('規則來源升級事件無效');
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-21');
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='dong-zhuo-killed-192')?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='yellow-turban-184')?.status).toBe('triggered');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='palace-succession-189')?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='emperor-relocates-xu-196')?.status).toBe('pending');
