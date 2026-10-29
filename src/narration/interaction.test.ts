@@ -36,6 +36,8 @@ describe('即時人物對話',()=>{
     const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
     const result=await understandInput('孫權在 197 年做了什麼？',current,new AbortController().signal);
     expect(result).toMatchObject({kind:'question',source:'已核對的遊戲年表'});expect(result.answer).toContain('未收錄');expect(result.answer).toContain('不表示該年沒有事情發生');expect(result.answer).not.toContain('征張繡');
+    const ambiguousYear=await understandInput('孫權在 220 年做了什麼？',current,new AbortController().signal);
+    expect(ambiguousYear).toMatchObject({kind:'question',source:'已核對的遊戲年表'});expect(ambiguousYear.answer).toContain('未收錄');expect(ambiguousYear.answer).not.toContain('魏文帝受禪');expect(ambiguousYear.answer).not.toContain('稱藩');
     expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
   });
   it('孫權生平問題用有來源的精度回答；未記載的日常不送模型也不推進時間',async()=>{
