@@ -257,6 +257,36 @@ describe('228 年孫權命陸遜破曹休於石亭', () => {
   });
 });
 
+describe('234 年孫權進向合肥新城', () => {
+  const campaignId = 'sun-quan-campaigns-at-hefei-234';
+
+  it('依《三國志》按年級記錄進軍、分遣及魏廷東征，不臆造戰果', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === campaignId);
+    expect(content).toMatchObject({ startYear: 234, endYear: 234, precision: 'year', introducedIn: 'phase4-scenario-98', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('《三國志》卷三');
+    expect(content?.source).toContain('陸議、孫韶');
+    expect(content?.source).toContain('六月吳軍還');
+    expect(content?.description).toContain('不推演戰鬥');
+  });
+
+  it('v97 年級存檔跨年至 234 年觸發；同年及晚載入不回補', () => {
+    const old = createPhase4Model(233, 1, persons, 'phase4-scenario-97');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === campaignId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === campaignId)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.detail.includes('孫權進向合肥新城'))?.source).toContain('五月');
+
+    const sameYear = upgradePhase4Content(createPhase4Model(234, 1, persons, 'phase4-scenario-97'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === campaignId)).toMatchObject({ status: 'resolved', resolvedYear: 234 });
+    expect(sameYear.eventLedger.some((item) => item.detail.includes('孫權進向合肥新城'))).toBe(false);
+    const late = upgradePhase4Content(createPhase4Model(235, 1, persons, 'phase4-scenario-97'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === campaignId)).toMatchObject({ status: 'resolved', resolvedYear: 234 });
+  });
+});
+
 describe('183 年北海、東萊、琅邪寒候記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
