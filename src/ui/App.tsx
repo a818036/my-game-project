@@ -9,7 +9,7 @@ import { characterAgeLabel } from '../narration/status';
 import {computeBattleVisibility} from '../battle-geometry';
 import { ActivityAnnouncer } from './ActivityAnnouncer';
 import { NameDialog } from './NameDialog';
-import { HistoricalGeographyRegisters } from './HistoricalGeographyRegisters';
+const HistoricalGeographyRegisters=lazy(()=>import('./HistoricalGeographyRegisters').then(({HistoricalGeographyRegisters})=>({default:HistoricalGeographyRegisters})));
 const LifeActionPanel=lazy(()=>import('./LifeActionPanel').then(({LifeActionPanel})=>({default:LifeActionPanel})));
 const ChatGptConnection=lazy(()=>import('./ChatGptConnection').then(({ChatGptConnection})=>({default:ChatGptConnection})));
 const EndingChoice=lazy(()=>import('./EndingChoice').then(({EndingChoice})=>({default:EndingChoice})));
@@ -332,7 +332,7 @@ export default function App() {
       <section className="phase4-subsection" aria-labelledby="han-geography-heading"><h3 id="han-geography-heading">東漢州部索引・史料摘要</h3>
         <p>《後漢書》所載 {HAN_INSPECTOR_DIVISION_COUNT} 州刺史部合計 {HAN_INSPECTOR_COMMANDERY_TOTAL} 郡國；司隸校尉部另列七郡。這是行政層級索引，不是精確對應某一遊戲年份的疆界圖；州郡不會因此成為可控制領地。</p>
         <ul className="division-index" aria-label="東漢州部與郡國數索引">{HAN_DIVISION_INDEX.map((division)=><li key={division.id}><b>{division.name}</b><span>{division.divisionType}・{division.commanderyCount} 郡國</span></li>)}</ul>
-        <HistoricalGeographyRegisters />
+        <Suspense fallback={<p className="caption" role="status">正在載入郡縣名錄…</p>}><HistoricalGeographyRegisters /></Suspense>
         <p className="caption">州部史料：《後漢書》卷一一八〈百官志五〉記建武十八年外十二州刺史設置，並列十二部郡國數；卷一〇九〈郡國志一〉列司隸河南尹、河內、河東、弘農、京兆、左馮翊、右扶風七部。各段記述年代與制度背景不完全相同，本表不拼成單一年份的行政地圖；上列郡縣名錄均為局部參考，不含縣級邊界、座標、路線或勢力歸屬。</p>
         <p className="caption"><a href={HAN_DIVISION_SOURCE_URLS.inspectorDivisions} target="_blank" rel="noreferrer">查閱《後漢書》卷一一八</a> ・ <a href={HAN_DIVISION_SOURCE_URLS.sili} target="_blank" rel="noreferrer">查閱《後漢書》卷一〇九</a></p>
       </section>
