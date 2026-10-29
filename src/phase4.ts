@@ -135,6 +135,40 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'sun-jian-death-191',kind:'death',title:'孫堅死亡硬節點',startYear:191,endYear:191,precision:'year',source:'《三國志》卷四十六〈吳書一·孫破虜討逆傳〉；此內容包僅取 191 年年級精度，不主張精確月日。',causes:['campaign-risk'],carrier:'孫堅',historicalPersonId:'sun-jian',description:'無直接、充分且成功的救援介入時，須在史實年級窗口退場。一般治療能力或局勢改變不算介入。' },
   { id:'sample-local-vacancy',kind:'event',title:'郡府文書職缺（示例）',startYear:184,endYear:300,precision:'year',source:'本專案示例情境，非史實人物／職缺。',causes:['local-office-vacancy'],carrier:'示例郡府',description:'已標明為示例的人事內容，用於驗證遞補流程。',example:true },
 ];
+/** Sourced Han-calendar dates shown separately from the annual simulation trigger. */
+export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
+  'zhao-ci-revolt-186': '原史紀年：中平三年二月起事、六月討平。月份採原典漢曆，不換算為遊戲日曆日期。',
+  'changsha-ou-xing-revolt-187': '原史紀年：中平四年冬十月。這是漢曆月份註記；本節點仍按公元年級觸發。',
+  'yizhou-ma-xiang-revolt-188': '原史紀年：中平五年六月。這是漢曆月份註記；本節點仍按公元年級觸發。',
+  'emperor-returns-east-195': '原史紀年：興平二年七月車駕東歸。行程仍按年級處理，不補每日路線。',
+  'hou-yin-rebellion-218': '原史紀年：建安二十三年冬十月。漢曆月份不換算為遊戲日曆日期。',
+  'sun-quan-accepts-king-of-wu-title-221': '原史紀年：黃初二年十一月受魏冊命。只保留來源月分，不推定月內日期。',
+  'yiling-campaign-222': '原史紀年：章武二年夏六月夷陵戰局、十二月遣使白帝。兩者仍是同一年級節點，不推成連續日程。',
+  'zhugeliang-south-campaign-225': '原史紀年：建興三年春三月。漢曆月份不換算為遊戲日曆日期。',
+  'cao-pi-death-cao-rui-accession-226': '原史紀年：黃初七年五月。漢曆月份不換算為遊戲日曆日期。',
+  'sun-quan-proclaims-emperor-229': '原史紀年：黃龍元年夏四月。漢曆月份不換算為遊戲日曆日期。',
+  'sun-quan-shiting-campaign-228': '原史紀年：黃武七年秋八月。漢曆月份不換算為遊戲日曆日期。',
+  'pan-jun-wuling-expedition-231': '原史紀年：黃龍三年春二月。漢曆月份不換算為遊戲日曆日期。',
+  'wu-liaodong-envoy-mission-232': '原史紀年：嘉禾元年三月遣使、九月遇截、冬十月公孫淵遣使。多段年內事件仍以年級觸發。',
+  'wu-liaodong-envoy-execution-233': '原史紀年：嘉禾二年三月遣使授命。漢曆月份不換算為遊戲日曆日期。',
+  'sun-he-crown-prince-and-zhuya-campaign-242': '原史紀年：赤烏五年正月立太子、四月詔令、七月出兵、八月立魯王。保留月序，不模擬月內日程。',
+  'zhuge-ke-lu-an-campaign-243': '原史紀年：赤烏六年春正月。漢曆月份不換算為遊戲日曆日期。',
+  'lu-xun-dies-245': '原史紀年：赤烏八年春二月。漢曆月份不換算為遊戲日曆日期。',
+  'wu-jurong-canal-public-works-245': '原史紀年：赤烏八年八月。漢曆月份不換算為遊戲日曆日期。',
+  'zhu-ran-zha-zhong-246': '原史紀年：正始七年二月。漢曆月份不換算為遊戲日曆日期。',
+  'sima-yi-dies-251': '原史紀年：嘉平三年秋七月。漢曆月份不換算為遊戲日曆日期。',
+  'sun-quan-dies-sun-liang-succeeds-252': '原史紀年：太元二年四月去世；前一年冬季另有寢疾與輔政詔令。此年級節點不推定月內日程。',
+  'zhuge-ke-xincheng-campaign-253': '原史紀年：建興二年春出兵、夏四月圍城、秋八月撤軍。保留來源季節與月份，不推成逐日戰況。',
+  'zhuge-ke-assassinated-253': '原史紀年：建興二年冬十月。漢曆月份不換算為遊戲日曆日期。',
+  'cao-fang-deposed-cao-mao-succeeds-254': '原史紀年：嘉平六年秋九月廢曹芳、十月曹髦即位。兩月資訊與年級遊戲觸發分開呈現。',
+  'sun-liang-deposed-sun-xiu-succeeds-258': '原史紀年：太平三年秋九月孫亮被黜、十月孫休即位。這是漢曆月份註記，不推成月內逐日行程。',
+  'wu-agriculture-relief-and-fortifications-240': '原史紀年：赤烏三年正月察舉農桑、夏四月修城、冬十一月賑饑。保留原文月份，不推算措施開始或完成日。',
+  'yuan-shao-dies-202': '原史紀年：建安七年五月。漢曆月份不換算為遊戲日曆日期。',
+  'yuan-tan-defeat-205': '原史紀年：建安十年春正月。漢曆月份不換算為遊戲日曆日期。',
+  'ruxu-campaign-213': '原史紀年：建安十八年正月。漢曆月份不換算為遊戲日曆日期。',
+  'cao-enfeoffed-duke-of-wei-213': '原史紀年：建安十八年五月。漢曆月份不換算為遊戲日曆日期。',
+  'wei-succession-239': '原史紀年：景初三年正月丁亥。保留干支日原文，不換算成公曆日期或遊戲日。',
+};
 export type NodeStatus='pending'|'triggered'|'broken'|'cancelled'|'resolved';
 export interface HistoryNode { contentId:string; status:NodeStatus; actualCause:string[]; carrier:string; evidence:string[]; resolvedYear?:number; triggeredDay?:number; }
 export type ControlLevel='名義影響'|'軍事進入'|'初步接收'|'穩定治理'|'完全實控';
