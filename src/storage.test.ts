@@ -4,7 +4,7 @@ import { applyEvent, createOpeningFacts, createStartEvent, dispatch, ENGINE_VERS
 import { commitWorldline, loadWorkspace, openSaveDb, parseSave, toJson, verifySave, assertSlotCompatible, type LegacySaveFile, type SaveFile } from './storage';
 import { dispatch as dispatchV3 } from './engine.v3';
 import { buildNarrationPayload } from './narration/client';
-import { PHASE4_CONTENT_VERSION } from './phase4';
+import { PHASE4_CONTENT_VERSION, type BattleSceneManifest, type WarUnit } from './phase4';
 
 const noHistory: OpeningHistory = { regions: [], surnames: [] };
 function makeSave(id = 'storage-world') {
@@ -91,6 +91,22 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(narrativeContext.playerView.knownFacts).toEqual([{turn:1,observation:'主角在庭院親見',facts:['主角親眼看到院門前有馬車']}]);
     expect(narrativeContext.visibleNpcs.some(person=>person.id==='opening-family-0')).toBe(false);
     expect(toJson(original)).toBe(originalJson);
+  });
+
+  it('v6 戰役場景清冊經 JSON 匯入、IndexedDB 載入與續玩後仍可重播', async () => {
+    const start=makeSave('battle-scene-roundtrip');
+    const units:WarUnit[]=[{id:'guard',faction:'守軍・示例',commanderId:'guard-captain',commanderName:'守將・示例',location:'渡口北岸',strength:100,reserve:10,supply:3,morale:70,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命'},{id:'attacker',faction:'攻軍・示例',commanderId:'attacker-captain',commanderName:'前軍校尉・示例',location:'渡口南岸',strength:120,reserve:0,supply:3,morale:65,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命'}];
+    const scene:BattleSceneManifest={example:true,objects:[{id:'platform',label:'弩臺・示例',location:'北岸土坡',condition:'支架穩固'},{id:'rope',label:'牽繫木索・示例',location:'弩臺與拒馬間',condition:'繃緊'}],potentialChains:[{id:'platform-rope',fromObjectId:'platform',toObjectId:'rope',triggerCondition:'弩臺側架受擊斷裂',possibleEffect:'木索可能鬆脫，尚未結算',affectedUnitIds:['guard']}],observers:[{id:'rear-observer',side:'守軍後陣',location:'北岸後列',visibility:'可辨旗號，無法看清前沿細節'}]};
+    const battle=dispatch(start.state,{version:ENGINE_VERSION,commandId:'battle-scene-start',expectedRevision:start.state.revision,worldlineId:start.worldlineId,type:'Phase4Action',action:{type:'StartBattle',id:'battle-scene-roundtrip',location:'汝南渡口（示例）',units,protagonistPresent:true,scene}});
+    const round=dispatch(battle.state!,{version:ENGINE_VERSION,commandId:'battle-scene-round',expectedRevision:battle.state!.revision,worldlineId:start.worldlineId,type:'Phase4Action',action:{type:'BattleRound',orders:{guard:'防守',attacker:'防守'}}});
+    const save:SaveFile={...start,events:[...start.events,battle.event!,round.event!],state:round.state!};
+    const imported=verifySave(toJson(save));
+    await commitWorldline(imported,noHistory,true);
+    const loaded=(await loadWorkspace()).saves.find(item=>item.worldlineId===start.worldlineId)!;
+    expect(loaded.state.phase4?.battle?.scene).toEqual(scene);
+    expect(loaded.events).toEqual(save.events);
+    expect(replay(loaded.events)).toEqual(loaded.state);
+    expect(loaded.state.phase4?.battle?.units.every(unit=>unit.killed+unit.wounded<=20)).toBe(true);
   });
 
   it('舊 v6 歷史內容版只追加一次更新事件，保留原事件並將當年新增節點接入重播',async()=>{
