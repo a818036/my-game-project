@@ -59,10 +59,15 @@ export function answerKnownTrendQuestion(text:string,state:GameState):Interactio
   return {kind:'question',answer:`目前畫面上的天下來報是：「${state.trend}」這是原型每回合更新的示例消息，不是完整史實資料；沒有提供更多遠方詳情。`,choiceIds:[],questions:[]};
 }
 export function answerKnownSunQuanBiographyQuestion(text:string):InteractionResult|null{
-  if(!/孫權|孫仲謀/.test(text)||!/(幾歲|年齡|多大|什麼時候|何時|哪一年|日常|每天|每日|小便|出恭|如廁)/.test(text))return null;
+  if(!/孫權|孫仲謀/.test(text)||!/(幾歲|年齡|多大|什麼時候|何時|哪一年|日常|每天|每日|小便|出恭|如廁|一生|生平|年表|完整經歷|七十一年|71年)/.test(text))return null;
   if(/小便|出恭|如廁|每天|每日|日常/.test(text))return {kind:'question',answer:'《三國志》卷四十七的孫權傳沒有記載孫權每日何時如廁或其他固定日常作息；現有史料無法回答，我不會補造時辰或行程。',choiceIds:[],questions:[],source:'史料未記載；不推測'};
   if(/陽羨|任官|做官|當官|官職/.test(text))return {kind:'question',answer:'《三國志》卷四十七〈吳主傳〉記孫權年十五時任陽羨長。原文提供的是年齡，沒有在此處給出確切公元年份、月日或到任時刻，因此本原型不換算成某一年的觸發事件。',choiceIds:[],questions:[],source:'《三國志》卷四十七〈吳主傳〉'};
   if(/去世|逝世|死亡|享年/.test(text))return {kind:'question',answer:'《三國志》卷四十八〈吳書·三嗣主傳〉記孫權於 252 年去世，時年七十一。原文沒有記下確切月日；其約 182 年出生是依享年回推的年級推定。',choiceIds:[],questions:[],source:'《三國志》卷四十八〈吳書·三嗣主傳〉'};
+  if(/一生|生平|年表|完整經歷|七十一年|71年/.test(text)){
+    const records=HISTORY_CONTENT.filter(item=>item.kind==='event'&&item.source.startsWith('《')&&item.startYear>=182&&item.endYear<=252&&/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.carrier} ${item.source}`)).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
+    const chronology=records.map(item=>`${item.startYear}年${item.id==='sun-quan-inferred-birth-182'?'（約）':''}・${item.title}：${item.description}〔${item.source}〕`).join('\n');
+    return {kind:'question',answer:`現有史料節點整理出孫權約 182 年至 252 年（享年七十一）的 ${records.length} 筆可考年級紀錄：\n${chronology}\n\n這是本遊戲目前收錄的來源節點，不是逐年完整傳記。未列年份不代表沒有事情發生；原史未記的日常時辰也不能用模擬補成史實。`,choiceIds:[],questions:[],source:'《三國志》卷四十七、四十八及已核對的年表節點'};
+  }
   return null;
 }
 export function answerKnownHistoricalEventQuestion(text:string,state:GameState):InteractionResult|null{

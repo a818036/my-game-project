@@ -42,6 +42,17 @@ describe('人生情境計畫',()=>{
     const routine=answerKnownSunQuanBiographyQuestion('孫權每天幾時小便出恭？');expect(routine?.answer).toContain('沒有記載');expect(routine?.answer).toContain('不會補造');
     expect(localInteraction('孫權每天幾時小便出恭？',start().state!).kind).toBe('question');
   });
+  it('孫權一生問題整理現有來源節點，不把空白年份或日常作息編成史實',()=>{
+    const biography=answerKnownSunQuanBiographyQuestion('請整理孫權七十一年生平年表');
+    expect(biography?.kind).toBe('question');
+    expect(biography?.answer).toContain('孫權約 182 年至 252 年（享年七十一）');
+    expect(biography?.answer).toContain('孫權隨孫策征劉勳');
+    expect(biography?.answer).toContain('孫權於庱亭射虎');
+    expect(biography?.answer).toContain('孫權去世、孫亮即位');
+    expect(biography?.answer).toContain('未列年份不代表沒有事情發生');
+    expect(biography?.answer).not.toContain('197年・');
+    expect(localInteraction('請整理孫權七十一年生平年表',start().state!).answer).toBe(biography?.answer);
+  });
   it('能力命令不經普通人生階段選項過濾',()=>{
     const state=start().state!;expect(inspectLifePlan(state,['軒轅閃']).errors.length).toBeGreaterThan(0);
     const next=dispatch(state,{version:5,type:'InnateAction',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:'flash-baby',action:{type:'Flash',location:'庭院另一側',bringIds:[]}}).state!;
