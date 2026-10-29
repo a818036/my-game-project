@@ -790,7 +790,7 @@ const registers = [
   },
   {
     id: 'julu', summary: '展開鉅鹿郡名錄（十五城）',
-    description: '《後漢書》卷一一〇〈志第二十·郡國志二〉鉅鹿郡條列十五城；末項依維基文庫顯示字形保留，不據構件猜補。',
+    description: '《後漢書》卷一一〇〈志第二十·郡國志二〉鉅鹿郡條列十五城；末項維基文庫轉錄顯示為字形構件，另一電子本轉錄作「䜌」，介面保留此異文。',
     ariaLabel: '後漢書鉅鹿郡十五城名錄', names: HAN_JULU_COUNTY_NAMES,
     sourceText: '查閱《後漢書》卷一一〇〈郡國志二〉鉅鹿郡條',
   },
@@ -807,9 +807,9 @@ const registers = [
     sourceText: '查閱《後漢書》卷一一〇〈郡國志二〉中山國條',
   },
   {
-    id: 'anping', summary: '展開安平國名錄（轉錄列十二項）',
-    description: '《後漢書》卷一一〇條目題稱十三城，但現有維基文庫正文轉錄僅列十二個名稱；照錄可見項，不補未知一名。',
-    ariaLabel: '後漢書安平國十二個可見名目，原條題稱十三城', names: HAN_ANPING_COUNTY_NAMES,
+    id: 'anping', summary: '展開安平國名錄（十三城）',
+    description: '《後漢書》卷一一〇〈志第二十·郡國志二〉安平國條題稱十三城；「觀津經西有漳水」中「經」為名目，「西」接下文。',
+    ariaLabel: '後漢書安平國十三城名錄', names: HAN_ANPING_COUNTY_NAMES,
     sourceText: '查閱《後漢書》卷一一〇〈郡國志二〉安平國條',
   },
   {
