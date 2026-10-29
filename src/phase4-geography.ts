@@ -25,6 +25,11 @@ export const HAN_DIVISION_SOURCE_URLS = {
   lujiang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   wu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   chenliu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  donghai: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  langya: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  pengcheng: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  guangling: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  xiapi: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
   dong: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
   dongping: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
   rencheng: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
@@ -101,6 +106,29 @@ export const HAN_SHANYANG_COUNTY_NAMES = [
 /** Source-ordered Jiyin names under Yanzhou in Hou Hanshu, Treatise 21. */
 export const HAN_JIYIN_COUNTY_NAMES = [
   '定陶', '冤句', '成陽', '乘氏', '句陽', '鄄城', '離狐', '廩丘', '單父', '成武', '己氏',
+] as const;
+
+/** Source-ordered Donghai names under Xuzhou in Hou Hanshu, Treatise 21. */
+export const HAN_DONGHAI_COUNTY_NAMES = [
+  '郯', '蘭陵', '戚', '朐', '襄賁', '昌慮', '承', '陰平', '利城', '合鄉', '祝其', '厚丘', '贛楡',
+] as const;
+
+/** Source-ordered Langya names under Xuzhou in Hou Hanshu, Treatise 21. */
+export const HAN_LANGYA_COUNTY_NAMES = [
+  '開陽', '東武', '琅邪', '東莞', '西海', '諸', '莒', '東安', '陽都', '臨沂', '即丘', '繒', '姑幕',
+] as const;
+
+/** Source-ordered Pengcheng names under Xuzhou in Hou Hanshu, Treatise 21. */
+export const HAN_PENGCHENG_COUNTY_NAMES = ['彭城', '武原', '傅陽', '呂', '留', '梧', '菑丘', '廣戚'] as const;
+
+/** Source-ordered Guangling names under Xuzhou in Hou Hanshu, Treatise 21. */
+export const HAN_GUANGLING_COUNTY_NAMES = [
+  '廣陵', '江都', '髙郵', '平安', '淩', '東陽', '射陽', '鹽瀆', '輿', '堂邑', '海西',
+] as const;
+
+/** Source-ordered Xiapi names under Xuzhou in Hou Hanshu, Treatise 21. */
+export const HAN_XIAPI_COUNTY_NAMES = [
+  '下邳', '徐', '僮', '睢陵', '下相', '淮陰', '淮浦', '盱臺', '髙山', '潘旌', '淮陵', '取慮', '東成', '曲陽', '司吾', '良成', '夏丘',
 ] as const;
 
 /** A source-ordered county-name sample, not a complete or year-specific map. */
