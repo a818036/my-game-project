@@ -12,6 +12,7 @@ export const HAN_DIVISION_SOURCE_URLS = {
   henanYin: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
   yingchuan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7110',
   nanyang: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  lujiang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   wu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
 } as const;
 
@@ -33,6 +34,10 @@ export const HAN_NANYANG_COUNTY_NAMES = [
   '舞陰', '比陽', '復陽', '平氏', '棘陽', '湖陽', '隨', '育陽', '涅陽', '陰',
   '酇', '鄧', '山都', '酈', '穰', '朝陽', '蔡陽', '安眾', '築陽', '武當', '順陽',
   '成都', '襄鄉', '南鄉', '丹水', '析',
+] as const;
+
+export const HAN_LUJIANG_COUNTY_NAMES = [
+  '舒', '雩婁', '尋陽', '潛', '臨湖', '龍舒', '襄安', '皖', '居巢', '六安', '蓼', '安豐', '陽泉', '安風',
 ] as const;
 
 /**
