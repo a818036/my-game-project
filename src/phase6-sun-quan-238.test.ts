@@ -14,7 +14,7 @@ describe('A254 孫權年表新增 238 年廬陵記事', () => {
     expect(event?.source).toContain('赤烏元年夏');
     expect(event?.source).toContain('還陸口');
     const biography = answerKnownSunQuanBiographyQuestion('請整理孫權七十一年生平年表');
-    expect(biography?.answer).toContain('56 筆可考年級紀錄，分布於 44 個年次');
+    expect(biography?.answer).toContain('57 筆可考年級紀錄，分布於 45 個年次');
     expect(biography?.answer).toContain('238年・呂岱討平廬陵賊，事畢還屯陸口');
     expect(biography?.answer).toContain('日常時辰也不能用模擬補成史實');
   });
@@ -23,7 +23,7 @@ describe('A254 孫權年表新增 238 年廬陵記事', () => {
     const old = createPhase4Model(237, 1, persons, 'phase4-scenario-132');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-133');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-134');
     expect(upgraded.eventLedger).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === nodeId)?.status).toBe('pending');
     expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === nodeId)?.status).toBe('triggered');

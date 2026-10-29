@@ -61,7 +61,7 @@ describe('人生情境計畫',()=>{
     const biography=answerKnownSunQuanBiographyQuestion('請整理孫權七十一年生平年表');
     expect(biography?.kind).toBe('question');
     expect(biography?.answer).toContain('孫權約 182 年至 252 年（享年七十一）');
-    expect(biography?.answer).toContain('56 筆可考年級紀錄，分布於 44 個年次');
+    expect(biography?.answer).toContain('57 筆可考年級紀錄，分布於 45 個年次');
     expect(biography?.answer).toContain('年十五時任陽羨長');
     expect(biography?.answer).toContain('郡察孝廉、州舉茂才、行奉義校尉');
     expect(biography?.answer).toContain('未給出這些任官可換算的公元年份');
@@ -71,6 +71,7 @@ describe('人生情境計畫',()=>{
     expect(biography?.answer).toContain('孫權遣呂岱討伐廬陵李桓等');
     expect(biography?.answer).toContain('呂岱討平廬陵賊，事畢還屯陸口');
     expect(biography?.answer).toContain('陸遜討平鄱陽彭旦等起事');
+    expect(biography?.answer).toContain('吳將擒獲鄱陽賊彭綺');
     expect(biography?.answer).toContain('孫權在位期間：孫邵去世、顧雍繼任吳丞相');
     expect(biography?.answer).toContain('孫權之弟、丹楊太守翊遇害');
     expect(biography?.answer).toContain('孫權遣賀齊討上饒');
