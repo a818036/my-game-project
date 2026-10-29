@@ -39,8 +39,17 @@ describe('人生情境計畫',()=>{
     const appointed=answerKnownSunQuanBiographyQuestion('孫權幾歲任陽羨長？');
     expect(appointed?.answer).toContain('年十五');expect(appointed?.answer).toContain('沒有在此處給出確切公元年份');
     const died=answerKnownSunQuanBiographyQuestion('孫權幾歲去世？');expect(died?.answer).toContain('時年七十一');
-    const routine=answerKnownSunQuanBiographyQuestion('孫權每天幾時小便出恭？');expect(routine?.answer).toContain('沒有記載');expect(routine?.answer).toContain('不會補造');
+    const routine=answerKnownSunQuanBiographyQuestion('孫權每天幾時小便出恭？');expect(routine?.answer).toContain('不是逐日生活日誌');expect(routine?.answer).toContain('我不能用模擬補造');
     expect(localInteraction('孫權每天幾時小便出恭？',start().state!).kind).toBe('question');
+  });
+  it('孫權日常作息的不同問法都走本機史料界線回答，不交模型猜測',()=>{
+    for(const text of ['孫權平時作息如何？','孫權平常的生活習慣是什麼？','孫權每天幾點上廁所？']){
+      const result=localInteraction(text,start().state!);
+      expect(result.kind).toBe('question');
+      expect(result.answer).toContain('不是逐日生活日誌');
+      expect(result.answer).toContain('我不能用模擬補造時辰或行程');
+      expect(result.source).toContain('日常細節未記載');
+    }
   });
   it('孫權一生問題整理現有來源節點，不把空白年份或日常作息編成史實',()=>{
     const biography=answerKnownSunQuanBiographyQuestion('請整理孫權七十一年生平年表');

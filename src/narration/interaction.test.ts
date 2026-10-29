@@ -45,7 +45,11 @@ describe('即時人物對話',()=>{
     const lifespan=await understandInput('孫權幾歲去世？',current,new AbortController().signal);
     expect(lifespan).toMatchObject({kind:'question',source:'《三國志》卷四十八〈吳書·三嗣主傳〉'});expect(lifespan.answer).toContain('時年七十一');
     const routine=await understandInput('孫權每天幾時小便出恭？',current,new AbortController().signal);
-    expect(routine).toMatchObject({kind:'question',source:'史料未記載；不推測'});expect(routine.answer).toContain('不會補造時辰或行程');
+    expect(routine).toMatchObject({kind:'question',source:'《三國志》卷四十七〈吳主傳〉；日常細節未記載'});expect(routine.answer).toContain('我不能用模擬補造時辰或行程');
+    for(const text of ['孫權平時作息如何？','孫權平常的生活習慣是什麼？']){
+      const variant=await understandInput(text,current,new AbortController().signal);
+      expect(variant).toMatchObject({kind:'question',source:'《三國志》卷四十七〈吳主傳〉；日常細節未記載'});
+    }
     expect(fetchMock).not.toHaveBeenCalled();expect(current).toEqual(before);expect(current.turn).toBe(0);
   });
   it('重大能力救援、戰爭與主權指令走專用入口，不送到模型或轉成生活行動',async()=>{
