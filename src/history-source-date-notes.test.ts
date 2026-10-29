@@ -114,9 +114,16 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'ruxu-campaign-213': ['建安十八年正月'],
       'cao-enfeoffed-duke-of-wei-213': ['建安十八年五月'],
       'wei-succession-239': ['景初三年正月丁亥'],
+      'zhou-yu-captures-deng-long-206': ['建安十一年', '周瑜追擊並生擒鄧龍'],
+      'gao-gan-defeat-206': ['建安十一年', '圍壺關三月'],
+      'sun-quan-builds-shitou-jianye-ruxu-212': ['明年，城石頭', '作濡須塢'],
+      'xun-yu-dies-212': ['建安十七年', '病留壽春、以憂薨'],
+      'sun-quan-campaigns-against-shiyang-226': ['征江夏、圍石陽'],
+      'wu-xiangyang-jiangxia-campaign-236': ['嘉禾五年', '攻襄陽'],
+      'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(69);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(76);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -127,6 +134,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
         expect(content?.source, `${id} source must contain ${phrase}`).toContain(phrase);
       }
     }
+    expect(HISTORY_SOURCE_DATE_NOTES['gao-gan-defeat-206']).toContain('不是漢曆三月');
+    expect(HISTORY_SOURCE_DATE_NOTES['sun-quan-campaigns-against-shiyang-226']).toContain('黃初五年秋七月');
   });
 
   it('年級遊戲精度與帶原史月份的顯示註記並存，不推算時辰', () => {
@@ -164,7 +173,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'sun-quan-moves-capital-to-jianye-229',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(69);
-    expect(uniqueNotedEvents.size).toBe(81);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(76);
+    expect(uniqueNotedEvents.size).toBe(88);
   });
 });
