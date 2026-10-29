@@ -396,3 +396,34 @@ describe('203、207 年孫權征黃祖', () => {
     }
   });
 });
+
+describe('214 年孫權合肥撤軍遭襲', () => {
+  const id = 'sun-quan-hefei-bridge-retreat-214';
+
+  it('保留合肥未克、撤軍遭襲及越津橋記載，不擴寫交戰細節', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === id);
+    expect(content).toMatchObject({ startYear: 214, endYear: 214, precision: 'year', introducedIn: 'phase4-scenario-101', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('《三國志》卷四十七');
+    expect(content?.source).toContain('合肥未下而撤');
+    expect(content?.source).toContain('張遼所襲');
+    expect(content?.source).toContain('乘駿馬越津橋');
+    expect(content?.description).toContain('不推演未載的完整交戰');
+  });
+
+  it('v100、213 年存檔跨年至 214 觸發；同年及之後遷移不回補', () => {
+    const old = createPhase4Model(213, 1, persons, 'phase4-scenario-100');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.detail.includes('合肥未克，孫權撤軍時遭張遼襲擊'))?.source).toContain('凌統等護衛孫權');
+
+    const sameYear = upgradePhase4Content(createPhase4Model(214, 1, persons, 'phase4-scenario-100'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 214 });
+    const late = upgradePhase4Content(createPhase4Model(215, 1, persons, 'phase4-scenario-100'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 214 });
+    expect(late.eventLedger.some((item) => item.detail.includes('合肥未克，孫權撤軍時遭張遼襲擊'))).toBe(false);
+  });
+});
