@@ -397,6 +397,35 @@ describe('203、207 年孫權征黃祖', () => {
   });
 });
 
+describe('209 年孫權任命周瑜並受劉備表奏', () => {
+  const id = 'sun-quan-appoints-zhou-yu-nanjun-209';
+
+  it('依卷四十七記錄年級官職任命，不補任命日或政治交易', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === id);
+    expect(content).toMatchObject({ startYear: 209, endYear: 209, precision: 'year', introducedIn: 'phase4-scenario-103', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('《三國志》卷四十七');
+    expect(content?.source).toContain('以周瑜為南郡太守');
+    expect(content?.source).toContain('行車騎將軍、領徐州牧');
+    expect(content?.description).toContain('不推演具體任命日期');
+  });
+
+  it('v102、208 年存檔跨年至 209 觸發並保留事件前綴；同年舊檔不回補', () => {
+    const old = createPhase4Model(208, 1, persons, 'phase4-scenario-102');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    expect(advanced.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advanced.eventLedger.find((event) => event.detail.includes('孫權任周瑜為南郡太守'))?.source).toContain('劉備表孫權');
+
+    const sameYear = upgradePhase4Content(createPhase4Model(209, 1, persons, 'phase4-scenario-102'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 209 });
+    expect(sameYear.eventLedger.some((event) => event.detail.includes('孫權任周瑜為南郡太守'))).toBe(false);
+  });
+});
+
 describe('214 年孫權合肥撤軍遭襲', () => {
   const id = 'sun-quan-hefei-bridge-retreat-214';
 
