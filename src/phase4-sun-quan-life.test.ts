@@ -267,6 +267,9 @@ describe('234 年孫權進向合肥新城', () => {
     expect(content?.source).toContain('陸議、孫韶');
     expect(content?.source).toContain('秋七月魏明帝親東征');
     expect(content?.description).toContain('不推演戰鬥');
+    expect(content?.sourceDateNote).toContain('青龍二年五月');
+    expect(content?.sourceDateNote).toContain('不映射為本遊戲 30 日制日期');
+    expect(HISTORY_CONTENT.find((node) => node.id === 'yellow-turban-184')?.sourceDateNote).toContain('中平元年二月');
   });
 
   it('v97 年級存檔跨年至 234 年觸發；同年及晚載入不回補', () => {
