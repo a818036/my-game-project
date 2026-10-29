@@ -43,7 +43,7 @@ describe('人生情境計畫',()=>{
     expect(localInteraction('孫權每天幾時小便出恭？',start().state!).kind).toBe('question');
   });
   it('孫權日常作息的不同問法都走本機史料界線回答，不交模型猜測',()=>{
-    for(const text of ['孫權平時作息如何？','孫權平常的生活習慣是什麼？','孫權每天幾點上廁所？']){
+    for(const text of ['孫權平時作息如何？','孫權平常的生活習慣是什麼？','孫權每天幾點上廁所？','孫權活著的71年裡每天每日幾時幾刻小便出恭？']){
       const result=localInteraction(text,start().state!);
       expect(result.kind).toBe('question');
       expect(result.answer).toContain('不是逐日生活日誌');
