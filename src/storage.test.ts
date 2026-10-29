@@ -3,6 +3,7 @@ import { indexedDB } from 'fake-indexeddb';
 import { applyEvent, createOpeningFacts, createStartEvent, dispatch, ENGINE_VERSION, LEGACY_ENGINE_VERSION, RULES_VERSION, SOURCE_HASHES, replay, type GameCommand, type GameEvent, type OpeningHistory } from './engine';
 import { commitWorldline, loadWorkspace, openSaveDb, parseSave, toJson, verifySave, assertSlotCompatible, type LegacySaveFile, type SaveFile } from './storage';
 import { dispatch as dispatchV3 } from './engine.v3';
+import { buildNarrationPayload } from './narration/client';
 
 const noHistory: OpeningHistory = { regions: [], surnames: [] };
 function makeSave(id = 'storage-world') {
@@ -65,7 +66,9 @@ describe('A05／A06 存檔交易與重播', () => {
 
     const next=dispatch(loaded.state,{version:ENGINE_VERSION,commandId:'phase4-v6-continue',expectedRevision:loaded.state.revision,worldlineId:loaded.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持'],supplement:''});
     expect(next.state?.turn).toBe(1);
-    const continued:SaveFile={format:'shenzhou-save',version:6,worldlineId:loaded.worldlineId,events:[...loaded.events,next.event!],state:next.state!};
+    const later=dispatch(next.state,{version:ENGINE_VERSION,commandId:'phase4-v6-continue-again',expectedRevision:next.state!.revision,worldlineId:loaded.worldlineId,type:'SubmitActionPlan',intents:['經商營生'],supplement:'不送入回憶'});
+    expect(later.state?.turn).toBe(2);
+    const continued:SaveFile={format:'shenzhou-save',version:6,worldlineId:loaded.worldlineId,events:[...loaded.events,next.event!,later.event!],state:later.state!};
     expect(replay(continued.events)).toEqual(continued.state);
     await commitWorldline(continued,noHistory);
 
@@ -73,6 +76,10 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(reloaded).toEqual(continued);
     expect(verifySave(toJson(reloaded))).toEqual(continued);
     expect(replay(reloaded.events)).toEqual(reloaded.state);
+    const narrativeContext=buildNarrationPayload(reloaded.state,later.event!);
+    expect(narrativeContext.protagonistMemory).toHaveLength(1);
+    expect(narrativeContext.protagonistMemory?.[0]).toMatchObject({turn:1});
+    expect(JSON.stringify(narrativeContext)).not.toContain('不送入回憶');
     expect(toJson(original)).toBe(originalJson);
   });
 

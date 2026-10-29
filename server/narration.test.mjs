@@ -16,6 +16,16 @@ describe('第五階段・伺服器敘事代理',()=>{
     const result=await openAiNarration(payload,{apiKey:'test-only',fetchImpl:async(_url,options)=>{const {instructions}=JSON.parse(options.body);expect(instructions).toContain('沒有條件就寫正劇');expect(instructions).toContain('不得臆造人物動機、誤讀、成本、傳聞、記憶');expect(instructions).toContain('同類回彈需要輸入中有相關前情');expect(instructions).toContain('嚴肅傷亡與創傷保留重量');return new Response(JSON.stringify({output_text:JSON.stringify(mockNarration(payload))}),{status:200});}});
     expect(result).toEqual(mockNarration(payload));
   });
+  it('只把保存的主角回憶作為私人敘事上下文，NPC 不得引用',async()=>{
+    const remembered={...payload,protagonistMemory:[{turn:3,title:'庭院讀書舊事',details:'主角曾讀完一卷兵書'}]};
+    expect(()=>validateNarrationPayload(remembered)).not.toThrow();
+    expect(()=>validateNarrationPayload({...remembered,protagonistMemory:[{turn:-1,title:'x',details:'y'}]})).toThrow('主角回憶');
+    const output={paragraphs:['主角想起庭院讀書舊事。'],dialogue:[],suggestions:[]};
+    const result=await openAiNarration(remembered,{apiKey:'test-only',fetchImpl:async(_url,options)=>{expect(JSON.parse(options.body).instructions).toContain('protagonistMemory 是由已保存、玩家確認行動紀錄');return new Response(JSON.stringify({output_text:JSON.stringify(output)}),{status:200});}});
+    expect(result).toEqual(output);
+    const ids=validateNarrationPayload(remembered);
+    expect(()=>validateNarrationOutput({paragraphs:[],dialogue:[{speakerId:'person-1',text:'我也記得庭院讀書舊事'}],suggestions:[]},ids,remembered)).toThrow('洩漏');
+  });
   it('mock 只根據已結算事件形成範本且不洩漏玩家視野給人物',()=>{
     const ids=validateNarrationPayload(payload),output=validateNarrationOutput(mockNarration(payload),ids,payload);
     expect(output.paragraphs[0]).toContain('收入錢 5');
