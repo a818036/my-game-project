@@ -48,7 +48,7 @@ export const HAN_YUZHANG_COUNTY_NAMES = [
 
 /** Source-ordered city names under Kuaiji commandery in Hou Hanshu, Treatise 28. */
 export const HAN_KUAIJI_COUNTY_NAMES = [
-  '山陰', '鄮', '烏傷', '諸暨', '餘暨', '太末', '上虞', '剡', '餘姚', '句章', '鄞', '章安', '永寧', '東部',
+  '山陰', '鄮', '烏傷', '諸暨', '餘暨', '太末', '上虞', '剡', '餘姚', '句章', '鄞', '章安', '永寧', '東部（原文；校勘記疑為訛文）',
 ] as const;
 
 /** Source-ordered city names under Danyang commandery in Hou Hanshu, Treatise 28. */
