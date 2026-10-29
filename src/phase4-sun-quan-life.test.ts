@@ -36,3 +36,33 @@ describe('孫權推定出生年資料', () => {
     expect(late.eventLedger.some((item) => item.detail.includes('孫權推定出生年'))).toBe(false);
   });
 });
+
+describe('183 年北海、東萊、琅邪寒候記錄', () => {
+  const coldId = 'winter-cold-eastern-commandries-183';
+
+  it('按原典只記年級寒候，不推演每天氣候或生活細節', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === coldId);
+    expect(content).toMatchObject({ startYear: 183, endYear: 183, precision: 'year', introducedIn: 'phase4-scenario-90' });
+    expect(content?.source).toContain('《後漢書》卷一〇五');
+    expect(content?.source).toContain('北海、東萊、琅邪');
+    expect(content?.source).toContain('冰厚尺餘');
+    expect(content?.description).toContain('不推演農損、疾病');
+  });
+
+  it('新局跨年至 183 年時觸發；v89 遷移不回補該年事件', () => {
+    const fresh = advancePhase4(createPhase4Model(182, 1, persons, PHASE4_CONTENT_VERSION), 360);
+    expect(fresh.nodes.find((node) => node.contentId === coldId)?.status).toBe('triggered');
+    expect(fresh.eventLedger.find((item) => item.detail.includes('北海、東萊、琅邪冬寒記錄'))?.source).toContain('光和六年冬');
+
+    const old = createPhase4Model(182, 1, persons, 'phase4-scenario-89');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === coldId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === coldId)?.status).toBe('triggered');
+
+    const late = upgradePhase4Content(createPhase4Model(184, 1, persons, 'phase4-scenario-89'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === coldId)).toMatchObject({ status: 'resolved', resolvedYear: 183 });
+    expect(late.eventLedger.some((item) => item.detail.includes('北海、東萊、琅邪冬寒記錄'))).toBe(false);
+  });
+});
