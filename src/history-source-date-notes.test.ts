@@ -30,7 +30,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(140);
+    expect(withinCatalogYears).toHaveLength(142);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -86,6 +86,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'zhugeliang-south-campaign-225': ['建興三年春三月'],
       'cao-pi-death-cao-rui-accession-226': ['黃初七年五月'],
       'sun-quan-proclaims-emperor-229': ['黃龍元年夏四月'],
+      'sun-quan-moves-capital-to-jianye-229': ['黃龍元年秋九月', '徵上大將軍陸遜輔太子孫登', '掌武昌留事'],
       'sun-quan-shiting-campaign-228': ['黃武七年', '秋八月'],
       'pan-jun-wuling-expedition-231': ['黃龍三年春二月'],
       'wu-liaodong-envoy-mission-232': ['嘉禾元年記三月', '九月魏將田豫', '冬十月公孫淵'],
@@ -109,7 +110,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-succession-239': ['景初三年正月丁亥'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(62);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(63);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -144,9 +145,10 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'sun-quan-sends-envoy-to-cao-217',
       'sun-quan-hunts-tiger-lingting-218',
       'sun-quan-campaigns-at-hefei-234',
+      'sun-quan-moves-capital-to-jianye-229',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(62);
-    expect(uniqueNotedEvents.size).toBe(66);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(63);
+    expect(uniqueNotedEvents.size).toBe(67);
   });
 });
