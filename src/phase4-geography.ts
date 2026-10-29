@@ -24,6 +24,14 @@ export const HAN_DIVISION_SOURCE_URLS = {
   jiujiang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   lujiang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   wu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  chenliu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  dong: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  dongping: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  rencheng: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  taishan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  jibei: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  shanyang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
+  jiyin: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7111',
 } as const;
 
 /** Source-ordered Jinan names under Qingzhou in Hou Hanshu, Treatise 4. */
@@ -55,6 +63,44 @@ export const HAN_DONGLAI_COUNTY_NAMES = [
 /** Source-ordered Qi names under Qingzhou in Hou Hanshu, Treatise 4. */
 export const HAN_QI_COUNTY_NAMES = [
   '臨菑', '西安', '昌國', '臨朐', '廣', '般陽',
+] as const;
+
+/** Source-ordered Chenliu names under Yanzhou in Hou Hanshu, Treatise 21. */
+export const HAN_CHENLIU_COUNTY_NAMES = [
+  '陳留', '浚儀', '尉氏', '雍丘', '襄邑', '外黃', '小黃', '東昬', '濟陽', '平丘',
+  '封丘', '酸棗', '長垣', '己吾', '考城', '圉', '扶溝',
+] as const;
+
+/** Source-ordered Dong commandery names under Yanzhou in Hou Hanshu, Treatise 21. */
+export const HAN_DONG_COUNTY_NAMES = [
+  '濮陽', '燕', '白馬', '頓丘', '東阿', '東武陽', '范', '臨邑', '博平', '聊城',
+  '發干', '樂平', '陽平', '衞', '穀城',
+] as const;
+
+/** Source-ordered Dongping names under Yanzhou in Hou Hanshu, Treatise 21. */
+export const HAN_DONGPING_COUNTY_NAMES = [
+  '無鹽', '東平陸', '富成', '章', '壽張', '須昌', '寧陽',
+] as const;
+
+/** Source-ordered Rencheng names under Yanzhou in Hou Hanshu, Treatise 21. */
+export const HAN_RENCHENG_COUNTY_NAMES = ['任城', '亢父', '樊'] as const;
+
+/** Source-ordered Taishan names under Yanzhou in Hou Hanshu, Treatise 21. */
+export const HAN_TAISHAN_COUNTY_NAMES = [
+  '奉髙', '博', '梁甫', '鉅平', '嬴', '山茌', '萊蕪', '蓋', '南武陽', '南城', '費', '牟',
+] as const;
+
+/** Source-ordered Jibei names under Yanzhou in Hou Hanshu, Treatise 21. */
+export const HAN_JIBEI_COUNTY_NAMES = ['盧', '蛇丘', '成', '茌平', '剛'] as const;
+
+/** Source-ordered Shanyang names under Yanzhou in Hou Hanshu, Treatise 21. */
+export const HAN_SHANYANG_COUNTY_NAMES = [
+  '昌邑', '東緡', '鉅野', '髙平', '湖陸', '南平陽', '方與', '瑕丘', '金鄕', '防東',
+] as const;
+
+/** Source-ordered Jiyin names under Yanzhou in Hou Hanshu, Treatise 21. */
+export const HAN_JIYIN_COUNTY_NAMES = [
+  '定陶', '冤句', '成陽', '乘氏', '句陽', '鄄城', '離狐', '廩丘', '單父', '成武', '己氏',
 ] as const;
 
 /** A source-ordered county-name sample, not a complete or year-specific map. */
