@@ -41,7 +41,7 @@ describe('即時人物對話',()=>{
   it('孫權生平問題用有來源的精度回答；未記載的日常不送模型也不推進時間',async()=>{
     const current=state(),before=structuredClone(current),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
     const office=await understandInput('孫權幾歲任陽羨長？',current,new AbortController().signal);
-    expect(office).toMatchObject({kind:'question',source:'《三國志》卷四十七〈吳主傳〉'});expect(office.answer).toContain('年十五');expect(office.answer).toContain('不換算成某一年的觸發事件');
+    expect(office).toMatchObject({kind:'question',source:'《三國志》卷四十七〈吳主傳〉'});expect(office.answer).toContain('年十五');expect(office.answer).toContain('不將年齡反推成特定年份');
     const lifespan=await understandInput('孫權幾歲去世？',current,new AbortController().signal);
     expect(lifespan).toMatchObject({kind:'question',source:'《三國志》卷四十八〈吳書·三嗣主傳〉'});expect(lifespan.answer).toContain('時年七十一');
     const routine=await understandInput('孫權每天幾時小便出恭？',current,new AbortController().signal);

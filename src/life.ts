@@ -62,7 +62,7 @@ export function answerKnownSunQuanBiographyQuestion(text:string):InteractionResu
   const asksRoutine=/小便|大便|出恭|如廁|解手|入廁|每天|每日|日常|作息|起居|平常|平時|生活習慣|私生活/.test(text);
   if(!/孫權|孫仲謀/.test(text)||!/(幾歲|年齡|多大|什麼時候|何時|哪一年|日常|每天|每日|作息|起居|平常|平時|生活習慣|私生活|小便|大便|出恭|如廁|解手|入廁|一生|生平|年表|完整經歷|七十一年|71年)/.test(text))return null;
   if(asksRoutine)return {kind:'question',answer:'《三國志》卷四十七〈吳主傳〉保存的是孫權任官、政軍與外交等事件記載，不是逐日生活日誌；現有來源沒有記下他平時的起居作息，也沒有記錄每天何時如廁等細節。我不能用模擬補造時辰或行程。若你想看可核實的內容，我可以整理目前收錄的生平年表。',choiceIds:[],questions:[],source:'《三國志》卷四十七〈吳主傳〉；日常細節未記載'};
-  if(/陽羨|任官|做官|當官|官職/.test(text))return {kind:'question',answer:'《三國志》卷四十七〈吳主傳〉記孫權年十五時任陽羨長。原文提供的是年齡，沒有在此處給出確切公元年份、月日或到任時刻，因此本原型不換算成某一年的觸發事件。',choiceIds:[],questions:[],source:'《三國志》卷四十七〈吳主傳〉'};
+  if(/陽羨|任官|做官|當官|官職/.test(text))return {kind:'question',answer:'《三國志》卷四十七〈吳主傳〉記孫權年十五時任陽羨長，同段續載郡察孝廉、州舉茂才、行奉義校尉。原文沒有提供這些任官可換算的確切公元年份、月日或到任時刻，因此本原型不將年齡反推成特定年份，也不補造任官日期。',choiceIds:[],questions:[],source:'《三國志》卷四十七〈吳主傳〉'};
   if(/去世|逝世|死亡|享年/.test(text))return {kind:'question',answer:'《三國志》卷四十八〈吳書·三嗣主傳〉記孫權於 252 年去世，時年七十一。原文沒有記下確切月日；其約 182 年出生是依享年回推的年級推定。',choiceIds:[],questions:[],source:'《三國志》卷四十八〈吳書·三嗣主傳〉'};
   if(/一生|生平|年表|完整經歷|七十一年|71年/.test(text)){
     const records=HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&item.startYear>=182&&item.endYear<=252&&/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.carrier} ${item.source}`)).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
@@ -70,7 +70,7 @@ export function answerKnownSunQuanBiographyQuestion(text:string):InteractionResu
     const coveredYears=new Set<number>();for(const item of records)for(let year=item.startYear;year<=item.endYear;year++)coveredYears.add(year);
     const missingRanges: Array<[number, number]> = [];for(let year=182;year<=252;year++){if(coveredYears.has(year))continue;const last=missingRanges.at(-1);if(last&&last[1]===year-1)last[1]=year;else missingRanges.push([year,year]);}
     const coverageGaps=missingRanges.map(([start,end])=>start===end?`${start}`:`${start}–${end}`).join('、')||'無';
-    return {kind:'question',answer:`現有史料節點整理出孫權約 182 年至 252 年（享年七十一）的 ${records.length} 筆可考年級紀錄，分布於 ${coveredYears.size} 個年次：\n${chronology}\n\n目前索引未收錄孫權相關節點的年次：${coverageGaps}。這些是資料覆蓋缺口，不代表他當年沒有活動。\n\n另有一項不繫公元年的年齡記載：《三國志》卷四十七記孫權年十五時任陽羨長；原文未給出可換算的確切公元年份，故不列入上述年級節點。\n\n這是本遊戲目前收錄的來源節點，不是逐年完整傳記；原史未記的日常時辰也不能用模擬補成史實。`,choiceIds:[],questions:[],source:'《三國志》卷四十七、四十八及已核對的年表節點'};
+    return {kind:'question',answer:`現有史料節點整理出孫權約 182 年至 252 年（享年七十一）的 ${records.length} 筆可考年級紀錄，分布於 ${coveredYears.size} 個年次：\n${chronology}\n\n目前索引未收錄孫權相關節點的年次：${coverageGaps}。這些是資料覆蓋缺口，不代表他當年沒有活動。\n\n另有一項不繫公元年的年齡記載：《三國志》卷四十七記孫權年十五時任陽羨長，同段續載郡察孝廉、州舉茂才、行奉義校尉；原文未給出這些任官可換算的公元年份或任官日期，故不列入上述年級節點。\n\n這是本遊戲目前收錄的來源節點，不是逐年完整傳記；原史未記的日常時辰也不能用模擬補成史實。`,choiceIds:[],questions:[],source:'《三國志》卷四十七、四十八及已核對的年表節點'};
   }
   return null;
 }

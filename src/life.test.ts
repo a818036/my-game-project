@@ -38,7 +38,7 @@ describe('人生情境計畫',()=>{
   });
   it('孫權生平問題保留史料精度；無來源的日常時辰明確回答未記載',()=>{
     const appointed=answerKnownSunQuanBiographyQuestion('孫權幾歲任陽羨長？');
-    expect(appointed?.answer).toContain('年十五');expect(appointed?.answer).toContain('沒有在此處給出確切公元年份');
+    expect(appointed?.answer).toContain('年十五');expect(appointed?.answer).toContain('郡察孝廉、州舉茂才、行奉義校尉');expect(appointed?.answer).toContain('不將年齡反推成特定年份');
     const died=answerKnownSunQuanBiographyQuestion('孫權幾歲去世？');expect(died?.answer).toContain('時年七十一');
     const routine=answerKnownSunQuanBiographyQuestion('孫權每天幾時小便出恭？');expect(routine?.answer).toContain('不是逐日生活日誌');expect(routine?.answer).toContain('我不能用模擬補造');
     expect(localInteraction('孫權每天幾時小便出恭？',start().state!).kind).toBe('question');
@@ -58,7 +58,8 @@ describe('人生情境計畫',()=>{
     expect(biography?.answer).toContain('孫權約 182 年至 252 年（享年七十一）');
     expect(biography?.answer).toContain('50 筆可考年級紀錄，分布於 38 個年次');
     expect(biography?.answer).toContain('年十五時任陽羨長');
-    expect(biography?.answer).toContain('未給出可換算的確切公元年份');
+    expect(biography?.answer).toContain('郡察孝廉、州舉茂才、行奉義校尉');
+    expect(biography?.answer).toContain('未給出這些任官可換算的公元年份');
     expect(biography?.answer).toContain('孫權隨孫策征劉勳');
     expect(biography?.answer).toContain('孫權之弟、丹楊太守翊遇害');
     expect(biography?.answer).toContain('孫權遣賀齊討上饒');
