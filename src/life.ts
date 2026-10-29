@@ -64,7 +64,7 @@ export function answerKnownSunQuanBiographyQuestion(text:string):InteractionResu
   if(/陽羨|任官|做官|當官|官職/.test(text))return {kind:'question',answer:'《三國志》卷四十七〈吳主傳〉記孫權年十五時任陽羨長。原文提供的是年齡，沒有在此處給出確切公元年份、月日或到任時刻，因此本原型不換算成某一年的觸發事件。',choiceIds:[],questions:[],source:'《三國志》卷四十七〈吳主傳〉'};
   if(/去世|逝世|死亡|享年/.test(text))return {kind:'question',answer:'《三國志》卷四十八〈吳書·三嗣主傳〉記孫權於 252 年去世，時年七十一。原文沒有記下確切月日；其約 182 年出生是依享年回推的年級推定。',choiceIds:[],questions:[],source:'《三國志》卷四十八〈吳書·三嗣主傳〉'};
   if(/一生|生平|年表|完整經歷|七十一年|71年/.test(text)){
-    const records=HISTORY_CONTENT.filter(item=>item.kind==='event'&&item.source.startsWith('《')&&item.startYear>=182&&item.endYear<=252&&/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.carrier} ${item.source}`)).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
+    const records=HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&item.startYear>=182&&item.endYear<=252&&/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.carrier} ${item.source}`)).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
     const chronology=records.map(item=>`${item.startYear}年${item.id==='sun-quan-inferred-birth-182'?'（約）':''}・${item.title}：${item.description}〔${item.source}〕`).join('\n');
     return {kind:'question',answer:`現有史料節點整理出孫權約 182 年至 252 年（享年七十一）的 ${records.length} 筆可考年級紀錄：\n${chronology}\n\n這是本遊戲目前收錄的來源節點，不是逐年完整傳記。未列年份不代表沒有事情發生；原史未記的日常時辰也不能用模擬補成史實。`,choiceIds:[],questions:[],source:'《三國志》卷四十七、四十八及已核對的年表節點'};
   }
@@ -76,7 +76,7 @@ export function answerKnownHistoricalEventQuestion(text:string,state:GameState):
   const asksCurrentYear=/(今年|這年|這一年|目前這年|當年|現在這年)/.test(text);
   if(!explicitYear&&!asksCurrentYear)return null;
   const year=explicitYear?Number(explicitYear[1]):state.world.year;
-  const records=HISTORY_CONTENT.filter(item=>item.kind==='event'&&item.source.startsWith('《')&&item.startYear<=year&&item.endYear>=year&&(!/(孫權|孫仲謀)/.test(text)||/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.source}`)));
+  const records=HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&item.startYear<=year&&item.endYear>=year&&(!/(孫權|孫仲謀)/.test(text)||/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.source}`)));
   if(/孫權|孫仲謀/.test(text)&&!records.length)return {kind:'question',answer:`目前內容包未收錄西元 ${year} 年有來源支持的孫權生平節點；這不表示該年沒有事情發生，我不以其他人物事件代答，也不臆測。`,choiceIds:[],questions:[]};
   const answer=records.length
     ? `西元 ${year} 年已收錄的史實年級節點：${records.map(item=>`${item.title}。${item.description} 資料：${item.source}`).join('；')}`

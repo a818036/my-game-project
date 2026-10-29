@@ -26,6 +26,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     const indexedNodes = HISTORY_CONTENT.filter((item) =>
       (item.kind === 'event' || item.kind === 'death')
       && !item.example
+      && !item.retired
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);

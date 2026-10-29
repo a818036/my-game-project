@@ -426,12 +426,15 @@ describe('209 年孫權任命周瑜並受劉備表奏', () => {
   });
 });
 
-describe('孫權早年可考年級節點（201、211、212）', () => {
-  it('卷四十七支持孫權之母吳氏去世，僅記年級，不補私人細節', () => {
-    const content = HISTORY_CONTENT.find((node) => node.id === 'sun-quan-mother-dies-201');
-    expect(content).toMatchObject({ startYear: 201, endYear: 201, precision: 'year', introducedIn: 'phase4-scenario-104', sameYearMigrationIsLate: true });
-    expect(content?.source).toContain('建安七年「權母吳氏薨」');
+describe('孫權早年可考年級節點（202、211、212）', () => {
+  it('卷四十七支持建安七年孫權之母吳氏去世，正確換算為 202 年', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === 'sun-quan-mother-dies-202');
+    expect(content).toMatchObject({ startYear: 202, endYear: 202, precision: 'year', introducedIn: 'phase4-scenario-106', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('建安七年，權母吳氏薨');
+    expect(content?.source).toContain('建安四年為公元 199 年');
+    expect(content?.source).toContain('建安七年為公元 202 年');
     expect(content?.description).toContain('不補死亡日期、病因');
+    expect(HISTORY_CONTENT.find((node) => node.id === 'sun-quan-mother-dies-201')?.retired).toBe(true);
   });
 
   it('卷四十七支持徙治秣陵及翌年築城改名備濡須，保留年級精度', () => {
@@ -449,7 +452,7 @@ describe('孫權早年可考年級節點（201、211、212）', () => {
     const old = createPhase4Model(210, 1, persons, 'phase4-scenario-103');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
-    expect(upgraded.nodes.find((node) => node.contentId === 'sun-quan-mother-dies-201')?.status).toBe('resolved');
+    expect(upgraded.nodes.find((node) => node.contentId === 'sun-quan-mother-dies-202')?.status).toBe('resolved');
     expect(upgraded.nodes.find((node) => node.contentId === 'sun-quan-moves-governance-to-muling-211')?.status).toBe('pending');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     const advanced = advancePhase4(upgraded, 720);
@@ -460,8 +463,41 @@ describe('孫權早年可考年級節點（201、211、212）', () => {
     expect(advanced.eventLedger.some((event) => event.detail.includes('築石頭城、改秣陵為建業並備濡須'))).toBe(true);
 
     const sameYear = upgradePhase4Content(createPhase4Model(211, 1, persons, 'phase4-scenario-103'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === 'sun-quan-mother-dies-202')).toMatchObject({ status: 'resolved', resolvedYear: 202 });
     expect(sameYear.nodes.find((node) => node.contentId === 'sun-quan-moves-governance-to-muling-211')).toMatchObject({ status: 'resolved', resolvedYear: 211 });
     expect(sameYear.eventLedger.some((event) => event.detail.includes('孫權徙治秣陵'))).toBe(false);
+  });
+});
+
+describe('v105 存檔之建安七年勘誤遷移', () => {
+  const legacyId='sun-quan-mother-dies-201',correctedId='sun-quan-mother-dies-202';
+
+  it('停用舊 201 年節點、保留事件前綴並於 202 年觸發正確節點', () => {
+    const old=createPhase4Model(200,1,persons,'phase4-scenario-105');
+    const oldNode=old.nodes.find(node=>node.contentId===legacyId)!;
+    oldNode.status='triggered';oldNode.resolvedYear=201;
+    old.eventLedger.push({id:'old-201-record',day:360,year:201,month:1,dayOfMonth:1,type:'史實事件形成',detail:'孫權之母吳氏去世（舊版誤年）'});
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find(node=>node.contentId===legacyId)).toMatchObject({status:'triggered',resolvedYear:201});
+    expect(upgraded.nodes.find(node=>node.contentId===legacyId)?.evidence.join('')).toContain('正確換算為 202 年');
+    expect(upgraded.nodes.find(node=>node.contentId===correctedId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.eventLedger.at(-1)?.type).toBe('史實資料勘誤');
+    const advanced=advancePhase4(upgraded,720);
+    expect(advanced.nodes.find(node=>node.contentId===correctedId)?.status).toBe('triggered');
+    expect(advanced.nodes.find(node=>node.contentId===legacyId)?.status).toBe('triggered');
+    expect(advanced.eventLedger.some(event=>event.detail.includes('孫權之母吳氏去世')&&event.year===202)).toBe(true);
+  });
+
+  it('202 年當年載入的舊存檔不回補正確事件，只附勘誤說明', () => {
+    const old=createPhase4Model(202,1,persons,'phase4-scenario-105');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find(node=>node.contentId===correctedId)).toMatchObject({status:'resolved',resolvedYear:202});
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.eventLedger.some(event=>event.type==='史實資料勘誤'&&event.year===202)).toBe(true);
+    expect(upgraded.eventLedger.some(event=>event.type==='史實事件形成'&&event.detail.includes('孫權之母吳氏去世')&&event.year===202)).toBe(false);
   });
 });
 
