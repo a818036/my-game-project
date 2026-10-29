@@ -12,6 +12,7 @@ export const HAN_DIVISION_SOURCE_URLS = {
   henanYin: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
   yingchuan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7110',
   nanyang: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  wu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
 } as const;
 
 /** A source-ordered county-name sample, not a complete or year-specific map. */
@@ -32,6 +33,15 @@ export const HAN_NANYANG_COUNTY_NAMES = [
   '舞陰', '比陽', '復陽', '平氏', '棘陽', '湖陽', '隨', '育陽', '涅陽', '陰',
   '酇', '鄧', '山都', '酈', '穰', '朝陽', '蔡陽', '安眾', '築陽', '武當', '順陽',
   '成都', '襄鄉', '南鄉', '丹水', '析',
+] as const;
+
+/**
+ * Transcribed Wu commandery list in the received text. The same volume's
+ * collation notes question the count and whether "安" duplicates "婁".
+ */
+export const HAN_WU_COUNTY_NAMES = [
+  '吳（本國）', '海鹽', '烏程', '餘杭', '毘陵', '丹徒', '曲阿', '由拳',
+  '安（原文；校勘疑為婁）', '富春', '陽羨', '無錫', '婁（原文補入；校勘疑與安重出）',
 ] as const;
 
 /**
