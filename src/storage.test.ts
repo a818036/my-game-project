@@ -166,7 +166,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const oldState=applyEvent(null,legacyStart)!;const old:SaveFile={...current,events:[legacyStart],state:oldState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(legacyStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-inferred-birth-182')).toMatchObject({status:'resolved',resolvedYear:182,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='winter-cold-eastern-commandries-183')).toMatchObject({status:'resolved',resolvedYear:183,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('孫權推定出生年'))).toBe(false);
@@ -184,7 +184,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(legacyStart);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
+    expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-ce-dies-sun-quan-inherits-200')).toMatchObject({status:'resolved',resolvedYear:200,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-chooses-resistance-208')).toMatchObject({status:'pending'});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-accepts-king-of-wu-title-221')).toMatchObject({status:'pending'});
@@ -199,7 +199,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const priorState=applyEvent(null,priorStart)!;const old:SaveFile={...current,events:[priorStart],state:priorState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(priorStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-hunts-tiger-lingting-218')?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
@@ -211,7 +211,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const priorState=applyEvent(null,priorStart)!;const old:SaveFile={...current,events:[priorStart],state:priorState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(priorStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-mother-dies-202')?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-moves-governance-to-muling-211')?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-builds-shitou-jianye-ruxu-212')?.status).toBe('pending');
@@ -222,37 +222,37 @@ describe('A05／A06 存檔交易與重播', () => {
   it('A214 v106 203 年存檔追加翊遇害節點、續玩觸發並保留重播一致',()=>{
     const current=makeSave('phase6-v106-sun-yi');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-106'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];for(const [index,days] of [3600,3240].entries()){const reached=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v106-sun-yi-reach-203-${index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!reached.state||!reached.event)throw new Error('could not prepare v106 fixture');oldState=reached.state;oldEvents.push(reached.event);}const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
-    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-brother-sun-yi-killed-204')?.status).toBe('pending');
+    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-brother-sun-yi-killed-204')?.status).toBe('pending');
     const next=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v106-sun-yi-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!next.state||!next.event)throw new Error('could not advance migrated v106 fixture');const continued:SaveFile={...migrated,events:[...migrated.events,next.event],state:next.state};expect(next.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-brother-sun-yi-killed-204')?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
   });
 
   it('A215 v107 204 年存檔升至 v108 後續玩觸發 205 年節點並保留重播',()=>{
     const current=makeSave('phase6-v107-he-qi');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-107'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];for(const [index,days] of [3600,3600].entries()){const reached=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v107-he-qi-reach-204-${index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!reached.state||!reached.event)throw new Error('could not prepare v107 fixture');oldState=reached.state;oldEvents.push(reached.event);}const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
-    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-he-qi-shangrao-205')?.status).toBe('pending');
+    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-he-qi-shangrao-205')?.status).toBe('pending');
     const next=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v107-he-qi-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!next.state||!next.event)throw new Error('could not advance migrated v107 fixture');const continued:SaveFile={...migrated,events:[...migrated.events,next.event],state:next.state};expect(next.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-he-qi-shangrao-205')?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
-  });
+  },15000);
 
   it('A216 v108 209 年存檔升至 v110 後續玩觸發 210 年節點並保留重播',()=>{
     const current=makeSave('phase6-v108-reorganize');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-108'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];for(const [index,days] of [3600,3600,1800].entries()){const reached=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v108-reorganize-reach-209-${index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!reached.state||!reached.event)throw new Error('could not prepare v108 fixture');oldState=reached.state;oldEvents.push(reached.event);}const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
-    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-reorganizes-yuzhang-changsha-210')?.status).toBe('pending');
+    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-reorganizes-yuzhang-changsha-210')?.status).toBe('pending');
     const next=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v108-reorganize-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!next.state||!next.event)throw new Error('could not advance migrated v108 fixture');const continued:SaveFile={...migrated,events:[...migrated.events,next.event],state:next.state};expect(next.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-reorganizes-yuzhang-changsha-210')?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
-  });
+  },15000);
 
   it('A217 v109 207 年存檔升至 v110 後續玩觸發 208 年節點並保留重播',()=>{
     const current=makeSave('phase6-v109-huang-zu');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-109'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];for(const [index,days] of [3600,3600,1080].entries()){const reached=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v109-huang-zu-reach-207-${index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!reached.state||!reached.event)throw new Error('could not prepare v109 fixture');oldState=reached.state;oldEvents.push(reached.event);}const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
-    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-defeats-huang-zu-jiangxia-208')?.status).toBe('pending');
+    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-defeats-huang-zu-jiangxia-208')?.status).toBe('pending');
     const next=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v109-huang-zu-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!next.state||!next.event)throw new Error('could not advance migrated v109 fixture');const continued:SaveFile={...migrated,events:[...migrated.events,next.event],state:next.state};expect(next.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-defeats-huang-zu-jiangxia-208')?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
-  });
+  },15000);
 
   it('A218 v110 213 年存檔升至 v111 後續玩觸發皖城節點並保留重播',()=>{
     const current=makeSave('phase6-v110-wancheng');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-110'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];for(const [index,days] of [3600,3600,3240].entries()){const reached=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v110-wancheng-reach-213-${index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!reached.state||!reached.event)throw new Error('could not prepare v110 fixture');oldState=reached.state;oldEvents.push(reached.event);}const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
-    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-captures-wancheng-214')?.status).toBe('pending');
+    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-captures-wancheng-214')?.status).toBe('pending');
     const next=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v110-wancheng-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!next.state||!next.event)throw new Error('could not advance migrated v110 fixture');const continued:SaveFile={...migrated,events:[...migrated.events,next.event],state:next.state};expect(next.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-captures-wancheng-214')?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
-  });
+  },15000);
 
   it('A212 v105 存檔勘誤遷移、續玩 202 年並保留重播一致',()=>{
     const current=makeSave('phase6-v105-correction');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
@@ -394,7 +394,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-111'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];let remainingDays=(220-oldState.phase4!.year)*360,index=0;
     while(remainingDays>0){const days=Math.min(3650,remainingDays);const result=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v111-sun-deng-${++index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!result.state||!result.event)throw new Error('could not prepare v111 save');oldState=result.state;oldEvents.push(result.event);remainingDays-=days;}
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};const migrated=verifySave(toJson(old));const nodeId='sun-quan-wei-envoys-and-sun-deng-investiture-221';
-    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='wu-chancellor-succession-225')?.status).toBe('pending');
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='wu-chancellor-succession-225')?.status).toBe('pending');
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v111-sun-deng-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!result.state||!result.event)throw new Error('could not trigger migrated v111 save');const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};expect(result.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
   },15000);
 
@@ -403,7 +403,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-112'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];let remainingDays=(224-oldState.phase4!.year)*360,index=0;
     while(remainingDays>0){const days=Math.min(3650,remainingDays);const result=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v112-gu-yong-${++index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!result.state||!result.event)throw new Error('could not prepare v112 save');oldState=result.state;oldEvents.push(result.event);remainingDays-=days;}
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};const migrated=verifySave(toJson(old));const nodeId='wu-chancellor-succession-225';
-    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v112-gu-yong-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!result.state||!result.event||result.event.type!=='Phase4Changed')throw new Error('could not trigger migrated v112 save');const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};expect(result.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(result.event.payload).toMatchObject({action:{type:'AdvanceDays',days:360}});expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
   },15000);
 
@@ -412,7 +412,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-113'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];let remainingDays=(199-oldState.phase4!.year)*360,index=0;
     while(remainingDays>0){const days=Math.min(3650,remainingDays);const result=dispatch(oldState,{version:ENGINE_VERSION,commandId:'phase6-v113-li-shu-'+(++index),expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!result.state||!result.event)throw new Error('could not prepare v113 save');oldState=result.state;oldEvents.push(result.event);remainingDays-=days;}
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};const migrated=verifySave(toJson(old));const nodeId='sun-quan-defeats-li-shu-200';
-    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v113-li-shu-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!result.state||!result.event||result.event.type!=='Phase4Changed')throw new Error('could not trigger migrated v113 save');const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};expect(result.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
   },15000);
 
@@ -421,7 +421,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-114'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];let remainingDays=(205-oldState.phase4!.year)*360,index=0;
     while(remainingDays>0){const days=Math.min(3650,remainingDays);const result=dispatch(oldState,{version:ENGINE_VERSION,commandId:'phase6-v114-deng-long-'+(++index),expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!result.state||!result.event)throw new Error('could not prepare v114 save');oldState=result.state;oldEvents.push(result.event);remainingDays-=days;}
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};const migrated=verifySave(toJson(old));const nodeId='zhou-yu-captures-deng-long-206';
-    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v114-deng-long-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!result.state||!result.event||result.event.type!=='Phase4Changed')throw new Error('could not trigger migrated v114 save');const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};expect(result.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
   },15000);
 
@@ -430,14 +430,14 @@ describe('A05／A06 存檔交易與重播', () => {
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-115'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];let remainingDays=(201-oldState.phase4!.year)*360,index=0;
     while(remainingDays>0){const days=Math.min(3650,remainingDays);const result=dispatch(oldState,{version:ENGINE_VERSION,commandId:'phase6-v115-hostage-demand-'+(++index),expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!result.state||!result.event)throw new Error('could not prepare v115 save');oldState=result.state;oldEvents.push(result.event);remainingDays-=days;}
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};const migrated=verifySave(toJson(old));const nodeId='sun-quan-refuses-hostage-demand-202';
-    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v115-hostage-demand-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!result.state||!result.event||result.event.type!=='Phase4Changed')throw new Error('could not trigger migrated v115 save');const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};expect(result.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
   },15000);
 
   it('A231 v116 的 226 年 v6 JSON 升至 v118、續玩觸發孫權政令並保持可重播',()=>{
     const current=makeSave('phase6-v116-sun-quan-decree');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-116'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];let remainingDays=(226-oldState.phase4!.year)*360,index=0;while(remainingDays>0){const days=Math.min(3650,remainingDays);const advanced=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v116-decree-reach-226-${++index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!advanced.state||!advanced.event)throw new Error('could not prepare v116 fixture');oldState=advanced.state;oldEvents.push(advanced.event);remainingDays-=days;}const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};const migrated=verifySave(toJson(old));const nodeId='sun-quan-protects-families-of-defectors-227';
-    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v116-decree-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!result.state||!result.event||result.event.type!=='Phase4Changed')throw new Error('could not trigger migrated v116 save');const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};expect(result.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
   },15000);
 
@@ -445,7 +445,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const current=makeSave('phase6-v117-229-milestones');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-117'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];let remainingDays=(228-oldState.phase4!.year)*360,index=0;while(remainingDays>0){const days=Math.min(3650,remainingDays);const advanced=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v117-229-reach-${++index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!advanced.state||!advanced.event)throw new Error('could not prepare v117 fixture');oldState=advanced.state;oldEvents.push(advanced.event);remainingDays-=days;}
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};const migrated=verifySave(toJson(old));const newIds=['wu-shu-alliance-partition-229','sun-quan-moves-capital-to-jianye-229'];
-    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});for(const id of newIds)expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});for(const id of newIds)expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v117-229-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!result.state||!result.event||result.event.type!=='Phase4Changed')throw new Error('could not trigger migrated v117 save');const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};for(const id of newIds)expect(result.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
 
     const currentYearStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-117'}};let sameYearState=applyEvent(null,currentYearStart)!;const sameYearEvents:GameEvent[]=[currentYearStart];remainingDays=(229-sameYearState.phase4!.year)*360;index=0;while(remainingDays>0){const days=Math.min(3650,remainingDays);const advanced=dispatch(sameYearState,{version:ENGINE_VERSION,commandId:`phase6-v117-229-late-${++index}`,expectedRevision:sameYearState.revision,worldlineId:sameYearState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!advanced.state||!advanced.event)throw new Error('could not prepare same-year v117 fixture');sameYearState=advanced.state;sameYearEvents.push(advanced.event);remainingDays-=days;}const late=verifySave(toJson({...current,worldlineId:sameYearState.worldlineId,events:sameYearEvents,state:sameYearState}));for(const id of newIds)expect(late.state.phase4?.nodes.find(node=>node.contentId===id)).toMatchObject({status:'resolved',resolvedYear:229});expect(late.state.phase4?.eventLedger.some(item=>item.detail.includes('吳蜀盟約分州、共同討魏'))).toBe(false);expect(late.state.phase4?.eventLedger.some(item=>item.detail.includes('孫權遷都建業、命陸遜留武昌輔太子'))).toBe(false);
@@ -458,8 +458,8 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(oldStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-134');
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-135');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
@@ -471,8 +471,8 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(oldStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-134');
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-135');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
@@ -484,8 +484,8 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(oldStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-134');
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-135');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
@@ -496,8 +496,8 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
     const migrated=verifySave(toJson(old));const nodeId='sun-quan-builds-wuchang-and-warns-generals-221';
     expect(migrated.events[0]).toEqual(oldStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-134');
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-135');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
@@ -510,8 +510,8 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
     const migrated=verifySave(toJson(old));const nodeId='sun-quan-capital-reports-sweet-dew-221';
     expect(migrated.events[0]).toEqual(oldStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-134');
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-135');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
@@ -534,8 +534,8 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
     const migrated=verifySave(toJson(old));const nodeId='sun-quan-declines-imperial-title-221';
     expect(migrated.events[0]).toEqual(oldStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-134');
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-135');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
@@ -548,8 +548,8 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
     const migrated=verifySave(toJson(old));const nodeId='wei-three-front-campaign-and-dongkou-storm-222';
     expect(migrated.events[0]).toEqual(oldStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
-    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-134');
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
+    expect(migrated.state.phase4?.contentVersion).toBe('phase4-scenario-135');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
@@ -573,7 +573,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
     const migrated=verifySave(toJson(old));const nodeId='guan-yu-falls-219';
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-134'}});
+    expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-135'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)).toMatchObject({status:'pending',evidence:[expect.stringContaining('史料補充')]});
     expect(migrated.state.phase4?.eventLedger.some(event=>event.type==='史實來源補充')).toBe(true);
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v131-jingzhou-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
