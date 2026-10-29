@@ -427,3 +427,49 @@ describe('214 年孫權合肥撤軍遭襲', () => {
     expect(late.eventLedger.some((item) => item.detail.includes('合肥未克，孫權撤軍時遭張遼襲擊'))).toBe(false);
   });
 });
+
+describe('216–217 年孫權濡須與遣使', () => {
+  const campaigns = [
+    { id: 'sun-quan-ruxu-campaign-216', year: 216, fact: '至居巢並攻濡須', evidence: '建安二十一年冬' },
+    { id: 'sun-quan-sends-envoy-to-cao-217', year: 217, fact: '徐詳赴曹操處請降', evidence: '建安二十二年春' },
+  ];
+
+  it('保留濡須攻守與外交先後的原典內容、年級精度及季節註記', () => {
+    for (const item of campaigns) {
+      const content = HISTORY_CONTENT.find((node) => node.id === item.id);
+      expect(content).toMatchObject({ startYear: item.year, endYear: item.year, precision: 'year', introducedIn: 'phase4-scenario-102', sameYearMigrationIsLate: true });
+      expect(content?.source).toContain('《三國志》卷四十七');
+      expect(content?.source).toContain(item.fact);
+      expect(content?.sourceDateNote).toContain(item.evidence);
+    }
+    expect(HISTORY_CONTENT.find((node) => node.id === campaigns[1].id)?.description).toContain('不代玩家作出外交選擇');
+  });
+
+  it('v101、215 年存檔跨年至 216、217 依序觸發，保存舊事件前綴', () => {
+    const old = createPhase4Model(215, 1, persons, 'phase4-scenario-101');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    for (const item of campaigns) expect(upgraded.nodes.find((node) => node.contentId === item.id)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+
+    const advanced = advancePhase4(upgraded, 720);
+    for (const item of campaigns) expect(advanced.nodes.find((node) => node.contentId === item.id)?.status).toBe('triggered');
+    expect(advanced.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advanced.eventLedger.find((event) => event.detail.includes('曹操進攻濡須、孫權與之相持'))?.source).toContain('建安二十一年冬');
+    expect(advanced.eventLedger.find((event) => event.detail.includes('孫權遣徐詳赴曹操處請降'))?.source).toContain('曹操遣使回覆修好');
+  });
+
+  it('同年與較晚載入都不回補已過的歷史事件', () => {
+    const at216 = upgradePhase4Content(createPhase4Model(216, 1, persons, 'phase4-scenario-101'), PHASE4_CONTENT_VERSION);
+    expect(at216.nodes.find((node) => node.contentId === campaigns[0].id)).toMatchObject({ status: 'resolved', resolvedYear: 216 });
+    expect(at216.nodes.find((node) => node.contentId === campaigns[1].id)?.status).toBe('pending');
+
+    for (const year of [217, 218]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, persons, 'phase4-scenario-101'), PHASE4_CONTENT_VERSION);
+      for (const item of campaigns.filter((campaign) => campaign.year <= year)) {
+        expect(late.nodes.find((node) => node.contentId === item.id)).toMatchObject({ status: 'resolved', resolvedYear: item.year });
+      }
+      expect(late.eventLedger.some((event) => campaigns.some((item) => event.detail.includes(item.year === 216 ? '曹操進攻濡須、孫權與之相持' : '孫權遣徐詳赴曹操處請降')))).toBe(false);
+    }
+  });
+});

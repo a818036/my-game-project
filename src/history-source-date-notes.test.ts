@@ -15,7 +15,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     const milestones = HISTORY_CONTENT.filter((item) =>
       item.startYear >= 182 && item.endYear <= 252 && item.source.includes('孫權'),
     );
-    expect(milestones.length).toBeGreaterThanOrEqual(19);
+    expect(milestones.length).toBeGreaterThanOrEqual(21);
     expect(milestones.every((item) => item.precision === 'year' && item.source.length > 0)).toBe(true);
     expect(milestones.some((item) => item.sourceDateNote?.match(/\d{1,2}時(?:\d{1,2}刻)?/))).toBe(false);
     expect(birth?.description).toContain('不宣稱精確出生日期');
@@ -29,7 +29,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(122);
+    expect(withinCatalogYears).toHaveLength(124);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -54,6 +54,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'hou-yin-rebellion-218': ['建安二十三年冬十月'],
       'sun-quan-hunts-tiger-lingting-218': ['建安二十三年十月', '庱亭射虎', '投以雙戟'],
       'sun-quan-accepts-king-of-wu-title-221': ['黃初二年', '十一月魏文帝策命'],
+      'sun-quan-ruxu-campaign-216': ['建安二十一年冬曹操至居巢', '攻濡須'],
+      'sun-quan-sends-envoy-to-cao-217': ['建安二十二年春', '徐詳', '請降', '修好'],
       'yiling-campaign-222': ['章武二年夏六月', '十二月孫權遣'],
       'sun-quan-renews-alliance-with-shu-224': ['黃武三年夏孫權遣輔義中郎將張溫聘蜀'],
       'dongxing-battle-252': ['孫亮建興元年冬魏軍圍東興'],
@@ -106,7 +108,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-succession-239': ['景初三年正月丁亥'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(60);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(62);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
