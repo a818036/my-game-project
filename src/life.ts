@@ -70,7 +70,7 @@ export function answerKnownSunQuanBiographyQuestion(text:string):InteractionResu
     const coveredYears=new Set<number>();for(const item of records)for(let year=item.startYear;year<=item.endYear;year++)coveredYears.add(year);
     const missingRanges: Array<[number, number]> = [];for(let year=182;year<=252;year++){if(coveredYears.has(year))continue;const last=missingRanges.at(-1);if(last&&last[1]===year-1)last[1]=year;else missingRanges.push([year,year]);}
     const coverageGaps=missingRanges.map(([start,end])=>start===end?`${start}`:`${start}–${end}`).join('、')||'無';
-    return {kind:'question',answer:`現有史料節點整理出孫權約 182 年至 252 年（享年七十一）的 ${records.length} 筆可考年級紀錄：\n${chronology}\n\n目前索引未收錄孫權相關節點的年次：${coverageGaps}。這些是資料覆蓋缺口，不代表他當年沒有活動。\n\n另有一項不繫公元年的年齡記載：《三國志》卷四十七記孫權年十五時任陽羨長；原文未給出可換算的確切公元年份，故不列入上述年級節點。\n\n這是本遊戲目前收錄的來源節點，不是逐年完整傳記；原史未記的日常時辰也不能用模擬補成史實。`,choiceIds:[],questions:[],source:'《三國志》卷四十七、四十八及已核對的年表節點'};
+    return {kind:'question',answer:`現有史料節點整理出孫權約 182 年至 252 年（享年七十一）的 ${records.length} 筆可考年級紀錄，分布於 ${coveredYears.size} 個年次：\n${chronology}\n\n目前索引未收錄孫權相關節點的年次：${coverageGaps}。這些是資料覆蓋缺口，不代表他當年沒有活動。\n\n另有一項不繫公元年的年齡記載：《三國志》卷四十七記孫權年十五時任陽羨長；原文未給出可換算的確切公元年份，故不列入上述年級節點。\n\n這是本遊戲目前收錄的來源節點，不是逐年完整傳記；原史未記的日常時辰也不能用模擬補成史實。`,choiceIds:[],questions:[],source:'《三國志》卷四十七、四十八及已核對的年表節點'};
   }
   return null;
 }
