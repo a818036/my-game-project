@@ -109,6 +109,7 @@ describe('221 年孫權受魏封吳王', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === titleId);
     expect(content).toMatchObject({ startYear: 221, endYear: 221, precision: 'year', introducedIn: 'phase4-scenario-93', sameYearMigrationIsLate: true });
     expect(content?.source).toContain('《三國志》卷四十七');
+    expect(content?.source).toContain('自公安都鄂、改名武昌');
     expect(content?.source).toContain('十一月魏文帝策命孫權為吳王');
     expect(content?.source).toContain('《江表傳》');
     expect(content?.description).toContain('不推演外交動機');
@@ -117,7 +118,7 @@ describe('221 年孫權受魏封吳王', () => {
   it('新局跨年至 221 年觸發；v92 存檔只追加遷移，不回補同年或晚年的事件', () => {
     const fresh = advancePhase4(createPhase4Model(220, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === titleId)?.status).toBe('triggered');
-    expect(fresh.eventLedger.find((item) => item.detail.includes('孫權受魏封吳王'))?.source).toContain('策命孫權為吳王');
+    expect(fresh.eventLedger.find((item) => item.detail.includes('孫權徙治武昌、受魏封吳王'))?.source).toContain('策命孫權為吳王');
 
     const old = createPhase4Model(220, 1, persons, 'phase4-scenario-92');
     const prefix = structuredClone(old.eventLedger);
