@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {mockNarration,openAiInterpretation,openAiNarration,validateInterpretationOutput,validateNarrationOutput,validateNarrationPayload} from './narration.mjs';
 
-const payload={eventBatchId:'event-1',settledEvents:[{turn:1,title:'經商營生',details:'市集營生收入錢 5'}],playerView:{location:'家宅',trend:'僅玩家可見的天下消息',knownFacts:[]},visibleNpcs:[{id:'person-1',name:'示例人物',age:20,office:'白身',present:true,knownFacts:['親眼所見市集往來']}]};
+const payload={eventBatchId:'event-1',settledEvents:[{turn:1,title:'經商營生',details:'市集營生收入錢 5'}],playerView:{location:'家宅',trend:'僅玩家可見的天下消息',knownFacts:[]},visibleNpcs:[{id:'person-1',name:'示例人物',age:20,office:'白身',present:true,knownFacts:[{turn:1,observation:'親見市集',facts:['親眼所見市集往來']}]}]};
 describe('第五階段・伺服器敘事代理',()=>{
   it('年齡上下文可驗證且不漏過額外秘密欄位；空 output_text 仍可讀取正式 output',async()=>{
     const current={...payload,protagonist:{name:'主角',age:0,ageMonths:2,birthYear:184,modernMemory:true}};
@@ -13,8 +13,13 @@ describe('第五階段・伺服器敘事代理',()=>{
     expect(result).toEqual(output);
   });
   it('v3.16 喜劇文風只在有根據時啟用，保留記憶、悲劇與資訊防火牆',async()=>{
-    const result=await openAiNarration(payload,{apiKey:'test-only',fetchImpl:async(_url,options)=>{const {instructions}=JSON.parse(options.body);expect(instructions).toContain('沒有條件就寫正劇');expect(instructions).toContain('不得臆造人物動機、誤讀、成本、傳聞、記憶');expect(instructions).toContain('同類回彈需要輸入中有相關前情');expect(instructions).toContain('嚴肅傷亡與創傷保留重量');return new Response(JSON.stringify({output_text:JSON.stringify(mockNarration(payload))}),{status:200});}});
+    const result=await openAiNarration(payload,{apiKey:'test-only',fetchImpl:async(_url,options)=>{const {instructions}=JSON.parse(options.body);expect(instructions).toContain('沒有條件就寫正劇');expect(instructions).toContain('不得臆造人物動機、誤讀、成本、傳聞、記憶');expect(instructions).toContain('同類回彈需要輸入中有相關前情');expect(instructions).toContain('按 turn 排列的已保存觀察紀錄');expect(instructions).toContain('不能推導消息已傳給他人');expect(instructions).toContain('嚴肅傷亡與創傷保留重量');return new Response(JSON.stringify({output_text:JSON.stringify(mockNarration(payload))}),{status:200});}});
     expect(result).toEqual(mockNarration(payload));
+  });
+  it('觀察回憶帶回合與明確知情內容；拒絕未知欄位與缺失時間',()=>{
+    expect(()=>validateNarrationPayload(payload)).not.toThrow();
+    expect(()=>validateNarrationPayload({...payload,visibleNpcs:[{...payload.visibleNpcs[0],knownFacts:[{turn:1,observation:'親見市集',facts:['親眼所見市集往來'],unknown:['未曾得知'] }]}]})).toThrow('個別知識');
+    expect(()=>validateNarrationPayload({...payload,playerView:{...payload.playerView,knownFacts:[{observation:'缺少回合',facts:['某事']} ]}})).toThrow('玩家視野');
   });
   it('只把保存的主角回憶作為私人敘事上下文，NPC 不得引用',async()=>{
     const remembered={...payload,protagonistMemory:[{turn:3,title:'庭院讀書舊事',details:'主角曾讀完一卷兵書'}]};

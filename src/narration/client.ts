@@ -1,22 +1,28 @@
 import type { GameEvent, GameState, PlannedActionDetail } from '../engine';
 import {currentAge} from '../life';
 
+export interface NarrationKnowledgeRecord { turn:number; observation:string; facts:string[]; }
 export interface NarrationPayload {
   eventBatchId:string;
   protagonist?:{name:string;age:number;ageMonths:number;birthYear:number;modernMemory:boolean};
   /** Player-only memories derived from persisted, player-confirmed action records. */
   protagonistMemory?:Array<{turn:number;title:string;details:string}>;
   settledEvents:Array<{turn:number;title:string;details:string;resolvedActions?:PlannedActionDetail[]}>;
-  playerView:{location:string;trend:string;knownFacts:string[]};
-  visibleNpcs:Array<{id:string;name:string;age:number;office:string;present:true;knownFacts:string[]}>;
+  playerView:{location:string;trend:string;knownFacts:NarrationKnowledgeRecord[]};
+  visibleNpcs:Array<{id:string;name:string;age:number;office:string;present:true;knownFacts:NarrationKnowledgeRecord[]}>;
 }
 export interface NarrationResult { paragraphs:string[]; dialogue:Array<{speakerId:string;text:string}>; suggestions:string[]; source?:'mock'|'openai'|'chatgpt'|'template'; }
 export function buildNarrationPayload(state:GameState,event:GameEvent):NarrationPayload{
   const observations=state.phase2?.observations??[];
-  const knownFacts=observations.filter(item=>item.witnessId==='protagonist').flatMap(item=>item.known);
+  const knownFactsFor=(witnessId:string):NarrationKnowledgeRecord[]=>observations
+    .filter(item=>item.witnessId===witnessId&&item.known.length>0)
+    .sort((left,right)=>left.turn-right.turn)
+    .slice(-3)
+    .map(item=>({turn:item.turn,observation:item.observation.slice(0,120),facts:item.known.slice(0,3).map(fact=>fact.slice(0,180))}));
+  const knownFacts=knownFactsFor('protagonist');
   const visibleNpcs=(state.phase2?.scene.presentIds??[]).filter(id=>id!=='protagonist').map(id=>{
     const npc=state.phase2!.persons.find(item=>item.id===id)!;
-    return{id:npc.id,name:npc.name,age:Math.max(0,state.world.year-npc.birthYear),office:npc.office,present:true as const,knownFacts:observations.filter(item=>item.witnessId===id).flatMap(item=>item.known)};
+    return{id:npc.id,name:npc.name,age:Math.max(0,state.world.year-npc.birthYear),office:npc.office,present:true as const,knownFacts:knownFactsFor(id)};
   });
   const latest=state.actions.at(-1);let settledEvents:NarrationPayload['settledEvents']=[];
   if((event.type==='ActionPlanResolved'||event.type==='LifePlanResolved')&&latest)settledEvents=[{turn:latest.turn,title:latest.title,details:latest.supplement?latest.details.replaceAll(latest.supplement,'').replace(/；補充說明[^；]*/g,''):latest.details,...(latest.freeTextActions?{resolvedActions:latest.freeTextActions}:{})}];
@@ -40,7 +46,7 @@ export function validateNarrationResult(value:unknown,payload:NarrationPayload):
   if(Object.keys(value).some(key=>!['paragraphs','dialogue','suggestions'].includes(key))||!Array.isArray(result.paragraphs)||!result.paragraphs.every(item=>typeof item==='string')||!Array.isArray(result.suggestions)||!result.suggestions.every(item=>typeof item==='string')||!Array.isArray(result.dialogue))throw new Error('敘事資料格式無效');
   const allowed=new Set(payload.visibleNpcs.map(person=>person.id));
   if(result.dialogue.some(line=>!line||typeof line.speakerId!=='string'||!allowed.has(line.speakerId)||typeof line.text!=='string'))throw new Error('敘事提及不在場或未知的發言者');
-  const privateMemory=(payload.protagonistMemory??[]).flatMap(item=>[item.title,item.details]).filter(secret=>secret.trim().length>=5);
+  const privateMemory=[...(payload.protagonistMemory??[]).flatMap(item=>[item.title,item.details]),...payload.playerView.knownFacts.flatMap(record=>record.facts)].filter(secret=>secret.trim().length>=5);
   if(result.dialogue.some(line=>privateMemory.some(secret=>line.text.includes(secret.trim()))))throw new Error('NPC 對話洩漏主角的私人回憶');
   const facts=JSON.stringify([payload.settledEvents,payload.protagonist,payload.protagonistMemory]),numbers=new Set(facts.match(/\d+(?:\.\d+)?/g)??[]),text=[...result.paragraphs,...result.suggestions,...result.dialogue.map(line=>line.text)].join('\n');
   if((text.match(/\d+(?:\.\d+)?/g)??[]).some(number=>!numbers.has(number)))throw new Error('敘事包含結算紀錄中不存在的數字事實');
