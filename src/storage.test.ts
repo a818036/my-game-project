@@ -158,13 +158,13 @@ describe('A05／A06 存檔交易與重播', () => {
     const archiveDb=await openSaveDb();const archived=await new Promise<SaveFile|undefined>((resolve,reject)=>{const tx=archiveDb.transaction('profile','readonly');const request=tx.objectStore('profile').get(`legacy:${old.worldlineId}:v6-phase4-scenario-1`);request.onsuccess=()=>resolve(request.result as SaveFile|undefined);request.onerror=()=>reject(request.error);});archiveDb.close();expect(archived).toEqual(old);
   });
 
-  it('A167 舊 v6 v88 存檔升至目前內容版本 時不回補新增史事且可重播',()=>{
+  it('A167 舊 v6 v88 存檔升至目前內容版本時不回補新增史事且可重播',()=>{
     const current=makeSave('phase6-v88-to-v90');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-88'}};
     const oldState=applyEvent(null,legacyStart)!;const old:SaveFile={...current,events:[legacyStart],state:oldState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(legacyStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-91'}});
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-92'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-inferred-birth-182')).toMatchObject({status:'resolved',resolvedYear:182,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='winter-cold-eastern-commandries-183')).toMatchObject({status:'resolved',resolvedYear:183,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('孫權推定出生年'))).toBe(false);
@@ -173,8 +173,8 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
 
-  it('A169 舊 v6 v90 存檔升至 v91 時不回補新增史事且可重播',()=>{
-    const current=makeSave('phase6-v90-to-v91');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+  it('A169 舊 v6 v90 存檔升至 v92 時不回補新增史事且可重播',()=>{
+    const current=makeSave('phase6-v90-to-v92');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-90'}};
     let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];let daysRemaining=(201-oldState.phase4!.year)*360;let step=0;
     while(daysRemaining>0){const days=Math.min(3650,daysRemaining);const result=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v90-turn-${++step}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!result.state||!result.event)throw new Error('could not advance legacy v90 fixture');oldState=result.state;oldEvents.push(result.event);daysRemaining-=days;}
@@ -182,8 +182,9 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(legacyStart);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-91'}});
+    expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-92'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-ce-dies-sun-quan-inherits-200')).toMatchObject({status:'resolved',resolvedYear:200,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-chooses-resistance-208')).toMatchObject({status:'pending'});
     expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('孫策去世、孫權承接軍政事務'))).toBe(false);
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);

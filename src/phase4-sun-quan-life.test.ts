@@ -67,6 +67,41 @@ describe('200 年孫策去世與孫權承接事務', () => {
   });
 });
 
+describe('208 年孫權決議抗曹', () => {
+  const decisionId = 'sun-quan-chooses-resistance-208';
+
+  it('依《三國志》記錄孫權與周瑜、魯肅同意拒曹並遣軍合劉，不補私下獨白', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === decisionId);
+    expect(content).toMatchObject({ startYear: 208, endYear: 208, precision: 'year', introducedIn: 'phase4-scenario-92', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('《三國志》卷四十七');
+    expect(content?.source).toContain('多數議者勸孫權迎降');
+    expect(content?.source).toContain('意與權同');
+    expect(content?.description).toContain('不把史料中的議論改寫成私下獨白');
+  });
+
+  it('新局跨年至 208 年觸發；v91 存檔保留前綴，已進入 208 年的舊存檔不回補', () => {
+    const fresh = advancePhase4(createPhase4Model(207, 1, persons, PHASE4_CONTENT_VERSION), 360);
+    expect(fresh.nodes.find((node) => node.contentId === decisionId)?.status).toBe('triggered');
+    expect(fresh.eventLedger.find((item) => item.detail.includes('孫權決議抗曹、與劉備合兵'))?.source).toContain('《三國志》卷四十七');
+
+    const old = createPhase4Model(207, 1, persons, 'phase4-scenario-91');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === decisionId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === decisionId)?.status).toBe('triggered');
+
+    const sameYear = upgradePhase4Content(createPhase4Model(208, 1, persons, 'phase4-scenario-91'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === decisionId)).toMatchObject({ status: 'resolved', resolvedYear: 208 });
+    expect(sameYear.nodes.find((node) => node.contentId === decisionId)?.evidence[0]).toContain('無法判定事件在目前年份內是否已發生');
+    expect(sameYear.eventLedger.some((item) => item.detail.includes('孫權決議抗曹、與劉備合兵'))).toBe(false);
+
+    const late = upgradePhase4Content(createPhase4Model(209, 1, persons, 'phase4-scenario-91'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === decisionId)).toMatchObject({ status: 'resolved', resolvedYear: 208 });
+    expect(late.eventLedger.some((item) => item.detail.includes('孫權決議抗曹、與劉備合兵'))).toBe(false);
+  });
+});
+
 describe('183 年北海、東萊、琅邪寒候記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
