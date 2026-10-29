@@ -15,6 +15,7 @@ export const HAN_DIVISION_SOURCE_URLS = {
   yuzhang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   kuaiji: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   danyang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  jiujiang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   lujiang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   wu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
 } as const;
@@ -53,6 +54,11 @@ export const HAN_KUAIJI_COUNTY_NAMES = [
 /** Source-ordered city names under Danyang commandery in Hou Hanshu, Treatise 28. */
 export const HAN_DANYANG_COUNTY_NAMES = [
   '宛陵', '溧陽', '丹陽', '故鄣', '於潛', '涇', '歙', '黝', '陵陽', '蕪湖', '秣陵', '湖熟', '句容', '江乘', '春穀', '石城',
+] as const;
+
+/** Source-ordered city names under Jiujiang commandery in Hou Hanshu, Treatise 28. */
+export const HAN_JIUJIANG_COUNTY_NAMES = [
+  '陰陵', '壽春', '浚遒', '成德', '西曲陽', '合肥', '歷陽', '當塗', '全椒', '鍾離', '阜陵', '下蔡', '平阿', '義成',
 ] as const;
 
 export const HAN_LUJIANG_COUNTY_NAMES = [
