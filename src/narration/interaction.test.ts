@@ -1,5 +1,6 @@
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
+import {HISTORY_CONTENT} from '../phase4';
 import {understandInput} from './interaction';
 
 function state(){
@@ -32,13 +33,18 @@ describe('即時人物對話',()=>{
     const result=await understandInput('西元 206 年發生了什麼事？',current,new AbortController().signal);
     expect(result).toMatchObject({kind:'question',source:'已核對的遊戲年表'});expect(result.answer).toContain('高幹敗走與壺關平定');expect(result.answer).toContain('《三國志》卷一');expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
   });
-  it('指定人物詢問未收錄年份時明說資料缺口，不拿其他事件代答',async()=>{
-    const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
-    const result=await understandInput('孫權在 197 年做了什麼？',current,new AbortController().signal);
-    expect(result).toMatchObject({kind:'question',source:'已核對的遊戲年表'});expect(result.answer).toContain('未收錄');expect(result.answer).toContain('不表示該年沒有事情發生');expect(result.answer).not.toContain('征張繡');
-    const ambiguousYear=await understandInput('孫權在 220 年做了什麼？',current,new AbortController().signal);
-    expect(ambiguousYear).toMatchObject({kind:'question',source:'已核對的遊戲年表'});expect(ambiguousYear.answer).toContain('未收錄');expect(ambiguousYear.answer).not.toContain('魏文帝受禪');expect(ambiguousYear.answer).not.toContain('稱藩');
-    expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
+  it('逐年核對孫權 182–252 年問答，只列有來源節點或明示缺口',async()=>{
+    const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);const before=structuredClone(current);
+    for(let year=182;year<=252;year++){
+      const result=await understandInput(`孫權在 ${year} 年做了什麼？`,current,new AbortController().signal);
+      expect(result).toMatchObject({kind:'question',source:'已核對的遊戲年表'});
+      const records=HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&item.startYear<=year&&item.endYear>=year&&/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.source}`));
+      if(records.length){for(const record of records)expect(result.answer).toContain(record.title);}
+      else expect(result.answer).toContain('未收錄');
+      if(year===197)expect(result.answer).toContain('不表示該年沒有事情發生');
+      if(year===220){expect(result.answer).not.toContain('魏文帝受禪');expect(result.answer).not.toContain('稱藩');expect(result.answer).not.toContain('征張繡');}
+    }
+    expect(fetchMock).not.toHaveBeenCalled();expect(current).toEqual(before);expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
   });
   it('孫權生平問題用有來源的精度回答；未記載的日常不送模型也不推進時間',async()=>{
     const current=state(),before=structuredClone(current),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
