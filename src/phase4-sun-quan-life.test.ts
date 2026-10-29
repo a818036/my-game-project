@@ -102,6 +102,39 @@ describe('208 年孫權決議抗曹', () => {
   });
 });
 
+describe('221 年孫權受魏封吳王', () => {
+  const titleId = 'sun-quan-accepts-king-of-wu-title-221';
+
+  it('依《三國志》與裴注記錄冊封及群臣議論，不推演外交動機', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === titleId);
+    expect(content).toMatchObject({ startYear: 221, endYear: 221, precision: 'year', introducedIn: 'phase4-scenario-93', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('《三國志》卷四十七');
+    expect(content?.source).toContain('十一月魏文帝策命孫權為吳王');
+    expect(content?.source).toContain('《江表傳》');
+    expect(content?.description).toContain('不推演外交動機');
+  });
+
+  it('新局跨年至 221 年觸發；v92 存檔只追加遷移，不回補同年或晚年的事件', () => {
+    const fresh = advancePhase4(createPhase4Model(220, 1, persons, PHASE4_CONTENT_VERSION), 360);
+    expect(fresh.nodes.find((node) => node.contentId === titleId)?.status).toBe('triggered');
+    expect(fresh.eventLedger.find((item) => item.detail.includes('孫權受魏封吳王'))?.source).toContain('策命孫權為吳王');
+
+    const old = createPhase4Model(220, 1, persons, 'phase4-scenario-92');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === titleId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === titleId)?.status).toBe('triggered');
+
+    const sameYear = upgradePhase4Content(createPhase4Model(221, 1, persons, 'phase4-scenario-92'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === titleId)).toMatchObject({ status: 'resolved', resolvedYear: 221 });
+    expect(sameYear.eventLedger.some((item) => item.detail.includes('孫權受魏封吳王'))).toBe(false);
+    const late = upgradePhase4Content(createPhase4Model(222, 1, persons, 'phase4-scenario-92'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === titleId)).toMatchObject({ status: 'resolved', resolvedYear: 221 });
+    expect(late.eventLedger.some((item) => item.detail.includes('孫權受魏封吳王'))).toBe(false);
+  });
+});
+
 describe('183 年北海、東萊、琅邪寒候記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
