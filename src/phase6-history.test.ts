@@ -19,7 +19,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(226,1,[],'phase4-scenario-116');
     const prefix=structuredClone(old.eventLedger);
     const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(migrated.contentVersion).toBe('phase4-scenario-120');
+    expect(migrated.contentVersion).toBe('phase4-scenario-121');
     expect(migrated.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(migrated,360).nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
@@ -60,7 +60,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(228,1,[],'phase4-scenario-117');
     const prefix=structuredClone(old.eventLedger);
     const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(migrated.contentVersion).toBe('phase4-scenario-120');
+    expect(migrated.contentVersion).toBe('phase4-scenario-121');
     expect(migrated.nodes.find(node=>node.contentId===allianceId)?.status).toBe('pending');
     expect(migrated.nodes.find(node=>node.contentId===capitalId)?.status).toBe('pending');
     expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
@@ -88,7 +88,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const prefix=structuredClone(old.eventLedger);
     const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-120');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-121');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(Object.fromEntries(upgraded.nodes.map(node=>[node.contentId,node.status]))).toEqual(priorStatuses);
   });
@@ -98,7 +98,25 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const prefix=structuredClone(old.eventLedger);
     const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-120');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-121');
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(Object.fromEntries(upgraded.nodes.map(node=>[node.contentId,node.status]))).toEqual(priorStatuses);
+  });
+
+  it('A235 records Wei investiture-era submission without assigning it a new year',()=>{
+    const node=HISTORY_CONTENT.find(item=>item.id==='sun-quan-accepts-king-of-wu-title-221');
+    expect(node).toMatchObject({startYear:221,endYear:221,precision:'year'});
+    expect(node?.source).toContain('自魏文帝踐祚，權使命稱藩');
+    expect(node?.source).toContain('原文未另給稱藩使節或月份');
+    expect(node?.description).toContain('不另定月份或年份');
+  });
+
+  it('A235 upgrades v120 content without changing prior event or node history',()=>{
+    const old=createPhase4Model(221,1,[],'phase4-scenario-120');
+    const prefix=structuredClone(old.eventLedger);
+    const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.contentVersion).toBe('phase4-scenario-121');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(Object.fromEntries(upgraded.nodes.map(node=>[node.contentId,node.status]))).toEqual(priorStatuses);
   });
