@@ -11,6 +11,12 @@ function ruleColor(selector: string): string {
   return match[1];
 }
 
+function lastRule(selector: string): string {
+  const declarations = stylesheet.split('}').map((rule) => rule.split('{')).filter(([name]) => name?.trim() === selector).at(-1)?.[1];
+  if (!declarations) throw new Error(`Missing CSS rule for ${selector}`);
+  return declarations;
+}
+
 function luminance(hex: string): number {
   const channels = hex.match(/[0-9a-fA-F]{2}/g)!.map((channel) => {
     const value = Number.parseInt(channel, 16) / 255;
@@ -33,5 +39,14 @@ describe('主要淺色介面的文字對比', () => {
     const foreground = ruleColor('.feature-nav button span');
     expect(contrastRatio(foreground, '#f5eedf')).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(foreground, '#eee3cf')).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('開局表單標籤跟隨閱讀字級，出生確認文字至少 16px 並達 AA 對比', () => {
+    expect(lastRule('.start-card label')).toMatch(/font-size:\s*1rem/);
+    const confirmation = lastRule('.start-card .confirm');
+    expect(confirmation).toMatch(/font-size:\s*1rem\s*!important/);
+    expect(confirmation).toMatch(/color:\s*(#[0-9a-fA-F]{6})\s*!important/);
+    const foreground = confirmation.match(/color:\s*(#[0-9a-fA-F]{6})\s*!important/)![1];
+    expect(contrastRatio(foreground, '#1b2724')).toBeGreaterThanOrEqual(4.5);
   });
 });
