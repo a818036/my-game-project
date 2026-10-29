@@ -68,6 +68,13 @@ export const HAN_DIVISION_SOURCE_URLS = {
   xuantu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
   lelang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
   liaodongDependent: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
+  nanhai: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
+  cangwu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
+  yulin: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
+  hep: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
+  jiaozhi: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
+  jiuzhen: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
+  rinan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7113',
   yuzhang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   kuaiji: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   danyang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
@@ -277,6 +284,13 @@ export const HAN_LIAODONG_COUNTY_NAMES = ['襄平', '新昌', '無慮', '望平'
 export const HAN_XUANTU_COUNTY_NAMES = ['高句驪', '西蓋馬', '上殷台', '高顯', '候城', '遼陽'] as const;
 export const HAN_LELANG_COUNTY_NAMES = ['朝鮮', '𧦦邯', '浿水', '含資', '占蟬', '遂城', '增地', '帶方', '駟望', '海冥', '列口', '長岑', '屯有', '昭明', '鏤方', '提奚', '渾彌', '樂都'] as const;
 export const HAN_LIAODONG_DEPENDENT_COUNTY_NAMES = ['昌遼', '賓徒', '徒河', '無慮', '險瀆', '房'] as const;
+export const HAN_NANHAI_COUNTY_NAMES = ['番禺', '博羅', '中宿', '龍川', '四會', '揭陽', '增城'] as const;
+export const HAN_CANGWU_COUNTY_NAMES = ['廣信', '謝沐', '高要', '封陽', '臨賀', '端谿', '馮乘', '富川', '荔浦', '猛陵', '鄣平'] as const;
+export const HAN_YULIN_COUNTY_NAMES = ['布山', '安廣', '阿林', '廣郁', '中溜', '桂林', '潭中', '臨塵', '定周', '增食', '領方'] as const;
+export const HAN_HEPU_COUNTY_NAMES = ['合浦', '徐聞', '高涼', '臨元', '朱崖'] as const;
+export const HAN_JIAOZHI_COUNTY_NAMES = ['龍編', '羸𨻻', '安定', '苟漏', '麋泠', '曲陽', '北帶', '稽徐', '西於', '朱（原文轉錄缺字）', '封谿', '望海'] as const;
+export const HAN_JIUZHEN_COUNTY_NAMES = ['胥浦', '居風', '咸懽', '無功', '無編'] as const;
+export const HAN_RINAN_COUNTY_NAMES = ['西卷', '朱吾', '盧容', '象林', '比景'] as const;
 
 /** Source-ordered city names under Yuzhang commandery in Hou Hanshu, Treatise 28. */
 export const HAN_YUZHANG_COUNTY_NAMES = [

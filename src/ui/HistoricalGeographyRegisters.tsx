@@ -1,4 +1,11 @@
 import {
+  HAN_CANGWU_COUNTY_NAMES,
+  HAN_HEPU_COUNTY_NAMES,
+  HAN_JIAOZHI_COUNTY_NAMES,
+  HAN_JIUZHEN_COUNTY_NAMES,
+  HAN_NANHAI_COUNTY_NAMES,
+  HAN_RINAN_COUNTY_NAMES,
+  HAN_YULIN_COUNTY_NAMES,
   HAN_DAI_COUNTY_NAMES,
   HAN_GUANGYANG_COUNTY_NAMES,
   HAN_LELANG_COUNTY_NAMES,
@@ -682,6 +689,48 @@ const registers = [
     description: '《後漢書》卷一一三〈志第二十三·郡國志五〉記遼東屬國故為西部都尉、安帝時別領六城，保留舊屬註記。',
     ariaLabel: '後漢書遼東屬國六城名錄', names: HAN_LIAODONG_DEPENDENT_COUNTY_NAMES,
     sourceText: '查閱《後漢書》卷一一三〈郡國志五〉遼東屬國條',
+  },
+  {
+    id: 'nanhai', summary: '展開南海郡名錄（七城）',
+    description: '《後漢書》卷一一三〈志第二十三·郡國志五〉南海郡條列七城，照錄原文用字與次序。',
+    ariaLabel: '後漢書南海郡七城名錄', names: HAN_NANHAI_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一三〈郡國志五〉南海郡條',
+  },
+  {
+    id: 'cangwu', summary: '展開蒼梧郡名錄（十一城）',
+    description: '《後漢書》卷一一三〈志第二十三·郡國志五〉蒼梧郡條列十一城，依底本次序呈現。',
+    ariaLabel: '後漢書蒼梧郡十一城名錄', names: HAN_CANGWU_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一三〈郡國志五〉蒼梧郡條',
+  },
+  {
+    id: 'yulin', summary: '展開鬱林郡名錄（十一城）',
+    description: '《後漢書》卷一一三〈志第二十三·郡國志五〉鬱林郡條列十一城，註秦時桂林郡、武帝更名。',
+    ariaLabel: '後漢書鬱林郡十一城名錄', names: HAN_YULIN_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一三〈郡國志五〉鬱林郡條',
+  },
+  {
+    id: 'hep', summary: '展開合浦郡名錄（五城）',
+    description: '《後漢書》卷一一三〈志第二十三·郡國志五〉合浦郡條列五城，照錄來源次序。',
+    ariaLabel: '後漢書合浦郡五城名錄', names: HAN_HEPU_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一三〈郡國志五〉合浦郡條',
+  },
+  {
+    id: 'jiaozhi', summary: '展開交趾郡名錄（十二城；一字有缺）',
+    description: '《後漢書》卷一一三〈志第二十三·郡國志五〉交趾郡條列十二城；朱䳒的網頁轉錄顯示缺字代碼，保留缺字標示，不猜補。',
+    ariaLabel: '後漢書交趾郡十二城名錄，朱䳒處轉錄缺字', names: HAN_JIAOZHI_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一三〈郡國志五〉交趾郡條',
+  },
+  {
+    id: 'jiuzhen', summary: '展開九真郡名錄（五城）',
+    description: '《後漢書》卷一一三〈志第二十三·郡國志五〉九真郡條列五城，保留原文用字與順序。',
+    ariaLabel: '後漢書九真郡五城名錄', names: HAN_JIUZHEN_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一三〈郡國志五〉九真郡條',
+  },
+  {
+    id: 'rinan', summary: '展開日南郡名錄（五城）',
+    description: '《後漢書》卷一一三〈志第二十三·郡國志五〉日南郡條列五城，保留秦象郡、武帝更名的來源說明。',
+    ariaLabel: '後漢書日南郡五城名錄', names: HAN_RINAN_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一三〈郡國志五〉日南郡條',
   },
 ] as const;
 
