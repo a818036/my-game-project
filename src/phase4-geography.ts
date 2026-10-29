@@ -9,6 +9,7 @@ export interface HistoricalDivisionIndexEntry {
 export const HAN_DIVISION_SOURCE_URLS = {
   inspectorDivisions: 'https://zh.wikisource.org/zh-hans/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7118',
   sili: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
+  henanYin: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
   yingchuan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7110',
 } as const;
 
@@ -16,6 +17,12 @@ export const HAN_DIVISION_SOURCE_URLS = {
 export const HAN_YINGCHUAN_COUNTY_NAMES = [
   '陽翟', '襄', '襄城', '昆陽', '定陵', '舞陽', '郾', '臨潁', '潁陽',
   '潁陰', '許', '新汲', '焉陵', '長社', '陽城', '父城', '輪氏',
+] as const;
+
+/** Source-ordered county names under Henan Yin in Hou Hanshu, Treatise 19. */
+export const HAN_HENAN_YIN_COUNTY_NAMES = [
+  '雒陽', '河南', '梁', '熒陽', '卷', '原武', '陽武', '中牟', '開封', '菀陵',
+  '平陰', '穀城', '緱氏', '鞏', '成睾', '京', '密', '新城', '匽師', '新鄭', '平',
 ] as const;
 
 /**
