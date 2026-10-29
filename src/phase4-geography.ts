@@ -11,6 +11,12 @@ export const HAN_DIVISION_SOURCE_URLS = {
   sili: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
   henanYin: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
   yingchuan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7110',
+  jinan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  pingyuan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  lean: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  beihai: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  donglai: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  qi: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   nanyang: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   yuzhang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   kuaiji: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
@@ -19,6 +25,37 @@ export const HAN_DIVISION_SOURCE_URLS = {
   lujiang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   wu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
 } as const;
+
+/** Source-ordered Jinan names under Qingzhou in Hou Hanshu, Treatise 4. */
+export const HAN_JINAN_COUNTY_NAMES = [
+  '東平陵', '著', '於陵', '臺', '菅', '土鼓', '梁鄒', '鄒平', '東朝陽', '歷城',
+] as const;
+
+/** Source-ordered Pingyuan names under Qingzhou in Hou Hanshu, Treatise 4. */
+export const HAN_PINGYUAN_COUNTY_NAMES = [
+  '平原', '高唐', '般', '鬲', '祝阿', '樂陵', '濕陰', '安德', '厭次',
+] as const;
+
+/** Source-ordered Le'an names under Qingzhou in Hou Hanshu, Treatise 4. */
+export const HAN_LEAN_COUNTY_NAMES = [
+  '臨濟', '千乘', '高菀', '樂安', '博昌', '蓼城', '利', '益', '壽光',
+] as const;
+
+/** Source-ordered Beihai names under Qingzhou in Hou Hanshu, Treatise 4. */
+export const HAN_BEIHAI_COUNTY_NAMES = [
+  '劇', '營陵', '平壽', '都昌', '安丘', '淳於', '平昌', '朱虛', '東安平', '高密',
+  '昌安', '夷安', '膠東', '即墨', '壯武', '下密', '挺', '觀陽',
+] as const;
+
+/** Source-ordered Donglai names under Qingzhou in Hou Hanshu, Treatise 4. */
+export const HAN_DONGLAI_COUNTY_NAMES = [
+  '黃', '牟平', '惤', '曲成', '掖', '當利', '東牟', '昌陽', '盧鄉', '長廣', '黔陬', '葛盧', '不其',
+] as const;
+
+/** Source-ordered Qi names under Qingzhou in Hou Hanshu, Treatise 4. */
+export const HAN_QI_COUNTY_NAMES = [
+  '臨菑', '西安', '昌國', '臨朐', '廣', '般陽',
+] as const;
 
 /** A source-ordered county-name sample, not a complete or year-specific map. */
 export const HAN_YINGCHUAN_COUNTY_NAMES = [
