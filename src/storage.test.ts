@@ -564,4 +564,25 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(alreadyPassed.state.phase4?.eventLedger.some(item=>item.detail.includes('洞口風災造成呂範部下溺亡'))).toBe(false);
   });
 
+  it('A247 v131 v6 JSON 升至 v132 後續玩可觸發同一個 219 節點並重播',()=>{
+    const current=makeSave('phase6-v131-jingzhou');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-131'}};
+    let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v131 fixture');
+    const oldEvents:GameEvent[]=[oldStart];let remainingDays=(218-oldState.phase4!.year)*360;let index=0;
+    while(remainingDays>0){const days=Math.min(3650,remainingDays);const result=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v131-jingzhou-${++index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!result.state||!result.event)throw new Error('could not prepare v131 save');oldState=result.state;oldEvents.push(result.event);remainingDays-=days;}
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
+    const migrated=verifySave(toJson(old));const nodeId='guan-yu-falls-219';
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
+    expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-132'}});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)).toMatchObject({status:'pending',evidence:[expect.stringContaining('史料補充')]});
+    expect(migrated.state.phase4?.eventLedger.some(event=>event.type==='史實來源補充')).toBe(true);
+    const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v131-jingzhou-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!result.state||!result.event||result.event.type!=='Phase4Changed')throw new Error('could not trigger migrated 219 save');
+    expect(result.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');
+    expect(result.state.phase4?.eventLedger.filter(event=>event.type==='史實事件形成'&&event.detail.includes('孫權取荊州、關羽敗亡'))).toHaveLength(1);
+    const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};
+    expect(replay(continued.events)).toEqual(continued.state);
+    expect(verifySave(toJson(continued))).toEqual(continued);
+  },15000);
+
 });
