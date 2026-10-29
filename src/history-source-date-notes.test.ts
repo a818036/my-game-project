@@ -3,11 +3,16 @@ import { HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES } from './phase4';
 
 describe('原典日期註記與遊戲日期精度分離', () => {
   it('A186 年表史實節點覆蓋 183–280 年每一年', () => {
-    const indexedEvents = HISTORY_CONTENT.filter((item) =>
-      item.kind === 'event' && !item.example && item.id !== 'sun-quan-inferred-birth-182',
+    const indexedNodes = HISTORY_CONTENT.filter((item) =>
+      (item.kind === 'event' || item.kind === 'death')
+      && !item.example
+      && item.id !== 'sun-quan-inferred-birth-182',
     );
+    const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
+    expect(withinCatalogYears).toHaveLength(118);
+    expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
-    for (const event of indexedEvents) {
+    for (const event of withinCatalogYears) {
       for (let year = event.startYear; year <= event.endYear; year += 1) {
         if (year >= 183 && year <= 280) coveredYears.add(year);
       }
