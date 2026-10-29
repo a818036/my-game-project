@@ -81,7 +81,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-crowned-king-of-wei-216': ['建安二十一年五月記天子進公爵'],
       'zhugeliang-moves-to-hanzhong-227': ['建興五年春丞相亮出屯漢中'],
       'shu-yang-yi-demoted-jiang-wan-promoted-235': ['建興十三年春正月', '夏四月'],
-      'wu-lu-dai-luling-revolt-response-235': ['嘉禾三年冬廬陵賊', '嘉禾四年夏遣呂岱'],
+      'wu-lu-dai-luling-revolt-response-235': ['嘉禾三年冬廬陵賊', '嘉禾四年夏承前記遣呂岱'],
       'wu-multi-front-campaign-241': ['赤烏四年記全琮略淮南', '六月吳軍還'],
       'shu-surrenders-263': ['景元四年冬劉禪詣鄧艾降'],
       'zhugeliang-south-campaign-225': ['建興三年春三月'],
