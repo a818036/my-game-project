@@ -103,3 +103,5 @@ Chromium 實際操作檢查：相同姓名、世界線種子、191 年節點與�
 ## ChatGPT 訂閱登入（本機個人使用）
 
 已加入官方 OAuth 訂閱模式，不需要 OPENAI_API_KEY。執行 npm.cmd run narration:chatgpt，再開啟遊戲的「AI 連線設定」登入與選擇模型。API 與 mock 模式保留，不自動切換付費模式。完整流程、資格、額度邊界與待本人驗證項目見 [訂閱登入指南](docs/CHATGPT_SUBSCRIPTION.md)。
+
+Phase 6 戰役示例的視線會依正規化 2D 座標、視距與圓形遮擋物估算；舊存檔沿用文字視線。此為旁白可知範圍的部分模型，並未結算碰撞、傷亡或物件連鎖物理，詳見 [ROADMAP](docs/ROADMAP.md) 與 [驗收紀錄](docs/ACCEPTANCE.md)。
