@@ -19,7 +19,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(226,1,[],'phase4-scenario-116');
     const prefix=structuredClone(old.eventLedger);
     const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(migrated.contentVersion).toBe('phase4-scenario-121');
+    expect(migrated.contentVersion).toBe('phase4-scenario-122');
     expect(migrated.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(migrated,360).nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
@@ -60,7 +60,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(228,1,[],'phase4-scenario-117');
     const prefix=structuredClone(old.eventLedger);
     const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(migrated.contentVersion).toBe('phase4-scenario-121');
+    expect(migrated.contentVersion).toBe('phase4-scenario-122');
     expect(migrated.nodes.find(node=>node.contentId===allianceId)?.status).toBe('pending');
     expect(migrated.nodes.find(node=>node.contentId===capitalId)?.status).toBe('pending');
     expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
@@ -88,9 +88,9 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const prefix=structuredClone(old.eventLedger);
     const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-121');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-122');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
-    expect(Object.fromEntries(upgraded.nodes.map(node=>[node.contentId,node.status]))).toEqual(priorStatuses);
+    expect(Object.fromEntries(upgraded.nodes.filter(node=>node.contentId!=='sun-quan-builds-wuchang-and-warns-generals-221').map(node=>[node.contentId,node.status]))).toEqual(Object.fromEntries(Object.entries(priorStatuses).filter(([nodeId])=>nodeId!=='sun-quan-builds-wuchang-and-warns-generals-221')));
   });
 
   it('A234 keeps v119 event history unchanged while adding source-only date context',()=>{
@@ -98,9 +98,9 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const prefix=structuredClone(old.eventLedger);
     const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-121');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-122');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
-    expect(Object.fromEntries(upgraded.nodes.map(node=>[node.contentId,node.status]))).toEqual(priorStatuses);
+    expect(Object.fromEntries(upgraded.nodes.filter(node=>node.contentId!=='sun-quan-builds-wuchang-and-warns-generals-221').map(node=>[node.contentId,node.status]))).toEqual(Object.fromEntries(Object.entries(priorStatuses).filter(([nodeId])=>nodeId!=='sun-quan-builds-wuchang-and-warns-generals-221')));
   });
 
   it('A235 records Wei investiture-era submission without assigning it a new year',()=>{
@@ -116,8 +116,33 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const prefix=structuredClone(old.eventLedger);
     const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-121');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-122');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
-    expect(Object.fromEntries(upgraded.nodes.map(node=>[node.contentId,node.status]))).toEqual(priorStatuses);
+    expect(Object.fromEntries(upgraded.nodes.filter(node=>node.contentId!=='sun-quan-builds-wuchang-and-warns-generals-221').map(node=>[node.contentId,node.status]))).toEqual(Object.fromEntries(Object.entries(priorStatuses).filter(([nodeId])=>nodeId!=='sun-quan-builds-wuchang-and-warns-generals-221')));
+  });
+
+  it('A236 records the sourced August 221 Wuchang construction and military order without inventing detail',()=>{
+    const node=HISTORY_CONTENT.find(item=>item.id==='sun-quan-builds-wuchang-and-warns-generals-221');
+    expect(node).toMatchObject({startYear:221,endYear:221,precision:'year'});
+    expect(node?.sourceDateNote).toContain('黃初二年八月');
+    expect(node?.source).toContain('下令諸將戒備');
+    expect(node?.description).toContain('不推演未載的工程規模、軍隊數量或訓練細節');
+    const advanced=advancePhase4(createPhase4Model(220,1,[],PHASE4_CONTENT_VERSION),360);
+    expect(advanced.nodes.find(item=>item.contentId===node?.id)?.status).toBe('triggered');
+  });
+
+  it('A236 upgrades v121 without changing its event prefix or backfilling the same year',()=>{
+    const old=createPhase4Model(220,1,[],'phase4-scenario-121');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    const nodeId='sun-quan-builds-wuchang-and-warns-generals-221';
+    expect(upgraded.contentVersion).toBe('phase4-scenario-122');
+    expect(upgraded.nodes.find(item=>item.contentId===nodeId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(advancePhase4(upgraded,360).nodes.find(item=>item.contentId===nodeId)?.status).toBe('triggered');
+
+    const sameYear=upgradePhase4Content(createPhase4Model(221,1,[],'phase4-scenario-121'),PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find(item=>item.contentId===nodeId)).toMatchObject({status:'resolved',resolvedYear:221});
+    expect(sameYear.eventLedger.some(item=>item.detail.includes('築武昌城、告誡諸將保持戒備'))).toBe(false);
   });
 });
