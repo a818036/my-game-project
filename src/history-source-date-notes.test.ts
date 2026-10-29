@@ -30,7 +30,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(145);
+    expect(withinCatalogYears).toHaveLength(146);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -152,11 +152,12 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'sun-quan-declines-imperial-title-221',
       'sun-quan-capital-reports-sweet-dew-221',
       'sun-quan-builds-wuchang-and-warns-generals-221',
+      'wei-three-front-campaign-and-dongkou-storm-222',
       'sun-quan-campaigns-at-hefei-234',
       'sun-quan-moves-capital-to-jianye-229',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(68);
-    expect(uniqueNotedEvents.size).toBe(75);
+    expect(uniqueNotedEvents.size).toBe(76);
   });
 });
