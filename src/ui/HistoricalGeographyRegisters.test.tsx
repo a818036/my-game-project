@@ -1,0 +1,26 @@
+import { describe, expect, it } from 'vitest';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { HAN_DIVISION_SOURCE_URLS } from '../phase4-geography';
+import { HistoricalGeographyRegisters } from './HistoricalGeographyRegisters';
+
+describe('史料郡縣名錄的可存取標記', () => {
+  it('九份名錄使用原生 details/summary、具名清單與可辨識原典連結', () => {
+    const html = renderToStaticMarkup(createElement(HistoricalGeographyRegisters));
+    expect([...html.matchAll(/<details\b/g)]).toHaveLength(9);
+    expect([...html.matchAll(/<summary>/g)]).toHaveLength(9);
+    expect([...html.matchAll(/<ol class="county-index" aria-label="[^"]+">/g)]).toHaveLength(9);
+    expect([...html.matchAll(/target="_blank" rel="noreferrer"/g)]).toHaveLength(9);
+    expect(html).toContain('東部（原文；校勘記疑為訛文）');
+    for (const key of ['henanYin', 'yingchuan', 'nanyang', 'yuzhang', 'kuaiji', 'danyang', 'jiujiang', 'lujiang', 'wu'] as const) {
+      expect(html).toContain(`href="${HAN_DIVISION_SOURCE_URLS[key]}"`);
+    }
+  });
+
+  it('每份名錄均有來源可見連結文字及適當的跨時段限定', () => {
+    const html = renderToStaticMarkup(createElement(HistoricalGeographyRegisters));
+    expect(html).toContain('不代表單一年份');
+    expect(html).toContain('查閱《後漢書》');
+    expect(html).toContain('這不是精確對應某一遊戲年份');
+  });
+});
