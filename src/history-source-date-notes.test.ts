@@ -2,6 +2,26 @@ import { describe, expect, it } from 'vitest';
 import { HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES } from './phase4';
 
 describe('原典日期註記與遊戲日期精度分離', () => {
+  it('A187 孫權生平索引只主張可證的 71 個年級，不補造每日行程', () => {
+    const birth = HISTORY_CONTENT.find((item) => item.id === 'sun-quan-inferred-birth-182');
+    const death = HISTORY_CONTENT.find((item) => item.id === 'sun-quan-dies-sun-liang-succeeds-252');
+    expect(birth).toMatchObject({ startYear: 182, endYear: 182, precision: 'year' });
+    expect(death).toMatchObject({ startYear: 252, endYear: 252, precision: 'year' });
+    expect(252 - 182 + 1).toBe(71);
+    expect(birth?.source).toContain('年七十一');
+    expect(birth?.source).toContain('約為 182 年');
+    expect(death?.source).toContain('明年四月孫權去世');
+
+    const milestones = HISTORY_CONTENT.filter((item) =>
+      item.startYear >= 182 && item.endYear <= 252 && item.source.includes('孫權'),
+    );
+    expect(milestones.length).toBeGreaterThanOrEqual(15);
+    expect(milestones.every((item) => item.precision === 'year' && item.source.length > 0)).toBe(true);
+    expect(milestones.some((item) => item.sourceDateNote?.match(/\d{1,2}時(?:\d{1,2}刻)?/))).toBe(false);
+    expect(birth?.description).toContain('不宣稱精確出生日期');
+    expect(death?.description).toContain('不推演');
+  });
+
   it('A186 年表史實節點覆蓋 183–280 年每一年', () => {
     const indexedNodes = HISTORY_CONTENT.filter((item) =>
       (item.kind === 'event' || item.kind === 'death')
