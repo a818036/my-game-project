@@ -133,4 +133,20 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       expect(note).not.toMatch(/\d{1,2}時(?:\d{1,2}刻)?/);
     }
   });
+
+  it('A225 核實集中與節點內原史日期註記總數', () => {
+    const inlineNotes = HISTORY_CONTENT.filter((item) => item.sourceDateNote).map((item) => item.id);
+    expect(inlineNotes).toEqual([
+      'yellow-turban-184',
+      'sun-quan-hefei-bridge-retreat-214',
+      'sun-quan-captures-wancheng-214',
+      'sun-quan-ruxu-campaign-216',
+      'sun-quan-sends-envoy-to-cao-217',
+      'sun-quan-hunts-tiger-lingting-218',
+      'sun-quan-campaigns-at-hefei-234',
+    ]);
+    const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(62);
+    expect(uniqueNotedEvents.size).toBe(66);
+  });
 });
