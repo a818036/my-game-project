@@ -9,7 +9,8 @@
     "narration:chatgpt": "node server/index.mjs --chatgpt",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b --pretty",
-    "test": "vitest run"
+    "test": "vitest run",
+    "benchmark:history": "node scripts/benchmark-history.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
