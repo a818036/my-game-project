@@ -11,6 +11,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'hou-yin-rebellion-218': ['建安二十三年冬十月'],
       'sun-quan-accepts-king-of-wu-title-221': ['黃初二年', '十一月魏文帝策命'],
       'yiling-campaign-222': ['章武二年夏六月', '十二月孫權遣'],
+      'sun-quan-renews-alliance-with-shu-224': ['黃武三年夏孫權遣輔義中郎將張溫聘蜀'],
       'zhugeliang-south-campaign-225': ['建興三年春三月'],
       'cao-pi-death-cao-rui-accession-226': ['黃初七年五月'],
       'sun-quan-proclaims-emperor-229': ['黃龍元年夏四月'],
@@ -37,7 +38,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-succession-239': ['景初三年正月丁亥'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(31);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(32);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);

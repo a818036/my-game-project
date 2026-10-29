@@ -144,6 +144,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'hou-yin-rebellion-218': '原史紀年：建安二十三年冬十月。漢曆月份不換算為遊戲日曆日期。',
   'sun-quan-accepts-king-of-wu-title-221': '原史紀年：黃初二年十一月受魏冊命。只保留來源月分，不推定月內日期。',
   'yiling-campaign-222': '原史紀年：章武二年夏六月夷陵戰局、十二月遣使白帝。兩者仍是同一年級節點，不推成連續日程。',
+  'sun-quan-renews-alliance-with-shu-224': '原史紀年：黃武三年夏遣張溫聘蜀，同年蜀遣鄧芝來聘。原文僅載夏季，不推定月份或月內日期。',
   'zhugeliang-south-campaign-225': '原史紀年：建興三年春三月。漢曆月份不換算為遊戲日曆日期。',
   'cao-pi-death-cao-rui-accession-226': '原史紀年：黃初七年五月。漢曆月份不換算為遊戲日曆日期。',
   'sun-quan-proclaims-emperor-229': '原史紀年：黃龍元年夏四月。漢曆月份不換算為遊戲日曆日期。',
