@@ -15,7 +15,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     const milestones = HISTORY_CONTENT.filter((item) =>
       item.startYear >= 182 && item.endYear <= 252 && item.source.includes('孫權'),
     );
-    expect(milestones.length).toBeGreaterThanOrEqual(25);
+    expect(milestones.length).toBeGreaterThanOrEqual(30);
     expect(milestones.every((item) => item.precision === 'year' && item.source.length > 0)).toBe(true);
     expect(milestones.some((item) => item.sourceDateNote?.match(/\d{1,2}時(?:\d{1,2}刻)?/))).toBe(false);
     expect(birth?.description).toContain('不宣稱精確出生日期');
