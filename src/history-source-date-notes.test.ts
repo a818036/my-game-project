@@ -152,6 +152,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'sun-quan-ruxu-campaign-216',
       'sun-quan-sends-envoy-to-cao-217',
       'sun-quan-hunts-tiger-lingting-218',
+      'guan-yu-falls-219',
       'sun-quan-declines-imperial-title-221',
       'sun-quan-capital-reports-sweet-dew-221',
       'sun-quan-builds-wuchang-and-warns-generals-221',
@@ -164,6 +165,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(69);
-    expect(uniqueNotedEvents.size).toBe(80);
+    expect(uniqueNotedEvents.size).toBe(81);
   });
 });

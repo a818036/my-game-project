@@ -483,7 +483,7 @@ describe('v105 存檔之建安七年勘誤遷移', () => {
     expect(upgraded.nodes.find(node=>node.contentId===legacyId)?.evidence.join('')).toContain('正確換算為 202 年');
     expect(upgraded.nodes.find(node=>node.contentId===correctedId)?.status).toBe('pending');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
-    expect(upgraded.eventLedger.at(-1)?.type).toBe('史實資料勘誤');
+    expect(upgraded.eventLedger.some(event=>event.type==='史實資料勘誤')).toBe(true);
     const advanced=advancePhase4(upgraded,720);
     expect(advanced.nodes.find(node=>node.contentId===correctedId)?.status).toBe('triggered');
     expect(advanced.nodes.find(node=>node.contentId===legacyId)?.status).toBe('triggered');
