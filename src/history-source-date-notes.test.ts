@@ -2,6 +2,21 @@ import { describe, expect, it } from 'vitest';
 import { HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES } from './phase4';
 
 describe('原典日期註記與遊戲日期精度分離', () => {
+  it('A186 年表史實節點覆蓋 183–280 年每一年', () => {
+    const indexedEvents = HISTORY_CONTENT.filter((item) =>
+      item.kind === 'event' && !item.example && item.id !== 'sun-quan-inferred-birth-182',
+    );
+    const coveredYears = new Set<number>();
+    for (const event of indexedEvents) {
+      for (let year = event.startYear; year <= event.endYear; year += 1) {
+        if (year >= 183 && year <= 280) coveredYears.add(year);
+      }
+    }
+    const missingYears = Array.from({ length: 98 }, (_, index) => 183 + index)
+      .filter((year) => !coveredYears.has(year));
+    expect(missingYears).toEqual([]);
+  });
+
   it('所有月份註記都對應來源明載的年級事件', () => {
     const evidence: Record<string, string[]> = {
       'winter-cold-eastern-commandries-183': ['光和六年冬大寒'],
