@@ -75,10 +75,14 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     expect(sameYear.eventLedger.some(item=>item.detail.includes('孫權遷都建業、命陸遜留武昌輔太子'))).toBe(false);
   });
 
-  it('the known biography answer includes 229 sourced milestones with their date limits',()=>{
+  it('the known biography answer includes the 221 and 229 sourced milestones with their date limits',()=>{
     const result=answerKnownSunQuanBiographyQuestion('請整理孫權生平年表');
     expect(result?.answer).toContain('吳蜀盟約分州、共同討魏');
     expect(result?.answer).toContain('孫權遷都建業、命陸遜留武昌輔太子');
+    expect(result?.answer).toContain('群臣勸孫權即尊號，孫權不許');
+    expect(result?.answer).toContain('夏四月，權群臣勸即尊號，權不許');
+    expect(result?.answer).toContain('建業上報甘露降');
+    expect(result?.answer).toContain('五月，建業言甘露降');
     expect(result?.answer).toContain('黃龍元年秋九月');
     expect(result?.answer).toContain('沒有提供盟約簽訂月日');
   });
