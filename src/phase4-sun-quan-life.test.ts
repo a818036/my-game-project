@@ -147,6 +147,33 @@ describe('222 年孫權遣使復通蜀漢', () => {
   });
 });
 
+describe('223 年孫權遣使弔劉備', () => {
+  const condolenceId = 'sun-quan-sends-condolences-to-shu-223';
+
+  it('依《吳書》裴注記錄孫權遣馮熙赴蜀弔喪', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === condolenceId);
+    expect(content).toMatchObject({ startYear: 223, endYear: 223, precision: 'year', introducedIn: 'phase4-scenario-94', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('《吳書》');
+    expect(content?.source).toContain('孫權遣立信都尉馮熙聘蜀弔喪');
+    expect(content?.description).toContain('不推演使團路線');
+  });
+
+  it('v93 年級存檔保留事件前綴、跨年至 223 年可觸發，晚載入不回補', () => {
+    const old = createPhase4Model(222, 1, persons, 'phase4-scenario-93');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === condolenceId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === condolenceId)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.detail.includes('孫權遣使弔劉備'))?.source).toContain('馮熙');
+
+    const late = upgradePhase4Content(createPhase4Model(224, 1, persons, 'phase4-scenario-93'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === condolenceId)).toMatchObject({ status: 'resolved', resolvedYear: 223 });
+    expect(late.eventLedger.some((item) => item.detail.includes('孫權遣使弔劉備'))).toBe(false);
+  });
+});
+
 describe('183 年北海、東萊、琅邪寒候記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
