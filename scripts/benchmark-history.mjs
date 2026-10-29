@@ -68,7 +68,10 @@ try {
 
   const reference = reachYear280();
   const { events } = reference;
-  console.log(`Historical performance benchmark (deterministic 160–${reference.state.world.year}, ${events.length} events)`);
+  const historicalLedger = reference.state.phase4?.eventLedger ?? [];
+  const historicalNodes = reference.state.phase4?.nodes ?? [];
+  console.log(`Historical performance benchmark (deterministic 160–${reference.state.world.year})`);
+  console.log(`Replay stream: ${events.length} engine command events; ${historicalLedger.length} historical ledger entries; ${historicalNodes.length} historical nodes.`);
   console.log(`Runtime: Node ${process.version}; ${process.platform}/${process.arch}; ${os.cpus()[0]?.model ?? 'CPU unknown'}; ${os.cpus().length} logical cores`);
   console.log(`Sampling: ${warmups} warmups, ${samples} measured runs; results are local rule-engine time, not browser rendering.`);
   measure(`Advance one worldline from 160 through ${reference.state.world.year}`, reachYear280);
