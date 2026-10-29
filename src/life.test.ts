@@ -68,7 +68,8 @@ describe('人生情境計畫',()=>{
     expect(biography?.answer).toContain('裴松之注引《江表傳》');
     expect(biography?.answer).toContain('趙咨使魏、孫權辭魏封孫登而立為太子');
     expect(biography?.answer).toContain('孫權去世、孫亮即位');
-    expect(biography?.answer).toContain('未列年份不代表沒有事情發生');
+    expect(biography?.answer).toContain('這些是資料覆蓋缺口，不代表他當年沒有活動');
+    expect(biography?.answer).toContain('目前索引未收錄孫權相關節點的年次：');
     expect(biography?.answer).not.toContain('197年・');
     expect(localInteraction('請整理孫權七十一年生平年表',start().state!).answer).toBe(biography?.answer);
   });
