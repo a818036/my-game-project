@@ -12,6 +12,7 @@ export const HAN_DIVISION_SOURCE_URLS = {
   henanYin: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
   yingchuan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7110',
   nanyang: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  yuzhang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   lujiang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   wu: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
 } as const;
@@ -34,6 +35,12 @@ export const HAN_NANYANG_COUNTY_NAMES = [
   '舞陰', '比陽', '復陽', '平氏', '棘陽', '湖陽', '隨', '育陽', '涅陽', '陰',
   '酇', '鄧', '山都', '酈', '穰', '朝陽', '蔡陽', '安眾', '築陽', '武當', '順陽',
   '成都', '襄鄉', '南鄉', '丹水', '析',
+] as const;
+
+/** Source-ordered city names under Yuzhang commandery in Hou Hanshu, Treatise 28. */
+export const HAN_YUZHANG_COUNTY_NAMES = [
+  '南昌', '建城', '新淦', '宜春', '廬陵', '贛', '雩都', '南野', '南城', '鄱陽', '歷陵',
+  '餘汗', '鄡陽', '彭澤', '柴桑', '艾', '海昏', '平都', '石陽', '臨汝', '建昌',
 ] as const;
 
 export const HAN_LUJIANG_COUNTY_NAMES = [
