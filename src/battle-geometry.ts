@@ -10,25 +10,27 @@ export interface VisibilityResult {
   blockedBy?: string;
 }
 
-const distanceBetween = (a: BattleCoordinate, b: BattleCoordinate) => Math.hypot(a.x - b.x, a.y - b.y);
+const z = (point: BattleCoordinate) => point.z ?? 0;
+const distanceBetween = (a: BattleCoordinate, b: BattleCoordinate) => Math.hypot(a.x - b.x, a.y - b.y, z(a) - z(b));
 
 function segmentDistance(point: BattleCoordinate, start: BattleCoordinate, end: BattleCoordinate) {
-  const dx = end.x - start.x, dy = end.y - start.y;
-  const lengthSquared = dx * dx + dy * dy;
+  const dx = end.x - start.x, dy = end.y - start.y, dz = z(end) - z(start);
+  const lengthSquared = dx * dx + dy * dy + dz * dz;
   if (lengthSquared === 0) return distanceBetween(point, start);
-  const projection = Math.max(0, Math.min(1, ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared));
-  return distanceBetween(point, { x: start.x + projection * dx, y: start.y + projection * dy });
+  const projection = Math.max(0, Math.min(1, ((point.x - start.x) * dx + (point.y - start.y) * dy + (z(point) - z(start)) * dz) / lengthSquared));
+  return distanceBetween(point, { x: start.x + projection * dx, y: start.y + projection * dy, z: z(start) + projection * dz });
 }
 
 function blocksSight(observer: BattleCoordinate, target: BattleCoordinate, blocker: BattleSceneObject) {
   if (!blocker.position || !blocker.radius || blocker.radius <= 0) return false;
   // A blocker only occludes the interior of the sight segment. Its own center is not the target.
-  const projection = ((blocker.position.x - observer.x) * (target.x - observer.x) + (blocker.position.y - observer.y) * (target.y - observer.y)) /
-    Math.max(Number.EPSILON, (target.x - observer.x) ** 2 + (target.y - observer.y) ** 2);
+  const dx = target.x - observer.x, dy = target.y - observer.y, dz = z(target) - z(observer);
+  const projection = ((blocker.position.x - observer.x) * dx + (blocker.position.y - observer.y) * dy + (z(blocker.position) - z(observer)) * dz) /
+    Math.max(Number.EPSILON, dx ** 2 + dy ** 2 + dz ** 2);
   return projection > 0.001 && projection < 0.999 && segmentDistance(blocker.position, observer, target) <= blocker.radius;
 }
 
-/** 2D normalized scene-plane estimate. Returns null for legacy manifests without observer geometry. */
+/** 3D straight-line sight estimate. Legacy 2D coordinates are treated as elevation 0. */
 export function computeBattleVisibility(
   scene: BattleSceneManifest,
   observer: BattleObserverPosition,
