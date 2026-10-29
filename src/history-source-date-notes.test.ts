@@ -4,6 +4,9 @@ import { HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES } from './phase4';
 describe('原典日期註記與遊戲日期精度分離', () => {
   it('所有月份註記都對應來源明載的年級事件', () => {
     const evidence: Record<string, string[]> = {
+      'winter-cold-eastern-commandries-183': ['光和六年冬大寒'],
+      'yuan-shu-proclaims-emperor-195': ['興平二年冬條記袁術議稱帝'],
+      'emperor-relocates-xu-196': ['建安元年秋車駕西出洛陽'],
       'zhao-ci-revolt-186': ['中平三年', '二月江夏兵', '六月荊州刺史'],
       'changsha-ou-xing-revolt-187': ['中平四年冬十月'],
       'yizhou-ma-xiang-revolt-188': ['中平五年六月'],
@@ -12,6 +15,30 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'sun-quan-accepts-king-of-wu-title-221': ['黃初二年', '十一月魏文帝策命'],
       'yiling-campaign-222': ['章武二年夏六月', '十二月孫權遣'],
       'sun-quan-renews-alliance-with-shu-224': ['黃武三年夏孫權遣輔義中郎將張溫聘蜀'],
+      'dongxing-battle-252': ['孫亮建興元年冬魏軍圍東興'],
+      'sima-shi-dies-sima-zhao-succeeds-255': ['正元二年正月司馬師征毌丘儉', '二月司馬昭受任大將軍'],
+      'huainan-rebellion-255': ['正元二年正月毌丘儉', '閏月司馬師破文欽'],
+      'sun-jun-dies-sun-chen-succeeds-256': ['太平元年九月孫峻去世'],
+      'zhuge-dan-revolt-shouchun-wu-relief-257': ['甘露二年五月徵諸葛誕為司空'],
+      'zhuge-dan-defeated-shouchun-falls-258': ['甘露三年三月司馬昭克壽春'],
+      'sun-xiu-agriculture-tax-deliberation-259': ['永安二年三月孫休詔'],
+      'sun-xiu-inspects-officials-and-grievances-261': ['永安四年秋八月'],
+      'sun-xiu-empress-crown-prince-262': ['永安五年八月立皇后朱氏及太子'],
+      'wu-relief-shu-ceased-after-surrender-263': ['永安六年冬十月蜀告魏來伐'],
+      'shi-dan-revolt-sun-qian-266': ['寶鼎元年冬十月'],
+      'sun-hao-builds-xianming-palace-267': ['寶鼎二年記夏六月', '冬十二月孫皓移居'],
+      'che-jun-zhang-yong-executed-sun-kai-defects-276': ['天璽元年記會稽太守車浚', '秋八月'],
+      'sun-shen-raids-zhang-chu-executed-277': ['天紀元年記夏口督孫慎'],
+      'wu-enfeoffs-eleven-princes-278': ['天紀二年秋七月記立成紀'],
+      'guo-ma-rebellion-279': ['天紀三年夏記郭馬反'],
+      'sima-yi-feigns-illness-248': ['正始九年冬李勝出任荊州刺史'],
+      'yi-province-surrender-214': ['建安十九年夏雒城破'],
+      'cao-crowned-king-of-wei-216': ['建安二十一年五月記天子進公爵'],
+      'zhugeliang-moves-to-hanzhong-227': ['建興五年春丞相亮出屯漢中'],
+      'shu-yang-yi-demoted-jiang-wan-promoted-235': ['建興十三年春正月', '夏四月'],
+      'wu-lu-dai-luling-revolt-response-235': ['嘉禾三年冬廬陵賊', '嘉禾四年夏遣呂岱'],
+      'wu-multi-front-campaign-241': ['赤烏四年記全琮略淮南', '六月吳軍還'],
+      'shu-surrenders-263': ['景元四年冬劉禪詣鄧艾降'],
       'zhugeliang-south-campaign-225': ['建興三年春三月'],
       'cao-pi-death-cao-rui-accession-226': ['黃初七年五月'],
       'sun-quan-proclaims-emperor-229': ['黃龍元年夏四月'],
@@ -38,7 +65,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-succession-239': ['景初三年正月丁亥'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(32);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(59);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
