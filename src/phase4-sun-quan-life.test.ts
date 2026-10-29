@@ -229,6 +229,34 @@ describe('226 年孫權征江夏石陽', () => {
   });
 });
 
+describe('228 年孫權命陸遜破曹休於石亭', () => {
+  const shitingId = 'sun-quan-shiting-campaign-228';
+
+  it('記錄周魴誘敵及陸遜擊破曹休，不添加未載的兵力與戰損', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === shitingId);
+    expect(content).toMatchObject({ startYear: 228, endYear: 228, precision: 'year', introducedIn: 'phase4-scenario-97', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('周魴偽叛誘曹休');
+    expect(content?.source).toContain('孫權至皖口');
+    expect(content?.source).toContain('陸遜督諸將大破曹休於石亭');
+    expect(content?.description).toContain('不推演兵力、傷亡數');
+  });
+
+  it('v96 年級存檔保留前綴，跨年至 228 年觸發且晚載入不回補', () => {
+    const old = createPhase4Model(227, 1, persons, 'phase4-scenario-96');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === shitingId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === shitingId)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.detail.includes('周魴誘曹休'))?.source).toContain('石亭');
+
+    const late = upgradePhase4Content(createPhase4Model(229, 1, persons, 'phase4-scenario-96'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === shitingId)).toMatchObject({ status: 'resolved', resolvedYear: 228 });
+    expect(late.eventLedger.some((item) => item.detail.includes('周魴誘曹休'))).toBe(false);
+  });
+});
+
 describe('183 年北海、東萊、琅邪寒候記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
