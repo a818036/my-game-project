@@ -26,7 +26,19 @@ export function buildNarrationPayload(state:GameState,event:GameEvent):Narration
   });
   const latest=state.actions.at(-1);let settledEvents:NarrationPayload['settledEvents']=[];
   if((event.type==='ActionPlanResolved'||event.type==='LifePlanResolved')&&latest)settledEvents=[{turn:latest.turn,title:latest.title,details:latest.supplement?latest.details.replaceAll(latest.supplement,'').replace(/；補充說明[^；]*/g,''):latest.details,...(latest.freeTextActions?{resolvedActions:latest.freeTextActions}:{})}];
-  else if(event.type==='Phase4Changed'){const entry=state.phase4?.eventLedger.at(-1);if(entry)settledEvents=[{turn:state.turn+1,title:entry.type,details:entry.detail}];}
+  else if(event.type==='Phase4Changed'){
+    const entry=state.phase4?.eventLedger.at(-1);
+    if(entry){
+      let details=entry.detail;
+      const battle=state.phase4?.battle;
+      if(battle&&(event.payload.action.type==='BattleRound'||event.payload.action.type==='StartBattle')){
+        const unitLedger=battle.units.map(unit=>`${unit.commanderName}率${unit.faction}：所在${unit.location}；地形${unit.terrain}；命令${unit.order}；現役${unit.strength}、預備${unit.reserve}、陣亡累計${unit.killed}、受傷累計${unit.wounded}、撤退${unit.routed}；士氣${unit.morale}、疲勞${unit.fatigue}、補給${unit.supply}`).join('；');
+        const latestLog=battle.logs.at(-1);
+        details+=`；戰場帳：${battle.location}；第 ${battle.rounds} 輪；主角${battle.protagonistPresent?'在場':'不在場'}${latestLog?`；回合紀錄：${latestLog}`:''}；各部狀態：${unitLedger}`;
+      }
+      settledEvents=[{turn:state.turn+1,title:entry.type,details}];
+    }
+  }
   else if(event.type==='InnateChanged'){const consequence=state.innate?.consequences.at(-1);if(consequence)settledEvents=[{turn:state.turn+1,title:consequence.title,details:[...consequence.direct,...consequence.secondary].join('；')}];}
   else if(event.type==='Phase2Changed')settledEvents=[{turn:state.turn+1,title:'人物與家產變更',details:'人物、關係或家產命令已由規則引擎結算；未公開欄位不提供給敘事。'}];
   const actionResolution=event.type==='ActionPlanResolved'||event.type==='LifePlanResolved';
