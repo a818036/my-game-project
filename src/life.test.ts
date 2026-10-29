@@ -50,6 +50,7 @@ describe('人生情境計畫',()=>{
     expect(biography?.answer).toContain('未給出可換算的確切公元年份');
     expect(biography?.answer).toContain('孫權隨孫策征劉勳');
     expect(biography?.answer).toContain('孫權之弟、丹楊太守翊遇害');
+    expect(biography?.answer).toContain('孫權遣賀齊討上饒');
     expect(biography?.answer).toContain('孫權於庱亭射虎');
     expect(biography?.answer).toContain('孫權去世、孫亮即位');
     expect(biography?.answer).toContain('未列年份不代表沒有事情發生');
