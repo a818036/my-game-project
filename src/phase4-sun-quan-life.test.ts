@@ -174,6 +174,34 @@ describe('223 年孫權遣使弔劉備', () => {
   });
 });
 
+describe('224 年吳蜀互遣使重結盟好', () => {
+  const allianceId = 'sun-quan-renews-alliance-with-shu-224';
+
+  it('依《三國志》卷四十七記錄張溫、鄧芝往來，不虛構盟約條文', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === allianceId);
+    expect(content).toMatchObject({ startYear: 224, endYear: 224, precision: 'year', introducedIn: 'phase4-scenario-95', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('張溫聘蜀');
+    expect(content?.source).toContain('蜀遣鄧芝來聘');
+    expect(content?.source).toContain('重結盟好');
+    expect(content?.description).toContain('不推演使節談判細節');
+  });
+
+  it('v94 年級存檔保留事件前綴、跨年至 224 年觸發，晚載入不回補', () => {
+    const old = createPhase4Model(223, 1, persons, 'phase4-scenario-94');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === allianceId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === allianceId)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.detail.includes('孫權、劉禪互遣使重結盟好'))?.source).toContain('鄧芝');
+
+    const late = upgradePhase4Content(createPhase4Model(225, 1, persons, 'phase4-scenario-94'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === allianceId)).toMatchObject({ status: 'resolved', resolvedYear: 224 });
+    expect(late.eventLedger.some((item) => item.detail.includes('孫權、劉禪互遣使重結盟好'))).toBe(false);
+  });
+});
+
 describe('183 年北海、東萊、琅邪寒候記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
