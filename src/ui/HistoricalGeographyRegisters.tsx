@@ -1,10 +1,15 @@
 import {
   HAN_CANGWU_COUNTY_NAMES,
+  HAN_CHEN_COUNTY_NAMES,
   HAN_HEPU_COUNTY_NAMES,
   HAN_JIAOZHI_COUNTY_NAMES,
   HAN_JIUZHEN_COUNTY_NAMES,
+  HAN_LIANG_COUNTY_NAMES,
+  HAN_LU_COUNTY_NAMES,
   HAN_NANHAI_COUNTY_NAMES,
+  HAN_PEI_COUNTY_NAMES,
   HAN_RINAN_COUNTY_NAMES,
+  HAN_RUNAN_COUNTY_NAMES,
   HAN_YULIN_COUNTY_NAMES,
   HAN_DAI_COUNTY_NAMES,
   HAN_GUANGYANG_COUNTY_NAMES,
@@ -731,6 +736,36 @@ const registers = [
     description: '《後漢書》卷一一三〈志第二十三·郡國志五〉日南郡條列五城，保留秦象郡、武帝更名的來源說明。',
     ariaLabel: '後漢書日南郡五城名錄', names: HAN_RINAN_COUNTY_NAMES,
     sourceText: '查閱《後漢書》卷一一三〈郡國志五〉日南郡條',
+  },
+  {
+    id: 'runan', summary: '展開汝南郡名錄（三十七城）',
+    description: '《後漢書》卷一一〇〈志第二十·郡國志二〉汝南郡條列三十七城，依底本次序呈現。',
+    ariaLabel: '後漢書汝南郡三十七城名錄', names: HAN_RUNAN_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一〇〈郡國志二〉汝南郡條',
+  },
+  {
+    id: 'liang', summary: '展開梁國名錄（九城）',
+    description: '《後漢書》卷一一〇〈志第二十·郡國志二〉梁國條列九城，保留原字及次序。',
+    ariaLabel: '後漢書梁國九城名錄', names: HAN_LIANG_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一〇〈郡國志二〉梁國條',
+  },
+  {
+    id: 'pei', summary: '展開沛國名錄（二十一城）',
+    description: '《後漢書》卷一一〇〈志第二十·郡國志二〉沛國條列二十一城，依底本次序呈現。',
+    ariaLabel: '後漢書沛國二十一城名錄', names: HAN_PEI_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一〇〈郡國志二〉沛國條',
+  },
+  {
+    id: 'chen', summary: '展開陳國名錄（九城）',
+    description: '《後漢書》卷一一〇〈志第二十·郡國志二〉陳國條列九城，沿用原文名稱與次序。',
+    ariaLabel: '後漢書陳國九城名錄', names: HAN_CHEN_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一〇〈郡國志二〉陳國條',
+  },
+  {
+    id: 'lu', summary: '展開魯國名錄（六城）',
+    description: '《後漢書》卷一一〇〈志第二十·郡國志二〉記魯國六城，並註明本屬徐州、光武時改屬豫州。',
+    ariaLabel: '後漢書魯國六城名錄', names: HAN_LU_COUNTY_NAMES,
+    sourceText: '查閱《後漢書》卷一一〇〈郡國志二〉魯國條',
   },
 ] as const;
 
