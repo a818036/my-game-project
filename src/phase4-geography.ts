@@ -18,6 +18,12 @@ export const HAN_DIVISION_SOURCE_URLS = {
   donglai: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   qi: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   nanyang: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  nanCommandery: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  jiangxia: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  lingling: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  guiyang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  wuling: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
+  changsha: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   yuzhang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   kuaiji: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
   danyang: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
@@ -149,6 +155,36 @@ export const HAN_NANYANG_COUNTY_NAMES = [
   '舞陰', '比陽', '復陽', '平氏', '棘陽', '湖陽', '隨', '育陽', '涅陽', '陰',
   '酇', '鄧', '山都', '酈', '穰', '朝陽', '蔡陽', '安眾', '築陽', '武當', '順陽',
   '成都', '襄鄉', '南鄉', '丹水', '析',
+] as const;
+
+/** Source-ordered city names under Nan commandery in Hou Hanshu, Treatise 28. */
+export const HAN_NAN_COMMANDERY_COUNTY_NAMES = [
+  '江陵', '巫', '秭歸', '中盧', '編', '當陽', '華容', '襄陽', '邔', '宜城', '鄀', '臨沮', '枝江', '夷道', '夷陵', '州陵', '很山',
+] as const;
+
+/** Source-ordered city names under Jiangxia commandery in Hou Hanshu, Treatise 28. */
+export const HAN_JIANGXIA_COUNTY_NAMES = [
+  '西陵', '西陽', '軑', '鄳', '竟陵', '雲杜', '沙羨', '邾', '下雉', '蘄春', '鄂', '平春', '南新市', '安陸',
+] as const;
+
+/** Source-ordered city names under Lingling commandery in Hou Hanshu, Treatise 28. */
+export const HAN_LINGLING_COUNTY_NAMES = [
+  '泉陵', '零陵', '營道', '營浦', '泠道', '洮陽', '都梁', '夫夷', '始安', '重安', '湘鄉', '昭陽', '烝陽',
+] as const;
+
+/** Source-ordered city names under Guiyang commandery in Hou Hanshu, Treatise 28. */
+export const HAN_GUIYANG_COUNTY_NAMES = [
+  '郴', '便', '耒陽', '陰山', '南平', '臨武', '桂陽', '含洭', '湞陽', '曲江', '漢寧',
+] as const;
+
+/** Source-ordered city names under Wuling commandery in Hou Hanshu, Treatise 28. */
+export const HAN_WULING_COUNTY_NAMES = [
+  '臨沅', '漢壽', '孱陵', '零陽', '充', '沅陵', '辰陽', '酉陽', '遷陵', '鐔成', '沅南', '作唐',
+] as const;
+
+/** Source-ordered city names under Changsha commandery in Hou Hanshu, Treatise 28. */
+export const HAN_CHANGSHA_COUNTY_NAMES = [
+  '臨湘', '攸', '荼陵', '安城', '酃', '湘南', '連道', '昭陵', '益陽', '下雋', '羅', '醴陵', '容陵',
 ] as const;
 
 /** Source-ordered city names under Yuzhang commandery in Hou Hanshu, Treatise 28. */
