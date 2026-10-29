@@ -404,8 +404,11 @@ describe('214 年孫權合肥撤軍遭襲', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === id);
     expect(content).toMatchObject({ startYear: 214, endYear: 214, precision: 'year', introducedIn: 'phase4-scenario-101', sameYearMigrationIsLate: true });
     expect(content?.source).toContain('《三國志》卷四十七');
-    expect(content?.source).toContain('合肥未下而撤');
-    expect(content?.source).toContain('張遼所襲');
+    expect(content?.source).toContain('卷十七〈魏書·張遼傳〉');
+    expect(content?.source).toContain('繫年有異');
+    expect(content?.sourceDateNote).toContain('建安二十年（215）');
+    expect(content?.source).toContain('征合肥未下、撤軍遭張遼襲擊');
+    expect(content?.source).toContain('張遼襲擊');
     expect(content?.source).toContain('乘駿馬越津橋');
     expect(content?.description).toContain('不推演未載的完整交戰');
   });
@@ -418,7 +421,7 @@ describe('214 年孫權合肥撤軍遭襲', () => {
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     const advanced = advancePhase4(upgraded, 360);
     expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
-    expect(advanced.eventLedger.find((item) => item.detail.includes('合肥未克，孫權撤軍時遭張遼襲擊'))?.source).toContain('凌統等護衛孫權');
+    expect(advanced.eventLedger.find((item) => item.detail.includes('合肥未克，孫權撤軍時遭張遼襲擊'))?.source).toContain('凌統、甘寧等護衛孫權');
 
     const sameYear = upgradePhase4Content(createPhase4Model(214, 1, persons, 'phase4-scenario-100'), PHASE4_CONTENT_VERSION);
     expect(sameYear.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 214 });
