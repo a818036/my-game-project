@@ -1,6 +1,6 @@
 import {describe,it,expect} from 'vitest';
 import {createOpeningFacts,dispatch,ENGINE_VERSION,replay,type GameCommand,type GameEvent} from './engine';
-import {inspectLifePlan,lifeChoices,localInteraction} from './life';
+import {answerKnownSunQuanBiographyQuestion,inspectLifePlan,lifeChoices,localInteraction} from './life';
 import {toJson,parseSave,migrateSaveFile} from './storage';
 function start(){const facts=createOpeningFacts(81,184,{regions:[],surnames:[]});return dispatch(null,{version:ENGINE_VERSION,type:'StartGame',name:'測試',seed:81,facts,commandId:'life-start',expectedRevision:0});}
 describe('人生情境計畫',()=>{
@@ -34,6 +34,13 @@ describe('人生情境計畫',()=>{
     for(const text of ['我才幾歲就叫我經商？','我能做什麼？','對母親說你好','我幾歲？然後再去經商','不要觀察眼前']){const r=localInteraction(text,state);expect(r.kind).not.toBe('action');expect(r.choiceIds).toEqual([]);}
     expect(localInteraction('對父親說：不要擔心',state).kind).toBe('dialogue');
     expect(localInteraction('我要觀察眼前',state).choiceIds).toEqual(['observe']);expect(state).toEqual(before);
+  });
+  it('孫權生平問題保留史料精度；無來源的日常時辰明確回答未記載',()=>{
+    const appointed=answerKnownSunQuanBiographyQuestion('孫權幾歲任陽羨長？');
+    expect(appointed?.answer).toContain('年十五');expect(appointed?.answer).toContain('沒有在此處給出確切公元年份');
+    const died=answerKnownSunQuanBiographyQuestion('孫權幾歲去世？');expect(died?.answer).toContain('時年七十一');
+    const routine=answerKnownSunQuanBiographyQuestion('孫權每天幾時小便出恭？');expect(routine?.answer).toContain('沒有記載');expect(routine?.answer).toContain('不會補造');
+    expect(localInteraction('孫權每天幾時小便出恭？',start().state!).kind).toBe('question');
   });
   it('能力命令不經普通人生階段選項過濾',()=>{
     const state=start().state!;expect(inspectLifePlan(state,['軒轅閃']).errors.length).toBeGreaterThan(0);

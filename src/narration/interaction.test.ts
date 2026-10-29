@@ -32,6 +32,16 @@ describe('即時人物對話',()=>{
     const result=await understandInput('西元 206 年發生了什麼事？',current,new AbortController().signal);
     expect(result).toMatchObject({kind:'question',source:'已核對的遊戲年表'});expect(result.answer).toContain('高幹敗走與壺關平定');expect(result.answer).toContain('《三國志》卷一');expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
   });
+  it('孫權生平問題用有來源的精度回答；未記載的日常不送模型也不推進時間',async()=>{
+    const current=state(),before=structuredClone(current),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    const office=await understandInput('孫權幾歲任陽羨長？',current,new AbortController().signal);
+    expect(office).toMatchObject({kind:'question',source:'《三國志》卷四十七〈吳主傳〉'});expect(office.answer).toContain('年十五');expect(office.answer).toContain('不換算成某一年的觸發事件');
+    const lifespan=await understandInput('孫權幾歲去世？',current,new AbortController().signal);
+    expect(lifespan).toMatchObject({kind:'question',source:'《三國志》卷四十八〈吳書·三嗣主傳〉'});expect(lifespan.answer).toContain('時年七十一');
+    const routine=await understandInput('孫權每天幾時小便出恭？',current,new AbortController().signal);
+    expect(routine).toMatchObject({kind:'question',source:'史料未記載；不推測'});expect(routine.answer).toContain('不會補造時辰或行程');
+    expect(fetchMock).not.toHaveBeenCalled();expect(current).toEqual(before);expect(current.turn).toBe(0);
+  });
   it('重大能力救援、戰爭與主權指令走專用入口，不送到模型或轉成生活行動',async()=>{
     const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
     const result=await understandInput('請直接治療已經死亡的孫堅，並批准永久割讓潁川郡。',current,new AbortController().signal);

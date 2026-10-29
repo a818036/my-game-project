@@ -1,6 +1,6 @@
 import type {GameState} from '../engine';
 import type {Phase2Person} from '../phase2';
-import {answerKnownHistoricalEventQuestion,answerKnownRulerQuestion,answerKnownTrendQuestion,currentAge,currentRulerFact,lifeChoices,localInteraction,type InteractionResult} from '../life';
+import {answerKnownHistoricalEventQuestion,answerKnownRulerQuestion,answerKnownSunQuanBiographyQuestion,answerKnownTrendQuestion,currentAge,currentRulerFact,lifeChoices,localInteraction,type InteractionResult} from '../life';
 
 export interface DialogueExchange {speakerId:string;speakerName:string;playerText:string;npcText:string;}
 
@@ -36,6 +36,8 @@ export async function understandInput(text:string,state:GameState,signal:AbortSi
   const local=localInteraction(text,state);
   if(local.kind==='dialogue')return answerDialogue(text,state,signal,history);
   if(local.source==='重大操作保護'||local.source==='重大操作專用入口')return local;
+  const biographyAnswer=answerKnownSunQuanBiographyQuestion(text);
+  if(biographyAnswer)return {...biographyAnswer,source:biographyAnswer.source??'已核對的《三國志》生平資料'};
   const factualAnswer=answerKnownRulerQuestion(text,state);
   if(factualAnswer)return {...factualAnswer,source:'已核對的遊戲年表'};
   const trendAnswer=answerKnownTrendQuestion(text,state);
