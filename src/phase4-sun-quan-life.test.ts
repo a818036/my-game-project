@@ -136,6 +136,17 @@ describe('221 年孫權受魏封吳王', () => {
   });
 });
 
+describe('222 年孫權遣使復通蜀漢', () => {
+  it('記錄夷陵戰局後遣鄭泉使白帝，不臆造盟約內容', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === 'yiling-campaign-222');
+    expect(content).toMatchObject({ startYear: 222, endYear: 222, precision: 'year' });
+    expect(content?.source).toContain('卷四十七');
+    expect(content?.source).toContain('十二月孫權遣太中大夫鄭泉聘劉備於白帝');
+    expect(content?.source).toContain('始復通也');
+    expect(content?.description).toContain('不推演完整戰役');
+  });
+});
+
 describe('183 年北海、東萊、琅邪寒候記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
