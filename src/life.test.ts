@@ -1,6 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {createOpeningFacts,dispatch,ENGINE_VERSION,replay,type GameCommand,type GameEvent} from './engine';
 import {answerKnownSunQuanBiographyQuestion,inspectLifePlan,lifeChoices,localInteraction} from './life';
+import {HISTORY_CONTENT} from './phase4';
 import {toJson,parseSave,migrateSaveFile} from './storage';
 function start(){const facts=createOpeningFacts(81,184,{regions:[],surnames:[]});return dispatch(null,{version:ENGINE_VERSION,type:'StartGame',name:'測試',seed:81,facts,commandId:'life-start',expectedRevision:0});}
 describe('人生情境計畫',()=>{
@@ -70,6 +71,12 @@ describe('人生情境計畫',()=>{
     expect(biography?.answer).toContain('孫權去世、孫亮即位');
     expect(biography?.answer).toContain('這些是資料覆蓋缺口，不代表他當年沒有活動');
     expect(biography?.answer).toContain('目前索引未收錄孫權相關節點的年次：');
+    const gapText=biography?.answer.match(/目前索引未收錄孫權相關節點的年次：([^。]+)/)?.[1]??'';
+    const displayedMissingYears=new Set<number>();
+    for(const [,startText,endText] of gapText.matchAll(/(\d{3})(?:–(\d{3}))?/g)){const start=Number(startText),end=Number(endText??startText);for(let year=start;year<=end;year++)displayedMissingYears.add(year);}
+    const coveredYears=new Set<number>();
+    for(const item of HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&item.startYear>=182&&item.endYear<=252&&/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.carrier} ${item.source}`))){for(let year=item.startYear;year<=item.endYear;year++)coveredYears.add(year);}
+    expect([...displayedMissingYears].sort((a,b)=>a-b)).toEqual(Array.from({length:71},(_,i)=>182+i).filter(year=>!coveredYears.has(year)));
     expect(biography?.answer).not.toContain('197年・');
     expect(localInteraction('請整理孫權七十一年生平年表',start().state!).answer).toBe(biography?.answer);
   });
