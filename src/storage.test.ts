@@ -54,7 +54,9 @@ describe('A05／A06 存檔交易與重播', () => {
     const phase4=dispatch(start.state,{version:ENGINE_VERSION,commandId:'phase4-v6-policy-time',expectedRevision:start.state.revision,worldlineId:start.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:40}});
     expect(phase4.state?.phase4?.year).toBe(184);
     expect(phase4.event?.type).toBe('Phase4Changed');
-    const original:SaveFile={...start,events:[...start.events,phase4.event!],state:phase4.state!};
+    const protagonistObservation=dispatch(phase4.state!,{version:ENGINE_VERSION,commandId:'phase4-v6-player-observation',expectedRevision:phase4.state!.revision,worldlineId:start.worldlineId,type:'Phase2Action',action:{type:'RecordObservation',observation:{id:'saved-player-observation',witnessId:'protagonist',turn:1,observation:'主角在庭院親見',known:['主角親眼看到院門前有馬車'],unknown:['未在場消息']}}});
+    const npcObservation=dispatch(protagonistObservation.state!,{version:ENGINE_VERSION,commandId:'phase4-v6-npc-observation',expectedRevision:protagonistObservation.state!.revision,worldlineId:start.worldlineId,type:'Phase2Action',action:{type:'RecordObservation',observation:{id:'saved-npc-observation',witnessId:'opening-family-0',turn:2,observation:'家人在庭院親見',known:['家人親眼看到院門前有車'],unknown:['主角私下所知消息']}}});
+    const original:SaveFile={...start,events:[...start.events,phase4.event!,protagonistObservation.event!,npcObservation.event!],state:npcObservation.state!};
     const originalJson=toJson(original);
     await commitWorldline(original,noHistory);
 
@@ -63,6 +65,11 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(loaded.events).toEqual(original.events);
     expect(replay(loaded.events)).toEqual(loaded.state);
     expect(loaded.state.phase4?.day).toBe(40);
+    const loadedNarration=buildNarrationPayload(loaded.state,npcObservation.event!);
+    expect(loadedNarration.playerView.knownFacts).toEqual([{turn:1,observation:'主角在庭院親見',facts:['主角親眼看到院門前有馬車']}]);
+    expect(loadedNarration.visibleNpcs.find(person=>person.id==='opening-family-0')?.knownFacts).toEqual([{turn:2,observation:'家人在庭院親見',facts:['家人親眼看到院門前有車']}]);
+    expect(JSON.stringify(loadedNarration)).not.toContain('未在場消息');
+    expect(JSON.stringify(loadedNarration)).not.toContain('主角私下所知消息');
 
     const next=dispatch(loaded.state,{version:ENGINE_VERSION,commandId:'phase4-v6-continue',expectedRevision:loaded.state.revision,worldlineId:loaded.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持'],supplement:''});
     expect(next.state?.turn).toBe(1);
@@ -80,6 +87,8 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(narrativeContext.protagonistMemory).toHaveLength(1);
     expect(narrativeContext.protagonistMemory?.[0]).toMatchObject({turn:1});
     expect(JSON.stringify(narrativeContext)).not.toContain('不送入回憶');
+    expect(narrativeContext.playerView.knownFacts).toEqual([{turn:1,observation:'主角在庭院親見',facts:['主角親眼看到院門前有馬車']}]);
+    expect(narrativeContext.visibleNpcs.some(person=>person.id==='opening-family-0')).toBe(false);
     expect(toJson(original)).toBe(originalJson);
   });
 
