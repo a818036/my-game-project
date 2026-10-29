@@ -202,6 +202,33 @@ describe('224 年吳蜀互遣使重結盟好', () => {
   });
 });
 
+describe('226 年孫權征江夏石陽', () => {
+  const campaignId = 'sun-quan-campaigns-against-shiyang-226';
+
+  it('記錄圍石陽未克而還，不推演兵力與戰損', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === campaignId);
+    expect(content).toMatchObject({ startYear: 226, endYear: 226, precision: 'year', introducedIn: 'phase4-scenario-96', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('卷四十七');
+    expect(content?.source).toContain('征江夏、圍石陽，不克而還');
+    expect(content?.description).toContain('不推演兵力、傷亡');
+  });
+
+  it('v95 年級存檔保留事件前綴並支援跨年觸發及晚載入不回補', () => {
+    const old = createPhase4Model(225, 1, persons, 'phase4-scenario-95');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === campaignId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === campaignId)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.detail.includes('孫權出兵圍江夏石陽'))?.source).toContain('不克而還');
+
+    const late = upgradePhase4Content(createPhase4Model(227, 1, persons, 'phase4-scenario-95'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === campaignId)).toMatchObject({ status: 'resolved', resolvedYear: 226 });
+    expect(late.eventLedger.some((item) => item.detail.includes('孫權出兵圍江夏石陽'))).toBe(false);
+  });
+});
+
 describe('183 年北海、東萊、琅邪寒候記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
