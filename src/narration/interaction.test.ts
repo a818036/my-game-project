@@ -50,7 +50,7 @@ describe('即時人物對話',()=>{
     expect(lifespan).toMatchObject({kind:'question',source:'《三國志》卷四十八〈吳書·三嗣主傳〉'});expect(lifespan.answer).toContain('時年七十一');
     const routine=await understandInput('孫權每天幾時小便出恭？',current,new AbortController().signal);
     expect(routine).toMatchObject({kind:'question',source:'《三國志》卷四十七〈吳主傳〉；日常細節未記載'});expect(routine.answer).toContain('我不能用模擬補造時辰或行程');
-    for(const text of ['孫權平時作息如何？','孫權平常的生活習慣是什麼？','孫權活著的71年裡每天每日幾時幾刻小便出恭？','孫權一天上幾次大號？','孫仲謀早上方便幾時？','孫權夜裡幾點解手？','孫權小號時間是什麼？']){
+    for(const text of ['孫權平時作息如何？','孫權平常的生活習慣是什麼？','孫權活著的71年裡每天每日幾時幾刻小便出恭？','孫權一天上幾次大號？','孫仲謀早上方便幾時？','孫權夜裡幾點解手？','孫權小號時間是什麼？','孫權每天幾點睡覺？']){
       const variant=await understandInput(text,current,new AbortController().signal);
       expect(variant).toMatchObject({kind:'question',source:'《三國志》卷四十七〈吳主傳〉；日常細節未記載'});
     }

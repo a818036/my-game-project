@@ -46,7 +46,7 @@ describe('人生情境計畫',()=>{
     expect(localInteraction('孫權每天幾時小便出恭？',start().state!).kind).toBe('question');
   });
   it('孫權日常作息的不同問法都走本機史料界線回答，不交模型猜測',()=>{
-    for(const text of ['孫權平時作息如何？','孫權平常的生活習慣是什麼？','孫權每天幾點上廁所？','孫權活著的71年裡每天每日幾時幾刻小便出恭？','孫權一天上幾次大號？','孫仲謀早上方便幾時？','孫權夜裡幾點解手？','孫權小號時間是什麼？']){
+    for(const text of ['孫權平時作息如何？','孫權平常的生活習慣是什麼？','孫權每天幾點上廁所？','孫權活著的71年裡每天每日幾時幾刻小便出恭？','孫權一天上幾次大號？','孫仲謀早上方便幾時？','孫權夜裡幾點解手？','孫權小號時間是什麼？','孫權每天幾點睡覺？']){
       const result=localInteraction(text,start().state!);
       expect(result.kind).toBe('question');
       expect(result.answer).toContain('不是逐日生活日誌');
@@ -54,6 +54,8 @@ describe('人生情境計畫',()=>{
       expect(result.source).toContain('日常細節未記載');
     }
     expect(answerKnownSunQuanBiographyQuestion('孫權現在方便出兵嗎？')).toBeNull();
+    expect(answerKnownSunQuanBiographyQuestion('孫權每天出兵嗎？')).toBeNull();
+    expect(answerKnownSunQuanBiographyQuestion('孫權平常怎麼打仗？')).toBeNull();
   });
   it('孫權一生問題整理現有來源節點，不把空白年份或日常作息編成史實',()=>{
     const biography=answerKnownSunQuanBiographyQuestion('請整理孫權七十一年生平年表');
