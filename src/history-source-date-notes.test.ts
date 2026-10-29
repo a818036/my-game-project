@@ -30,7 +30,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(151);
+    expect(withinCatalogYears).toHaveLength(153);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -82,6 +82,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'zhugeliang-moves-to-hanzhong-227': ['建興五年春丞相亮出屯漢中'],
       'shu-yang-yi-demoted-jiang-wan-promoted-235': ['建興十三年春正月', '夏四月'],
       'wu-lu-dai-luling-revolt-response-235': ['嘉禾三年冬廬陵賊', '嘉禾四年夏承前記遣呂岱'],
+      'wu-lu-dai-pacifies-luling-238': ['赤烏元年夏', '呂岱討盧陵賊，畢，還陸口'],
+      'lu-xun-pacifies-pengdan-revolt-237': ['嘉禾六年二月', '陸遜討彭旦等', '其年，皆破之'],
       'wu-multi-front-campaign-241': ['赤烏四年記全琮略淮南', '六月吳軍還'],
       'shu-surrenders-263': ['景元四年冬劉禪詣鄧艾降'],
       'zhugeliang-south-campaign-225': ['建興三年春三月'],
@@ -123,7 +125,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(76);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(78);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -170,10 +172,12 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-morning-raid-ruxu-defeated-223',
       'wu-captures-jin-zong-at-qichun-223',
       'sun-quan-campaigns-at-hefei-234',
+      'wu-lu-dai-pacifies-luling-238',
+      'lu-xun-pacifies-pengdan-revolt-237',
       'sun-quan-moves-capital-to-jianye-229',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(76);
-    expect(uniqueNotedEvents.size).toBe(88);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(78);
+    expect(uniqueNotedEvents.size).toBe(90);
   });
 });
