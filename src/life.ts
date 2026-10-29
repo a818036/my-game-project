@@ -71,7 +71,8 @@ export function answerKnownHistoricalEventQuestion(text:string,state:GameState):
   const asksCurrentYear=/(今年|這年|這一年|目前這年|當年|現在這年)/.test(text);
   if(!explicitYear&&!asksCurrentYear)return null;
   const year=explicitYear?Number(explicitYear[1]):state.world.year;
-  const records=HISTORY_CONTENT.filter(item=>item.kind==='event'&&item.source.startsWith('《')&&item.startYear<=year&&item.endYear>=year);
+  const records=HISTORY_CONTENT.filter(item=>item.kind==='event'&&item.source.startsWith('《')&&item.startYear<=year&&item.endYear>=year&&(!/(孫權|孫仲謀)/.test(text)||/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.source}`)));
+  if(/孫權|孫仲謀/.test(text)&&!records.length)return {kind:'question',answer:`目前內容包未收錄西元 ${year} 年有來源支持的孫權生平節點；這不表示該年沒有事情發生，我不以其他人物事件代答，也不臆測。`,choiceIds:[],questions:[]};
   const answer=records.length
     ? `西元 ${year} 年已收錄的史實年級節點：${records.map(item=>`${item.title}。${item.description} 資料：${item.source}`).join('；')}`
     : `目前年表尚未涵蓋西元 ${year} 年的具體史實；我不臆測。`;
