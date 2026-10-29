@@ -19,7 +19,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(226,1,[],'phase4-scenario-116');
     const prefix=structuredClone(old.eventLedger);
     const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(migrated.contentVersion).toBe('phase4-scenario-119');
+    expect(migrated.contentVersion).toBe('phase4-scenario-120');
     expect(migrated.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(migrated,360).nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
@@ -60,7 +60,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(228,1,[],'phase4-scenario-117');
     const prefix=structuredClone(old.eventLedger);
     const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(migrated.contentVersion).toBe('phase4-scenario-119');
+    expect(migrated.contentVersion).toBe('phase4-scenario-120');
     expect(migrated.nodes.find(node=>node.contentId===allianceId)?.status).toBe('pending');
     expect(migrated.nodes.find(node=>node.contentId===capitalId)?.status).toBe('pending');
     expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
@@ -83,12 +83,22 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     expect(result?.answer).toContain('沒有提供盟約簽訂月日');
   });
 
-  it('A233 keeps v118 event history unchanged when source-date annotations advance content to v119',()=>{
+  it('A233 keeps v118 event history unchanged when upgrading to current content',()=>{
     const old=createPhase4Model(227,1,[],'phase4-scenario-118');
     const prefix=structuredClone(old.eventLedger);
     const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-119');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-120');
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(Object.fromEntries(upgraded.nodes.map(node=>[node.contentId,node.status]))).toEqual(priorStatuses);
+  });
+
+  it('A234 keeps v119 event history unchanged while adding source-only date context',()=>{
+    const old=createPhase4Model(218,1,[],'phase4-scenario-119');
+    const prefix=structuredClone(old.eventLedger);
+    const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.contentVersion).toBe('phase4-scenario-120');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(Object.fromEntries(upgraded.nodes.map(node=>[node.contentId,node.status]))).toEqual(priorStatuses);
   });
