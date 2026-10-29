@@ -21,6 +21,13 @@ describe('第五階段・伺服器敘事代理',()=>{
     expect(()=>validateNarrationPayload({...payload,visibleNpcs:[{...payload.visibleNpcs[0],knownFacts:[{turn:1,observation:'親見市集',facts:['親眼所見市集往來'],unknown:['未曾得知'] }]}]})).toThrow('個別知識');
     expect(()=>validateNarrationPayload({...payload,playerView:{...payload.playerView,knownFacts:[{observation:'缺少回合',facts:['某事']} ]}})).toThrow('玩家視野');
   });
+  it('NPC 對話可用自己的觀察，但不能照搬只屬於主角的觀察',()=>{
+    const ids=validateNarrationPayload(payload);
+    expect(()=>validateNarrationOutput({paragraphs:[],dialogue:[{speakerId:'person-1',text:'我親眼所見市集往來'}],suggestions:[]},ids,payload)).not.toThrow();
+    const privatePayload={...payload,playerView:{...payload.playerView,knownFacts:[{turn:2,observation:'主角獨自所得',facts:['主角私下得知的密報代碼']} ]}};
+    const privateIds=validateNarrationPayload(privatePayload);
+    expect(()=>validateNarrationOutput({paragraphs:[],dialogue:[{speakerId:'person-1',text:'主角私下得知的密報代碼'}],suggestions:[]},privateIds,privatePayload)).toThrow('洩漏');
+  });
   it('只把保存的主角回憶作為私人敘事上下文，NPC 不得引用',async()=>{
     const remembered={...payload,protagonistMemory:[{turn:3,title:'庭院讀書舊事',details:'主角曾讀完一卷兵書'}]};
     expect(()=>validateNarrationPayload(remembered)).not.toThrow();
