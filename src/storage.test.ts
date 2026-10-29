@@ -158,13 +158,13 @@ describe('A05／A06 存檔交易與重播', () => {
     const archiveDb=await openSaveDb();const archived=await new Promise<SaveFile|undefined>((resolve,reject)=>{const tx=archiveDb.transaction('profile','readonly');const request=tx.objectStore('profile').get(`legacy:${old.worldlineId}:v6-phase4-scenario-1`);request.onsuccess=()=>resolve(request.result as SaveFile|undefined);request.onerror=()=>reject(request.error);});archiveDb.close();expect(archived).toEqual(old);
   });
 
-  it('A167 舊 v6 v88 存檔升至 scenario v106 時不回補新增史事且可重播',()=>{
+  it('A167 舊 v6 v88 存檔升至目前 scenario 時不回補新增史事且可重播',()=>{
     const current=makeSave('phase6-v88-to-v90');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-88'}};
     const oldState=applyEvent(null,legacyStart)!;const old:SaveFile={...current,events:[legacyStart],state:oldState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(legacyStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-106'}});
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-107'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-inferred-birth-182')).toMatchObject({status:'resolved',resolvedYear:182,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='winter-cold-eastern-commandries-183')).toMatchObject({status:'resolved',resolvedYear:183,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('孫權推定出生年'))).toBe(false);
@@ -173,7 +173,7 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
 
-  it('A169 舊 v6 v90 存檔升至 scenario v106 時不回補新增史事且可重播',()=>{
+  it('A169 舊 v6 v90 存檔升至目前 scenario 時不回補新增史事且可重播',()=>{
     const current=makeSave('phase6-v90-to-v100');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-90'}};
     let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];let daysRemaining=(201-oldState.phase4!.year)*360;let step=0;
@@ -182,7 +182,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(legacyStart);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-106'}});
+    expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-107'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-ce-dies-sun-quan-inherits-200')).toMatchObject({status:'resolved',resolvedYear:200,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-chooses-resistance-208')).toMatchObject({status:'pending'});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-accepts-king-of-wu-title-221')).toMatchObject({status:'pending'});
@@ -191,30 +191,37 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
 
-  it('A188 v6 scenario v98 JSON 存檔追加升至 v106，保留事件前綴並納入射虎節點',()=>{
+  it('A188 v6 scenario v98 JSON 存檔追加升至目前版本，保留事件前綴並納入射虎節點',()=>{
     const current=makeSave('phase6-v98-to-v102');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const priorStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-98'}};
     const priorState=applyEvent(null,priorStart)!;const old:SaveFile={...current,events:[priorStart],state:priorState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(priorStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-106'}});
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-107'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-hunts-tiger-lingting-218')?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
 
-  it('A194 v6 scenario v103 存檔追加升至 v106，保留事件前綴並可重播',()=>{
+  it('A194 v6 scenario v103 存檔追加升至目前版本，保留事件前綴並可重播',()=>{
     const current=makeSave('phase6-v103-to-v105');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const priorStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-103'}};
     const priorState=applyEvent(null,priorStart)!;const old:SaveFile={...current,events:[priorStart],state:priorState};
     const migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(priorStart);
-    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-106'}});
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-107'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-mother-dies-202')?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-moves-governance-to-muling-211')?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-builds-shitou-jianye-ruxu-212')?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
+
+  it('A214 v106 203 年存檔追加翊遇害節點、續玩觸發並保留重播一致',()=>{
+    const current=makeSave('phase6-v106-sun-yi');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-106'}};let oldState=applyEvent(null,legacyStart)!;const oldEvents:GameEvent[]=[legacyStart];for(const [index,days] of [3600,3240].entries()){const reached=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v106-sun-yi-reach-203-${index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!reached.state||!reached.event)throw new Error('could not prepare v106 fixture');oldState=reached.state;oldEvents.push(reached.event);}const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
+    const migrated=verifySave(toJson(old));expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-107'}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-brother-sun-yi-killed-204')?.status).toBe('pending');
+    const next=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v106-sun-yi-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!next.state||!next.event)throw new Error('could not advance migrated v106 fixture');const continued:SaveFile={...migrated,events:[...migrated.events,next.event],state:next.state};expect(next.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-brother-sun-yi-killed-204')?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
   });
 
   it('A212 v105 存檔勘誤遷移、續玩 202 年並保留重播一致',()=>{
