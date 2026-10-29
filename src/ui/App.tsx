@@ -7,6 +7,7 @@ import { ENGINEERING, HISTORY_CONTENT, type ControlLevel, type Phase4Action, typ
 import { HAN_DIVISION_INDEX, HAN_DIVISION_SOURCE_URLS, HAN_HENAN_YIN_COUNTY_NAMES, HAN_INSPECTOR_COMMANDERY_TOTAL, HAN_INSPECTOR_DIVISION_COUNT, HAN_NANYANG_COUNTY_NAMES, HAN_YINGCHUAN_COUNTY_NAMES } from '../phase4-geography';
 import { characterAgeLabel } from '../narration/status';
 import { ActivityAnnouncer } from './ActivityAnnouncer';
+import { NameDialog } from './NameDialog';
 const LifeActionPanel=lazy(()=>import('./LifeActionPanel').then(({LifeActionPanel})=>({default:LifeActionPanel})));
 const ChatGptConnection=lazy(()=>import('./ChatGptConnection').then(({ChatGptConnection})=>({default:ChatGptConnection})));
 const EndingChoice=lazy(()=>import('./EndingChoice').then(({EndingChoice})=>({default:EndingChoice})));
@@ -358,7 +359,7 @@ export default function App() {
       <details><summary>開發模式：行動時間與中斷規則</summary><p className="caption">耕讀 30 日、訪求 7 日、經商 10 日、遊歷 14 日是可調工程參數；一般重大事件在完成當前行動後中斷後續安排，死亡節點則在出現介入窗口的當日中斷，未完成行動不結算。天生技直接移動與普通驛路運輸分開記錄。</p></details>
     </details></article>}
     </aside></div>
-    {phase2?.pendingNames[0] && <div className="modal-backdrop"><section className="name-dialog" role="dialog" aria-modal="true" aria-labelledby="name-dialog-title"><div className="section-kicker">玩家命名權・待決</div><h2 id="name-dialog-title">請為「{phase2.pendingNames[0].role}」命名</h2><p>命名完成前，此人物不會加入正式家族圖。</p><label>姓名<input autoFocus maxLength={20} value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} /></label><button className="primary" disabled={!nameDraft.trim() || busy} onClick={finalizeName}>確認姓名</button></section></div>}
+    {phase2?.pendingNames[0] && <NameDialog role={phase2.pendingNames[0].role} value={nameDraft} busy={busy} onChange={setNameDraft} onConfirm={finalizeName} />}
     <footer>神洲三國・第四階段示例原型　<span>自動保存・事件版本 {state.engineVersion}</span></footer>
   </main>;
 }
