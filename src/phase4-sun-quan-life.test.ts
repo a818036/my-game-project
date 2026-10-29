@@ -265,7 +265,7 @@ describe('234 年孫權進向合肥新城', () => {
     expect(content).toMatchObject({ startYear: 234, endYear: 234, precision: 'year', introducedIn: 'phase4-scenario-98', sameYearMigrationIsLate: true });
     expect(content?.source).toContain('《三國志》卷三');
     expect(content?.source).toContain('陸議、孫韶');
-    expect(content?.source).toContain('六月吳軍還');
+    expect(content?.source).toContain('秋七月魏明帝親東征');
     expect(content?.description).toContain('不推演戰鬥');
   });
 
