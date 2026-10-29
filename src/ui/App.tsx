@@ -8,6 +8,7 @@ import { ENGINEERING, HISTORY_CONTENT, type ControlLevel, type Phase4Action, typ
 import { HAN_DIVISION_INDEX, HAN_DIVISION_SOURCE_URLS, HAN_HENAN_YIN_COUNTY_NAMES, HAN_INSPECTOR_COMMANDERY_TOTAL, HAN_INSPECTOR_DIVISION_COUNT, HAN_NANYANG_COUNTY_NAMES, HAN_YINGCHUAN_COUNTY_NAMES } from '../phase4-geography';
 import { characterAgeLabel } from '../narration/status';
 import { ChatGptConnection } from './ChatGptConnection';
+import { ActivityAnnouncer } from './ActivityAnnouncer';
 import { buildNarrationPayload, fetchNarration, templateNarration, type NarrationPayload, type NarrationResult } from '../narration/client';
 
 const blankWorkspace: WorkspaceSnapshot = { saves: [], profile: { regions: [], surnames: [], activeWorldlineId: null } };
@@ -41,6 +42,7 @@ export default function App() {
   const [confirmed, setConfirmed] = useState(false);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
+  const [activityMessage,setActivityMessage]=useState('');
   const [nameDraft, setNameDraft] = useState('');
   const [familyAnchor, setFamilyAnchor] = useState('protagonist');
   const [skillDraft, setSkillDraft] = useState('');
@@ -125,7 +127,7 @@ export default function App() {
 
   async function run(command: GameCommand): Promise<boolean> {
     if (busyRef.current) return false;
-    busyRef.current = true; setBusy(true);
+    busyRef.current = true; setBusy(true);setActivityMessage('正在保存並結算操作。');
     try {
       const result = dispatch(command.type === 'StartGame' ? null : state, command);
       if (!result.event || !result.state) {
@@ -140,13 +142,13 @@ export default function App() {
         : workspace.profile;
       await commitWorldline(save, nextProfile, true);
       setWorkspace((old) => ({ saves: [...old.saves.filter((entry) => entry.worldlineId !== worldlineId), save], profile: { ...nextProfile, activeWorldlineId: worldlineId } }));
-      if(['SubmitLifePlan','SubmitActionPlan','Phase2Action','InnateAction','Phase4Action'].includes(command.type))await generateNarrative(buildNarrationPayload(result.state,result.event));
+      if(['SubmitLifePlan','SubmitActionPlan','Phase2Action','InnateAction','Phase4Action'].includes(command.type)){setActivityMessage('遊戲狀態已保存，正在整理本回合敘事。');await generateNarrative(buildNarrationPayload(result.state,result.event));}
       setNewTimeline(false); setConfirmed(false); const interruptions=result.state.actions.at(-1)?.interruptions??[];const deathWindowOpen=result.state.phase4?.nodes.some(node=>node.status==='triggered'&&HISTORY_CONTENT.find(content=>content.id===node.contentId)?.kind==='death')??false;setNotice(interruptions.length?(deathWindowOpen?`行動已中斷；死亡節點介入窗口開啟：${interruptions.join('；')}`:`行動已因重大節點中斷：${interruptions.join('；')}`):'本回合已保存。');
       return true;
     } catch (error) {
       setNotice(error instanceof Error ? `未保存任何變更：${error.message}` : '保存失敗；原世界線保持不變。');
       return false;
-    } finally { busyRef.current = false; setBusy(false); }
+    } finally { busyRef.current = false; setBusy(false);setActivityMessage(''); }
   }
   function phaseAction(action: Phase2Action) {
     if (!state) return;
@@ -245,7 +247,8 @@ export default function App() {
       <button className="quiet" onClick={() => { setNewTimeline(true); setConfirmed(false); }}>新建世界線</button><button className="quiet" onClick={() => exportSave()}>匯出</button><button className="quiet" onClick={() => fileRef.current?.click()}>匯入</button><input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(e) => void importSave(e.target.files?.[0])} />
     </div></header>
     <section className="hero"><div><p className="eyebrow">{turnInterval(c.birthYear, state.turn, w.year, w.month, state.phase4?.dayOfMonth ?? 1, state.phase4?.day, state.actions.at(-1)?.elapsedDays ?? 90)}　｜　第 {state.turn} 回合</p><p className="location-line">所在・{phase2?.scene.location ?? c.home}</p><h1>{c.name}<small>　{characterAgeLabel(state)}・出生於 {c.home}</small></h1><p>{c.background}（示例）・{c.health}</p></div></section>
-    <div className="layout"><section id="main-content" className="main-column" tabIndex={-1} aria-label="故事與行動">
+    <ActivityAnnouncer message={activityMessage}/>
+    <div className="layout"><section id="main-content" className="main-column" tabIndex={-1} aria-label="故事與行動" aria-busy={busy||narrationPending}>
       {phase2 && <article className="panel scene-panel story-panel"><div className="section-kicker">眼前</div><p className="scene-place"><b>{phase2.scene.location}</b><span>第 {phase2.scene.turn} 回合・在場 {phase2.scene.presentIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</span></p><p className="scene-arrivals">新到：{phase2.scene.enteredIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}；離去：{phase2.scene.leftIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</p>
         {phase2.scene.speeches.map((speech, index) => <p className="speech" key={`${speech.speakerId}-${index}`}><b>{speech.label}：</b>「{speech.text}」</p>)}
         {narrative&&<section className="ai-narrative" aria-live="polite"><div className="section-kicker">本回合敘事・{narrationPending?'生成中':narrationError?'範本回退':narrative.source==='mock'?'本機 mock':narrative.source==='chatgpt'?'ChatGPT 訂閱生成':narrative.source==='openai'?'供應者生成':'範本'}</div>{narrative.paragraphs.map((paragraph,index)=><p className="narrative-paragraph" key={`p-${index}`}>{paragraph}</p>)}{(()=>{const spoken=new Set(phase2.scene.speeches.map(item=>item.speakerId));return narrative.dialogue.map((line,index)=>{const speaker=phase2.persons.find(person=>person.id===line.speakerId);if(!speaker||!phase2.scene.presentIds.includes(speaker.id))return null;const age=Math.max(0,(state?.world.year??speaker.birthYear)-speaker.birthYear);const prior=spoken.has(speaker.id);spoken.add(speaker.id);return <p className="speech" key={`d-${index}`}><b>{prior?speaker.name:`${speaker.name}（${age}歲，${speaker.office||'白身'}）`}：</b>「{line.text}」</p>;});})()}{narrative.suggestions.length>0&&<p className="narrative-suggestions">可考慮：{narrative.suggestions.join('；')}</p>}{narrationError&&<p className="notice" role="status">{narrationError}</p>}<div className="button-row">{narrationPending&&<button className="quiet" onClick={()=>narrationAbort.current?.abort()}>取消敘事生成</button>}{!narrationPending&&narrationError&&<button className="quiet" onClick={()=>{if(narrationPayload.current)void generateNarrative(narrationPayload.current);}}>重試敘事（不重跑行動）</button>}</div></section>}</article>}
