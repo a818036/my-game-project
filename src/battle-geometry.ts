@@ -42,7 +42,7 @@ export function computeBattleVisibility(
   return targets.map((target) => {
     const distance = distanceBetween(observer.position!, target.position);
     if (distance > observer.sightRange!) return { targetId: target.id, targetLabel: target.label, distance: Number(distance.toFixed(2)), visible: false, reason: 'beyond-range' };
-    const blocker = scene.objects.find((object) => object.id !== target.id.replace(/^object:/, '') && object.blocksLineOfSight === true && blocksSight(observer.position!, target.position, object));
+    const blocker = scene.objects.find((object) => object.id !== target.id.replace(/^object:/, '') && object.destroyed !== true && object.blocksLineOfSight === true && blocksSight(observer.position!, target.position, object));
     if (blocker) return { targetId: target.id, targetLabel: target.label, distance: Number(distance.toFixed(2)), visible: false, reason: 'occluded', blockedBy: blocker.label };
     return { targetId: target.id, targetLabel: target.label, distance: Number(distance.toFixed(2)), visible: true };
   });
