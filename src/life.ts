@@ -32,6 +32,7 @@ export function inspectLifePlan(state:GameState,ids:string[],paceDays=1):{choice
 }
 export type InputKind='question'|'objection'|'dialogue'|'action'|'mixed'|'unclear';
 export interface InteractionResult {kind:InputKind;answer:string;choiceIds:string[];questions:string[];source?:string;speakerName?:string;speakerId?:string;}
+const sunQuanRoutinePattern=/(?:小便|大便|大小便|出恭|如廁|如厕|解手|入廁|入厕|上廁所|上厕所|廁所|厕所|茅廁|茅厕|便溺|排泄|尿尿|撒尿|拉屎|大號|大号|小號|小号|作息|起居|生活習慣|生活习惯|私生活|每日|每天|日常|平時|平时|平常|(?:何時|何时|幾時|几时|幾點|几点).{0,3}(?:方便|更衣)|(?:方便|更衣).{0,3}(?:時間|时间|時辰|时辰|幾時|几时|幾點|几点|幾次|几次)|早上.{0,4}(?:廁所|厕所|大小便|小便|大便|方便)|上午.{0,4}(?:廁所|厕所|大小便|小便|大便|方便)|中午.{0,4}(?:廁所|厕所|大小便|小便|大便|方便)|晚上.{0,4}(?:廁所|厕所|大小便|小便|大便|方便)|夜裡.{0,4}(?:廁所|厕所|大小便|小便|大便|方便)|一天.{0,5}(?:幾次|几次|幾回|几回))/;
 function protectMajorAction(clean:string):InteractionResult|null{
   const mentionsMajor=/(天生技|死亡窗口|救援|救治|治療(?:.{0,8}(?:孫堅|亡者|死人|已故))?|復活|救活|調兵|出兵|攻城|戰役|永久割地|割地|割讓|條約|主權|宣告獨立|臣服)/.test(clean);
   if(!mentionsMajor)return null;
@@ -59,8 +60,8 @@ export function answerKnownTrendQuestion(text:string,state:GameState):Interactio
   return {kind:'question',answer:`目前畫面上的天下來報是：「${state.trend}」這是原型每回合更新的示例消息，不是完整史實資料；沒有提供更多遠方詳情。`,choiceIds:[],questions:[]};
 }
 export function answerKnownSunQuanBiographyQuestion(text:string):InteractionResult|null{
-  const asksRoutine=/小便|大便|出恭|如廁|解手|入廁|每天|每日|日常|作息|起居|平常|平時|生活習慣|私生活/.test(text);
-  if(!/孫權|孫仲謀/.test(text)||!/(幾歲|年齡|多大|什麼時候|何時|哪一年|日常|每天|每日|作息|起居|平常|平時|生活習慣|私生活|小便|大便|出恭|如廁|解手|入廁|一生|生平|年表|完整經歷|七十一年|71年|職務|職位|官職|做過.{0,4}官|擔任|任過|任職)/.test(text))return null;
+  const asksRoutine=sunQuanRoutinePattern.test(text);
+  if(!/孫權|孫仲謀/.test(text)||!/(幾歲|年齡|多大|什麼時候|何時|哪一年|一生|生平|年表|完整經歷|七十一年|71年|職務|職位|官職|做過.{0,4}官|擔任|任過|任職)/.test(text)&&!asksRoutine)return null;
   if(asksRoutine)return {kind:'question',answer:'《三國志》卷四十七〈吳主傳〉保存的是孫權任官、政軍與外交等事件記載，不是逐日生活日誌；現有來源沒有記下他平時的起居作息，也沒有記錄每天何時如廁等細節。我不能用模擬補造時辰或行程。若你想看可核實的內容，我可以整理目前收錄的生平年表。',choiceIds:[],questions:[],source:'《三國志》卷四十七〈吳主傳〉；日常細節未記載'};
   if(/(?:孝廉|茂才|奉義校尉)/.test(text)&&/(幾歲|年齡|何時|哪一年|哪年|什麼時候)/.test(text))return {kind:'question',answer:'《三國志》卷四十七〈吳主傳〉同段記孫權年十五任陽羨長，並載郡察孝廉、州舉茂才、行奉義校尉；但未分別記後三者發生時的年齡或可換算公元年份，不能把十五歲套用到它們。',choiceIds:[],questions:[],source:'《三國志》卷四十七〈吳主傳〉'};
   if(/陽羨|任官|做官|當官|官職|職務|職位|做過.{0,4}官|擔任|任過|任職/.test(text))return {kind:'question',answer:'《三國志》卷四十七〈吳主傳〉記孫權年十五時任陽羨長，同段續載郡察孝廉、州舉茂才、行奉義校尉。原文沒有提供這些任官可換算的確切公元年份、月日或到任時刻，因此本原型不將年齡反推成特定年份，也不補造任官日期。',choiceIds:[],questions:[],source:'《三國志》卷四十七〈吳主傳〉'};
