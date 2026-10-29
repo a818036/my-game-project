@@ -56,6 +56,18 @@ describe('第五階段・敘事資訊分層與回應驗證',()=>{
     expect(()=>validateNarrationResult({paragraphs:['此輪陣亡 2 人、受傷 3 人。'],dialogue:[],suggestions:[]},payload)).not.toThrow();
     expect(()=>validateNarrationResult({paragraphs:['此輪陣亡 200 人。'],dialogue:[],suggestions:[]},payload)).toThrow('不存在的數字事實');
   });
+  it('A230 戰場因果打擊旁白附上最新傷亡軍籍與已結算結果',()=>{
+    const current=state();
+    const battle={id:'impact-narration',location:'渡口北岸（示例）',startedDay:3,rounds:0,status:'active' as const,overallCommander:{id:'overall',name:'總指揮・示例',unitId:null},protagonistPresent:true,witnesses:['近旁目擊者'],scene:{example:true,objects:[{id:'beam',label:'斷梁（示例）',location:'弩臺下',condition:'已摧毀',position:{x:0,y:0},integrity:0,destroyed:true},{id:'shield',label:'盾列（示例）',location:'梁下前沿',condition:'受損',position:{x:2,y:0},integrity:0,destroyed:true}],potentialChains:[{id:'beam-shield',fromObjectId:'beam',toObjectId:'shield',triggerCondition:'斷梁砸向盾列',possibleEffect:'傷亡依預置軍籍結算',affectedUnitIds:['unit-test'],impactForce:8,maxDistance:3,affectedRadius:2,moraleImpact:4,casualties:[{unitId:'unit-test',killed:1,wounded:2,routed:0}]}],observers:[],settledChainIds:['beam-shield']},logs:['斷梁失效後，斷梁砸向盾列；傷亡名冊結算：守備校尉部陣亡 1、受傷 2、潰散 0，現役 87。'],units:[{id:'unit-test',faction:'郡縣守備（示例）',commanderId:'captain-test',commanderName:'守備校尉・示例',location:'渡口北側（示例）',strength:87,reserve:5,supply:2,morale:57,fatigue:20,terrain:'渡口',wounded:2,killed:1,routed:0,order:'防守' as const}]};
+    const detail='斷梁失效後，斷梁砸向盾列；傷亡名冊結算：守備校尉部陣亡 1、受傷 2、潰散 0，現役 87。';
+    const withBattle={...current,phase4:{...current.phase4!,battle,eventLedger:[...current.phase4!.eventLedger,{id:'impact-event',day:4,year:184,month:1,dayOfMonth:5,type:'戰場因果連鎖',detail}]}} as GameState;
+    withBattle.phase4!.battle=battle;
+    const event={version:ENGINE_VERSION as typeof ENGINE_VERSION,eventId:'impact-event',commandId:'impact-command',commandHash:'h',revision:2,type:'Phase4Changed' as const,payload:{action:{type:'ResolveBattleImpact' as const,targetObjectId:'beam',force:60}}};
+    const payload=buildNarrationPayload(withBattle,event),details=payload.settledEvents[0].details;
+    expect(details).toContain('戰場帳：渡口北岸（示例）');expect(details).toContain('陣亡累計1');expect(details).toContain('受傷累計2');expect(details).toContain('陣亡 1、受傷 2、潰散 0');
+    expect(()=>validateNarrationResult({paragraphs:['此擊造成陣亡 1 人、受傷 2 人。'],dialogue:[],suggestions:[]},payload)).not.toThrow();
+    expect(()=>validateNarrationResult({paragraphs:['此擊造成陣亡 999 人。'],dialogue:[],suggestions:[]},payload)).toThrow('不存在的數字事實');
+  });
   it('歷史年節點敘事取得來源事實與精度註記，但不把年表資料當作主角親見',()=>{
     const current=state();
     const content=HISTORY_CONTENT.find(item=>item.id==='sun-quan-hunts-tiger-lingting-218')!;

@@ -35,7 +35,7 @@ export function buildNarrationPayload(state:GameState,event:GameEvent):Narration
       const historicalContent=entry.source?HISTORY_CONTENT.find(content=>content.source===entry.source):undefined;
       if(historicalContent){details+=`；年表史料（不表示主角親見）：${historicalContent.source}；記載範圍：${historicalContent.description}${historicalContent.sourceDateNote?`；紀年註記：${historicalContent.sourceDateNote}`:''}`;}
       const battle=state.phase4?.battle;
-      if(battle&&(event.payload.action.type==='BattleRound'||event.payload.action.type==='StartBattle')){
+      if(battle&&(event.payload.action.type==='BattleRound'||event.payload.action.type==='StartBattle'||event.payload.action.type==='ResolveBattleImpact')){
         const unitLedger=battle.units.map(unit=>`${unit.commanderName}率${unit.faction}：所在${unit.location}；地形${unit.terrain}；命令${unit.order}；現役${unit.strength}、預備${unit.reserve}、陣亡累計${unit.killed}、受傷累計${unit.wounded}、撤退${unit.routed}；士氣${unit.morale}、疲勞${unit.fatigue}、補給${unit.supply}`).join('；');
         const latestLog=battle.logs.at(-1);
         details+=`；戰場帳：${battle.location}；第 ${battle.rounds} 輪；主角${battle.protagonistPresent?'在場':'不在場'}${latestLog?`；回合紀錄：${latestLog}`:''}；各部狀態：${unitLedger}`;
