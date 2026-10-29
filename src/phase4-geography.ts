@@ -11,6 +11,7 @@ export const HAN_DIVISION_SOURCE_URLS = {
   sili: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
   henanYin: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7109',
   yingchuan: 'https://zh.wikisource.org/zh-hant/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7110',
+  nanyang: 'https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B7112',
 } as const;
 
 /** A source-ordered county-name sample, not a complete or year-specific map. */
@@ -23,6 +24,14 @@ export const HAN_YINGCHUAN_COUNTY_NAMES = [
 export const HAN_HENAN_YIN_COUNTY_NAMES = [
   '雒陽', '河南', '梁', '熒陽', '卷', '原武', '陽武', '中牟', '開封', '菀陵',
   '平陰', '穀城', '緱氏', '鞏', '成睾', '京', '密', '新城', '匽師', '新鄭', '平',
+] as const;
+
+/** Source-ordered city names under Nanyang commandery in Hou Hanshu, Treatise 28. */
+export const HAN_NANYANG_COUNTY_NAMES = [
+  '宛', '冠軍', '叶', '新野', '章陵', '西鄂', '雉', '魯陽', '犨', '堵陽', '博望',
+  '舞陰', '比陽', '復陽', '平氏', '棘陽', '湖陽', '隨', '育陽', '涅陽', '陰',
+  '酇', '鄧', '山都', '酈', '穰', '朝陽', '蔡陽', '安眾', '築陽', '武當', '順陽',
+  '成都', '襄鄉', '南鄉', '丹水', '析',
 ] as const;
 
 /**
