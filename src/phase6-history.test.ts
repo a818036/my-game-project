@@ -45,8 +45,10 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const alliance=HISTORY_CONTENT.find(item=>item.id===allianceId)!;
     const capital=HISTORY_CONTENT.find(item=>item.id===capitalId)!;
     expect(alliance.precision).toBe('year');
+    expect(alliance.source).toContain('豫、青、徐、幽屬吳；兗、冀、并、涼屬蜀；司州以函谷關為界');
     expect(alliance.source).toContain('沒有提供盟約簽訂月日');
-    expect(alliance.description).toContain('不將盟書轉成玩家領地變更');
+    expect(alliance.description).toContain('不表示各州實際控制狀況');
+    expect(alliance.description).toContain('不轉成玩家領地變更');
     expect(capital.precision).toBe('year');
     expect(capital.sourceDateNote).toContain('秋九月');
     expect(capital.source).toContain('輔太子孫登、掌武昌留事');
@@ -69,13 +71,13 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const sameYear=upgradePhase4Content(createPhase4Model(229,1,[],'phase4-scenario-117'),PHASE4_CONTENT_VERSION);
     expect(sameYear.nodes.find(node=>node.contentId===allianceId)).toMatchObject({status:'resolved',resolvedYear:229});
     expect(sameYear.nodes.find(node=>node.contentId===capitalId)).toMatchObject({status:'resolved',resolvedYear:229});
-    expect(sameYear.eventLedger.some(item=>item.detail.includes('吳蜀約定分界、共同討魏'))).toBe(false);
+    expect(sameYear.eventLedger.some(item=>item.detail.includes('吳蜀盟約分州、共同討魏'))).toBe(false);
     expect(sameYear.eventLedger.some(item=>item.detail.includes('孫權遷都建業、命陸遜留武昌輔太子'))).toBe(false);
   });
 
   it('the known biography answer includes 229 sourced milestones with their date limits',()=>{
     const result=answerKnownSunQuanBiographyQuestion('請整理孫權生平年表');
-    expect(result?.answer).toContain('吳蜀約定分界、共同討魏');
+    expect(result?.answer).toContain('吳蜀盟約分州、共同討魏');
     expect(result?.answer).toContain('孫權遷都建業、命陸遜留武昌輔太子');
     expect(result?.answer).toContain('黃龍元年秋九月');
     expect(result?.answer).toContain('沒有提供盟約簽訂月日');
