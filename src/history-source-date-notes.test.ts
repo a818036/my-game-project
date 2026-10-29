@@ -15,7 +15,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     const milestones = HISTORY_CONTENT.filter((item) =>
       item.startYear >= 182 && item.endYear <= 252 && item.source.includes('孫權'),
     );
-    expect(milestones.length).toBeGreaterThanOrEqual(15);
+    expect(milestones.length).toBeGreaterThanOrEqual(18);
     expect(milestones.every((item) => item.precision === 'year' && item.source.length > 0)).toBe(true);
     expect(milestones.some((item) => item.sourceDateNote?.match(/\d{1,2}時(?:\d{1,2}刻)?/))).toBe(false);
     expect(birth?.description).toContain('不宣稱精確出生日期');
@@ -29,7 +29,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(118);
+    expect(withinCatalogYears).toHaveLength(121);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -52,6 +52,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'yizhou-ma-xiang-revolt-188': ['中平五年六月'],
       'emperor-returns-east-195': ['興平二年七月'],
       'hou-yin-rebellion-218': ['建安二十三年冬十月'],
+      'sun-quan-hunts-tiger-lingting-218': ['建安二十三年十月', '庱亭射虎', '投以雙戟'],
       'sun-quan-accepts-king-of-wu-title-221': ['黃初二年', '十一月魏文帝策命'],
       'yiling-campaign-222': ['章武二年夏六月', '十二月孫權遣'],
       'sun-quan-renews-alliance-with-shu-224': ['黃武三年夏孫權遣輔義中郎將張溫聘蜀'],
@@ -105,7 +106,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-succession-239': ['景初三年正月丁亥'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(59);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(60);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);

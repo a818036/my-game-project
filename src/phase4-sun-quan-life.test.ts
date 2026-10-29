@@ -319,3 +319,80 @@ describe('183 年北海、東萊、琅邪寒候記錄', () => {
     expect(late.eventLedger.some((item) => item.detail.includes('北海、東萊、琅邪冬寒記錄'))).toBe(false);
   });
 });
+
+describe('218 年孫權於庱亭射虎', () => {
+  const huntId = 'sun-quan-hunts-tiger-lingting-218';
+
+  it('依《三國志》記錄年級事件與十月來源註記，不擴寫日常', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === huntId);
+    expect(content).toMatchObject({ startYear: 218, endYear: 218, precision: 'year', introducedIn: 'phase4-scenario-99', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('《三國志》卷四十七');
+    expect(content?.source).toContain('建安二十三年十月');
+    expect(content?.source).toContain('孫權投以雙戟');
+    expect(content?.source).toContain('隨從張世');
+    expect(content?.description).toContain('不擴寫為日常狩獵習慣');
+    expect(content?.sourceDateNote).toContain('原文不載月內日期');
+  });
+
+  it('新局跨年至 218 年觸發；v98 存檔保留事件前綴且不回補同年事件', () => {
+    const old = createPhase4Model(217, 1, persons, 'phase4-scenario-98');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === huntId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === huntId)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.detail.includes('孫權於庱亭射虎'))?.source).toContain('投以雙戟');
+
+    const sameYear = upgradePhase4Content(createPhase4Model(218, 1, persons, 'phase4-scenario-98'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === huntId)).toMatchObject({ status: 'resolved', resolvedYear: 218 });
+    expect(sameYear.nodes.find((node) => node.contentId === huntId)?.evidence[0]).toContain('無法判定事件在目前年份內是否已發生');
+    expect(sameYear.eventLedger.some((item) => item.detail.includes('孫權於庱亭射虎'))).toBe(false);
+
+    const late = upgradePhase4Content(createPhase4Model(219, 1, persons, 'phase4-scenario-98'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === huntId)).toMatchObject({ status: 'resolved', resolvedYear: 218 });
+    expect(late.eventLedger.some((item) => item.detail.includes('孫權於庱亭射虎'))).toBe(false);
+  });
+});
+
+describe('203、207 年孫權征黃祖', () => {
+  const campaigns = [
+    { id: 'sun-quan-western-campaign-huang-zu-203', year: 203, detail: '孫權西征黃祖、破其舟軍' },
+    { id: 'sun-quan-western-expedition-huang-zu-207', year: 207, detail: '孫權再征黃祖、擄其人民而還' },
+  ];
+
+  it('依《三國志》保留兩次不同年份的西征記載與原文限制', () => {
+    for (const campaign of campaigns) {
+      const content = HISTORY_CONTENT.find((node) => node.id === campaign.id);
+      expect(content).toMatchObject({ startYear: campaign.year, endYear: campaign.year, precision: 'year', introducedIn: 'phase4-scenario-100' });
+      expect(content?.source).toContain('《三國志》卷四十七');
+      expect(content?.source).toContain(campaign.year === 203 ? '破其舟軍而未克城' : '虜其人民而還');
+    }
+    expect(HISTORY_CONTENT.find((node) => node.id === campaigns[0].id)?.description).toContain('不把未克城改寫為攻陷');
+    expect(HISTORY_CONTENT.find((node) => node.id === campaigns[1].id)?.description).toContain('不推估人數');
+  });
+
+  it('v99、202 年存檔跨年至 203 觸發兩個新節點；晚載入不回補', () => {
+    const old = createPhase4Model(202, 1, persons, 'phase4-scenario-99');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    for (const campaign of campaigns) expect(upgraded.nodes.find((node) => node.contentId === campaign.id)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 5 * 360);
+    for (const campaign of campaigns) expect(advanced.nodes.find((node) => node.contentId === campaign.id)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.detail.includes(campaigns[0].detail))?.source).toContain('山寇復動');
+    expect(advanced.eventLedger.find((item) => item.detail.includes(campaigns[1].detail))?.source).toContain('虜其人民而還');
+
+    const late = upgradePhase4Content(createPhase4Model(208, 1, persons, 'phase4-scenario-99'), PHASE4_CONTENT_VERSION);
+    for (const campaign of campaigns) expect(late.nodes.find((node) => node.contentId === campaign.id)).toMatchObject({ status: 'resolved', resolvedYear: campaign.year });
+    expect(late.eventLedger.some((item) => campaigns.some((campaign) => item.detail.includes(campaign.detail)))).toBe(false);
+
+    for (const year of [203, 207]) {
+      const sameYear = upgradePhase4Content(createPhase4Model(year, 1, persons, 'phase4-scenario-99'), PHASE4_CONTENT_VERSION);
+      for (const campaign of campaigns.filter((item) => item.year <= year)) {
+        expect(sameYear.nodes.find((node) => node.contentId === campaign.id)).toMatchObject({ status: 'resolved', resolvedYear: campaign.year });
+      }
+      expect(sameYear.eventLedger.some((item) => item.detail.includes(campaigns.find((campaign) => campaign.year === year)!.detail))).toBe(false);
+    }
+  });
+});

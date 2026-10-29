@@ -1,6 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {buildNarrationPayload,validateNarrationResult} from './client';
 import {createOpeningFacts,dispatch,ENGINE_VERSION,type GameState} from '../engine';
+import {HISTORY_CONTENT} from '../phase4';
 
 function state(){const facts=createOpeningFacts(81,184,{regions:[],surnames:[]});return dispatch(null,{version:ENGINE_VERSION,commandId:'narration-start',expectedRevision:0,type:'StartGame',name:`${facts.surname}文和`,seed:81,facts}).state!;}
 describe('第五階段・敘事資訊分層與回應驗證',()=>{
@@ -54,6 +55,18 @@ describe('第五階段・敘事資訊分層與回應驗證',()=>{
     expect(details).toContain('場景預置（示例）');expect(details).toContain('承重梁（示例）');expect(details).toContain('尚未觸發或結算');expect(details).toContain('後陣觀察者在渡口後陣');expect(details).not.toContain('承重梁已斷');expect(details).not.toContain('連鎖崩毀');
     expect(()=>validateNarrationResult({paragraphs:['此輪陣亡 2 人、受傷 3 人。'],dialogue:[],suggestions:[]},payload)).not.toThrow();
     expect(()=>validateNarrationResult({paragraphs:['此輪陣亡 200 人。'],dialogue:[],suggestions:[]},payload)).toThrow('不存在的數字事實');
+  });
+  it('歷史年節點敘事取得來源事實與精度註記，但不把年表資料當作主角親見',()=>{
+    const current=state();
+    const content=HISTORY_CONTENT.find(item=>item.id==='sun-quan-hunts-tiger-lingting-218')!;
+    const withHistory={...current,phase4:{...current.phase4!,eventLedger:[{id:'history-218',day:12240,year:218,month:10,dayOfMonth:1,type:'史實事件形成',detail:'孫權於庱亭射虎由孫權承載；原因仍存 sun-quan-hunts-tiger',source:content.source}]}} as GameState;
+    const event={version:ENGINE_VERSION as typeof ENGINE_VERSION,eventId:'history-218',commandId:'history-command',commandHash:'h',revision:2,type:'Phase4Changed' as const,payload:{action:{type:'AdvanceDays' as const,days:360}}};
+    const payload=buildNarrationPayload(withHistory,event),details=payload.settledEvents[0].details;
+    expect(details).toContain('孫權投以雙戟');
+    expect(details).toContain('虎傷其馬');
+    expect(details).toContain('不表示主角親見');
+    expect(details).toContain('原文不載月內日期');
+    expect(details).not.toContain('主角目睹');
   });
 });
 
