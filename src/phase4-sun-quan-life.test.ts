@@ -580,3 +580,36 @@ describe('216–217 年孫權濡須與遣使', () => {
     }
   });
 });
+
+describe('246 年朱然征柤中', () => {
+  const id = 'wu-zhu-ran-campaign-to-zhazhong-246';
+
+  it('保留《三國志》赤烏九年記事與年級日期精度', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === id);
+    expect(content).toMatchObject({ startYear: 246, endYear: 246, precision: 'year', introducedIn: 'phase4-scenario-131', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('《三國志》卷四十七');
+    expect(content?.source).toContain('赤烏九年春二月');
+    expect(content?.source).toContain('斬獲千餘');
+    expect(content?.source).toContain('《宋書》卷二十八');
+    expect(content?.description).toContain('不推演兵力、戰鬥過程');
+  });
+
+  it('v130 舊存檔保留事件前綴並於跨年至 246 年觸發，不回補當年及更晚存檔', () => {
+    const old = createPhase4Model(245, 1, persons, 'phase4-scenario-130');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'triggered', resolvedYear: 246 });
+    expect(advanced.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advanced.eventLedger.find((event) => event.detail.includes('朱然出征柤中'))?.source).toContain('斬獲千餘');
+
+    for (const year of [246, 247]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, persons, 'phase4-scenario-130'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 246 });
+      expect(late.eventLedger.some((event) => event.detail.includes('朱然出征柤中'))).toBe(false);
+    }
+  });
+});
