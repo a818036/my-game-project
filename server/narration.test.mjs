@@ -16,6 +16,11 @@ describe('第五階段・伺服器敘事代理',()=>{
     const result=await openAiNarration(payload,{apiKey:'test-only',fetchImpl:async(_url,options)=>{const {instructions}=JSON.parse(options.body);expect(instructions).toContain('沒有條件就寫正劇');expect(instructions).toContain('不得臆造人物動機、誤讀、成本、傳聞、記憶');expect(instructions).toContain('同類回彈需要輸入中有相關前情');expect(instructions).toContain('按 turn 排列的已保存觀察紀錄');expect(instructions).toContain('不能推導消息已傳給他人');expect(instructions).toContain('嚴肅傷亡與創傷保留重量');return new Response(JSON.stringify({output_text:JSON.stringify(mockNarration(payload))}),{status:200});}});
     expect(result).toEqual(mockNarration(payload));
   });
+  it('v3.17 戰場演出遵循已結算因果，非殺傷行動不追加傷亡',async()=>{
+    const battle={...payload,settledEvents:[{turn:7,title:'霸者橫攔・撼陣',details:'引擎記錄：敵軍隊形受撼、士氣下降、軍令中斷；未虛構傷亡。主角所在位置：渡口北側。'}]};
+    const result=await openAiNarration(battle,{apiKey:'test-only',fetchImpl:async(_url,options)=>{const {instructions,input}=JSON.parse(options.body);expect(instructions).toContain('先依已結算的場景和事件資料呈現可見危險、物理因果鏈');expect(instructions).toContain('沒有可驗證的戰場細節時');expect(instructions).toContain('不得憑空增加危險物件、連鎖、傷亡');expect(instructions).toContain('明確非殺傷的萬解、繳械、投降者、平民與未參戰者');expect(JSON.parse(input).settledEvents[0].details).toContain('未虛構傷亡');return new Response(JSON.stringify({output_text:JSON.stringify(mockNarration(battle))}),{status:200});}});
+    expect(result).toEqual(mockNarration(battle));
+  });
   it('觀察回憶帶回合與明確知情內容；拒絕未知欄位與缺失時間',()=>{
     expect(()=>validateNarrationPayload(payload)).not.toThrow();
     expect(()=>validateNarrationPayload({...payload,visibleNpcs:[{...payload.visibleNpcs[0],knownFacts:[{turn:1,observation:'親見市集',facts:['親眼所見市集往來'],unknown:['未曾得知'] }]}]})).toThrow('個別知識');

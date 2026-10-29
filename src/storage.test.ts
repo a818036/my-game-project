@@ -140,6 +140,20 @@ describe('A05／A06 存檔交易與重播', () => {
     const archiveDb=await openSaveDb();const archived=await new Promise<SaveFile|undefined>((resolve,reject)=>{const tx=archiveDb.transaction('profile','readonly');const request=tx.objectStore('profile').get(`legacy:${old.worldlineId}:v6-phase4-scenario-1`);request.onsuccess=()=>resolve(request.result as SaveFile|undefined);request.onerror=()=>reject(request.error);});archiveDb.close();expect(archived).toEqual(old);
   });
 
+  it('v3.16 v6 存檔升至 v3.17 只追加來源版本事件，保留既有事件與結算',()=>{
+    const current=makeSave('rules-316-to-317');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const priorHashes={rules:'042ee27fc3e6bf373db7851ce8ad38c5448978c58bb36dfc292c89d046cc5832',skills:SOURCE_HASHES.skills};
+    const priorStart:GameEvent={...start,payload:{...start.payload,rulesVersion:'3.16',sourceHashes:priorHashes}};
+    const priorState=applyEvent(null,priorStart)!;const old:SaveFile={...current,events:[priorStart],state:priorState};
+    const migrated=verifySave(toJson(old));
+    expect(migrated.events[0]).toEqual(priorStart);
+    expect(migrated.events.slice(1).map(event=>event.type)).toEqual(['RulesUpdated']);
+    expect(migrated.events[1]).toMatchObject({type:'RulesUpdated',payload:{fromVersion:'3.16',toVersion:'3.17',sourceHashes:SOURCE_HASHES}});
+    expect(migrated.state.rulesVersion).toBe('3.17');
+    expect(replay(migrated.events)).toEqual(migrated.state);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
+
   it('較早的 phase4-scenario-2 至 v11 更新事件在新內容版本中仍可重播並接續升級',()=>{
     const current=makeSave('phase6-version-chain');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');const {phase4ContentVersion:_version,...payload}=start.payload;const legacyStart:GameEvent={...start,payload};let state=applyEvent(null,legacyStart)!;const events:GameEvent[]=[legacyStart];
     const update2:GameEvent={version:ENGINE_VERSION,eventId:`${state.worldlineId}:2`,commandId:'phase4-content-v2',commandHash:'phase4-content-v2',revision:2,type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-2'}};state=applyEvent(state,update2);events.push(update2);expect(state.phase4?.nodes.some(node=>node.contentId==='yellow-turban-184')).toBe(true);expect(state.phase4?.nodes.some(node=>node.contentId==='emperor-relocates-xu-196')).toBe(false);

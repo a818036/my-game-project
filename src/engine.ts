@@ -11,7 +11,7 @@ import {resolveYoungLife} from './lifeReducer';
 export const ENGINE_VERSION = 5;
 export const LEGACY_ENGINE_VERSION = 1;
 export const PHASE2_ENGINE_VERSION = 2;
-export const RULES_VERSION = '3.16';
+export const RULES_VERSION = '3.17';
 export const SKILLS_VERSION = '1.10';
 export const LEGACY_RULES_VERSION = '3.15';
 export const LEGACY_SOURCE_HASHES = {
@@ -19,7 +19,7 @@ export const LEGACY_SOURCE_HASHES = {
   skills: 'd1d9ee7687b5bcb6ab1e4899e0d2ac62c22ee34bcd72900df78e4cb436cc7a80',
 } as const;
 export const SOURCE_HASHES = {
-  rules: '042ee27fc3e6bf373db7851ce8ad38c5448978c58bb36dfc292c89d046cc5832',
+  rules: 'af4a537c119edbd29adfee7dfa936f8831163492c46e9a33b3b4bdf63a26f6bd',
   skills: 'd1d9ee7687b5bcb6ab1e4899e0d2ac62c22ee34bcd72900df78e4cb436cc7a80',
 } as const;
 export type SourceHashes = { rules: string; skills: string };
