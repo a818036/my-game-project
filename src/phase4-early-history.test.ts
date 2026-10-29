@@ -6,7 +6,7 @@ const eventId = 'yizhou-ma-xiang-revolt-188';
 
 describe('188 年益州馬相起事節點', () => {
   it('按來源觸發，將 v85 舊存檔追加升級且不回補較晚年份', () => {
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event')).toHaveLength(107);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event')).toHaveLength(109);
 
     const fresh = advancePhase4(createPhase4Model(187, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
@@ -32,7 +32,7 @@ describe('188 年益州馬相起事節點', () => {
 describe('187 年長沙區星起事節點', () => {
   it('保留史料異名並按年觸發，遷移不補寫晚年存檔', () => {
     const eventId = 'changsha-ou-xing-revolt-187';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event')).toHaveLength(107);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event')).toHaveLength(109);
 
     const fresh = advancePhase4(createPhase4Model(186, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
@@ -52,5 +52,35 @@ describe('187 年長沙區星起事節點', () => {
     const late = upgradePhase4Content(createPhase4Model(188, 1, persons, 'phase4-scenario-85'), PHASE4_CONTENT_VERSION);
     expect(late.nodes.find((node) => node.contentId === eventId)).toMatchObject({ status: 'resolved', resolvedYear: 187 });
     expect(late.eventLedger.some((item) => item.detail.includes('長沙區星起事、孫堅平定'))).toBe(false);
+  });
+});
+
+describe('185–186 年涼州與江夏事件', () => {
+  it('連續兩年事件依年觸發，v86 遷移保留事件前綴且不回補', () => {
+    const meiyangId = 'liangzhou-meiyang-campaign-185';
+    const zhaoCiId = 'zhao-ci-revolt-186';
+    const fresh = advancePhase4(createPhase4Model(184, 1, persons, PHASE4_CONTENT_VERSION), 720);
+    expect(fresh.nodes.find((node) => node.contentId === meiyangId)?.status).toBe('triggered');
+    expect(fresh.nodes.find((node) => node.contentId === zhaoCiId)?.status).toBe('triggered');
+    const meiyang = fresh.eventLedger.find((item) => item.detail.includes('張溫征涼州、美陽戰事'));
+    expect(meiyang?.source).toContain('《資治通鑑》卷五十八');
+    expect(meiyang?.source).toContain('孫堅');
+    const zhaoCi = fresh.eventLedger.find((item) => item.detail.includes('江夏兵趙慈起事、王敏討平'));
+    expect(zhaoCi?.source).toContain('殺南陽太守秦頡');
+    expect(zhaoCi?.source).toContain('王敏');
+
+    const old = createPhase4Model(184, 1, persons, 'phase4-scenario-86');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === meiyangId)?.status).toBe('pending');
+    expect(upgraded.nodes.find((node) => node.contentId === zhaoCiId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === meiyangId)?.status).toBe('triggered');
+
+    const late = upgradePhase4Content(createPhase4Model(187, 1, persons, 'phase4-scenario-86'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === meiyangId)).toMatchObject({ status: 'resolved', resolvedYear: 185 });
+    expect(late.nodes.find((node) => node.contentId === zhaoCiId)).toMatchObject({ status: 'resolved', resolvedYear: 186 });
+    expect(late.eventLedger.some((item) => item.detail.includes('張溫征涼州、美陽戰事'))).toBe(false);
+    expect(late.eventLedger.some((item) => item.detail.includes('江夏兵趙慈起事、王敏討平'))).toBe(false);
   });
 });
