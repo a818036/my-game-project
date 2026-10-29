@@ -9,5 +9,11 @@ describe('異步操作螢幕閱讀器狀態',()=>{
     expect(saving).toContain('role="status"');expect(saving).toContain('aria-live="polite"');expect(saving).toContain('aria-atomic="true"');expect(saving).toContain('visually-hidden');expect(saving).toContain('正在保存並結算操作。');
     const narrating=renderToStaticMarkup(createElement(ActivityAnnouncer,{message:'遊戲狀態已保存，正在整理本回合敘事。'}));
     expect(narrating).toContain('遊戲狀態已保存，正在整理本回合敘事。');
+    const ready=renderToStaticMarkup(createElement(ActivityAnnouncer,{message:'本回合敘事已就緒，可於故事區閱讀。'}));
+    expect(ready).toContain('本回合敘事已就緒，可於故事區閱讀。');
+    const saved=renderToStaticMarkup(createElement(ActivityAnnouncer,{message:'操作已保存。'}));
+    expect(saved).toContain('操作已保存。');
+    const unchanged=renderToStaticMarkup(createElement(ActivityAnnouncer,{message:'目前人生已繼續，沒有時間推進。'}));
+    expect(unchanged).toContain('目前人生已繼續，沒有時間推進。');
   });
 });
