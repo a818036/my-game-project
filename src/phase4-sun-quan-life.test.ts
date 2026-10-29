@@ -426,6 +426,45 @@ describe('209 年孫權任命周瑜並受劉備表奏', () => {
   });
 });
 
+describe('孫權早年可考年級節點（201、211、212）', () => {
+  it('卷四十七支持孫權之母吳氏去世，僅記年級，不補私人細節', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === 'sun-quan-mother-dies-201');
+    expect(content).toMatchObject({ startYear: 201, endYear: 201, precision: 'year', introducedIn: 'phase4-scenario-104', sameYearMigrationIsLate: true });
+    expect(content?.source).toContain('建安七年「權母吳氏薨」');
+    expect(content?.description).toContain('不補死亡日期、病因');
+  });
+
+  it('卷四十七支持徙治秣陵及翌年築城改名備濡須，保留年級精度', () => {
+    const move = HISTORY_CONTENT.find((node) => node.id === 'sun-quan-moves-governance-to-muling-211');
+    const works = HISTORY_CONTENT.find((node) => node.id === 'sun-quan-builds-shitou-jianye-ruxu-212');
+    expect(move).toMatchObject({ startYear: 211, endYear: 211, precision: 'year', introducedIn: 'phase4-scenario-104', sameYearMigrationIsLate: true });
+    expect(move?.source).toContain('建安十六年「權徙治秣陵」');
+    expect(works).toMatchObject({ startYear: 212, endYear: 212, precision: 'year', introducedIn: 'phase4-scenario-104', sameYearMigrationIsLate: true });
+    expect(works?.source).toContain('明年，城石頭，改秣陵為建業');
+    expect(works?.source).toContain('作濡須塢');
+    expect(works?.description).toContain('不推演工程規模');
+  });
+
+  it('v103 舊存檔只追加節點、跨年觸發；同年遷移不回補', () => {
+    const old = createPhase4Model(210, 1, persons, 'phase4-scenario-103');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === 'sun-quan-mother-dies-201')?.status).toBe('resolved');
+    expect(upgraded.nodes.find((node) => node.contentId === 'sun-quan-moves-governance-to-muling-211')?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 720);
+    expect(advanced.nodes.find((node) => node.contentId === 'sun-quan-moves-governance-to-muling-211')?.status).toBe('triggered');
+    expect(advanced.nodes.find((node) => node.contentId === 'sun-quan-builds-shitou-jianye-ruxu-212')?.status).toBe('triggered');
+    expect(advanced.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advanced.eventLedger.some((event) => event.detail.includes('孫權徙治秣陵'))).toBe(true);
+    expect(advanced.eventLedger.some((event) => event.detail.includes('築石頭城、改秣陵為建業並備濡須'))).toBe(true);
+
+    const sameYear = upgradePhase4Content(createPhase4Model(211, 1, persons, 'phase4-scenario-103'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === 'sun-quan-moves-governance-to-muling-211')).toMatchObject({ status: 'resolved', resolvedYear: 211 });
+    expect(sameYear.eventLedger.some((event) => event.detail.includes('孫權徙治秣陵'))).toBe(false);
+  });
+});
+
 describe('214 年孫權合肥撤軍遭襲', () => {
   const id = 'sun-quan-hefei-bridge-retreat-214';
 
