@@ -37,6 +37,36 @@ describe('孫權推定出生年資料', () => {
   });
 });
 
+describe('200 年孫策去世與孫權承接事務', () => {
+  const successionId = 'sun-ce-dies-sun-quan-inherits-200';
+
+  it('依《三國志》保留年級精度與承接事務記錄，不補月日或私生活', () => {
+    const content = HISTORY_CONTENT.find((node) => node.id === successionId);
+    expect(content).toMatchObject({ startYear: 200, endYear: 200, precision: 'year', introducedIn: 'phase4-scenario-91' });
+    expect(content?.source).toContain('《三國志》卷四十七');
+    expect(content?.source).toContain('策薨，以事授權');
+    expect(content?.source).toContain('未提供月日');
+    expect(content?.description).toContain('不補寫死亡日');
+  });
+
+  it('新局跨年至 200 年時觸發；v90 舊存檔不回補 200 年史事', () => {
+    const fresh = advancePhase4(createPhase4Model(199, 1, persons, PHASE4_CONTENT_VERSION), 360);
+    expect(fresh.nodes.find((node) => node.contentId === successionId)?.status).toBe('triggered');
+    expect(fresh.eventLedger.find((item) => item.detail.includes('孫策去世、孫權承接軍政事務'))?.source).toContain('策薨，以事授權');
+
+    const old = createPhase4Model(199, 1, persons, 'phase4-scenario-90');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === successionId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === successionId)?.status).toBe('triggered');
+
+    const late = upgradePhase4Content(createPhase4Model(201, 1, persons, 'phase4-scenario-90'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === successionId)).toMatchObject({ status: 'resolved', resolvedYear: 200 });
+    expect(late.eventLedger.some((item) => item.detail.includes('孫策去世、孫權承接軍政事務'))).toBe(false);
+  });
+});
+
 describe('183 年北海、東萊、琅邪寒候記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
