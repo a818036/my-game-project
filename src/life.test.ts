@@ -40,6 +40,7 @@ describe('人生情境計畫',()=>{
     const appointed=answerKnownSunQuanBiographyQuestion('孫權幾歲任陽羨長？');
     expect(appointed?.answer).toContain('年十五');expect(appointed?.answer).toContain('郡察孝廉、州舉茂才、行奉義校尉');expect(appointed?.answer).toContain('不將年齡反推成特定年份');
     const undatedOffice=answerKnownSunQuanBiographyQuestion('孫權幾歲任奉義校尉？');expect(undatedOffice?.answer).toContain('不能把十五歲套用到它們');
+    const earlyOffices=answerKnownSunQuanBiographyQuestion('孫權早年做過哪些官？');expect(earlyOffices?.answer).toContain('年十五時任陽羨長');expect(earlyOffices?.answer).toContain('行奉義校尉');
     const died=answerKnownSunQuanBiographyQuestion('孫權幾歲去世？');expect(died?.answer).toContain('時年七十一');
     const routine=answerKnownSunQuanBiographyQuestion('孫權每天幾時小便出恭？');expect(routine?.answer).toContain('不是逐日生活日誌');expect(routine?.answer).toContain('我不能用模擬補造');
     expect(localInteraction('孫權每天幾時小便出恭？',start().state!).kind).toBe('question');
