@@ -64,6 +64,8 @@ describe('人生情境計畫',()=>{
     expect(biography?.answer).toContain('孫權再征黃祖、克其城並分置新都郡');
     expect(biography?.answer).toContain('孫權征皖城、克城並獲朱光');
     expect(biography?.answer).toContain('孫權於庱亭射虎');
+    expect(biography?.answer).toContain('孫權下令不得因部下亡叛而殺其妻子');
+    expect(biography?.answer).toContain('裴松之注引《江表傳》');
     expect(biography?.answer).toContain('趙咨使魏、孫權辭魏封孫登而立為太子');
     expect(biography?.answer).toContain('孫權去世、孫亮即位');
     expect(biography?.answer).toContain('未列年份不代表沒有事情發生');
