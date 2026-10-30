@@ -442,4 +442,4 @@
 | A353 | 以真實 Chromium 驗證新世界線建立、切換及狀態隔離 | 在隔離 IndexedDB 中，由合成 280 年世界線建立 184 年新世界線；新線顯示嬰幼兒生活選項且沒有舊線結局。切回 280 年線仍顯示已保存的自訂結局，重載及再次切換後兩線的年份、角色與結局狀態仍分開。僅測本機合成資料，不代表 NVDA／Firefox 或正式玩家存檔驗收。 |
 | A354 | 世界線切換結果以狀態角色呈現 | 隔離 Chromium 在兩條合成／測試世界線間往返切換；每次均讀到正確角色、日期及 `role=status` 的「已切換世界線；舊存檔仍保留。」訊息。`status` 角色具隱含 polite live-region 語意；此為瀏覽器無障礙樹確認，不代表 NVDA／Firefox 實際語音已驗收，也未操作正式玩家存檔。 |
 | A355 | 世界線切換通知的自動回歸 | App 整合測試確認切換成功時主角更新且成功訊息為 `role=status`；注入儲存層錯誤後，原主角與選取線保留，失敗訊息同樣為 `role=status`。只驗 DOM 角色及 React 狀態，不等同螢幕閱讀器語音驗收。 |
-| A357 | 世界線切換狀態使用持續存在的 live region | App 整合測試先保存空白 `ActivityAnnouncer` 節點參照，再切換世界線；成功與失敗文字都更新同一個 `role=status`／polite／atomic 節點。可見提示保留在畫面但不另設第二個 status role，避免把新插入的狀態元素當成唯一播報途徑。隔離 Chromium 切換後的無障礙樹可讀到成功訊息；未驗 NVDA／Firefox 真實語音。 |
+| A357 | 遊戲內通知使用持續存在的 live region | 遊戲頁另掛載專用 `ActivityAnnouncer` 接收所有 `notice`；App 整合測試保存該 `role=status`／polite／atomic 節點參照，再驗成功切線及儲存失敗都更新同一節點。可見通知保留但移除重複 status role，避免事件後才插入的節點成為唯一播報途徑。隔離 Chromium 切線後的無障礙樹可讀到成功訊息；未驗 NVDA／Firefox 真實語音。 |
