@@ -61,4 +61,11 @@ describe('主要淺色介面的文字對比', () => {
   it('尊重減少動態效果偏好，停用平滑捲動及動畫轉場', () => {
     expect(stylesheet).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{\*,\*::before,\*::after\{[^}]*scroll-behavior:auto!important[^}]*animation-duration:\.01ms!important[^}]*animation-iteration-count:1!important[^}]*transition-duration:\.01ms!important\}\}/);
   });
+
+  it('跳轉連結抵達主要內容或開局表單時保留可見焦點框', () => {
+    const targetFocus = lastRule('#main-content:focus,#start-content:focus');
+    expect(targetFocus).toMatch(/outline:\s*3px solid var\(--seal\)/);
+    expect(targetFocus).not.toMatch(/outline:\s*none/);
+    expect(lastRule('.skip-link:focus')).toMatch(/outline:\s*3px solid/);
+  });
 });
