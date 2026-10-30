@@ -91,4 +91,19 @@ describe('開局存檔載入提示',()=>{
     await act(async()=>{finishSave();await saveResult;});
     expect(host.querySelector('[role="status"]')?.textContent).toBe('操作已保存。');
   });
+
+  it('新局保存失敗時不顯示只適用於存檔讀取失敗的重試按鈕',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    vi.mocked(commitWorldline).mockRejectedValueOnce(new Error('disk full'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'安');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    const saveButton=[...host.querySelectorAll('button')].find(button=>button.textContent==='確認出生並開始')!;
+    await act(async()=>{saveButton.click();await Promise.resolve();});
+    expect(host.querySelector('[role="alert"] span')?.textContent).toBe('未保存任何變更：disk full');
+    expect(host.querySelector('[role="alert"] button')).toBeNull();
+    expect(loadWorkspace).toHaveBeenCalledTimes(1);
+  });
 });
