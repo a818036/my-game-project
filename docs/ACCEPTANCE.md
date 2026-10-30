@@ -371,4 +371,4 @@
 | A281 | 世界線初始化狀態可由輔助技術辨認 | 載入畫面以可見的 `role="status"`、`aria-live="polite"` 與 `aria-atomic="true"` 呈現「正在開啟你的世界線」；SSR 測試核對狀態語意與文案。實際螢幕閱讀器語音仍待人工驗收。 |
 | A282 | 強制色彩模式下跳轉目的地使用系統焦點色 | `forced-colors: active` 時，`#main-content` 與 `#start-content` 的程式焦點明確使用 `Highlight`；樣式回歸測試確認規則。實際 Windows 高對比模式仍需人工抽查。 |
 | A283 | 開局保存進度能由輔助技術讀取 | 開局畫面掛載共用 `role="status"` 播報區；DOM 測試確認保存訊息更新時 live region 保留同一節點、`aria-live="polite"` 與 `aria-atomic="true"`，並顯示更新後文字。實際螢幕閱讀器語音仍待人工驗收。 |
-| A284 | 開局存檔讀取錯誤在畫面可見並即時播報 | IndexedDB 載入失敗訊息在開局畫面以 `role="alert"` 顯示；SSR 測試確認錯誤文案和空訊息不渲染。實際瀏覽器故障注入及螢幕閱讀器語音仍待人工驗收。 |
+| A284 | 開局存檔讀取錯誤在畫面可見並即時播報 | IndexedDB 載入失敗訊息在開局畫面以 `role="alert"` 顯示；SSR 測試確認錯誤文案和空訊息不渲染。React DOM 整合測試模擬 IndexedDB 讀取失敗，確認錯誤出現在出生確認畫面的 alert；正常載入對照測試確認不誤報。實際瀏覽器故障注入及螢幕閱讀器語音仍待人工驗收。 |
