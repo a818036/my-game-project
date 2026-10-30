@@ -2,6 +2,7 @@
 import {act,createElement} from 'react';
 import {createRoot} from 'react-dom/client';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import axe from 'axe-core';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
 import type {InteractionResult} from '../life';
 import {understandInput} from '../narration/interaction';
@@ -26,7 +27,7 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     host=document.createElement('div');
     document.body.append(host);
     root=createRoot(host);
-    await act(async()=>root.render(createElement(LifeActionPanel,{state,busy:false,onRun:vi.fn(async()=>true)})));
+    await act(async()=>root.render(createElement('main',{id:'main-content'},createElement(LifeActionPanel,{state,busy:false,onRun:vi.fn(async()=>true)}))));
   });
 
   afterEach(async()=>{
@@ -54,5 +55,17 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     expect(host.querySelector('.intents > .visually-hidden[role="status"]')).toBe(status);
     expect(status?.textContent).toBe('回應你的詢問：你目前是零歲。');
     expect(host.querySelector('.plan-review[role="region"]')?.querySelector('[role="status"]')).toBeNull();
+  });
+
+  it('A391 詢問回覆畫面 axe-core 啟用規則無違規',async()=>{
+    const textarea=host.querySelector<HTMLTextAreaElement>('textarea')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')!.set!;
+    await act(async()=>{
+      setValue.call(textarea,'我今年幾歲？');
+      textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+    const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+    expect(results.violations.map(({id,help,nodes})=>({id,help,targets:nodes.flatMap(node=>node.target.map(String))}))).toEqual([]);
   });
 });
