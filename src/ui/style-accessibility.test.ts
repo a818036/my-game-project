@@ -61,6 +61,13 @@ describe('主要淺色介面的文字對比', () => {
     expect(contrastRatio(lastRuleColor('.primary'), seal)).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('已故家庭成員標示在淺色閱讀背景達 WCAG AA 一般文字對比', () => {
+    const deceased = lastRuleColor('.family-list .deceased,.deceased');
+    for (const background of ['#f5eedf', '#f7f1e4', '#f2eadb']) {
+      expect(contrastRatio(deceased, background)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it('開局表單標籤跟隨閱讀字級，出生確認文字至少 16px 並達 AA 對比', () => {
     expect(lastRule('.start-card label')).toMatch(/font-size:\s*1rem/);
     const confirmation = lastRule('.start-card .confirm');
