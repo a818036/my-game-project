@@ -7,7 +7,7 @@ import { ENGINEERING, HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES, type ControlLe
 import { HAN_DIVISION_INDEX, HAN_DIVISION_SOURCE_URLS, HAN_INSPECTOR_COMMANDERY_TOTAL, HAN_INSPECTOR_DIVISION_COUNT } from '../phase4-geography';
 import { characterAgeLabel } from '../narration/status';
 import {computeBattleVisibility} from '../battle-geometry';
-import { ActivityAnnouncer } from './ActivityAnnouncer';
+import { ActivityAnnouncer, LoadingScreen } from './ActivityAnnouncer';
 import { BattlePersonnelRegister } from './BattlePersonnelRegister';
 import { NameDialog } from './NameDialog';
 const HistoricalGeographyRegisters=lazy(()=>import('./HistoricalGeographyRegisters').then(({HistoricalGeographyRegisters})=>({default:HistoricalGeographyRegisters})));
@@ -229,7 +229,7 @@ export default function App() {
     if (fileRef.current) fileRef.current.value = '';
   }
 
-  if (!ready) return <main className="loading">正在開啟你的世界線……</main>;
+  if (!ready) return <LoadingScreen/>;
   if (!state || newTimeline) return <main className="start-page"><a className="skip-link" href="#start-content">跳至主要內容</a><section id="start-content" className="start-card" tabIndex={-1}>
     <Suspense fallback={null}><ChatGptConnection /></Suspense>
     <p className="eyebrow">東漢・出生確認　｜　第六階段開發中原型</p><h1>神洲三國</h1><p className="lead">先確認你的名字與出生結果，再從出生之年展開一條獨立世界線。</p>

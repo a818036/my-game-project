@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {ActivityAnnouncer} from './ActivityAnnouncer';
+import {ActivityAnnouncer,LoadingScreen} from './ActivityAnnouncer';
 
 describe('異步操作螢幕閱讀器狀態',()=>{
   it('以可讀的 polite status 區域宣告保存與敘事進度',()=>{
@@ -15,5 +15,10 @@ describe('異步操作螢幕閱讀器狀態',()=>{
     expect(saved).toContain('操作已保存。');
     const unchanged=renderToStaticMarkup(createElement(ActivityAnnouncer,{message:'目前人生已繼續，沒有時間推進。'}));
     expect(unchanged).toContain('目前人生已繼續，沒有時間推進。');
+  });
+
+  it('將世界線載入訊息標記為可見的 polite status',()=>{
+    const loading=renderToStaticMarkup(createElement(LoadingScreen));
+    expect(loading).toContain('<main class="loading"><p role="status" aria-live="polite" aria-atomic="true">正在開啟你的世界線……</p></main>');
   });
 });
