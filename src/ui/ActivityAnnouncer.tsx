@@ -5,3 +5,7 @@ export function ActivityAnnouncer({message}:{message:string}){
 export function LoadingScreen(){
   return <main className="loading"><p role="status" aria-live="polite" aria-atomic="true">正在開啟你的世界線……</p></main>;
 }
+
+export function StatusAlert({message}:{message:string}){
+  return message?<p className="notice" role="alert">{message}</p>:null;
+}

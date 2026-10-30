@@ -1,7 +1,9 @@
+// @vitest-environment jsdom
 import {describe,expect,it} from 'vitest';
-import {createElement} from 'react';
+import {act,createElement} from 'react';
+import {createRoot} from 'react-dom/client';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {ActivityAnnouncer,LoadingScreen} from './ActivityAnnouncer';
+import {ActivityAnnouncer,LoadingScreen,StatusAlert} from './ActivityAnnouncer';
 
 describe('異步操作螢幕閱讀器狀態',()=>{
   it('以可讀的 polite status 區域宣告保存與敘事進度',()=>{
@@ -20,5 +22,25 @@ describe('異步操作螢幕閱讀器狀態',()=>{
   it('將世界線載入訊息標記為可見的 polite status',()=>{
     const loading=renderToStaticMarkup(createElement(LoadingScreen));
     expect(loading).toContain('<main class="loading"><p role="status" aria-live="polite" aria-atomic="true">正在開啟你的世界線……</p></main>');
+  });
+
+  it('同一 live region 會保留並更新開局保存狀態',async()=>{
+    const host=document.createElement('div');document.body.append(host);const root=createRoot(host);
+    try{
+      await act(async()=>root.render(createElement(ActivityAnnouncer,{message:''})));
+      const status=host.querySelector('[role="status"]');
+      expect(status?.getAttribute('aria-live')).toBe('polite');
+      await act(async()=>root.render(createElement(ActivityAnnouncer,{message:'正在保存並結算操作。'})));
+      expect(host.querySelector('[role="status"]')).toBe(status);
+      expect(status?.textContent).toBe('正在保存並結算操作。');
+      expect(status?.getAttribute('aria-atomic')).toBe('true');
+    }finally{await act(async()=>root.unmount());host.remove();}
+  });
+
+  it('開局存檔錯誤以 alert 顯示且空訊息不佔畫面',()=>{
+    const error=renderToStaticMarkup(createElement(StatusAlert,{message:'無法讀取瀏覽器存檔；請確認 IndexedDB 可用。'}));
+    expect(error).toContain('role="alert"');
+    expect(error).toContain('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');
+    expect(renderToStaticMarkup(createElement(StatusAlert,{message:''}))).toBe('');
   });
 });

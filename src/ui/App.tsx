@@ -7,7 +7,7 @@ import { ENGINEERING, HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES, type ControlLe
 import { HAN_DIVISION_INDEX, HAN_DIVISION_SOURCE_URLS, HAN_INSPECTOR_COMMANDERY_TOTAL, HAN_INSPECTOR_DIVISION_COUNT } from '../phase4-geography';
 import { characterAgeLabel } from '../narration/status';
 import {computeBattleVisibility} from '../battle-geometry';
-import { ActivityAnnouncer, LoadingScreen } from './ActivityAnnouncer';
+import { ActivityAnnouncer, LoadingScreen, StatusAlert } from './ActivityAnnouncer';
 import { BattlePersonnelRegister } from './BattlePersonnelRegister';
 import { NameDialog } from './NameDialog';
 const HistoricalGeographyRegisters=lazy(()=>import('./HistoricalGeographyRegisters').then(({HistoricalGeographyRegisters})=>({default:HistoricalGeographyRegisters})));
@@ -230,7 +230,7 @@ export default function App() {
   }
 
   if (!ready) return <LoadingScreen/>;
-  if (!state || newTimeline) return <main className="start-page"><a className="skip-link" href="#start-content">跳至主要內容</a><section id="start-content" className="start-card" tabIndex={-1}>
+  if (!state || newTimeline) return <main className="start-page"><a className="skip-link" href="#start-content">跳至主要內容</a><ActivityAnnouncer message={activityMessage}/><section id="start-content" className="start-card" tabIndex={-1}>
     <Suspense fallback={null}><ChatGptConnection /></Suspense>
     <p className="eyebrow">東漢・出生確認　｜　第六階段開發中原型</p><h1>神洲三國</h1><p className="lead">先確認你的名字與出生結果，再從出生之年展開一條獨立世界線。</p>
     <label className="reader-control">閱讀字體　{fontSize}px<input type="range" min="16" max="24" step="1" value={fontSize} onChange={(event)=>setFontSize(Number(event.target.value))} /></label>
@@ -245,7 +245,7 @@ export default function App() {
     </>}
     {workspace.saves.length > 0 && <section className="save-slots"><div className="section-kicker">已保存的其他世界線</div>{workspace.saves.map((save) => <div key={save.worldlineId}><span>{saveName(save)}</span><button className="quiet" onClick={() => void switchTimeline(save.worldlineId)}>載入</button></div>)}</section>}
     <button className="quiet" onClick={() => fileRef.current?.click()}>匯入 JSON 存檔</button><input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(e) => void importSave(e.target.files?.[0])} />
-    <p className="caption">資料表與人物是明示的少量示例，不是完整歷史資料庫。</p>
+    <StatusAlert message={notice}/><p className="caption">資料表與人物是明示的少量示例，不是完整歷史資料庫。</p>
   </section></main>;
 
   const c = state.character, w = state.world;
