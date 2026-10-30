@@ -48,6 +48,7 @@ export default function App() {
   const [seed, setSeed] = useState(randomSeed());
   const [confirmed, setConfirmed] = useState(false);
   const [notice, setNotice] = useState('');
+  const [retryingStorage, setRetryingStorage] = useState(false);
   const [busy, setBusy] = useState(false);
   const [activityMessage,setActivityMessage]=useState('');
   const [nameDraft, setNameDraft] = useState('');
@@ -124,6 +125,12 @@ export default function App() {
   useEffect(() => { document.documentElement.style.setProperty('--reader-size', `${fontSize}px`); localStorage.setItem('shenzhou-font-size', String(fontSize)); }, [fontSize]);
 
   useEffect(() => { loadWorkspace().then(setWorkspace).catch(() => setNotice('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。')).finally(() => setReady(true)); }, []);
+  const retryWorkspaceLoad=async()=>{
+    setRetryingStorage(true);
+    try{setWorkspace(await loadWorkspace());setNotice('');}
+    catch{setNotice('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');}
+    finally{setRetryingStorage(false);}
+  };
   useEffect(()=>()=>{narrationAbort.current?.abort();},[]);
 
   async function generateNarrative(payload:NarrationPayload){
@@ -245,7 +252,7 @@ export default function App() {
     </>}
     {workspace.saves.length > 0 && <section className="save-slots"><div className="section-kicker">已保存的其他世界線</div>{workspace.saves.map((save) => <div key={save.worldlineId}><span>{saveName(save)}</span><button className="quiet" onClick={() => void switchTimeline(save.worldlineId)}>載入</button></div>)}</section>}
     <button className="quiet" onClick={() => fileRef.current?.click()}>匯入 JSON 存檔</button><input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(e) => void importSave(e.target.files?.[0])} />
-    <StatusAlert message={notice}/><p className="caption">資料表與人物是明示的少量示例，不是完整歷史資料庫。</p>
+    <StatusAlert message={notice} onRetry={retryWorkspaceLoad} retrying={retryingStorage}/><p className="caption">資料表與人物是明示的少量示例，不是完整歷史資料庫。</p>
   </section></main>;
 
   const c = state.character, w = state.world;
