@@ -19,7 +19,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(226,1,[],'phase4-scenario-116');
     const prefix=structuredClone(old.eventLedger);
     const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(migrated.contentVersion).toBe('phase4-scenario-137');
+    expect(migrated.contentVersion).toBe('phase4-scenario-138');
     expect(migrated.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(migrated,360).nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
@@ -60,7 +60,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(228,1,[],'phase4-scenario-117');
     const prefix=structuredClone(old.eventLedger);
     const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(migrated.contentVersion).toBe('phase4-scenario-137');
+    expect(migrated.contentVersion).toBe('phase4-scenario-138');
     expect(migrated.nodes.find(node=>node.contentId===allianceId)?.status).toBe('pending');
     expect(migrated.nodes.find(node=>node.contentId===capitalId)?.status).toBe('pending');
     expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
@@ -92,7 +92,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const prefix=structuredClone(old.eventLedger);
     const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     for(const [nodeId,status] of Object.entries(priorStatuses))if(!['sun-quan-builds-wuchang-and-warns-generals-221','sun-quan-capital-reports-sweet-dew-221','sun-quan-declines-imperial-title-221'].includes(nodeId))expect(upgraded.nodes.find(node=>node.contentId===nodeId)?.status).toBe(status);
   });
@@ -102,7 +102,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const prefix=structuredClone(old.eventLedger);
     const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     for(const [nodeId,status] of Object.entries(priorStatuses))if(!['sun-quan-builds-wuchang-and-warns-generals-221','sun-quan-capital-reports-sweet-dew-221','sun-quan-declines-imperial-title-221'].includes(nodeId))expect(upgraded.nodes.find(node=>node.contentId===nodeId)?.status).toBe(status);
   });
@@ -120,7 +120,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const prefix=structuredClone(old.eventLedger);
     const priorStatuses=Object.fromEntries(old.nodes.map(node=>[node.contentId,node.status]));
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     for(const [nodeId,status] of Object.entries(priorStatuses))if(!['sun-quan-builds-wuchang-and-warns-generals-221','sun-quan-capital-reports-sweet-dew-221','sun-quan-declines-imperial-title-221'].includes(nodeId))expect(upgraded.nodes.find(node=>node.contentId===nodeId)?.status).toBe(status);
   });
@@ -140,7 +140,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
     const nodeId='sun-quan-builds-wuchang-and-warns-generals-221';
-    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
     expect(upgraded.nodes.find(item=>item.contentId===nodeId)?.status).toBe('pending');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(upgraded,360).nodes.find(item=>item.contentId===nodeId)?.status).toBe('triggered');
@@ -165,7 +165,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-122');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(upgraded,360).nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
@@ -191,7 +191,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-123');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(upgraded,360).nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
@@ -218,7 +218,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(221,1,[],'phase4-scenario-124');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(upgraded,360).nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
@@ -294,7 +294,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(250,1,[],'phase4-scenario-128');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(advancePhase4(upgraded,360).nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
@@ -317,7 +317,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const old=createPhase4Model(214,1,[],'phase4-scenario-129');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(upgraded,360).nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
@@ -325,6 +325,37 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const sameYear=upgradePhase4Content(createPhase4Model(215,1,[],'phase4-scenario-129'),PHASE4_CONTENT_VERSION);
     expect(sameYear.nodes.find(item=>item.contentId===id)).toMatchObject({status:'resolved',resolvedYear:215});
     expect(sameYear.eventLedger.some(item=>item.detail.includes('陸口駐軍與湘水分荊州'))).toBe(false);
+  });
+
+  it('A286 adds cross-polity successions in 220 and 223 with source precision and safe v137 migration',()=>{
+    const cao='cao-cao-dies-cao-pi-succeeds-220';
+    const shu='liu-shan-succeeds-liu-bei-223';
+    const caoNode=HISTORY_CONTENT.find(item=>item.id===cao);
+    const shuNode=HISTORY_CONTENT.find(item=>item.id===shu);
+    expect(caoNode).toMatchObject({startYear:220,endYear:220,precision:'year',introducedIn:'phase4-scenario-138',sameYearMigrationIsLate:true});
+    expect(caoNode?.source).toContain('《三國志》卷一〈魏書·武帝紀〉');
+    expect(caoNode?.source).toContain('庚子太祖崩');
+    expect(caoNode?.source).toContain('嗣位為丞相、魏王');
+    expect(shuNode).toMatchObject({startYear:223,endYear:223,precision:'year',introducedIn:'phase4-scenario-138',sameYearMigrationIsLate:true});
+    expect(shuNode?.source).toContain('《三國志》卷三十三〈蜀書·後主傳〉');
+    expect(shuNode?.source).toContain('建興元年五月後主即位');
+    expect(shuNode?.description).toContain('不推演未載');
+
+    const old=createPhase4Model(219,1,[],'phase4-scenario-137');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.contentVersion).toBe('phase4-scenario-138');
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find(item=>item.contentId===cao)?.status).toBe('pending');
+    expect(upgraded.nodes.find(item=>item.contentId===shu)?.status).toBe('pending');
+    const advanced=advancePhase4(upgraded,1440);
+    expect(advanced.nodes.find(item=>item.contentId===cao)?.status).toBe('triggered');
+    expect(advanced.nodes.find(item=>item.contentId===shu)?.status).toBe('triggered');
+    const sameYear=upgradePhase4Content(createPhase4Model(220,1,[],'phase4-scenario-137'),PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find(item=>item.contentId===cao)).toMatchObject({status:'resolved',resolvedYear:220});
+    expect(sameYear.eventLedger.some(item=>item.detail.includes('曹操卒於洛陽'))).toBe(false);
+    const later=upgradePhase4Content(createPhase4Model(223,1,[],'phase4-scenario-137'),PHASE4_CONTENT_VERSION);
+    expect(later.nodes.find(item=>item.contentId===shu)).toMatchObject({status:'resolved',resolvedYear:223});
   });
 
 });
