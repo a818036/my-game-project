@@ -100,6 +100,10 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(saved.state.phase4).toMatchObject({ year: 280, ending: 'pending', unified: true });
     expect(host.querySelector('.finale-reoffer')).toBeNull();
     expect(host.textContent).toContain('已開啟大結局選擇；沒有呼叫 AI 或推進時間。');
+    const decision = host.querySelector<HTMLElement>('#main-content [data-testid="ending-decision-main"]');
+    expect(decision).not.toBeNull();
+    expect(decision?.textContent).toContain('選擇繼續人生');
+    expect(host.querySelector('.phase4-panel [data-testid="ending-decision-main"]')).toBeNull();
   }, 30000);
 
   it('操作自然節點重提入口後，待決結局可從 IndexedDB 重新載入', async () => {
