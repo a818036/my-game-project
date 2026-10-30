@@ -412,3 +412,4 @@ A313 加入開局及遊戲畫面 DOM 檢查：單一 main landmark 與 h1、有�
 ## 本輪追加（A392）
 
 - 以 React 整合流程勾選生活選項並開啟確認計畫，再用 axe-core 掃描確認介面；啟用規則無違規，色彩對比仍因 jsdom 限制停用。真實瀏覽器與 NVDA／Firefox 驗收仍待人工執行。
+- `src/ui/LifeActionPanel.reply.test.tsx` 專項 3 項全過；最新提交 `118e3ba` 的完整 GitHub Actions run [41139308827](https://github.com/a818036/my-game-project/actions/runs/41139308827) 全綠：61 個測試檔／534 項測試、型別檢查、正式建置、bundle 預算與正式預覽 smoke check 均通過。
