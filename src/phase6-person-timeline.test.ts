@@ -1,5 +1,6 @@
 import {describe,expect,it} from 'vitest';
-import {answerKnownHistoricalPersonTimelineQuestion} from './life';
+import {answerKnownHistoricalPersonTimelineQuestion,localInteraction} from './life';
+import {createOpeningFacts,dispatch,ENGINE_VERSION} from './engine';
 
 describe('A373 other-person historical timeline queries',()=>{
   it('answers a Liu Bei timeline from sourced nodes without claiming a complete biography',()=>{
@@ -21,5 +22,15 @@ describe('A373 other-person historical timeline queries',()=>{
   it('leaves Sun Quan to the existing precision-aware biography path and ignores ordinary questions',()=>{
     expect(answerKnownHistoricalPersonTimelineQuestion('請整理孫權生平年表')).toBeNull();
     expect(answerKnownHistoricalPersonTimelineQuestion('曹操是誰？')).toBeNull();
+  });
+
+  it('routes a player timeline question through the local interaction without mutating the game',()=>{
+    const facts=createOpeningFacts(373,184,{regions:[],surnames:[]});
+    const state=dispatch(null,{version:ENGINE_VERSION,commandId:'timeline-start',expectedRevision:0,type:'StartGame',name:'測試玩家',seed:373,facts}).state!;
+    const before=structuredClone(state);
+    const result=localInteraction('請整理劉備生平年表',state);
+    expect(result.answer).toContain('劉備殺車胄、屯兵沛地');
+    expect(result.choiceIds).toEqual([]);
+    expect(state).toEqual(before);
   });
 });
