@@ -713,6 +713,20 @@ describe('A05／A06 存檔交易與重播', () => {
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   },30000);
 
+  it('A399 v149 v6 存檔遷移補列呂岱多地討擊史料並可續玩重播',()=>{
+    const current=makeSave('phase6-v149-ludai-source',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-149'}};let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v149 fixture');
+    const oldEvents:GameEvent[]=[oldStart];let remainingDays=50*360,index=0;
+    while(remainingDays>0){const days=Math.min(3650,remainingDays);const step=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v149-ludai-setup-${++index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!step.state||!step.event)throw new Error('could not prepare v149 save');oldState=step.state;oldEvents.push(step.event);remainingDays-=days;}
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState},migrated=verifySave(toJson(old)),id='wu-lu-dai-luling-revolt-response-235';
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.evidence.join(' ')).toContain('會稽東冶');expect(replay(migrated.events)).toEqual(migrated.state);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v149-ludai-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not continue v149 save');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.source?.includes('卷六十')&&item.source.includes('劉纂、唐咨'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  },30000);
+
   it('A303 280 年長局的結局與繼續人生分支均可 JSON 匯入、IndexedDB 重載及重播',async()=>{
     const current=makeSave('phase6-ending-storage-roundtrip',160);const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     let state=current.state;const prefix:GameEvent[]=[start];

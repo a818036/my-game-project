@@ -73,7 +73,7 @@ describe('即時人物對話',()=>{
       if(year===225)expect(result.answer).toContain('孫權在位期間：孫邵去世、顧雍繼任吳丞相');
       if(year===230)expect(result.answer).toContain('孫權遣衛溫、諸葛直浮海求夷洲');
       if(year===231)expect(result.answer).toContain('孫權遣潘濬率眾征武陵');
-      if(year===235)expect(result.answer).toContain('孫權遣呂岱討伐廬陵李桓等');
+      if(year===235)expect(result.answer).toContain('吳廷遣呂岱等分部討擊多地起事');
       if(year===197)expect(result.answer).toContain('不表示該年沒有事情發生');
       if(year===220){expect(result.answer).not.toContain('魏文帝受禪');expect(result.answer).not.toContain('稱藩');expect(result.answer).not.toContain('征張繡');}
     }

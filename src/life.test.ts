@@ -81,7 +81,7 @@ describe('人生情境計畫',()=>{
     expect(biography?.answer).toContain('孫權隨孫策征劉勳');
     expect(biography?.answer).toContain('孫權遣衛溫、諸葛直浮海求夷洲');
     expect(biography?.answer).toContain('孫權遣潘濬率眾征武陵');
-    expect(biography?.answer).toContain('孫權遣呂岱討伐廬陵李桓等');
+    expect(biography?.answer).toContain('吳廷遣呂岱等分部討擊多地起事');
     expect(biography?.answer).toContain('呂岱討平廬陵賊，事畢還屯陸口');
     expect(biography?.answer).toContain('陸遜討平鄱陽彭旦等起事');
     expect(biography?.answer).toContain('吳將擒獲鄱陽賊彭綺');
