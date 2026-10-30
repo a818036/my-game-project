@@ -116,8 +116,10 @@ const HISTORICAL_SUBJECT_ALIASES=['曹操','曹丕','曹叡','曹仁','曹真','
 export function answerKnownHistoricalPersonTimelineQuestion(text:string):InteractionResult|null{
   const asksTimeline=/(一生|生平|年表|完整經歷|經歷|事蹟|做過什麼|有哪些事)/.test(text);
   if(!asksTimeline)return null;
-  const subject=HISTORICAL_SUBJECT_ALIASES.find(name=>text.includes(name));
-  if(!subject||subject==='孫權'||subject==='孫仲謀')return null;
+  const subjects=HISTORICAL_SUBJECT_ALIASES.filter(name=>text.includes(name));
+  if(subjects.length!==1)return null;
+  const subject=subjects[0];
+  if(subject==='孫權'||subject==='孫仲謀')return null;
   const records=HISTORY_CONTENT.filter(item=>{
     if(item.retired||item.kind!=='event'||!item.source.startsWith('《'))return false;
     return `${item.title} ${item.description} ${item.carrier}`.includes(subject);
