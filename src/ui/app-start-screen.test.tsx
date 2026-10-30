@@ -3,6 +3,7 @@ import {act,createElement} from 'react';
 import {createRoot} from 'react-dom/client';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {commitWorldline,loadWorkspace} from '../storage';
+import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
 
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 
@@ -86,6 +87,31 @@ describe('開局存檔載入提示',()=>{
     const controls=[...host.querySelectorAll<HTMLInputElement>('input:not([type="hidden"]):not([hidden])')];
     expect(controls.length).toBeGreaterThan(0);
     expect(controls.every(control=>control.labels?.length)).toBe(true);
+    const buttons=[...host.querySelectorAll<HTMLButtonElement>('button')];
+    expect(buttons.every(button=>!!(button.textContent?.trim()||button.getAttribute('aria-label')?.trim()))).toBe(true);
+  });
+
+  it('遊戲畫面保持地標、標題層級及可見控制項名稱',async()=>{
+    const facts=createOpeningFacts(123,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a313-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}景初`,seed:123,facts});
+    if(!started.state||!started.event)throw new Error('建立遊戲畫面測試存檔失敗');
+    const state=started.state;
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({
+      saves:[{format:'shenzhou-save',version:6,worldlineId:state.worldlineId,events:[started.event],state}],
+      profile:{regions:[],surnames:[],activeWorldlineId:state.worldlineId},
+    });
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+
+    expect(host.querySelectorAll('main')).toHaveLength(1);
+    expect(host.querySelectorAll('h1')).toHaveLength(1);
+    expect(host.querySelector('a.skip-link')?.getAttribute('href')).toBe('#main-content');
+    expect(host.querySelector<HTMLElement>('#main-content')?.tabIndex).toBe(-1);
+    expect(host.querySelector('nav[aria-label="遊戲資料與操作"]')).not.toBeNull();
+    const headingLevels=[...host.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(heading=>Number(heading.tagName.slice(1)));
+    expect(headingLevels[0]).toBe(1);
+    expect(headingLevels.slice(1).every((level,index)=>level<=headingLevels[index]+1)).toBe(true);
+    const controls=[...host.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('input:not([type="hidden"]):not([hidden]),select,textarea')];
+    expect(controls.every(control=>!!(control.labels?.length||control.getAttribute('aria-label')||control.getAttribute('aria-labelledby')))).toBe(true);
     const buttons=[...host.querySelectorAll<HTMLButtonElement>('button')];
     expect(buttons.every(button=>!!(button.textContent?.trim()||button.getAttribute('aria-label')?.trim()))).toBe(true);
   });
