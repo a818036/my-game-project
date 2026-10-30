@@ -691,4 +691,12 @@ describe('A05／A06 存檔交易與重播', () => {
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   },30000);
 
+  it('A302 v141 v6 存檔升至 v142 後可續玩赤壁節點並重播',()=>{
+    const current=makeSave('phase6-v141-red-cliffs',184);const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-141'}};let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v141 fixture');const oldEvents:GameEvent[]=[oldStart];let remainingDays=(207-oldState.phase4!.year)*360,index=0;while(remainingDays>0){const days=Math.min(3650,remainingDays);const step=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v141-red-cliffs-${++index}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});if(!step.state||!step.event)throw new Error('could not prepare v141 save');oldState=step.state;oldEvents.push(step.event);remainingDays-=days;}const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
+    const migrated=verifySave(toJson(old)),nodeId='red-cliffs-208';expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');expect(replay(migrated.events)).toEqual(migrated.state);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v141-red-cliffs-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not trigger migrated Red Cliffs save');expect(continued.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&(item.source??'').includes('《三國志》卷五十四'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  },15000);
+
 });

@@ -14,7 +14,7 @@ describe('A254 孫權年表新增 238 年廬陵記事', () => {
     expect(event?.source).toContain('赤烏元年夏');
     expect(event?.source).toContain('還陸口');
     const biography = answerKnownSunQuanBiographyQuestion('請整理孫權七十一年生平年表');
-    expect(biography?.answer).toContain('58 筆可考年級紀錄，分布於 46 個年次');
+    expect(biography?.answer).toContain('59 筆可考年級紀錄，分布於 46 個年次');
     expect(biography?.answer).toContain('238年・呂岱討平廬陵賊，事畢還屯陸口');
     expect(biography?.answer).toContain('日常時辰也不能用模擬補成史實');
   });
