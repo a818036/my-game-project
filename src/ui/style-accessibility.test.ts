@@ -4,21 +4,61 @@ import { readFileSync } from 'node:fs';
 
 const stylesheet: string = readFileSync(new URL('./style.css', import.meta.url), 'utf8');
 
+interface CssRule { selector: string; declarations: string; }
+
+function parseCssRules(css: string, start = 0, end = css.length, result: CssRule[] = []): CssRule[] {
+  let cursor = start;
+  while (cursor < end) {
+    while (/\s/.test(css[cursor] ?? '')) cursor++;
+    if (css[cursor] === '}') return result;
+    const open = css.indexOf('{', cursor);
+    if (open < 0 || open >= end) return result;
+    const selector = css.slice(cursor, open).trim();
+    let depth = 1;
+    let close = open + 1;
+    while (close < end && depth > 0) {
+      if (css[close] === '{') depth++;
+      else if (css[close] === '}') depth--;
+      close++;
+    }
+    const bodyEnd = close - 1;
+    if (selector.startsWith('@')) parseCssRules(css, open + 1, bodyEnd, result);
+    else result.push({ selector, declarations: css.slice(open + 1, bodyEnd).trim() });
+    cursor = close;
+  }
+  return result;
+}
+
+const cssRules = parseCssRules(stylesheet);
+
+function rulesForSelector(selector: string): CssRule[] {
+  const requested = selector.split(',').map((part) => part.trim()).join(',');
+  return cssRules.filter((rule) => {
+    const selectors = rule.selector.split(',').map((part) => part.trim());
+    return selectors.includes(selector) || selectors.join(',') === requested;
+  });
+}
+
 function ruleColor(selector: string): string {
-  const declaration = stylesheet.split('}').map((rule) => rule.split('{')).find(([name]) => name.trim() === selector)?.[1];
-  const match = declaration?.match(/(?:^|;)\s*color:\s*(#[0-9a-fA-F]{6})/);
+  const match = rulesForSelector(selector).map((rule) => rule.declarations).map((declaration) => declaration.match(/(?:^|;)\s*color:\s*(#[0-9a-fA-F]{6})/)).find(Boolean);
   if (!match) throw new Error(`Missing color declaration for ${selector}`);
   return match[1];
 }
 
 function lastRule(selector: string): string {
-  const declarations = stylesheet.split('}').map((rule) => rule.split('{')).filter(([name]) => name?.trim() === selector).at(-1)?.[1];
-  if (!declarations) throw new Error(`Missing CSS rule for ${selector}`);
+  const declarations = rulesForSelector(selector).at(-1)?.declarations;
+  if (declarations === undefined) throw new Error(`Missing CSS rule for ${selector}`);
+  return declarations;
+}
+
+function ruleMatching(selector: string, pattern: RegExp): string {
+  const declarations = rulesForSelector(selector).find((rule) => pattern.test(rule.declarations))?.declarations;
+  if (declarations === undefined) throw new Error(`Missing matching CSS rule for ${selector}`);
   return declarations;
 }
 
 function lastRuleColor(selector: string): string {
-  const match = lastRule(selector).match(/(?:^|;)\s*color:\s*(#[0-9a-fA-F]{6})/);
+  const match = rulesForSelector(selector).reverse().map((rule) => rule.declarations.match(/(?:^|;)\s*color:\s*(#[0-9a-fA-F]{6})/)).find(Boolean);
   if (!match) throw new Error(`Missing color declaration for ${selector}`);
   return match[1];
 }
@@ -77,6 +117,24 @@ describe('主要淺色介面的文字對比', () => {
     expect(contrastRatio(lastRuleColor('.division-index li span'), '#f5eddd')).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('回合標記與世界線資訊在紙色底達 WCAG AA 對比', () => {
+    const paper = '#f7f1e4';
+    expect(contrastRatio(lastRuleColor('.round'), paper)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(lastRuleColor('.worldline'), paper)).toBeGreaterThanOrEqual(4.5);
+    const seal = stylesheet.match(/--seal:\s*(#[0-9a-fA-F]{6})/)![1];
+    expect(contrastRatio(seal, paper)).toBeGreaterThanOrEqual(4.5);
+    const wood = stylesheet.match(/--wood:\s*(#[0-9a-fA-F]{6})/)![1];
+    expect(contrastRatio(wood, paper)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('通知、場景對話、日誌及軍政表單文字在閱讀底色達 WCAG AA 對比', () => {
+    expect(contrastRatio(lastRuleColor('.notice'), '#f0dfd2')).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(lastRuleColor('.scene-panel .speech'), '#f5eedf')).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(lastRuleColor('.log li p'), '#f5eedf')).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(lastRuleColor('.phase-panel label'), '#f5eedf')).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(lastRuleColor('.summary summary,.folds summary'), '#f5eedf')).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('開局表單標籤跟隨閱讀字級，出生確認文字至少 16px 並達 AA 對比', () => {
     expect(lastRule('.start-card label')).toMatch(/font-size:\s*1rem/);
     const confirmation = lastRule('.start-card .confirm');
@@ -99,10 +157,10 @@ describe('主要淺色介面的文字對比', () => {
   });
 
   it('跳轉連結抵達主要內容或開局表單時保留可見焦點框', () => {
-    const targetFocus = lastRule('#main-content:focus,#start-content:focus');
+    const targetFocus = ruleMatching('#main-content:focus,#start-content:focus', /outline:\s*3px solid var\(--seal\)/);
     expect(targetFocus).toMatch(/outline:\s*3px solid var\(--seal\)/);
     expect(targetFocus).not.toMatch(/outline:\s*none/);
-    expect(lastRule('.skip-link:focus')).toMatch(/outline:\s*3px solid/);
+    expect(ruleMatching('.skip-link:focus', /outline:\s*3px solid/)).toMatch(/outline:\s*3px solid/);
   });
 
   it('強制色彩模式將程式焦點落點改用系統高亮色', () => {
