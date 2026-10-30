@@ -8,6 +8,7 @@
     "narration": "node server/index.mjs",
     "narration:chatgpt": "node server/index.mjs --chatgpt",
     "build": "tsc -b && vite build",
+    "check:bundle": "node scripts/check-bundle-budget.mjs",
     "typecheck": "tsc -b --pretty",
     "test": "vitest run",
     "benchmark:history": "node scripts/benchmark-history.mjs"
