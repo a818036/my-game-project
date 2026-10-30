@@ -72,4 +72,11 @@ describe('主要淺色介面的文字對比', () => {
   it('強制色彩模式將程式焦點落點改用系統高亮色', () => {
     expect(stylesheet).toMatch(/#main-content:focus,#start-content:focus\{outline-color:Highlight!important\}/);
   });
+
+  it('對話紀錄長字串允許斷行並維持一般正文尺寸',()=>{
+    expect(lastRule('.dialogue-history li')).toMatch(/overflow-wrap:\s*anywhere/);
+    const paragraph=lastRule('.dialogue-history li p');
+    expect(paragraph).toMatch(/font-size:\s*16px\s*!important/);
+    expect(paragraph).toMatch(/line-height:\s*1\.6/);
+  });
 });
