@@ -279,7 +279,7 @@ export default function App() {
   if (!ready) return <LoadingScreen/>;
   if (!state || newTimeline) return <main className="start-page"><a className="skip-link" href="#start-content">跳至主要內容</a><ActivityAnnouncer message={activityMessage}/><section id="start-content" className="start-card" tabIndex={-1}>
     <Suspense fallback={null}><ChatGptConnection /></Suspense>
-    <p className="eyebrow">東漢・出生確認　｜　第六階段開發中原型</p><h1>神洲三國</h1><p className="lead">先確認你的名字與出生結果，再從出生之年展開一條獨立世界線。</p>
+    <p className="eyebrow">東漢・出生確認　｜　開啟獨立世界線</p><h1>神洲三國</h1><p className="lead">先確認你的名字與出生結果，再從出生之年展開一條獨立世界線。</p>
     <label className="reader-control">閱讀字體　{fontSize}px<input type="range" min="16" max="24" step="1" value={fontSize} onChange={(event)=>setFontSize(Number(event.target.value))} /></label>
     <label>名字（不含姓氏）<input maxLength={16} value={name} onChange={(e) => { setName(e.target.value); setConfirmed(false); }} placeholder="輸入主角名字" /></label>
     {name.trim() && <>
@@ -417,6 +417,6 @@ export default function App() {
     </details></article>}
     </aside></div>
     {phase2?.pendingNames[0] && <NameDialog role={phase2.pendingNames[0].role} value={nameDraft} busy={busy} onChange={setNameDraft} onConfirm={finalizeName} />}
-    <footer>神洲三國・第四階段示例原型　<span>自動保存・事件版本 {state.engineVersion}</span></footer>
+    <footer>神洲三國・亂世生涯原型　<span>自動保存・事件版本 {state.engineVersion}</span></footer>
   </main>;
 }

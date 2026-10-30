@@ -95,6 +95,8 @@ describe('開局存檔載入提示',()=>{
     expect(host.querySelectorAll('main')).toHaveLength(1);
     expect(host.querySelectorAll('h1')).toHaveLength(1);
     expect(host.querySelector('h1')?.textContent).toBe('神洲三國');
+    expect(host.querySelector('.eyebrow')?.textContent).toContain('開啟獨立世界線');
+    expect(host.textContent).not.toContain('第六階段開發中原型');
     const controls=[...host.querySelectorAll<HTMLInputElement>('input:not([type="hidden"]):not([hidden])')];
     expect(controls.length).toBeGreaterThan(0);
     expect(controls.every(control=>control.labels?.length)).toBe(true);
@@ -115,6 +117,8 @@ describe('開局存檔載入提示',()=>{
 
     expect(host.querySelectorAll('main')).toHaveLength(1);
     expect(host.querySelectorAll('h1')).toHaveLength(1);
+    expect(host.querySelector('footer')?.textContent).toContain('神洲三國・亂世生涯原型');
+    expect(host.querySelector('footer')?.textContent).not.toContain('第四階段示例原型');
     expect(host.querySelector('a.skip-link')?.getAttribute('href')).toBe('#main-content');
     expect(host.querySelector<HTMLElement>('#main-content')?.tabIndex).toBe(-1);
     expect(host.querySelector('nav[aria-label="遊戲資料與操作"]')).not.toBeNull();
