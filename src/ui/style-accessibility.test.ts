@@ -4,9 +4,9 @@ import { readFileSync } from 'node:fs';
 
 const stylesheet: string = readFileSync(new URL('./style.css', import.meta.url), 'utf8');
 
-interface CssRule { selector: string; declarations: string; }
+interface CssRule { selector: string; declarations: string; conditions: string[]; }
 
-function parseCssRules(css: string, start = 0, end = css.length, result: CssRule[] = []): CssRule[] {
+function parseCssRules(css: string, start = 0, end = css.length, result: CssRule[] = [], conditions: string[] = []): CssRule[] {
   let cursor = start;
   while (cursor < end) {
     while (/\s/.test(css[cursor] ?? '')) cursor++;
@@ -22,8 +22,8 @@ function parseCssRules(css: string, start = 0, end = css.length, result: CssRule
       close++;
     }
     const bodyEnd = close - 1;
-    if (selector.startsWith('@')) parseCssRules(css, open + 1, bodyEnd, result);
-    else result.push({ selector, declarations: css.slice(open + 1, bodyEnd).trim() });
+    if (selector.startsWith('@')) parseCssRules(css, open + 1, bodyEnd, result, [...conditions, selector]);
+    else result.push({ selector, declarations: css.slice(open + 1, bodyEnd).trim(), conditions });
     cursor = close;
   }
   return result;
@@ -37,6 +37,10 @@ function rulesForSelector(selector: string): CssRule[] {
     const selectors = rule.selector.split(',').map((part) => part.trim());
     return selectors.includes(selector) || selectors.join(',') === requested;
   });
+}
+
+function rulesForCondition(condition: string): CssRule[] {
+  return cssRules.filter((rule) => rule.conditions.includes(condition));
 }
 
 function ruleColor(selector: string): string {
@@ -145,15 +149,21 @@ describe('主要淺色介面的文字對比', () => {
   });
 
   it('Windows 強制色彩模式仍以系統色標示焦點、選取及按鈕狀態', () => {
-    expect(stylesheet).toMatch(/@media\s*\(forced-colors:\s*active\)/);
-    expect(stylesheet).toMatch(/:focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus\s*\{[^}]*outline-color:\s*Highlight/s);
-    expect(stylesheet).toMatch(/\.intent\.selected\s*\{[^}]*border:[^}]*Highlight/s);
-    expect(stylesheet).toMatch(/\.primary\s*,\s*\.quiet\s*\{[^}]*ButtonFace[^}]*ButtonText/s);
+    const rules = rulesForCondition('@media(forced-colors:active)');
+    expect(rules.find((rule) => rule.selector === ':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus')?.declarations).toMatch(/outline-color:Highlight!important/);
+    expect(rules.find((rule) => rule.selector === '.intent.selected')?.declarations).toMatch(/border:2px solid Highlight/);
+    expect(rules.find((rule) => rule.selector === '.primary,.quiet')?.declarations).toMatch(/background:ButtonFace;color:ButtonText/);
+    expect(rules.find((rule) => rule.selector === '.primary:disabled,.quiet:disabled,button:disabled')?.declarations).toMatch(/color:GrayText/);
     expect(stylesheet).not.toMatch(/forced-color-adjust:\s*none/);
   });
 
   it('尊重減少動態效果偏好，停用平滑捲動及動畫轉場', () => {
-    expect(stylesheet).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{\*,\*::before,\*::after\{[^}]*scroll-behavior:auto!important[^}]*animation-duration:\.01ms!important[^}]*animation-iteration-count:1!important[^}]*transition-duration:\.01ms!important\}\}/);
+    const motion = rulesForCondition('@media(prefers-reduced-motion:reduce)');
+    const allElements = motion.find((rule) => rule.selector === '*,*::before,*::after')?.declarations;
+    expect(allElements).toMatch(/scroll-behavior:auto!important/);
+    expect(allElements).toMatch(/animation-duration:\.01ms!important/);
+    expect(allElements).toMatch(/animation-iteration-count:1!important/);
+    expect(allElements).toMatch(/transition-duration:\.01ms!important/);
   });
 
   it('跳轉連結抵達主要內容或開局表單時保留可見焦點框', () => {
@@ -164,7 +174,8 @@ describe('主要淺色介面的文字對比', () => {
   });
 
   it('強制色彩模式將程式焦點落點改用系統高亮色', () => {
-    expect(stylesheet).toMatch(/#main-content:focus,#start-content:focus\{outline-color:Highlight!important\}/);
+    const focus = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector === ':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus')?.declarations;
+    expect(focus).toMatch(/outline-color:Highlight!important/);
   });
 
   it('對話紀錄長字串允許斷行並維持一般正文尺寸',()=>{
