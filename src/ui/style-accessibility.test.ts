@@ -57,4 +57,8 @@ describe('主要淺色介面的文字對比', () => {
     expect(stylesheet).toMatch(/\.primary\s*,\s*\.quiet\s*\{[^}]*ButtonFace[^}]*ButtonText/s);
     expect(stylesheet).not.toMatch(/forced-color-adjust:\s*none/);
   });
+
+  it('尊重減少動態效果偏好，停用平滑捲動及動畫轉場', () => {
+    expect(stylesheet).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{\*,\*::before,\*::after\{[^}]*scroll-behavior:auto!important[^}]*animation-duration:\.01ms!important[^}]*animation-iteration-count:1!important[^}]*transition-duration:\.01ms!important\}\}/);
+  });
 });
