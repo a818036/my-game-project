@@ -30,7 +30,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(159);
+    expect(withinCatalogYears).toHaveLength(160);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -98,6 +98,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'sun-quan-moves-capital-to-jianye-229': ['黃龍元年秋九月', '徵上大將軍陸遜輔太子孫登', '掌武昌留事'],
       'sun-quan-shiting-campaign-228': ['黃武七年', '秋八月'],
       'pan-jun-wuling-expedition-231': ['黃龍三年春二月'],
+      'shu-wei-qishan-lucheng-campaign-231': ['太和五年', '五月', '六月', '張郃追擊'],
       'wu-liaodong-envoy-mission-232': ['嘉禾元年記三月', '九月魏將田豫', '冬十月公孫淵'],
       'wu-liaodong-envoy-execution-233': ['嘉禾二年記三月'],
       'sun-he-crown-prince-and-zhuya-campaign-242': ['赤烏五年記正月', '四月禁進獻御物', '七月遣聶友', '八月立孫霸'],
@@ -126,7 +127,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(79);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(80);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -176,6 +177,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-morning-raid-ruxu-defeated-223',
       'wu-captures-jin-zong-at-qichun-223',
       'sun-quan-campaigns-at-hefei-234',
+      'shu-wei-qishan-lucheng-campaign-231',
       'wu-lu-dai-pacifies-luling-238',
       'lu-xun-pacifies-pengdan-revolt-237',
       'wu-captures-pengqi-243',
@@ -184,7 +186,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(79);
-    expect(uniqueNotedEvents.size).toBe(96);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(80);
+    expect(uniqueNotedEvents.size).toBe(97);
   });
 });
