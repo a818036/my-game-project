@@ -1,0 +1,40 @@
+import { describe, expect, it } from 'vitest';
+import { advancePhase4, createPhase4Model, HISTORY_CONTENT, PHASE4_CONTENT_VERSION, upgradePhase4Content } from './phase4';
+
+const persons = [{ id: 'sample-person', name: '示例人物', alive: true, location: '郡府', office: '縣令' }];
+
+describe('166、168 年東漢朝廷史實切片', () => {
+  it('A375 依來源觸發兩個年級節點，並只追加遷移、不回補舊存檔', () => {
+    const partisanId = 'partisan-frictions-emerge-166';
+    const courtId = 'ling-emperor-accession-court-purge-168';
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(162);
+
+    const fresh = advancePhase4(createPhase4Model(165, 1, persons, PHASE4_CONTENT_VERSION), 3 * 360);
+    expect(fresh.nodes.find((node) => node.contentId === partisanId)?.status).toBe('triggered');
+    expect(fresh.nodes.find((node) => node.contentId === courtId)?.status).toBe('triggered');
+    const partisan = fresh.eventLedger.find((item) => item.detail.includes('桓帝朝廷朋黨議論漸起'));
+    expect(partisan?.source).toContain('《資治通鑑》卷五十五');
+    expect(partisan?.source).toContain('《後漢書》卷六十七');
+    expect(partisan?.source).toContain('黨人之議自此始');
+    const court = fresh.eventLedger.find((item) => item.detail.includes('靈帝即位與竇武、陳蕃遭誅'));
+    expect(court?.source).toContain('《後漢書》卷八');
+    expect(court?.source).toContain('曹節矯詔');
+    expect(court?.source).toContain('不換算成模型月份');
+
+    const old = createPhase4Model(165, 1, persons, 'phase4-scenario-143');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === partisanId)?.status).toBe('pending');
+    expect(upgraded.nodes.find((node) => node.contentId === courtId)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const continued = advancePhase4(upgraded, 3 * 360);
+    expect(continued.nodes.find((node) => node.contentId === partisanId)?.status).toBe('triggered');
+    expect(continued.nodes.find((node) => node.contentId === courtId)?.status).toBe('triggered');
+
+    const late = upgradePhase4Content(createPhase4Model(169, 1, persons, 'phase4-scenario-143'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === partisanId)).toMatchObject({ status: 'resolved', resolvedYear: 166 });
+    expect(late.nodes.find((node) => node.contentId === courtId)).toMatchObject({ status: 'resolved', resolvedYear: 168 });
+    expect(late.eventLedger.some((item) => item.detail.includes('桓帝朝廷朋黨議論漸起'))).toBe(false);
+    expect(late.eventLedger.some((item) => item.detail.includes('靈帝即位與竇武、陳蕃遭誅'))).toBe(false);
+  });
+});

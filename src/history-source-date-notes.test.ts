@@ -156,6 +156,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
   it('A225 核實集中與節點內原史日期註記總數', () => {
     const inlineNotes = HISTORY_CONTENT.filter((item) => item.sourceDateNote).map((item) => item.id);
     expect(inlineNotes).toEqual([
+      'ling-emperor-accession-court-purge-168',
       'yellow-turban-184',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
@@ -184,6 +185,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(79);
-    expect(uniqueNotedEvents.size).toBe(95);
+    expect(uniqueNotedEvents.size).toBe(96);
   });
 });

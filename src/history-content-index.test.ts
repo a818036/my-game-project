@@ -29,7 +29,7 @@ describe('A304 歷史內容來源索引', () => {
     const rows = new Map([...document.matchAll(/^\| `([^`]+)` \|([^\r\n]*)/gm)].map(([, id, rest]) => [id, rest]));
     const activeEvents = HISTORY_CONTENT.filter((item) => item.kind === 'event' && !item.retired);
 
-    expect(activeEvents).toHaveLength(160);
+    expect(activeEvents).toHaveLength(162);
     for (const event of activeEvents) {
       const row = rows.get(event.id);
       expect(row, `缺少事件索引列：${event.id}`).toBeDefined();
