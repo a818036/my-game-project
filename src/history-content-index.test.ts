@@ -51,4 +51,16 @@ describe('A304 歷史內容來源索引', () => {
       }
     }
   });
+
+  it('A379 確認 160–280 年每個年份都有現行史實節點', () => {
+    const activeEventYears = new Set(
+      HISTORY_CONTENT
+        .filter((item) => item.kind === 'event' && !item.retired)
+        .flatMap((item) => Array.from({ length: item.endYear - item.startYear + 1 }, (_, index) => item.startYear + index)),
+    );
+    const missingYears = Array.from({ length: 280 - 160 + 1 }, (_, index) => 160 + index)
+      .filter((year) => !activeEventYears.has(year));
+
+    expect(missingYears).toEqual([]);
+  });
 });
