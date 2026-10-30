@@ -43,6 +43,9 @@ describe('即時人物對話',()=>{
     expect(missing.answer).toContain('未收錄');
     expect(missing.answer).toContain('劉備');
     expect(missing.answer).not.toContain('下邳之戰');
+    const unrelated=await understandInput('劉表在西元 197 年發生了哪些史實？',current,new AbortController().signal);
+    expect(unrelated.answer).toContain('未收錄');
+    expect(unrelated.answer).not.toContain('袁術稱帝');
     expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
   });
   it('逐年核對孫權 182–252 年問答，只列有來源節點或明示缺口',async()=>{

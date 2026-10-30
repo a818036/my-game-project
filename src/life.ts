@@ -93,7 +93,8 @@ export function answerKnownHistoricalEventQuestion(text:string,state:GameState):
       return aliases.test(narrative)||!/(孫權|孫仲謀)/.test(name)&&aliases.test(item.carrier);
     });
   });
-  const yuanShuChronologyNote=year===197&&!/(孫權|孫仲謀)/.test(text)?' 另，《資治通鑑》卷六十二將袁術稱帝繫於建安二年（197）；《三國志》卷六則繫於興平二年冬（195）。本內容包將兩者視為同一事件的紀年異說，只在 195 年結算一次，不代表 197 年再次稱帝。':'';
+  const asksAboutYuanShu=!subjects.length||subjects.includes('袁術');
+  const yuanShuChronologyNote=year===197&&asksAboutYuanShu&&!/(孫權|孫仲謀)/.test(text)?' 另，《資治通鑑》卷六十二將袁術稱帝繫於建安二年（197）；《三國志》卷六則繫於興平二年冬（195）。本內容包將兩者視為同一事件的紀年異說，只在 195 年結算一次，不代表 197 年再次稱帝。':'';
   if(subjects.length&&!records.length){
     const subject=subjects.join('、');
     return {kind:'question',answer:`目前內容包未收錄西元 ${year} 年與${subject}直接相關的來源節點；這不表示該年沒有事情發生，我不以其他人物事件代答，也不臆測。${yuanShuChronologyNote}`,choiceIds:[],questions:[]};
