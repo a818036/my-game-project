@@ -20,6 +20,7 @@ const HistoricalGeographyRegisters=lazy(()=>import('./HistoricalGeographyRegiste
 const LifeActionPanel=lazy(()=>import('./LifeActionPanel').then(({LifeActionPanel})=>({default:LifeActionPanel})));
 const ChatGptConnection=lazy(()=>import('./ChatGptConnection').then(({ChatGptConnection})=>({default:ChatGptConnection})));
 import { buildNarrationPayload, fetchNarration, templateNarration, type NarrationPayload, type NarrationResult } from '../narration/client';
+import { eraLabel } from './date-label';
 
 const blankWorkspace: WorkspaceSnapshot = { saves: [], unreadableSaves: [], profile: { regions: [], surnames: [], activeWorldlineId: null } };
 interface ConfirmationRequest { title: string; description: string; confirmLabel: string; input?: { label: string; value: string; onChange(value: string): void; maxLength?: number; placeholder?: string }; onConfirm(): void }
@@ -41,20 +42,19 @@ const DEDICATED_ABILITY_OPERATIONS = new Set<AbilityId>(['軒轅幻術・五感�
 const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
 const commandId = () => crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 function saveName(save: SaveFile) { return `${save.state.character.name}・${save.state.character.home}・第${save.state.turn}回合`; }
-function era(year: number) { return year >= 184 && year <= 189 ? `漢中平${year - 183}年` : `年號待補（${year}年）`; }
 function turnInterval(birthYear: number, turn: number, endYear: number, endMonth: number, endDay: number, timelineDay?: number, elapsedDays = 90) {
-  if (turn === 0) return `西元 ${endYear} 年 ${endMonth} 月／${era(endYear)}・出生`;
+  if (turn === 0) return `西元 ${endYear} 年 ${endMonth} 月／${eraLabel(endYear)}・出生`;
   if (timelineDay !== undefined) {
     const startDay = Math.max(0, timelineDay - elapsedDays);
     const startYear = birthYear + Math.floor(startDay / 360);
     const startMonth = Math.floor((startDay % 360) / 30) + 1;
     const startDayOfMonth = (startDay % 30) + 1;
-    return `西元 ${startYear} 年 ${startMonth} 月 ${startDayOfMonth} 日至 ${endYear} 年 ${endMonth} 月 ${endDay} 日／${era(startYear)}至${era(endYear)}・本回合推進 ${elapsedDays} 日`;
+    return `西元 ${startYear} 年 ${startMonth} 月 ${startDayOfMonth} 日至 ${endYear} 年 ${endMonth} 月 ${endDay} 日／${eraLabel(startYear)}至${eraLabel(endYear)}・本回合推進 ${elapsedDays} 日`;
   }
   const startMonths = (turn - 1) * 3;
   const startYear = birthYear + Math.floor(startMonths / 12);
   const startMonth = (startMonths % 12) + 1;
-  return `西元 ${startYear} 年 ${startMonth} 月至 ${endYear} 年 ${endMonth} 月／${era(startYear)}至${era(endYear)}・本回合約三月`;
+  return `西元 ${startYear} 年 ${startMonth} 月至 ${endYear} 年 ${endMonth} 月／${eraLabel(startYear)}至${eraLabel(endYear)}・本回合約三月`;
 }
 
 export default function App() {
@@ -395,7 +395,7 @@ export default function App() {
       </>}
       {activePanel==='記事'&&<>
       {state.summaries.length > 0 && <article className="panel summary"><div className="section-kicker">五／十／十五／二十回合摘要</div>{state.summaries.map((summary) => <details key={summary.turn}><summary>第 {summary.turn} 回合・{summary.kind}</summary><p>{summary.text}</p></details>)}</article>}
-      <article className="panel folds"><details><summary>開發模式：事件、種子與來源</summary><p>目前：{state.status === 'playing' ? '進行中' : '已完成'}・第 {state.turn} 回合</p><p>世界線：{w.worldlineId}・種子 {w.seed}・revision {state.revision}</p><p>日期：西元 {w.year} 年 {w.month} 月／{era(w.year)}</p><p>自動後台檢查：人事 {state.backend.personnelChecks}・人才 {state.backend.talentChecks}・歷史 {state.backend.historyChecks}・天下 {state.backend.trendChecks}</p><p>來源摘要：規則 {SOURCE_HASHES.rules.slice(0,12)}…・天生技 {SOURCE_HASHES.skills.slice(0,12)}…</p><p>待決決策不會由「繼續」批准；本原型尚無待決決策流程。</p><p>RNG 抽樣序列由種子及回合決定，可經事件重播。</p></details>
+      <article className="panel folds"><details><summary>開發模式：事件、種子與來源</summary><p>目前：{state.status === 'playing' ? '進行中' : '已完成'}・第 {state.turn} 回合</p><p>世界線：{w.worldlineId}・種子 {w.seed}・revision {state.revision}</p><p>日期：西元 {w.year} 年 {w.month} 月／{eraLabel(w.year)}</p><p>自動後台檢查：人事 {state.backend.personnelChecks}・人才 {state.backend.talentChecks}・歷史 {state.backend.historyChecks}・天下 {state.backend.trendChecks}</p><p>來源摘要：規則 {SOURCE_HASHES.rules.slice(0,12)}…・天生技 {SOURCE_HASHES.skills.slice(0,12)}…</p><p>待決決策不會由「繼續」批准；本原型尚無待決決策流程。</p><p>RNG 抽樣序列由種子及回合決定，可經事件重播。</p></details>
         <details><summary>收合帳簿・多帳戶</summary><p>私帳 {state.accounts.private}・家帳 {state.accounts.family}・公帑 {state.accounts.public}・軍府 {state.accounts.military}・主君 {state.accounts.sovereign}</p><div className="ledger">{state.ledger.map((entry) => <div key={entry.id}><span>第 {entry.turn} 回合・{entry.memo}</span><span>{entry.from} → {entry.to}・{entry.asset} {entry.amount}</span></div>)}</div><p className="caption">物資代管保留 ownerId，保管人與位置另記；不代表第一階段已實作完整天生技效果。</p></details>
       </article>
       <article className="panel folds"><details><summary>收合自動後台示例</summary><p>人事：{state.backend.personnel.at(-1)}</p><p>待接觸人才：{state.backend.talents.at(-1) ?? '本回合無新示例候選'}</p><p>四個引擎每回合都執行檢查；示例名單不代表完整歷史資料。</p></details></article>
