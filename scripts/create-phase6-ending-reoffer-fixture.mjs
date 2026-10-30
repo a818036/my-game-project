@@ -2,7 +2,9 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { createServer } from 'vite';
 
-const outputPath = resolve(process.argv[2] ?? 'docs/fixtures/phase6-ending-reoffer-v6.json');
+const args = process.argv.slice(2);
+const beforeReoffer = args[0] === '--before-reoffer';
+const outputPath = resolve(args[beforeReoffer ? 1 : 0] ?? 'docs/fixtures/phase6-ending-reoffer-v6.json');
 const vite = await createServer({
   configFile: './vite.config.ts',
   appType: 'custom',
@@ -67,7 +69,7 @@ try {
   state = continueLife.state;
   events.push(continueLife.event);
 
-  for (let index = 0; index < ENGINEERING.endingReofferNaturalNodeCount; index++) {
+  for (let index = 0; !beforeReoffer && index < ENGINEERING.endingReofferNaturalNodeCount; index++) {
     const id = `phase6-ending-reoffer-fixture-treaty-${index + 1}`;
     const draft = dispatch(state, {
       version: ENGINE_VERSION,
@@ -105,15 +107,15 @@ try {
     events.push(approval.event);
   }
 
-  if (!state.phase4 || state.phase4.year !== 280 || state.phase4.ending !== 'continuing' || !shouldReofferEnding(state.phase4)) {
-    throw new Error('測試存檔沒有停在 280 年且達到結局重提門檻');
+  if (!state.phase4 || state.phase4.year !== 280 || state.phase4.ending !== 'continuing' || shouldReofferEnding(state.phase4) === beforeReoffer) {
+    throw new Error(`測試存檔沒有停在 280 年且${beforeReoffer ? '低於' : '達到'}結局重提門檻`);
   }
   const candidate = { format: 'shenzhou-save', version: 6, worldlineId: state.worldlineId, events, state };
   const save = verifySave(toJson(candidate));
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, toJson(save), 'utf8');
   console.log(`已建立並重播驗證 v6 結局重提存檔：${outputPath}`);
-  console.log(`世界線 ${save.worldlineId}、${save.events.length} 筆引擎事件、西元 ${save.state.phase4.year} 年、ending=${save.state.phase4.ending}、已達重提門檻。`);
+  console.log(`世界線 ${save.worldlineId}、${save.events.length} 筆引擎事件、西元 ${save.state.phase4.year} 年、ending=${save.state.phase4.ending}、${beforeReoffer ? '尚未達' : '已達'}重提門檻。`);
 } finally {
   await vite.close();
 }
