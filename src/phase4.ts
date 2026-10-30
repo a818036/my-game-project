@@ -5,8 +5,8 @@
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
 export const PHASE4_CONTENT_VERSION = 'phase4-scenario-137';
 const PHASE4_CONTENT_VERSIONS=[PHASE4_LEGACY_CONTENT_VERSION,'phase4-scenario-2','phase4-scenario-3','phase4-scenario-4','phase4-scenario-5','phase4-scenario-6','phase4-scenario-7','phase4-scenario-8','phase4-scenario-9','phase4-scenario-10','phase4-scenario-11','phase4-scenario-12','phase4-scenario-13','phase4-scenario-14','phase4-scenario-15','phase4-scenario-16','phase4-scenario-17','phase4-scenario-18','phase4-scenario-19','phase4-scenario-20','phase4-scenario-21','phase4-scenario-22','phase4-scenario-23','phase4-scenario-24','phase4-scenario-25','phase4-scenario-26','phase4-scenario-27','phase4-scenario-28','phase4-scenario-29','phase4-scenario-30','phase4-scenario-31','phase4-scenario-32','phase4-scenario-33','phase4-scenario-34','phase4-scenario-35','phase4-scenario-36','phase4-scenario-37','phase4-scenario-38','phase4-scenario-39','phase4-scenario-40','phase4-scenario-41','phase4-scenario-42','phase4-scenario-43','phase4-scenario-44','phase4-scenario-45','phase4-scenario-46','phase4-scenario-47','phase4-scenario-48','phase4-scenario-49','phase4-scenario-50','phase4-scenario-51','phase4-scenario-52','phase4-scenario-53','phase4-scenario-54','phase4-scenario-55','phase4-scenario-56','phase4-scenario-57','phase4-scenario-58','phase4-scenario-59','phase4-scenario-60','phase4-scenario-61','phase4-scenario-62','phase4-scenario-63','phase4-scenario-64','phase4-scenario-65','phase4-scenario-66','phase4-scenario-67','phase4-scenario-68','phase4-scenario-69','phase4-scenario-70','phase4-scenario-71','phase4-scenario-72','phase4-scenario-73','phase4-scenario-74','phase4-scenario-75','phase4-scenario-76','phase4-scenario-77','phase4-scenario-78','phase4-scenario-79','phase4-scenario-80','phase4-scenario-81','phase4-scenario-82','phase4-scenario-83','phase4-scenario-84','phase4-scenario-85','phase4-scenario-86','phase4-scenario-87','phase4-scenario-88','phase4-scenario-89','phase4-scenario-90','phase4-scenario-91','phase4-scenario-92','phase4-scenario-93','phase4-scenario-94','phase4-scenario-95','phase4-scenario-96','phase4-scenario-97','phase4-scenario-98','phase4-scenario-99','phase4-scenario-100','phase4-scenario-101','phase4-scenario-102','phase4-scenario-103','phase4-scenario-104','phase4-scenario-105','phase4-scenario-106','phase4-scenario-107','phase4-scenario-108','phase4-scenario-109','phase4-scenario-110','phase4-scenario-111','phase4-scenario-112','phase4-scenario-113','phase4-scenario-114','phase4-scenario-115','phase4-scenario-116','phase4-scenario-117','phase4-scenario-118','phase4-scenario-119','phase4-scenario-120','phase4-scenario-121','phase4-scenario-122','phase4-scenario-123','phase4-scenario-124','phase4-scenario-125','phase4-scenario-126','phase4-scenario-127','phase4-scenario-128','phase4-scenario-129','phase4-scenario-130','phase4-scenario-131','phase4-scenario-132','phase4-scenario-133','phase4-scenario-134','phase4-scenario-135','phase4-scenario-136',PHASE4_CONTENT_VERSION] as const;
-export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; playerVisitTrustGain:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
- travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, playerVisitTrustGain:2,
+export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
+ travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2,
  // Engineering choice for the single named historical sample; this is not a general rule.
  deathInterventionWindowDaysByEvent:{'sun-jian-death-191':30},
 };
@@ -267,6 +267,7 @@ export interface Route { id:string; from:string; to:string; days:number; terrain
 export interface HistoricalPerson {id:string;name:string;alive:boolean;location:string;role:string;deathYear?:number;deathCause?:string;source:string;}
 export interface Convoy { id:string; routeId:string; owner:string; item:string; quantity:number; from:string; to:string; daysRemaining:number; status:'traveling'|'arrived'|'lost'; }
 export interface BattleCoordinate { x:number; y:number; z?:number; }
+export interface BattleVelocity { x:number; y:number; z:number; }
 export type BattlePersonnelStatus='active'|'killed'|'wounded'|'missing'|'captured'|'surrendered';
 export type BattlePersonnelOutcome=Exclude<BattlePersonnelStatus,'active'>;
 export interface BattlePersonnel { id:string; name:string; status:BattlePersonnelStatus; }
@@ -275,7 +276,9 @@ export interface WarUnit { id:string; faction:string; commanderId:string; comman
 export interface CampaignFront { id:string; name:string; location:string; overallCommanderId:string; overallCommanderName:string; unitIds:string[]; }
 export interface CampaignTransfer { id:string; unitId:string; fromFrontId:string; toFrontId:string; arrivalDay:number; }
 export interface MultiFrontCampaign { fronts:CampaignFront[]; units:WarUnit[]; transfers:CampaignTransfer[]; }
-export interface BattleSceneObject { id:string; label:string; location:string; condition:string; position?:BattleCoordinate; radius?:number; blocksLineOfSight?:boolean; integrity?:number; destroyed?:boolean; }
+/** Optional, explicit rigid-sphere profile. All dimensions use SI units and remain engineering inputs. */
+export interface BattleRigidBody { massKg:number; restitution:number; anchored?:boolean; velocityMps?:BattleVelocity; accumulatedDissipationJ?:number; failureEnergyJ?:number; }
+export interface BattleSceneObject { id:string; label:string; location:string; condition:string; position?:BattleCoordinate; radius?:number; blocksLineOfSight?:boolean; integrity?:number; destroyed?:boolean; rigidBody?:BattleRigidBody; }
 export interface BattlePotentialChain { id:string; fromObjectId:string; toObjectId:string; triggerCondition:string; possibleEffect:string; affectedUnitIds:string[]; impactForce?:number; maxDistance?:number; affectedRadius?:number; moraleImpact?:number; casualties?:Array<{unitId:string;killed:number;wounded:number;routed:number;personnelOutcomes?:BattlePersonnelLoss[]}>; }
 export interface BattleObserverPosition { id:string; side:string; location:string; visibility:string; position?:BattleCoordinate; sightRange?:number; }
 export interface BattleSceneManifest { example:boolean; /** Coordinates use this common unit; absent means legacy normalized units. */ coordinateScale?:'normalized'|'meters'; objects:BattleSceneObject[]; potentialChains:BattlePotentialChain[]; observers:BattleObserverPosition[]; settledChainIds?:string[]; }
@@ -300,6 +303,7 @@ export type Phase4Action =
  | {type:'SendConvoy';routeId:string;owner:string;item:string;quantity:number;from:string;to:string}
  | {type:'StartBattle';id:string;location:string;units:WarUnit[];protagonistPresent:boolean;scene?:BattleSceneManifest}
  | {type:'ResolveBattleImpact';targetObjectId:string;force:number}
+ | {type:'ResolveBattleImpulse';targetObjectId:string;impulseNs:BattleVelocity}
  | {type:'StartMultiFrontExample'}
  | {type:'TransferBetweenFronts';unitId:string;toFrontId:string}
  | {type:'BattleRound';orders:Record<string,WarUnit['order']>}
@@ -381,6 +385,56 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
  return model;
 }
 function battleCoordinateDistance(a:BattleCoordinate,b:BattleCoordinate){return Math.hypot(a.x-b.x,a.y-b.y,(a.z??0)-(b.z??0));}
+function resolveBattleImpulse(battle:Battle,targetObjectId:string,impulseNs:BattleVelocity):string[]{
+ const scene=battle.scene,target=scene?.objects.find(object=>object.id===targetObjectId),bodies=scene?.objects.filter(object=>object.rigidBody&&!object.destroyed)??[];
+ const validVector=(v:BattleVelocity)=>!!v&&[v.x,v.y,v.z].every(Number.isFinite)&&Math.hypot(v.x,v.y,v.z)<=100000;
+ if(battle.status!=='active'||!scene||scene.coordinateScale!=='meters'||!target||!target.position||!target.radius||!target.rigidBody||target.rigidBody.anchored||target.destroyed||!validVector(impulseNs)||Math.hypot(impulseNs.x,impulseNs.y,impulseNs.z)===0||bodies.length<1)throw new Error('戰場動量目標、SI 座標、剛體屬性或戰役狀態無效');
+ validateBattleScene(scene,battle.units);
+ const norm=(v:BattleVelocity)=>Math.hypot(v.x,v.y,v.z), dot=(a:BattleVelocity,b:BattleVelocity)=>a.x*b.x+a.y*b.y+a.z*b.z;
+ const add=(a:BattleVelocity,b:BattleVelocity):BattleVelocity=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z});
+ const scale=(a:BattleVelocity,n:number):BattleVelocity=>({x:a.x*n,y:a.y*n,z:a.z*n});
+ const velocity=(object:BattleSceneObject)=>object.rigidBody!.anchored?{x:0,y:0,z:0}:object.rigidBody!.velocityMps??{x:0,y:0,z:0};
+ const initialVelocity=velocity(target);
+ if(norm(add(initialVelocity,scale(impulseNs,1/target.rigidBody.massKg)))>1000)throw new Error('戰場剛體速度超出示例模型上限');
+ const initialEnergy=new Map(bodies.map(object=>[object.id,.5*object.rigidBody!.massKg*norm(velocity(object))**2]));
+ target.rigidBody.velocityMps=add(velocity(target),scale(impulseNs,1/target.rigidBody.massKg));
+ const contacts:string[]=[];let collisionDissipation=0;
+ for(let iteration=0;iteration<ENGINEERING.battlePhysicsContactIterations;iteration++){
+  let changed=false;
+  for(let i=0;i<bodies.length;i++)for(let j=i+1;j<bodies.length;j++){
+   const a=bodies[i]!,b=bodies[j]!,pa=a.position!,pb=b.position!,ba=a.rigidBody!,bb=b.rigidBody!;
+   const delta:BattleVelocity={x:pb.x-pa.x,y:pb.y-pa.y,z:(pb.z??0)-(pa.z??0)},distance=norm(delta),contactLimit=a.radius!+b.radius!+ENGINEERING.battlePhysicsContactSlopMeters;
+   if(distance>contactLimit)continue;
+   const normal=distance>1e-9?scale(delta,1/distance):{x:1,y:0,z:0};
+   const inverseA=ba.anchored?0:1/ba.massKg,inverseB=bb.anchored?0:1/bb.massKg,inverseTotal=inverseA+inverseB;
+   const penetration=Math.max(0,a.radius!+b.radius!-distance-ENGINEERING.battlePhysicsContactSlopMeters);
+   if(penetration>0&&inverseTotal>0){const correction=scale(normal,penetration*ENGINEERING.battlePhysicsPositionCorrection/inverseTotal),nextA={...pa,x:pa.x-correction.x*inverseA,y:pa.y-correction.y*inverseA,z:(pa.z??0)-correction.z*inverseA},nextB={...pb,x:pb.x+correction.x*inverseB,y:pb.y+correction.y*inverseB,z:(pb.z??0)+correction.z*inverseB};if([nextA.x,nextA.y,nextA.z,nextB.x,nextB.y,nextB.z].some(value=>!Number.isFinite(value)||Math.abs(value)>100000))throw new Error('碰撞位置修正超出座標範圍');if(!ba.anchored)a.position=nextA;if(!bb.anchored)b.position=nextB;changed=true;}
+   const relative=dot({x:bb.velocityMps?.x??0,y:bb.velocityMps?.y??0,z:bb.velocityMps?.z??0},{x:normal.x,y:normal.y,z:normal.z})-dot({x:ba.velocityMps?.x??0,y:ba.velocityMps?.y??0,z:ba.velocityMps?.z??0},normal);
+   if(relative>=-1e-9)continue;
+   if(inverseTotal===0)continue;
+   const reducedMass=1/inverseTotal,beforeRelativeEnergy=.5*reducedMass*relative*relative;
+   const magnitude=-(1+Math.min(ba.restitution,bb.restitution))*relative/inverseTotal,contactImpulse=scale(normal,magnitude);
+   if(!ba.anchored)ba.velocityMps=add(velocity(a),scale(contactImpulse,-inverseA));
+   if(!bb.anchored)bb.velocityMps=add(velocity(b),scale(contactImpulse,inverseB));
+   if(norm(velocity(a))>1000||norm(velocity(b))>1000)throw new Error('戰場剛體速度超出示例模型上限');
+   const afterRelative=dot(velocity(b),normal)-dot(velocity(a),normal),pairDissipation=Math.max(0,beforeRelativeEnergy-.5*reducedMass*afterRelative*afterRelative);
+   collisionDissipation+=pairDissipation;
+   ba.accumulatedDissipationJ=(ba.accumulatedDissipationJ??0)+pairDissipation/2;
+   bb.accumulatedDissipationJ=(bb.accumulatedDissipationJ??0)+pairDissipation/2;
+   if((ba.accumulatedDissipationJ??0)>1e12||(bb.accumulatedDissipationJ??0)>1e12)throw new Error('戰場剛體耗散能量超出示例模型上限');
+   contacts.push(`${a.label}↔${b.label}`);changed=true;
+  }
+  if(!changed)break;
+ }
+ // Energy supplied by the impulse is reported separately from collision dissipation.
+ const afterImpulseVelocity=add(initialVelocity,scale(impulseNs,1/target.rigidBody.massKg));
+ const suppliedEnergy=.5*target.rigidBody.massKg*norm(afterImpulseVelocity)**2-(initialEnergy.get(target.id)??0);
+ const failed:string[]=[];for(const object of bodies){const body=object.rigidBody!;if(body.failureEnergyJ!==undefined&&(body.accumulatedDissipationJ??0)>=body.failureEnergyJ){object.integrity=0;object.destroyed=true;object.condition=`結構失效（${object.condition}）`;failed.push(object.label);}}
+ const vectorText=(v:BattleVelocity)=>`(${Number(v.x.toFixed(3))}, ${Number(v.y.toFixed(3))}, ${Number(v.z.toFixed(3))})`;
+ const supplied=Math.max(0,suppliedEnergy);
+ const beat=`對${target.label}施加動量 ${vectorText(impulseNs)} N·s；輸入能量約 ${Number(supplied.toFixed(3))} J，結算速度 ${vectorText(target.rigidBody.velocityMps!)} m/s。接觸 ${contacts.length?contacts.join('、'):'無球形剛體接觸'}；本次碰撞耗散能量 ${Number(collisionDissipation.toFixed(3))} J${failed.length?`，達到明示失效閾值的構件：${failed.join('、')}`:''}。此模型不推算人員傷亡、地形、空氣阻力或器械細節。`;
+ battle.logs.push(beat);return [beat];
+}
 function resolveBattleImpact(battle:Battle,targetObjectId:string,force:number):string[]{
  const scene=battle.scene,target=scene?.objects.find(object=>object.id===targetObjectId);
  if(battle.status!=='active'||!scene||!target||!target.position||target.integrity===undefined||target.destroyed||!Number.isInteger(force)||force<1||force>100000)throw new Error('戰場打擊目標、位置、力值或戰役狀態無效');
@@ -416,7 +470,15 @@ function validateBattleScene(scene:BattleSceneManifest,units:WarUnit[]):BattleSc
  const unitIds=new Set(units.map(unit=>unit.id)),unitsById=new Map(units.map(unit=>[unit.id,unit]));
  const validCoordinate=(point:BattleCoordinate|undefined)=>point===undefined||(!!point&&Number.isFinite(point.x)&&Number.isFinite(point.y)&&(point.z===undefined||Number.isFinite(point.z))&&Math.abs(point.x)<=100000&&Math.abs(point.y)<=100000&&(point.z===undefined||Math.abs(point.z)<=100000));
  const validRadius=(radius:number|undefined,max:number)=>radius===undefined||(Number.isFinite(radius)&&radius>=0&&radius<=max);
- const objectIds=new Set<string>();for(const object of scene.objects){if(typeof object.id!=='string'||!object.id.trim()||object.id.length>100||objectIds.has(object.id)||typeof object.label!=='string'||!object.label.trim()||typeof object.location!=='string'||!object.location.trim()||typeof object.condition!=='string'||!object.condition.trim()||object.label.length>120||object.location.length>120||object.condition.length>240||!validCoordinate(object.position)||!validRadius(object.radius,10000)||!validRadius(object.integrity,100000)||(object.integrity!==undefined&&object.integrity<=0&&object.destroyed!==true)||(object.destroyed!==undefined&&typeof object.destroyed!=='boolean')||(object.destroyed===true&&object.integrity!==0)||(object.integrity===undefined&&object.destroyed!==undefined)||(object.blocksLineOfSight!==undefined&&typeof object.blocksLineOfSight!=='boolean'))throw new Error('戰場物件資料無效');objectIds.add(object.id);}
+ const objectIds=new Set<string>();for(const object of scene.objects){
+  const body=object.rigidBody,velocity=body?.velocityMps;
+  const badVelocity=velocity!==undefined&&(!velocity||![velocity.x,velocity.y,velocity.z].every(Number.isFinite)||Math.hypot(velocity.x,velocity.y,velocity.z)>100000||(body?.anchored===true&&Math.hypot(velocity.x,velocity.y,velocity.z)>1e-9));
+  const badEnergy=body?.accumulatedDissipationJ!==undefined&&(!Number.isFinite(body.accumulatedDissipationJ)||body.accumulatedDissipationJ<0||body.accumulatedDissipationJ>1e12);
+  const badFailure=body?.failureEnergyJ!==undefined&&(!Number.isFinite(body.failureEnergyJ)||body.failureEnergyJ<=0||body.failureEnergyJ>1e12);
+  const badBody=body!==undefined&&(scene.coordinateScale!=='meters'||!object.position||object.radius===undefined||object.radius<=0||!Number.isFinite(body.massKg)||body.massKg<=0||body.massKg>1_000_000||!Number.isFinite(body.restitution)||body.restitution<0||body.restitution>1||(body.anchored!==undefined&&typeof body.anchored!=='boolean')||badVelocity||badEnergy||badFailure);
+  if(typeof object.id!=='string'||!object.id.trim()||object.id.length>100||objectIds.has(object.id)||typeof object.label!=='string'||!object.label.trim()||typeof object.location!=='string'||!object.location.trim()||typeof object.condition!=='string'||!object.condition.trim()||object.label.length>120||object.location.length>120||object.condition.length>240||!validCoordinate(object.position)||!validRadius(object.radius,10000)||!validRadius(object.integrity,100000)||(object.integrity!==undefined&&object.integrity<=0&&object.destroyed!==true)||(object.destroyed!==undefined&&typeof object.destroyed!=='boolean')||(object.destroyed===true&&object.integrity!==0)||(object.integrity===undefined&&object.destroyed!==undefined)||(object.blocksLineOfSight!==undefined&&typeof object.blocksLineOfSight!=='boolean')||badBody)throw new Error('戰場物件資料無效');
+  objectIds.add(object.id);
+ }
  const linkIds=new Set<string>(),namedOutcomeIds=new Set<string>();for(const link of scene.potentialChains){const physical=[link.impactForce,link.maxDistance,link.affectedRadius,link.moraleImpact],hasPhysical=physical.some(value=>value!==undefined);if(typeof link.id!=='string'||!link.id.trim()||link.id.length>100||linkIds.has(link.id)||!objectIds.has(link.fromObjectId)||!objectIds.has(link.toObjectId)||link.fromObjectId===link.toObjectId||typeof link.triggerCondition!=='string'||!link.triggerCondition.trim()||link.triggerCondition.length>300||typeof link.possibleEffect!=='string'||!link.possibleEffect.trim()||link.possibleEffect.length>300||!Array.isArray(link.affectedUnitIds)||link.affectedUnitIds.length>64||link.affectedUnitIds.some(id=>typeof id!=='string'||id.length>100||!unitIds.has(id))||new Set(link.affectedUnitIds).size!==link.affectedUnitIds.length||(link.casualties!==undefined&&(!Array.isArray(link.casualties)||link.casualties.length>64||link.casualties.some(loss=>!loss||!link.affectedUnitIds.includes(loss.unitId)||![loss.killed,loss.wounded,loss.routed].every(value=>Number.isSafeInteger(value)&&value>=0)||loss.killed+loss.wounded+loss.routed<1||(loss.personnelOutcomes!==undefined&&(!Array.isArray(loss.personnelOutcomes)||loss.personnelOutcomes.length>64||loss.personnelOutcomes.some(outcome=>!outcome||typeof outcome.personId!=='string'||outcome.personId.length>100||!['killed','wounded','missing','captured','surrendered'].includes(outcome.status)||namedOutcomeIds.has(outcome.personId))||new Set(loss.personnelOutcomes.map(outcome=>outcome.personId)).size!==loss.personnelOutcomes.length))||countOutcome(loss.personnelOutcomes??[],'killed')>loss.killed||countOutcome(loss.personnelOutcomes??[],'wounded')>loss.wounded||countRoutedOutcome(loss.personnelOutcomes??[])>loss.routed)||new Set(link.casualties.map(loss=>loss.unitId)).size!==link.casualties.length))||(hasPhysical&&(!Number.isFinite(link.impactForce)||link.impactForce!<=0||link.impactForce!>100000||!Number.isFinite(link.maxDistance)||link.maxDistance!<=0||link.maxDistance!>100000||!Number.isFinite(link.affectedRadius)||link.affectedRadius!<0||link.affectedRadius!>100)))throw new Error('戰場潛在因果鏈無效或指向不存在的物件／部隊');for(const loss of link.casualties??[])for(const outcome of loss.personnelOutcomes??[])namedOutcomeIds.add(outcome.personId);linkIds.add(link.id);}
  for(const link of scene.potentialChains)for(const loss of link.casualties??[])for(const outcome of loss.personnelOutcomes??[]){const unit=unitsById.get(loss.unitId),person=unit?.personnel?.find(entry=>entry.id===outcome.personId);if(!person||person.status!=='active')throw new Error('戰場傷亡名冊引用不存在或已非現役的人員');}
  const observerIds=new Set<string>();for(const observer of scene.observers){if(typeof observer.id!=='string'||!observer.id.trim()||observer.id.length>100||observerIds.has(observer.id)||typeof observer.side!=='string'||!observer.side.trim()||observer.side.length>80||typeof observer.location!=='string'||!observer.location.trim()||typeof observer.visibility!=='string'||!observer.visibility.trim()||observer.location.length>120||observer.visibility.length>240||!validCoordinate(observer.position)||!validRadius(observer.sightRange,100000))throw new Error('戰場觀察位置資料無效');observerIds.add(observer.id);}
@@ -460,6 +522,7 @@ export function applyPhase4Action(model:Phase4Model,action:Phase4Action,people:P
   pushEvent(n,'戰役開始',`${action.location}，戰略總指揮與 ${units.length} 個唯一部隊分列；預備隊單獨保留，未重複計入現役兵。`);break;
  }
  case'ResolveBattleImpact':{if(!n.battle)throw new Error('沒有可結算的戰場');const beats=resolveBattleImpact(n.battle,action.targetObjectId,action.force);pushEvent(n,'戰場因果連鎖',beats.join(' '));break;}
+ case'ResolveBattleImpulse':{if(!n.battle)throw new Error('沒有可結算的戰場');const beats=resolveBattleImpulse(n.battle,action.targetObjectId,action.impulseNs);pushEvent(n,'戰場碰撞物理結算',beats.join(' '));break;}
  case'BattleRound':{if(!n.battle||n.battle.status!=='active')throw new Error('目前沒有進行中的戰役');n.battle.rounds++;const b=n.battle;for(const u of b.units){const order=action.orders[u.id]??u.order;u.order=order;if(order==='撤退'){const trackedActive=countPersonnel(u.personnel??[],'active'),routed=Math.min(Math.max(0,u.strength-trackedActive),Math.floor(u.strength*.1));u.routed+=routed;u.strength-=routed;continue;}if(order==='進攻'&&u.reserve){u.strength+=u.reserve;u.reserve=0;b.logs.push(`${u.commanderName}奉令投入預備隊；該兵力由預備轉為現役一次。`);}u.fatigue=Math.min(100,u.fatigue+10);u.morale=Math.max(0,Math.min(100,u.morale+(order==='防守'?2:-3)-(u.supply===0?10:0)));u.supply=Math.max(0,u.supply-1);const trackedActive=countPersonnel(u.personnel??[],'active'),loss=Math.min(Math.max(0,u.strength-trackedActive),Math.max(0,ENGINEERING.battleBaseCasualties+Math.floor(u.fatigue/25)+(u.terrain==='山地'?1:0)));u.strength-=loss;u.killed+=Math.floor(loss*.4);u.wounded+=loss-Math.floor(loss*.4);}
  b.logs.push(`第 ${b.rounds} 輪：地形、命令、士氣、疲勞與補給已結算；傷亡已回寫各部。${b.protagonistPresent?'主角親臨：近旁目擊先起，旗號與傳令沿前陣擴散；不在場者仍不知道主角身份與能力。':''}`);if(b.units.filter(u=>u.order!=='撤退').length<=1)b.status='ended';pushEvent(n,'戰役輪次',b.logs.at(-1)!);dateAdd(n,1);break;}
  case'Retreat':{const b=n.battle,u=b?.units.find(x=>x.id===action.unitId);if(!b||b.status!=='active'||!u)throw new Error('撤退部隊不存在');u.order='撤退';const trackedActive=countPersonnel(u.personnel??[],'active'),routed=Math.min(Math.max(0,u.strength-trackedActive),Math.floor(u.strength*.1));u.routed+=routed;u.strength-=routed;b.logs.push(`${u.commanderName}率部沿既定退路撤出；只將未具名現役兵記為潰散，已登錄人員仍待明確結算。`);pushEvent(n,'部隊撤退',b.logs.at(-1)!);break;}

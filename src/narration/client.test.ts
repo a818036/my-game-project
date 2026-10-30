@@ -68,6 +68,16 @@ describe('第五階段・敘事資訊分層與回應驗證',()=>{
     expect(()=>validateNarrationResult({paragraphs:['此擊造成陣亡 1 人、受傷 2 人。'],dialogue:[],suggestions:[]},payload)).not.toThrow();
     expect(()=>validateNarrationResult({paragraphs:['此擊造成陣亡 999 人。'],dialogue:[],suggestions:[]},payload)).toThrow('不存在的數字事實');
   });
+  it('A271 戰場碰撞旁白取得結算剛體速度與公尺座標標記',()=>{
+    const current=state(),detail='對撞木施加動量 (10, 0, 0) N·s；結算速度 (0, 0, 0) m/s；木門接觸';
+    const battle={id:'physics-narration',location:'渡口（示例）',startedDay:3,rounds:0,status:'active' as const,overallCommander:{id:'overall',name:'總指揮・示例',unitId:null},protagonistPresent:true,witnesses:[],scene:{example:true,coordinateScale:'meters' as const,objects:[{id:'ram',label:'撞木',location:'前沿',condition:'碰撞',position:{x:0,y:0,z:0},radius:.5,rigidBody:{massKg:1,restitution:0,velocityMps:{x:0,y:0,z:0},accumulatedDissipationJ:25}},{id:'gate',label:'木門',location:'門洞',condition:'固定',position:{x:1,y:0,z:0},radius:.5,rigidBody:{massKg:100,restitution:0,anchored:true,velocityMps:{x:0,y:0,z:0}}}],potentialChains:[],observers:[]},logs:[detail],units:[]};
+    const withBattle={...current,phase4:{...current.phase4!,battle,eventLedger:[...current.phase4!.eventLedger,{id:'physics-event',day:4,year:184,month:1,dayOfMonth:5,type:'戰場碰撞物理結算',detail}]}} as GameState;withBattle.phase4!.battle=battle;
+    const event={version:ENGINE_VERSION as typeof ENGINE_VERSION,eventId:'physics-event',commandId:'physics-command',commandHash:'h',revision:2,type:'Phase4Changed' as const,payload:{action:{type:'ResolveBattleImpulse' as const,targetObjectId:'ram',impulseNs:{x:10,y:0,z:0}}}};
+    const payload=buildNarrationPayload(withBattle,event),details=payload.settledEvents[0].details;
+    expect(details).toContain('對撞木施加動量');expect(details).toContain('撞木');expect(details).toContain('速度 0,0,0 m/s');expect(details).toContain('累積耗散 25 J');expect(details).toContain('場景座標單位：公尺');
+    expect(()=>validateNarrationResult({paragraphs:['撞木速度為 0,0,0 m/s，累積耗散 25 J。'],dialogue:[],suggestions:[]},payload)).not.toThrow();
+    expect(()=>validateNarrationResult({paragraphs:['碰撞造成陣亡 5 人。'],dialogue:[],suggestions:[]},payload)).toThrow('不存在的數字事實');
+  });
   it('歷史年節點敘事取得來源事實與精度註記，但不把年表資料當作主角親見',()=>{
     const current=state();
     const content=HISTORY_CONTENT.find(item=>item.id==='sun-quan-hunts-tiger-lingting-218')!;
