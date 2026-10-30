@@ -92,6 +92,7 @@ describe('重大節點後重新提供結局的 App 流程', () => {
 
     await act(async () => {
       button?.click();
+      await import('./EndingChoice');
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
@@ -103,6 +104,9 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     const decision = host.querySelector<HTMLElement>('#main-content [data-testid="ending-decision-main"]');
     expect(decision).not.toBeNull();
     expect(decision?.textContent).toContain('選擇繼續人生');
+    expect(decision?.querySelector('label[for="ending-direction"]')?.textContent).toBe('你決定的結局方向');
+    expect(decision?.querySelector('#ending-direction')).not.toBeNull();
+    expect(decision?.querySelector('button[type="submit"]')?.textContent).toBe('確認選擇結局');
     expect(host.querySelector('.phase4-panel [data-testid="ending-decision-main"]')).toBeNull();
   }, 30000);
 
