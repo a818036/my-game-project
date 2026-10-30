@@ -113,6 +113,21 @@ export function answerKnownSunQuanBiographyQuestion(text:string):InteractionResu
   return null;
 }
 const HISTORICAL_SUBJECT_ALIASES=['曹操','曹丕','曹叡','曹仁','曹真','曹休','曹洪','袁紹','袁術','袁譚','袁尚','呂布','董卓','張角','劉備','劉禪','劉表','劉焉','劉璋','關羽','張飛','趙雲','諸葛亮','周瑜','魯肅','呂蒙','陸遜','孫堅','孫策','孫權','孫仲謀','孫登','孫和','孫亮','孫休','孫皓','司馬懿','馬超','韓遂','張昭','高幹','蹋頓'];
+export function answerKnownHistoricalPersonTimelineQuestion(text:string):InteractionResult|null{
+  const asksTimeline=/(一生|生平|年表|完整經歷|經歷|事蹟|做過什麼|有哪些事)/.test(text);
+  if(!asksTimeline)return null;
+  const subject=HISTORICAL_SUBJECT_ALIASES.find(name=>text.includes(name));
+  if(!subject||subject==='孫權'||subject==='孫仲謀')return null;
+  const records=HISTORY_CONTENT.filter(item=>{
+    if(item.retired||item.kind!=='event'||!item.source.startsWith('《'))return false;
+    return `${item.title} ${item.description} ${item.carrier}`.includes(subject);
+  }).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
+  if(!records.length)return {kind:'question',answer:`目前內容包沒有找到與${subject}姓名直接相符的來源節點；這是資料索引缺口，不代表其一生沒有事蹟。我不以其他人物事件代答，也不臆測。`,choiceIds:[],questions:[]};
+  const shown=records.slice(0,20);
+  const chronology=shown.map(item=>`${item.startYear===item.endYear?`${item.startYear}年`:`${item.startYear}–${item.endYear}年`}・${item.title}：${item.description}〔${item.source}〕`).join('\n');
+  const more=records.length>shown.length?`\n\n目前另有 ${records.length-shown.length} 筆符合索引，這次先列前 ${shown.length} 筆。`:'';
+  return {kind:'question',answer:`依目前內容包中標有原典來源、且標題／摘要／承載者明確提及${subject}的節點，整理出 ${records.length} 筆年級事件：\n${chronology}${more}\n\n這只是遊戲目前收錄的事件索引，不是完整生平或逐年活動清單；未列出的年份是資料覆蓋缺口，不表示當年沒有活動。節點日期精度以各筆來源註記為準，沒有資料的日常生活與確切日期不作補寫。`,choiceIds:[],questions:[],source:'各年表節點所列原典來源'};
+}
 export function answerKnownHistoricalEventQuestion(text:string,state:GameState):InteractionResult|null{
   if(!/(發生|事件|大事|史實|何事|什麼|哪些)/.test(text))return null;
   const explicitYear=text.match(/(?:西元|公元)?\s*([1-9]\d{2,3})\s*年/);
@@ -146,6 +161,7 @@ export function localInteraction(text:string,state:GameState):InteractionResult{
   const major=protectMajorAction(clean);if(major)return major;
   if((/[?？]/.test(clean)&&/然後|接著|再去/.test(clean))||/不要|先別|不去|不做|除非|如果|若是/.test(clean))return{kind:'mixed',answer:'這段話包含條件、否定或不同用途，需要先拆開確認，沒有執行任何一部分。',choiceIds:[],questions:['請先說明要查詢的問題，或單獨列出這次確定要做的行動。']};
   const biographyAnswer=answerKnownSunQuanBiographyQuestion(clean);if(biographyAnswer)return biographyAnswer;
+  const personTimelineAnswer=answerKnownHistoricalPersonTimelineQuestion(clean);if(personTimelineAnswer)return personTimelineAnswer;
   const rulerAnswer=answerKnownRulerQuestion(clean,state);if(rulerAnswer)return rulerAnswer;
   if(/幾歲|年齡|多大/.test(clean)&&!/(然後|接著|再去)/.test(clean))return {kind:/才|怎麼|為什麼|不合理/.test(clean)?'objection':'question',answer:`你目前 ${currentAge(state)} 歲 ${Math.max(0,state.world.month-1)} 個月。現代記憶不代表身體成年，普通生活選項會依當下階段安排；天生技仍依各自規則處理。`,choiceIds:[],questions:[]};
   if(/不合理|沒邏輯|有問題|怎麼會|為什麼/.test(clean))return{kind:'objection',answer:'這是對情境的質疑，並非行動指令。我會保留目前狀態；請指出不合理的人物、行動或結果。',choiceIds:[],questions:[]};
