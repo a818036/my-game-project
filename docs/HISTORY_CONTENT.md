@@ -417,4 +417,4 @@ scenario-132 補充既有 219 年荊州戰局節點，未增加節點或重複�
 | `sample-local-vacancy` | 郡府文書職缺（示例） | 示例情境 | 184 年級 | 本專案示例情境，非史實人物／職缺。 | 已標明為示例的人事內容，用於驗證遞補流程。 |
 
 
-A312 2026-10-30 新增年表來源後重跑 npm run check:history-links：78 個不同網址中 77 個取得 HTTP 2xx；Harvard CHGIS V6 網址重試 5 次後仍因 ECONNRESET 未能確認。此為外部連線錯誤，不能視為來源已失效；下次重跑再確認。
+A312 2026-10-30 年表來源加入後重跑 npm run check:history-links：78 個不同網址全數回應 HTTP 2xx、0 次重試。前一次 Harvard CHGIS V6 的 ECONNRESET 為暫時性連線錯誤。
