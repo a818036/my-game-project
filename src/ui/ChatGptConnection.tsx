@@ -12,7 +12,7 @@ export function ChatGptConnection(){
     <p>ChatGPT 訂閱模式會使用你授權的方案額度，不是無限用量，也不會自動轉用另外計費的 API。</p>
     {provider!=='chatgpt'?<p>使用訂閱登入：在代理視窗設定 <code>NARRATION_PROVIDER=chatgpt</code> 後重新啟動代理，再按下方重新整理。</p>:<>
       <p role="status">{status?.connected?(status.planEnabled?'已登入並授權使用 ChatGPT 訂閱':'已登入，尚未授權使用訂閱'):'尚未登入'}{status?.activeId?`・${status.accounts.find(a=>a.id===status.activeId)?.email??''}`:''}</p>
-      <div className="button-row"><button type="button" disabled={busy} onClick={()=>start()}>Continue with ChatGPT</button></div>
+      <div className="button-row"><button type="button" disabled={busy} onClick={()=>start()}>使用 ChatGPT 帳戶登入</button></div>
       {status?.accounts.map((account,index)=><div className="button-row" key={account.id}><span>{account.email}・連線 {index+1}</span><button type="button" className="quiet" disabled={busy} onClick={()=>account.connected?void run(async()=>{setLoginUrl('');await api('select',{accountId:account.id});}):start(account.id)}>{account.connected?'使用此帳戶':'重新登入此帳戶'}</button></div>)}
       {loginUrl&&<p><a href={loginUrl} target="_blank" rel="noopener noreferrer">開啟 OpenAI 官方登入頁面</a>。完成後回到此頁，按「重新整理連線」。</p>}
       {status?.message&&<p>{status.message}</p>}
