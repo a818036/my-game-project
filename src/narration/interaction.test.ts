@@ -39,10 +39,10 @@ describe('即時人物對話',()=>{
     expect(known).toMatchObject({kind:'question',source:'已核對的遊戲年表'});
     expect(known.answer).toContain('下邳之戰與呂布敗亡');
     expect(known.answer).not.toContain('孫權');
-    const missing=await understandInput('劉備在西元 198 年發生了哪些史實？',current,new AbortController().signal);
-    expect(missing.answer).toContain('未收錄');
-    expect(missing.answer).toContain('劉備');
-    expect(missing.answer).not.toContain('下邳之戰');
+    const liuBei=await understandInput('劉備在西元 198 年發生了哪些史實？',current,new AbortController().signal);
+    expect(liuBei.answer).toContain('劉備隨曹操東征');
+    expect(liuBei.answer).toContain('卷三十二〈蜀書');
+    expect(liuBei.answer).toContain('下邳之戰與呂布敗亡');
     const unrelated=await understandInput('劉表在西元 197 年發生了哪些史實？',current,new AbortController().signal);
     expect(unrelated.answer).toContain('未收錄');
     expect(unrelated.answer).not.toContain('袁術稱帝');
