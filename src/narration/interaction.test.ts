@@ -48,6 +48,13 @@ describe('即時人物對話',()=>{
     expect(unrelated.answer).not.toContain('袁術稱帝');
     expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
   });
+  it('人物生平年表查詢優先用來源索引回答，不送往已登入模型或改變世界線',async()=>{
+    const current=state(),before=structuredClone(current),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    const result=await understandInput('請整理劉備生平年表',current,new AbortController().signal);
+    expect(result).toMatchObject({kind:'question',source:'已核對的遊戲年表',choiceIds:[]});
+    expect(result.answer).toContain('劉備殺車胄、屯兵沛地');expect(result.answer).toContain('《三國志》');
+    expect(fetchMock).not.toHaveBeenCalled();expect(current).toEqual(before);expect(current.turn).toBe(0);
+  });
   it('逐年核對孫權 182–252 年問答，只列有來源節點或明示缺口',async()=>{
     const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);const before=structuredClone(current);
     for(let year=182;year<=252;year++){
