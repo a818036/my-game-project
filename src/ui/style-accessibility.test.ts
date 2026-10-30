@@ -52,7 +52,7 @@ describe('主要淺色介面的文字對比', () => {
 
   it('Windows 強制色彩模式仍以系統色標示焦點、選取及按鈕狀態', () => {
     expect(stylesheet).toMatch(/@media\s*\(forced-colors:\s*active\)/);
-    expect(stylesheet).toMatch(/:focus-visible(?:\s*,\s*#ending-result:focus)?\s*\{[^}]*outline-color:\s*Highlight/s);
+    expect(stylesheet).toMatch(/:focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus\s*\{[^}]*outline-color:\s*Highlight/s);
     expect(stylesheet).toMatch(/\.intent\.selected\s*\{[^}]*border:[^}]*Highlight/s);
     expect(stylesheet).toMatch(/\.primary\s*,\s*\.quiet\s*\{[^}]*ButtonFace[^}]*ButtonText/s);
     expect(stylesheet).not.toMatch(/forced-color-adjust:\s*none/);
@@ -67,5 +67,9 @@ describe('主要淺色介面的文字對比', () => {
     expect(targetFocus).toMatch(/outline:\s*3px solid var\(--seal\)/);
     expect(targetFocus).not.toMatch(/outline:\s*none/);
     expect(lastRule('.skip-link:focus')).toMatch(/outline:\s*3px solid/);
+  });
+
+  it('強制色彩模式將程式焦點落點改用系統高亮色', () => {
+    expect(stylesheet).toMatch(/#main-content:focus,#start-content:focus\{outline-color:Highlight!important\}/);
   });
 });
