@@ -63,4 +63,23 @@ describe('A304 歷史內容來源索引', () => {
 
     expect(missingYears).toEqual([]);
   });
+
+  it('A388 README 與來源索引使用相同的現行史實項目數', () => {
+    const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
+    const historyDocument = readFileSync(new URL('../docs/HISTORY_CONTENT.md', import.meta.url), 'utf8');
+    const activeEvents = HISTORY_CONTENT.filter((item) => item.kind === 'event' && !item.retired);
+    const inferredEntries = activeEvents.filter((item) => item.id === 'sun-quan-inferred-birth-182');
+    const earlyBackgroundEntries = activeEvents.filter((item) => item.startYear < 183 && !inferredEntries.includes(item));
+    const lateHistoricalNodes = activeEvents.filter((item) => item.startYear >= 183);
+
+    expect(inferredEntries).toHaveLength(1);
+    expect(earlyBackgroundEntries).toHaveLength(24);
+    expect(lateHistoricalNodes).toHaveLength(159);
+    expect(readme).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件／死亡節點`);
+    expect(readme).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);
+    expect(readme).toContain(`現行史實索引共 ${activeEvents.length} 項`);
+    expect(historyDocument).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件／死亡節點`);
+    expect(historyDocument).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);
+    expect(historyDocument).toContain(`${activeEvents.length} 個現行史實索引項目`);
+  });
 });
