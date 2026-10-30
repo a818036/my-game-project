@@ -49,4 +49,12 @@ describe('主要淺色介面的文字對比', () => {
     const foreground = confirmation.match(/color:\s*(#[0-9a-fA-F]{6})\s*!important/)![1];
     expect(contrastRatio(foreground, '#1b2724')).toBeGreaterThanOrEqual(4.5);
   });
+
+  it('Windows 強制色彩模式仍以系統色標示焦點、選取及按鈕狀態', () => {
+    expect(stylesheet).toMatch(/@media\s*\(forced-colors:\s*active\)/);
+    expect(stylesheet).toMatch(/:focus-visible\s*\{[^}]*outline-color:\s*Highlight/s);
+    expect(stylesheet).toMatch(/\.intent\.selected\s*\{[^}]*border:[^}]*Highlight/s);
+    expect(stylesheet).toMatch(/\.primary\s*,\s*\.quiet\s*\{[^}]*ButtonFace[^}]*ButtonText/s);
+    expect(stylesheet).not.toMatch(/forced-color-adjust:\s*none/);
+  });
 });
