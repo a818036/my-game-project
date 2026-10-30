@@ -114,6 +114,29 @@ describe('開局存檔載入提示',()=>{
     expect(controls.every(control=>!!(control.labels?.length||control.getAttribute('aria-label')||control.getAttribute('aria-labelledby')))).toBe(true);
     const buttons=[...host.querySelectorAll<HTMLButtonElement>('button')];
     expect(buttons.every(button=>!!(button.textContent?.trim()||button.getAttribute('aria-label')?.trim()))).toBe(true);
+    for(const panel of ['家產','天生技','軍政','記事']){
+      const tab=[...host.querySelectorAll<HTMLButtonElement>('nav[aria-label="遊戲資料與操作"] button')].find(button=>button.textContent?.trim().startsWith(panel));
+      expect(tab,`找不到「${panel}」分頁控制項`).toBeDefined();
+      await act(async()=>{tab!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+      const panelControls=[...host.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('input:not([type="hidden"]):not([hidden]),select,textarea')];
+      expect(panelControls.filter(control=>!(control.labels?.length||control.getAttribute('aria-label')||control.getAttribute('aria-labelledby'))).map(control=>control.outerHTML),`「${panel}」分頁有未命名表單欄位`).toEqual([]);
+      const panelButtons=[...host.querySelectorAll<HTMLButtonElement>('button')];
+      expect(panelButtons.filter(button=>!(button.textContent?.trim()||button.getAttribute('aria-label')?.trim())).map(button=>button.outerHTML),`「${panel}」分頁有未命名按鈕`).toEqual([]);
+      const levels=[...host.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(heading=>Number(heading.tagName.slice(1)));
+      expect(levels.slice(1).every((level,index)=>level<=levels[index]+1),`「${panel}」分頁標題層級跳階：${levels.join('→')}`).toBe(true);
+      if(panel==='軍政'){
+        const geographyDisclosure=[...host.querySelectorAll('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'));
+        expect(geographyDisclosure).toBeDefined();
+        await act(async()=>{geographyDisclosure!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+        const search=host.querySelector<HTMLInputElement>('#county-register-search');
+        expect(search).not.toBeNull();
+        const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+        await act(async()=>{setValue.call(search,'豫州');search!.dispatchEvent(new Event('input',{bubbles:true}));await Promise.resolve();});
+        expect(host.querySelector('.county-search-result h3')?.textContent).toContain('豫州');
+        const searchLevels=[...host.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(heading=>Number(heading.tagName.slice(1)));
+        expect(searchLevels.slice(1).every((level,index)=>level<=searchLevels[index]+1),`郡縣搜尋結果標題層級跳階：${searchLevels.join('→')}`).toBe(true);
+      }
+    }
   });
 
   it('單一世界線無法驗證時仍顯示開局畫面與原始備份操作',async()=>{

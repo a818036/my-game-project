@@ -914,7 +914,7 @@ export function HistoricalGeographyRegisters() {
     {normalizedQuery ? <>
       <p className="caption" role="status" aria-live="polite" aria-atomic="true">{resultCount ? `找到 ${resultCount} 個名目，來自 ${searchResults.length} 份名錄。` : '沒有符合的郡縣名目；可調整搜尋文字。'}</p>
       {searchResults.map(({ register, names }) => <section className="county-search-result" key={register.id} aria-labelledby={`county-search-${register.id}`}>
-        <h4 id={`county-search-${register.id}`}>{registerDivision[register.id]}・{register.summary.replace(/^展開/, '').replace(/（.*$/, '')}</h4>
+        <h3 id={`county-search-${register.id}`}>{registerDivision[register.id]}・{register.summary.replace(/^展開/, '').replace(/（.*$/, '')}</h3>
         <ol className="county-index" aria-label={`${register.ariaLabel}搜尋結果`}>{names.map((name) => <li key={name}>{name}</li>)}</ol>
         <p className="caption"><a href={HAN_DIVISION_SOURCE_URLS[register.id]} target="_blank" rel="noreferrer">{register.sourceText}</a></p>
       </section>)}
