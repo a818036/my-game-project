@@ -450,3 +450,4 @@
 | A362 | 強化遊戲畫面表單／按鈕名稱與 ARIA ID 參照抽查 | App 整合測試不再把任意 `textContent` 或空的 `aria-labelledby` 屬性視為有效名稱；忽略 `aria-hidden`／`hidden` 裝飾文字、核對名稱參照存在非空目標，並檢查 `aria-labelledby`、`aria-describedby`、`aria-controls`、`aria-owns`、`aria-details`、`aria-errormessage` 的 ID 均解析至畫面元素。切換五個資料分頁時另確認恰有一個分頁按鈕標記目前選取。另有負向案例證明純裝飾符號及不存在 ID 會被拒絕。這是 jsdom DOM 語意回歸，不是完整 Accessible Name and Description Computation、axe 稽核或 NVDA／Firefox 語音測試。 |
 
 | A363 | 重新檢查史料來源網址可取得 | 2026-10-31 執行 `npm run check:history-links`，83 個不同網址均回應 HTTP 2xx、0 次重試。這是本次網路快照；不代表完成史料內容校勘、授權審查或保證外站日後持續可用，也不是 CI 檢查。 |
+| A364 | 以 Chromium 鍵盤啟用跳至主要內容連結 | 隔離 Chromium 建立合成 184 年世界線後，以 Enter 啟用「跳至主要內容」；瀏覽器確認焦點落在 `#main-content`、該節點 `tabindex=-1`，網址錨點更新為 `#main-content`。僅確認瀏覽器焦點與導覽，不代表 NVDA／Firefox 語音驗收，未使用正式玩家存檔。 |
