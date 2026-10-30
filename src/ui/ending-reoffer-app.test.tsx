@@ -163,8 +163,18 @@ describe('重大節點後重新提供結局的 App 流程', () => {
       });
       const pending = [...host.querySelectorAll<HTMLButtonElement>('.phase4-panel button')].find((button) => button.textContent?.includes('明確批准條款'));
       expect(pending).not.toBeNull();
+      if (milestone === 1) pending?.focus();
       await act(async () => { pending?.click(); });
       expect(document.querySelector('[role=\"dialog\"]')?.textContent).toContain('批准後會變更所列領地控制者');
+      if (milestone === 1) {
+        await act(async () => { document.querySelector<HTMLButtonElement>('.confirm-dialog button.quiet')?.click(); });
+        expect(document.querySelector('.confirm-dialog')).toBeNull();
+        expect(commitWorldline).toHaveBeenCalledTimes(milestone);
+        expect(host.querySelector('.finale-reoffer')).toBeNull();
+        expect(document.activeElement).toBe(pending);
+        await act(async () => { pending?.click(); });
+        expect(document.querySelector('.confirm-dialog')).not.toBeNull();
+      }
       await act(async () => {
         document.querySelector<HTMLButtonElement>('.confirm-dialog button.primary')?.click();
         await new Promise((resolve) => setTimeout(resolve, 0));
