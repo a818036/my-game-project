@@ -130,7 +130,7 @@ export function answerKnownHistoricalPersonTimelineQuestion(text:string):Interac
   const shown=records.slice(0,20);
   const chronology=shown.map(item=>`${item.startYear===item.endYear?`${item.startYear}年`:`${item.startYear}–${item.endYear}年`}・${item.title}：${item.description}〔${item.source}〕`).join('\n');
   const more=records.length>shown.length?`\n\n目前另有 ${records.length-shown.length} 筆符合索引，這次先列前 ${shown.length} 筆。`:'';
-  return {kind:'question',answer:`依目前內容包中標有原典來源、且標題／摘要／承載者明確提及${subject}的節點，整理出 ${records.length} 筆年級事件：\n${chronology}${more}\n\n這只是遊戲目前收錄的事件索引，不是完整生平或逐年活動清單；未列出的年份是資料覆蓋缺口，不表示當年沒有活動。節點日期精度以各筆來源註記為準，沒有資料的日常生活與確切日期不作補寫。`,choiceIds:[],questions:[],source:'各年表節點所列原典來源'};
+  return {kind:'question',answer:`依目前內容包中標有原典來源、且標題／摘要／承載者明確提及${subject}的節點，整理出 ${records.length} 筆年級事件：\n${chronology}${more}\n\n這只是遊戲目前收錄的事件索引，不是完整生平或逐年活動清單；沒有列出的年份可能是索引缺口，也可能是符合條件的節點超過本次 20 筆顯示上限，不表示當年沒有活動。需要核對時可改問指定年份。節點日期精度以各筆來源註記為準，沒有資料的日常生活與確切日期不作補寫。`,choiceIds:[],questions:[],source:'各年表節點所列原典來源'};
 }
 export function answerKnownHistoricalEventQuestion(text:string,state:GameState):InteractionResult|null{
   if(!/(發生|事件|大事|史實|何事|什麼|哪些)/.test(text))return null;

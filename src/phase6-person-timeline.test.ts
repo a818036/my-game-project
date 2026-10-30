@@ -1,5 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {answerKnownHistoricalPersonTimelineQuestion,localInteraction} from './life';
+import {HISTORY_CONTENT} from './phase4';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from './engine';
 
 describe('A373 other-person historical timeline queries',()=>{
@@ -17,6 +18,18 @@ describe('A373 other-person historical timeline queries',()=>{
     expect(result?.answer).toContain('黃巾起事');
     expect(result?.answer).toContain('《後漢書》');
     expect(result?.answer).not.toContain('劉備殺車胄');
+  });
+
+  it('A383 distinguishes the 20-item display limit from missing historical years',()=>{
+    const person='曹操';
+    const records=HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&`${item.title} ${item.description} ${item.carrier}`.includes(person)).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
+    expect(records).toHaveLength(24);
+    const result=answerKnownHistoricalPersonTimelineQuestion(`請整理${person}生平年表`);
+    expect(result?.answer).toContain('前 20 筆');
+    expect(result?.answer).toContain('20 筆顯示上限');
+    for(const record of records.slice(0,20))expect(result?.answer).toContain(record.title);
+    expect(result?.answer).not.toContain(records[20]!.title);
+    expect(result?.answer).toContain('沒有列出的年份可能是索引缺口，也可能是符合條件的節點超過本次 20 筆顯示上限');
   });
 
   it('leaves Sun Quan to the existing precision-aware biography path and ignores ordinary questions',()=>{
