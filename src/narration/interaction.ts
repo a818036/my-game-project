@@ -2,7 +2,7 @@ import type {GameState} from '../engine';
 import type {Phase2Person} from '../phase2';
 import {answerKnownHistoricalEventQuestion,answerKnownRulerQuestion,answerKnownSunQuanBiographyQuestion,answerKnownTrendQuestion,currentAge,currentRulerFact,lifeChoices,localInteraction,type InteractionResult} from '../life';
 
-export interface DialogueExchange {speakerId:string;speakerName:string;playerText:string;npcText:string;}
+export interface DialogueExchange {speakerId:string;speakerName:string;turn?:number;playerText:string;npcText:string;}
 
 function dialogueTarget(text:string,state:GameState):{error:string}|{target:Phase2Person;line:string}{
   const phrase=text.trim().match(/^(?:(?:我)?(?:想要|想|要)\s*)?(?:對|向|跟|與)\s*(.+?)\s*(?:說|問|道|講|詢問|表示)[：:\s]*/s);
@@ -29,7 +29,7 @@ async function answerDialogue(text:string,state:GameState,signal:AbortSignal,his
     const result=await response.json();if(!response.ok)throw new Error(result.error??'人物暫時無法回話');
     if(result.speakerId!==target.id||typeof result.text!=='string'||!result.text.trim()||result.text.length>1000)throw new Error('人物回應未通過檢查');
     const provider=response.headers.get('X-Narration-Provider');
-    return{kind:'dialogue',answer:result.text,choiceIds:[],questions:['本頁保留最近四次與此人物的交談供延續話題；不寫入存檔、不推進時間，也不改變人物關係。'],source:provider==='chatgpt'?'ChatGPT 訂閱對話':provider==='openai'?'AI 對話':'本機對話範本',speakerName:target.name,speakerId:target.id};
+    return{kind:'dialogue',answer:result.text,choiceIds:[],questions:['對話會寫入此世界線存檔；之後只會向同一人物提供最近四次交談作為話題脈絡。對話不推進時間，也不改變人物關係。'],source:provider==='chatgpt'?'ChatGPT 訂閱對話':provider==='openai'?'AI 對話':'本機對話範本',speakerName:target.name,speakerId:target.id};
   }catch(error){if(signal.aborted)throw error;return{kind:'dialogue',answer:`${target.name}沒有回話：${error instanceof Error?error.message:'對話服務暫時無法使用'}。沒有推進時間或改變存檔。`,choiceIds:[],questions:[],source:'對話服務未完成',speakerName:target.name};}
 }
 export async function understandInput(text:string,state:GameState,signal:AbortSignal,history:DialogueExchange[]=[]):Promise<InteractionResult>{

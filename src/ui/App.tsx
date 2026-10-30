@@ -150,9 +150,10 @@ export default function App() {
         : workspace.profile;
       await commitWorldline(save, nextProfile, true);
       setWorkspace((old) => ({ saves: [...old.saves.filter((entry) => entry.worldlineId !== worldlineId), save], profile: { ...nextProfile, activeWorldlineId: worldlineId } }));
-      if(['SubmitLifePlan','SubmitActionPlan','Phase2Action','InnateAction','Phase4Action'].includes(command.type)){setActivityMessage('遊戲狀態已保存，正在整理本回合敘事。');await generateNarrative(buildNarrationPayload(result.state,result.event));setActivityMessage('本回合敘事已就緒，可於故事區閱讀。');}
-      else setActivityMessage('操作已保存。');
-      setNewTimeline(false); setConfirmed(false); const interruptions=result.state.actions.at(-1)?.interruptions??[];const deathWindowOpen=result.state.phase4?.nodes.some(node=>node.status==='triggered'&&HISTORY_CONTENT.find(content=>content.id===node.contentId)?.kind==='death')??false;setNotice(interruptions.length?(deathWindowOpen?`行動已中斷；死亡節點介入窗口開啟：${interruptions.join('；')}`:`行動已因重大節點中斷：${interruptions.join('；')}`):'本回合已保存。');
+      const dialogueOnly=command.type==='Phase2Action'&&command.action.type==='RecordDialogueExchange';
+      if(!dialogueOnly&&['SubmitLifePlan','SubmitActionPlan','Phase2Action','InnateAction','Phase4Action'].includes(command.type)){setActivityMessage('遊戲狀態已保存，正在整理本回合敘事。');await generateNarrative(buildNarrationPayload(result.state,result.event));setActivityMessage('本回合敘事已就緒，可於故事區閱讀。');}
+      else setActivityMessage(dialogueOnly?'對話已保存；時間與人物關係未變。':'操作已保存。');
+      setNewTimeline(false); setConfirmed(false); const interruptions=result.state.actions.at(-1)?.interruptions??[];const deathWindowOpen=result.state.phase4?.nodes.some(node=>node.status==='triggered'&&HISTORY_CONTENT.find(content=>content.id===node.contentId)?.kind==='death')??false;setNotice(interruptions.length?(deathWindowOpen?`行動已中斷；死亡節點介入窗口開啟：${interruptions.join('；')}`:`行動已因重大節點中斷：${interruptions.join('；')}`):dialogueOnly?'對話已保存；沒有推進時間或改變人物關係。':'本回合已保存。');
       return true;
     } catch (error) {
       setNotice(error instanceof Error ? `未保存任何變更：${error.message}` : '保存失敗；原世界線保持不變。');setActivityMessage('保存失敗，原世界線保持不變。');
