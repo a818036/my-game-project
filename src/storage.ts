@@ -14,7 +14,8 @@ export interface Phase3WorldSaveFile { format: 'shenzhou-save'; version: 5; worl
 export interface SaveFile { format: 'shenzhou-save'; version: 6; worldlineId: string; events: GameEvent[]; state: GameState; }
 export type AnySaveFile = SaveFile | Phase3WorldSaveFile | Phase3SaveFile | Phase2SaveFile | LegacySaveFile;
 export interface SaveProfile extends OpeningHistory { activeWorldlineId: string | null; }
-export interface WorkspaceSnapshot { saves: SaveFile[]; profile: SaveProfile; }
+export interface UnreadableSave { worldlineId: string; version: number; reason: string; raw: AnySaveFile; }
+export interface WorkspaceSnapshot { saves: SaveFile[]; profile: SaveProfile; unreadableSaves?: UnreadableSave[]; }
 
 export function openSaveDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -55,8 +56,18 @@ export async function loadWorkspace(): Promise<WorkspaceSnapshot> {
     tx.oncomplete = async () => {
       db.close();
       try {
-        const migrated = rawSaves.map(migrateSaveFile);
-        const changed = migrated.filter((entry, index) => stable(entry) !== stable(rawSaves[index]));
+        const migrated: SaveFile[] = [];
+        const unreadableSaves: UnreadableSave[] = [];
+        for (const raw of rawSaves) {
+          try { migrated.push(migrateSaveFile(raw)); }
+          catch (error) {
+            unreadableSaves.push({ worldlineId: raw.worldlineId, version: raw.version, reason: error instanceof Error ? error.message : String(error), raw });
+          }
+        }
+        const changed = migrated.filter((entry) => {
+          const original = rawSaves.find((candidate) => candidate.worldlineId === entry.worldlineId);
+          return original !== undefined && stable(entry) !== stable(original);
+        });
         if (changed.length) {
           const writeDb = await openSaveDb();
           await new Promise<void>((done, fail) => {
@@ -71,7 +82,7 @@ export async function loadWorkspace(): Promise<WorkspaceSnapshot> {
             write.onabort = () => { writeDb.close(); fail(write.error ?? new Error('舊存檔遷移交易中止')); };
           });
         }
-        resolve({ saves: migrated, profile: { ...(history ?? { regions: [], surnames: [] }), activeWorldlineId: active ?? migrated.at(-1)?.worldlineId ?? null } });
+        resolve({ saves: migrated, unreadableSaves, profile: { ...(history ?? { regions: [], surnames: [] }), activeWorldlineId: active ?? migrated.at(-1)?.worldlineId ?? null } });
       } catch (error) { reject(error); }
     };
     tx.onerror = () => { db.close(); reject(tx.error); };

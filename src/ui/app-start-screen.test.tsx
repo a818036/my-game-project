@@ -29,11 +29,13 @@ describe('開局存檔載入提示',()=>{
   });
 
   it('IndexedDB 載入失敗時，將錯誤顯示在出生確認畫面並以 alert 播報',async()=>{
-    vi.mocked(loadWorkspace).mockRejectedValueOnce(new Error('IndexedDB unavailable'));
+    vi.mocked(loadWorkspace).mockRejectedValueOnce(new DOMException('The operation is insecure.', 'SecurityError'));
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
     const alert=host.querySelector('[role="alert"]');
     expect(alert?.textContent).toBe('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');
     expect(host.querySelector('#start-content')?.contains(alert)).toBe(true);
+    expect(host.querySelector('summary')?.textContent).toBe('查看錯誤詳情');
+    expect(host.querySelector('.notice code')?.textContent).toBe('SecurityError: The operation is insecure.');
   });
 
   it('暫時讀取失敗後重試成功，載入世界線並清除錯誤',async()=>{
@@ -55,11 +57,12 @@ describe('開局存檔載入提示',()=>{
   });
 
   it('重試仍失敗時保留說明並重新啟用重試按鈕',async()=>{
-    vi.mocked(loadWorkspace).mockRejectedValueOnce(new Error('initial IndexedDB error')).mockRejectedValueOnce(new Error('retry IndexedDB error'));
+    vi.mocked(loadWorkspace).mockRejectedValueOnce(new Error('initial IndexedDB error')).mockRejectedValueOnce(new DOMException('Blocked by storage policy.', 'SecurityError'));
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
     const retry=host.querySelector<HTMLButtonElement>('.notice button');
     await act(async()=>{retry?.click();await Promise.resolve();});
     expect(host.querySelector('[role="alert"]')?.textContent).toBe('仍無法讀取瀏覽器存檔；請確認 IndexedDB 可用，再試一次。');
+    expect(host.querySelector('.notice code')?.textContent).toBe('SecurityError: Blocked by storage policy.');
     expect(retry?.disabled).toBe(false);
     expect(retry?.textContent).toBe('重新讀取存檔');
   });
@@ -71,6 +74,14 @@ describe('開局存檔載入提示',()=>{
     expect(host.querySelector<HTMLAnchorElement>('a.skip-link')?.getAttribute('href')).toBe('#start-content');
     expect(host.querySelector<HTMLElement>('#start-content')?.tabIndex).toBe(-1);
     expect(host.querySelector('[role="alert"]')).toBeNull();
+  });
+
+  it('單一世界線無法驗證時仍顯示開局畫面與原始備份操作',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({...emptyWorkspace,unreadableSaves:[{worldlineId:'broken-world',version:6,reason:'存檔狀態與事件重播結果不一致',raw:{format:'shenzhou-save',version:6,worldlineId:'broken-world',events:[],state:{worldlineId:'broken-world'}} as never}]});
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    expect(host.querySelector('.save-recovery')?.textContent).toContain('原始資料仍保留');
+    expect(host.querySelector('.save-recovery button')?.textContent).toBe('下載原始存檔備份');
+    expect(host.querySelector('input[maxlength="16"]')).not.toBeNull();
   });
 
   it('開局保存期間在開局畫面播報狀態，保存後更新同一節點',async()=>{

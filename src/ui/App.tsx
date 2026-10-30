@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { createOpeningFacts, dispatch, ENGINE_VERSION, SKILLS_VERSION, SOURCE_HASHES, type GameCommand } from '../engine';
-import { activateWorldline, assertSlotCompatible, commitWorldline, loadWorkspace, parseSave, toJson, verifySave, type SaveFile, type WorkspaceSnapshot } from '../storage';
+import { activateWorldline, assertSlotCompatible, commitWorldline, loadWorkspace, parseSave, toJson, verifySave, type SaveFile, type UnreadableSave, type WorkspaceSnapshot } from '../storage';
 import { kinshipTerm, STAT_NAMES, type AccountName, type AssetName, type Phase2Action, type RelationshipKind } from '../phase2';
 import { EXAMPLE_LANGUAGE, OFFICIAL_ABILITIES, sampleLightningContext, type AbilityCombinationId, type AbilityId, type HarmIntent, type IllusionDistribution, type InnateAction, type RealityDepth } from '../innate';
 import { ENGINEERING, HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES, type ControlLevel, type Phase4Action, type PolicyId, type WarUnit, type BattleSceneManifest } from '../phase4';
@@ -17,9 +17,18 @@ const EndingChoice=lazy(()=>import('./EndingChoice').then(({EndingChoice})=>({de
 const EndingResult=lazy(()=>import('./EndingChoice').then(({EndingResult})=>({default:EndingResult})));
 import { buildNarrationPayload, fetchNarration, templateNarration, type NarrationPayload, type NarrationResult } from '../narration/client';
 
-const blankWorkspace: WorkspaceSnapshot = { saves: [], profile: { regions: [], surnames: [], activeWorldlineId: null } };
+const blankWorkspace: WorkspaceSnapshot = { saves: [], unreadableSaves: [], profile: { regions: [], surnames: [], activeWorldlineId: null } };
 const WORKSPACE_READ_ERROR = '無法讀取瀏覽器存檔；請確認 IndexedDB 可用。';
 const WORKSPACE_RETRY_ERROR = '仍無法讀取瀏覽器存檔；請確認 IndexedDB 可用，再試一次。';
+function storageDiagnostic(error: unknown) {
+  const name = error && typeof error==='object'&&'name' in error ? String(error.name) : '未知錯誤';
+  const rawMessage = error && typeof error==='object'&&'message' in error ? String(error.message) : String(error);
+  const message = rawMessage.startsWith(`${name}: `) ? rawMessage.slice(name.length + 2) : rawMessage;
+  return `${name}: ${message}`.slice(0, 240);
+}
+function UnreadableSaves({issues,onExport}:{issues:UnreadableSave[];onExport:(issue:UnreadableSave)=>void}){
+  return issues.length?<section className="save-recovery" role="alert" aria-label="無法驗證的存檔"><h2>有存檔未能通過驗證</h2><p>原始資料仍保留在瀏覽器中。你可以先下載備份，再開始新局或載入其他有效世界線。</p><ul>{issues.map(issue=><li key={issue.worldlineId}><b>世界線 {issue.worldlineId}・v{issue.version}</b><details><summary>查看原因</summary><code>{issue.reason}</code></details><button className="quiet" type="button" onClick={()=>onExport(issue)}>下載原始存檔備份</button></li>)}</ul></section>:null;
+}
 function exampleBattleScene():BattleSceneManifest{return{example:true,coordinateScale:'meters',objects:[{id:'crossbow-platform',label:'北岸木弩臺（示例）',location:'渡口北岸土坡',condition:'支架穩固，外側受力點靠近坡沿',position:{x:4,y:0},radius:0.7,integrity:60},{id:'tether-rope',label:'牽繫木索（示例）',location:'木弩臺至拒馬側樁之間',condition:'繃緊，連接弩臺外架與木樁',position:{x:6,y:0},radius:0.1,integrity:15},{id:'refuse-barrier',label:'拒馬（示例）',location:'守軍前沿',condition:'橫置，木索從側面牽固',position:{x:8,y:0},radius:0.8,blocksLineOfSight:true,integrity:30},{id:'blue-shield-rank',label:'守軍盾列（示例）',location:'拒馬後方',condition:'列陣防守',position:{x:10,y:0},radius:0.5,integrity:40},{id:'physics-ram',label:'撞木（碰撞示例）',location:'木門外側測試區',condition:'待推撞',position:{x:0,y:20,z:0},radius:0.5,rigidBody:{massKg:1,restitution:0,velocityMps:{x:0,y:0,z:0},failureEnergyJ:20}},{id:'physics-gate',label:'固定木門（碰撞示例）',location:'木門外側測試區',condition:'固定不動',position:{x:2,y:20,z:0},radius:0.5,rigidBody:{massKg:100,restitution:0,anchored:true,velocityMps:{x:0,y:0,z:0}}}],potentialChains:[{id:'platform-rope',fromObjectId:'crossbow-platform',toObjectId:'tether-rope',triggerCondition:'弩臺側架受擊斷裂',possibleEffect:'側架將力傳至牽索',affectedUnitIds:['blue-vanguard'],impactForce:18,maxDistance:3,affectedRadius:0,moraleImpact:0},{id:'rope-barrier',fromObjectId:'tether-rope',toObjectId:'refuse-barrier',triggerCondition:'牽索受拉斷裂',possibleEffect:'牽索將力傳至拒馬',affectedUnitIds:['blue-vanguard'],impactForce:35,maxDistance:3,affectedRadius:0,moraleImpact:0},{id:'barrier-shield-rank',fromObjectId:'refuse-barrier',toObjectId:'blue-shield-rank',triggerCondition:'拒馬向盾列方向翻倒',possibleEffect:'拒馬撞擊盾列前沿，短暫失序；傷亡數為本示例預置軍籍',affectedUnitIds:['blue-vanguard'],impactForce:24,maxDistance:3,affectedRadius:4,moraleImpact:8,casualties:[{unitId:'blue-vanguard',killed:1,wounded:2,routed:0}]}],observers:[{id:'north-front',side:'守軍前列',location:'拒馬後方',visibility:'可看見拒馬與本部盾列；近處情況較清楚',position:{x:0,y:0},sightRange:12},{id:'far-rear',side:'後陣觀察者',location:'渡口對岸後陣',visibility:'受河道與塵煙遮擋，只能辨認大致旗號與隊列變化',position:{x:0,y:8},sightRange:7}]};}
 const DEDICATED_ABILITY_OPERATIONS = new Set<AbilityId>(['軒轅幻術・五感天幕','全幻術系強制執行通則','萬軍共夢','千軍異夢','惑感','入實','五感實相','五感盡失','神識威壓','妖術・伏地','萬軍伏地','全雷霆系強制敘事通則','軒轅天罰','地走雷','雷震','萬雷震軍','天雷禁域','天雷破城','軒轅天罰・雷海','百脈敕令','百脈敕令・封將','萬疫敕令','軒轅觀世','天醫敕生','歲月回春','軒轅傳音','軒轅傳音・天下共視','軒轅閃','軒轅藏界','軒轅極限收斂','萬解','霸者橫攔','霸者橫攔・摧關','霸者橫攔・撼陣','霸者橫攔・霸王擲','霸者橫攔・不動','霸骨天成','山河薪火','薪火不滅','群星入懷','萬民歸心','萬軍如臂']);
 const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
@@ -50,6 +59,7 @@ export default function App() {
   const [seed, setSeed] = useState(randomSeed());
   const [confirmed, setConfirmed] = useState(false);
   const [notice, setNotice] = useState('');
+  const [storageErrorDetail,setStorageErrorDetail]=useState('');
   const [retryingStorage, setRetryingStorage] = useState(false);
   const [busy, setBusy] = useState(false);
   const [activityMessage,setActivityMessage]=useState('');
@@ -126,11 +136,11 @@ export default function App() {
 
   useEffect(() => { document.documentElement.style.setProperty('--reader-size', `${fontSize}px`); localStorage.setItem('shenzhou-font-size', String(fontSize)); }, [fontSize]);
 
-  useEffect(() => { loadWorkspace().then(setWorkspace).catch(() => setNotice(WORKSPACE_READ_ERROR)).finally(() => setReady(true)); }, []);
+  useEffect(() => { loadWorkspace().then(setWorkspace).catch((error) => {setNotice(WORKSPACE_READ_ERROR);setStorageErrorDetail(storageDiagnostic(error));}).finally(() => setReady(true)); }, []);
   const retryWorkspaceLoad=async()=>{
     setRetryingStorage(true);
-    try{setWorkspace(await loadWorkspace());setNotice('');}
-    catch{setNotice(WORKSPACE_RETRY_ERROR);}
+    try{setWorkspace(await loadWorkspace());setNotice('');setStorageErrorDetail('');}
+    catch(error){setNotice(WORKSPACE_RETRY_ERROR);setStorageErrorDetail(storageDiagnostic(error));}
     finally{setRetryingStorage(false);}
   };
   useEffect(()=>()=>{narrationAbort.current?.abort();},[]);
@@ -159,7 +169,7 @@ export default function App() {
         ? { regions: [...workspace.profile.regions, command.facts.birthRegion].slice(-3), surnames: [...workspace.profile.surnames, command.facts.surname].slice(-3) }
         : workspace.profile;
       await commitWorldline(save, nextProfile, true);
-      setWorkspace((old) => ({ saves: [...old.saves.filter((entry) => entry.worldlineId !== worldlineId), save], profile: { ...nextProfile, activeWorldlineId: worldlineId } }));
+      setWorkspace((old) => ({ ...old, saves: [...old.saves.filter((entry) => entry.worldlineId !== worldlineId), save], profile: { ...nextProfile, activeWorldlineId: worldlineId } }));
       const dialogueOnly=command.type==='Phase2Action'&&command.action.type==='RecordDialogueExchange';
       if(!dialogueOnly&&['SubmitLifePlan','SubmitActionPlan','Phase2Action','InnateAction','Phase4Action'].includes(command.type)){setActivityMessage('遊戲狀態已保存，正在整理本回合敘事。');await generateNarrative(buildNarrationPayload(result.state,result.event));setActivityMessage('本回合敘事已就緒，可於故事區閱讀。');}
       else setActivityMessage(dialogueOnly?'對話已保存；時間與人物關係未變。':'操作已保存。');
@@ -219,7 +229,11 @@ export default function App() {
   function exportSave(save = activeSave) {
     if (!save) return;
     const blob = new Blob([toJson(save)], { type: 'application/json' }); const url = URL.createObjectURL(blob);
-    const link = document.createElement('a'); link.href = url; link.download = `shenzhou-${save.worldlineId}.json`; link.click(); URL.revokeObjectURL(url);
+    const link = document.createElement('a'); link.href = url; link.download = `shenzhou-${save.worldlineId}.json`; link.click(); window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  function exportUnreadableSave(issue:UnreadableSave){
+    const blob=new Blob([JSON.stringify(issue.raw,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);
+    const link=document.createElement('a');link.href=url;link.download=`shenzhou-${issue.worldlineId}-原始備份.json`;link.click();window.setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
   async function importSave(file?: File) {
     if (!file) return;
@@ -228,11 +242,12 @@ export default function App() {
       const raw = JSON.parse(rawText) as { version?: number };
       const original = raw.version !== 6 ? parseSave(rawText) : undefined;
       const imported = verifySave(rawText);
+      if(workspace.unreadableSaves?.some(issue=>issue.worldlineId===imported.worldlineId))throw new Error('此 ID 已有未能驗證的原始存檔；請先下載備份，系統不會覆寫它');
       const existing = workspace.saves.find((entry) => entry.worldlineId === imported.worldlineId);
       assertSlotCompatible(existing ?? undefined, imported);
       const save = existing ?? imported;
       await commitWorldline(save, workspace.profile, true, original);
-      setWorkspace((old) => ({ saves: existing ? old.saves : [...old.saves, save], profile: { ...old.profile, activeWorldlineId: save.worldlineId } }));
+      setWorkspace((old) => ({ ...old, saves: existing ? old.saves : [...old.saves, save], profile: { ...old.profile, activeWorldlineId: save.worldlineId } }));
       setNewTimeline(false); setNotice('存檔已重播驗證並匯入為獨立世界線。');
     } catch (error) { setNotice(error instanceof Error ? `匯入失敗：${error.message}` : '匯入失敗；目前世界線未變更。'); }
     if (fileRef.current) fileRef.current.value = '';
@@ -254,7 +269,7 @@ export default function App() {
     </>}
     {workspace.saves.length > 0 && <section className="save-slots"><div className="section-kicker">已保存的其他世界線</div>{workspace.saves.map((save) => <div key={save.worldlineId}><span>{saveName(save)}</span><button className="quiet" onClick={() => void switchTimeline(save.worldlineId)}>載入</button></div>)}</section>}
     <button className="quiet" onClick={() => fileRef.current?.click()}>匯入 JSON 存檔</button><input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(e) => void importSave(e.target.files?.[0])} />
-    <StatusAlert message={notice} onRetry={notice===WORKSPACE_READ_ERROR||notice===WORKSPACE_RETRY_ERROR?retryWorkspaceLoad:undefined} retrying={retryingStorage}/><p className="caption">資料表與人物是明示的少量示例，不是完整歷史資料庫。</p>
+    <StatusAlert message={notice} detail={notice===WORKSPACE_READ_ERROR||notice===WORKSPACE_RETRY_ERROR?storageErrorDetail:''} onRetry={notice===WORKSPACE_READ_ERROR||notice===WORKSPACE_RETRY_ERROR?retryWorkspaceLoad:undefined} retrying={retryingStorage}/><UnreadableSaves issues={workspace.unreadableSaves??[]} onExport={exportUnreadableSave}/><p className="caption">資料表與人物是明示的少量示例，不是完整歷史資料庫。</p>
   </section></main>;
 
   const c = state.character, w = state.world;
@@ -267,7 +282,7 @@ export default function App() {
       <button className="quiet" onClick={() => { setNewTimeline(true); setConfirmed(false); }}>新建世界線</button><button className="quiet" onClick={() => exportSave()}>匯出</button><button className="quiet" onClick={() => fileRef.current?.click()}>匯入</button><input ref={fileRef} hidden type="file" accept="application/json,.json" onChange={(e) => void importSave(e.target.files?.[0])} />
     </div></header>
     <section className="hero"><div><p className="eyebrow">{turnInterval(c.birthYear, state.turn, w.year, w.month, state.phase4?.dayOfMonth ?? 1, state.phase4?.day, state.actions.at(-1)?.elapsedDays ?? 90)}　｜　第 {state.turn} 回合</p><p className="location-line">所在・{phase2?.scene.location ?? c.home}</p><h1>{c.name}<small>　{characterAgeLabel(state)}・出生於 {c.home}</small></h1><p>{c.background}（示例）・{c.health}</p></div></section>
-    <ActivityAnnouncer message={activityMessage}/>
+    <ActivityAnnouncer message={activityMessage}/><UnreadableSaves issues={workspace.unreadableSaves??[]} onExport={exportUnreadableSave}/>
     <div className="layout"><section id="main-content" className="main-column" tabIndex={-1} aria-label="故事與行動" aria-busy={busy||narrationPending}>
       {phase2 && <article className="panel scene-panel story-panel"><div className="section-kicker">眼前</div><p className="scene-place"><b>{phase2.scene.location}</b><span>第 {phase2.scene.turn} 回合・在場 {phase2.scene.presentIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</span></p><p className="scene-arrivals">新到：{phase2.scene.enteredIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}；離去：{phase2.scene.leftIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</p>
         {phase2.scene.speeches.map((speech, index) => <p className="speech" key={`${speech.speakerId}-${index}`}><b>{speech.label}：</b>「{speech.text}」</p>)}

@@ -50,6 +50,26 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(replay(reloaded.saves[0].events)).toEqual(reloaded.saves[0].state);
   });
 
+  it('單一無法重播的存檔不阻擋其他世界線，且原資料可備份並保持不變', async () => {
+    const valid=makeSave('valid-worldline');
+    const damaged=makeSave('damaged-worldline');
+    const corrupt={...damaged,state:{...damaged.state,character:{...damaged.state.character,money:damaged.state.character.money+1}}};
+    await commitWorldline(valid,noHistory,true);
+    const db=await openSaveDb();
+    await new Promise<void>((resolve,reject)=>{const tx=db.transaction(['worldlines'],'readwrite');tx.objectStore('worldlines').put(corrupt);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});
+    db.close();
+
+    const loaded=await loadWorkspace();
+    expect(loaded.saves.map(save=>save.worldlineId)).toEqual([valid.worldlineId]);
+    expect(loaded.unreadableSaves).toEqual([{worldlineId:damaged.worldlineId,version:6,reason:'存檔狀態與事件重播結果不一致',raw:corrupt}]);
+    expect(loaded.profile.activeWorldlineId).toBe(valid.worldlineId);
+
+    const verifyDb=await openSaveDb();
+    const savedRaw=await new Promise<unknown>((resolve,reject)=>{const tx=verifyDb.transaction(['worldlines'],'readonly');const request=tx.objectStore('worldlines').get(damaged.worldlineId);request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
+    verifyDb.close();
+    expect(savedRaw).toEqual(corrupt);
+  });
+
   it('第四階段 v6 存檔可由 IndexedDB 載入、續玩、重播並再次儲存', async () => {
     const start=makeSave('phase4-v6-roundtrip');
     const phase4=dispatch(start.state,{version:ENGINE_VERSION,commandId:'phase4-v6-policy-time',expectedRevision:start.state.revision,worldlineId:start.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:40}});

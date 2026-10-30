@@ -6,6 +6,6 @@ export function LoadingScreen(){
   return <main className="loading"><p role="status" aria-live="polite" aria-atomic="true">正在開啟你的世界線……</p></main>;
 }
 
-export function StatusAlert({message,onRetry,retrying=false}:{message:string;onRetry?:()=>void;retrying?:boolean}){
-  return message?<div className="notice"><p role="alert">{message}</p>{onRetry&&<button type="button" onClick={onRetry} disabled={retrying}>{retrying?'正在重新讀取…':'重新讀取存檔'}</button>}</div>:null;
+export function StatusAlert({message,detail,onRetry,retrying=false}:{message:string;detail?:string;onRetry?:()=>void;retrying?:boolean}){
+  return message?<div className="notice"><p role="alert">{message}</p>{detail&&<details><summary>查看錯誤詳情</summary><code>{detail}</code></details>}{onRetry&&<button type="button" onClick={onRetry} disabled={retrying}>{retrying?'正在重新讀取…':'重新讀取存檔'}</button>}</div>:null;
 }
