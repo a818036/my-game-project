@@ -37,7 +37,7 @@ async function answerDialogue(text:string,state:GameState,signal:AbortSignal,his
     const result=await response.json();if(!response.ok)throw new Error(result.error??'人物暫時無法回話');
     if(result.speakerId!==target.id||typeof result.text!=='string'||!result.text.trim()||result.text.length>1000)throw new Error('人物回應未通過檢查');
     const provider=response.headers.get('X-Narration-Provider');
-    return{kind:'dialogue',answer:result.text,choiceIds:[],questions:['對話會把本次文字、同一人物最多最近四次交談、其已知內容，以及目前關係的粗略語氣提示送至所選服務；成功往返會寫入此世界線。對話不推進時間，也不改變人物關係。'],source:provider==='chatgpt'?'ChatGPT 訂閱對話':provider==='openai'?'AI 對話':'本機對話範本',speakerName:target.name,speakerId:target.id,playerText:line};
+    return{kind:'dialogue',answer:result.text,choiceIds:[],questions:['對話會把本次文字、主角年齡與所在地、指定人物身份及其已知內容、同一人物最多最近四次交談，以及目前關係的粗略語氣提示送至所選服務；成功往返會寫入此世界線。對話不推進時間，也不改變人物關係。'],source:provider==='chatgpt'?'ChatGPT 訂閱對話':provider==='openai'?'AI 對話':'本機對話範本',speakerName:target.name,speakerId:target.id,playerText:line};
   }catch(error){if(signal.aborted)throw error;return{kind:'dialogue',answer:`${target.name}沒有回話：${error instanceof Error?error.message:'對話服務暫時無法使用'}。沒有推進時間或改變存檔。`,choiceIds:[],questions:[],source:'對話服務未完成',speakerName:target.name};}
 }
 export async function understandInput(text:string,state:GameState,signal:AbortSignal,history:DialogueExchange[]=[]):Promise<InteractionResult>{
