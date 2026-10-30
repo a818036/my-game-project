@@ -68,6 +68,8 @@ describe('開局存檔載入提示',()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
     expect(host.querySelector('#start-content')).not.toBeNull();
+    expect(host.querySelector<HTMLAnchorElement>('a.skip-link')?.getAttribute('href')).toBe('#start-content');
+    expect(host.querySelector<HTMLElement>('#start-content')?.tabIndex).toBe(-1);
     expect(host.querySelector('[role="alert"]')).toBeNull();
   });
 
@@ -87,9 +89,13 @@ describe('開局存檔載入提示',()=>{
 
     const status=host.querySelector('[role="status"]');
     expect(status?.textContent).toBe('正在保存並結算操作。');
+    expect(host.querySelector<HTMLAnchorElement>('a.skip-link')?.getAttribute('href')).toBe('#start-content');
+    expect(host.querySelector<HTMLElement>('#start-content')?.tabIndex).toBe(-1);
     expect(saveButton.disabled).toBe(true);
     await act(async()=>{finishSave();await saveResult;});
     expect(host.querySelector('[role="status"]')?.textContent).toBe('操作已保存。');
+    expect(host.querySelector<HTMLAnchorElement>('a.skip-link')?.getAttribute('href')).toBe('#main-content');
+    expect(host.querySelector<HTMLElement>('#main-content')?.tabIndex).toBe(-1);
   });
 
   it('新局保存失敗時不顯示只適用於存檔讀取失敗的重試按鈕',async()=>{
