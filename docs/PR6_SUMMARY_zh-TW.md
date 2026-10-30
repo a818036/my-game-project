@@ -338,7 +338,7 @@ A313 加入開局及遊戲畫面 DOM 檢查：單一 main landmark 與 h1、有�
 - A360–A365：結局重大節點逐步累積整合、門檻前／後合成 fixture、史料來源連線快照、跳至主要內容鍵盤焦點及 axe-core 選定畫面掃描，詳情以 ROADMAP 與 ACCEPTANCE 的逐項紀錄為準。
 - A366：逝世記錄、一般醫療救援及主權批准改用具標題／說明關聯、背景 inert、Esc 取消、Tab 焦點循環及焦點復原的遊戲內確認對話框；元件與 App 整合測試通過。
 - A367：取消主權批准後沒有新增保存或重大節點，焦點回到批准按鈕；再次確認可提交。此項由 jsdom／mock storage 驗證，尚未完成 Chromium 長局、NVDA／Firefox、實體手機、真實模型敘事及外部新玩家驗收。
-- 最新本機完整回歸為 58 個測試檔／514 項通過；型別檢查、正式建置、bundle 預算及 preview smoke check 通過。GitHub Actions 尚待最新提交回報。PR 保持草稿、開啟、未合併、未部署。
+- 最新本機完整回歸為 58 個測試檔／514 項通過；型別檢查、正式建置、bundle 預算及 preview smoke check 通過。提交 `34db7f4` 的 GitHub Actions #236 亦通過。PR 保持草稿、開啟、未合併、未部署。
 
 - A368：已開啟確認對話框納入 axe-core 掃描，jsdom 啟用規則無違規；色彩對比規則停用，仍須真實瀏覽器／螢幕閱讀器驗收。
 
@@ -347,4 +347,4 @@ A313 加入開局及遊戲畫面 DOM 檢查：單一 main landmark 與 h1、有�
 - A371：隔離 Chromium 確認恩怨可保存至指定關係並在重載後保留，焦點復原且回合不變；只用合成 IndexedDB 世界線。
 - A372：輸入法組字中按 Enter 不會誤提交對話框；測試涵蓋 `isComposing` 與 `keyCode=229`，真實裝置輸入法仍待人工抽查。
 
-本輪 A372 驗證：完整測試 58 個檔案、514 項通過；型別檢查、正式建置、bundle 預算、正式預覽 smoke check 與 diff 檢查通過。首頁 JavaScript 486,575／500,000 bytes、戰役 chunk 8,572／10,000 bytes。最新提交的 GitHub Actions 尚待回報。PR 維持草稿、開啟、未合併、未部署。
+本輪 A372 驗證：完整測試 58 個檔案、514 項通過；型別檢查、正式建置、bundle 預算、正式預覽 smoke check 與 diff 檢查通過。首頁 JavaScript 486,575／500,000 bytes、戰役 chunk 8,572／10,000 bytes。GitHub Actions #236 通過。PR 維持草稿、開啟、未合併、未部署。
