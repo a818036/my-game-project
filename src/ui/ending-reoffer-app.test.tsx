@@ -2,7 +2,8 @@
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createOpeningFacts, dispatch, ENGINE_VERSION, type GameEvent, type GameState, type OpeningHistory } from '../engine';
+import { indexedDB } from 'fake-indexeddb';
+import { createOpeningFacts, dispatch, ENGINE_VERSION, replay, type GameEvent, type GameState, type OpeningHistory } from '../engine';
 import { ENGINEERING, shouldReofferEnding } from '../phase4';
 import { commitWorldline, loadWorkspace, type SaveFile } from '../storage';
 import App from './App';
@@ -99,5 +100,36 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(saved.state.phase4).toMatchObject({ year: 280, ending: 'pending', unified: true });
     expect(host.querySelector('.finale-reoffer')).toBeNull();
     expect(host.textContent).toContain('已開啟大結局選擇；沒有呼叫 AI 或推進時間。');
+  }, 30000);
+
+  it('操作自然節點重提入口後，待決結局可從 IndexedDB 重新載入', async () => {
+    const actualStorage = await vi.importActual<typeof import('../storage')>('../storage');
+    Object.defineProperty(globalThis, 'indexedDB', { configurable: true, value: indexedDB });
+    const save = makeSaveWithDueReoffer();
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({
+      saves: [save],
+      profile: { regions: [], surnames: [], activeWorldlineId: save.worldlineId },
+    });
+    vi.mocked(commitWorldline).mockImplementation((candidate, history, makeActive) =>
+      actualStorage.commitWorldline(candidate as SaveFile, history, makeActive),
+    );
+    await act(async () => {
+      root.render(createElement(App));
+      await Promise.resolve();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const button = host.querySelector<HTMLButtonElement>('.finale-reoffer button');
+    expect(button).not.toBeNull();
+    await act(async () => {
+      button?.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const workspace = await actualStorage.loadWorkspace();
+    expect(workspace.profile.activeWorldlineId).toBe(save.worldlineId);
+    expect(workspace.saves).toHaveLength(1);
+    expect(workspace.saves[0]?.state.phase4).toMatchObject({ year: 280, ending: 'pending', unified: true });
+    expect(replay(workspace.saves[0]!.events)).toEqual(workspace.saves[0]!.state);
   }, 30000);
 });
