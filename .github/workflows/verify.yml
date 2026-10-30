@@ -35,3 +35,6 @@ jobs:
 
       - name: Check initial and deferred bundle budgets
         run: npm run check:bundle
+
+      - name: Smoke-test production preview assets
+        run: npm run check:preview
