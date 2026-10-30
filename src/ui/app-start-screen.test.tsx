@@ -54,6 +54,16 @@ describe('開局存檔載入提示',()=>{
     expect(host.querySelector('#start-content')).not.toBeNull();
   });
 
+  it('重試仍失敗時保留說明並重新啟用重試按鈕',async()=>{
+    vi.mocked(loadWorkspace).mockRejectedValueOnce(new Error('initial IndexedDB error')).mockRejectedValueOnce(new Error('retry IndexedDB error'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    const retry=host.querySelector<HTMLButtonElement>('[role="alert"] button');
+    await act(async()=>{retry?.click();await Promise.resolve();});
+    expect(host.querySelector('[role="alert"] span')?.textContent).toBe('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');
+    expect(retry?.disabled).toBe(false);
+    expect(retry?.textContent).toBe('重新讀取存檔');
+  });
+
   it('載入成功時不顯示存檔錯誤提示',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
