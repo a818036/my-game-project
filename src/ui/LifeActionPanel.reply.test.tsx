@@ -68,4 +68,12 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
     expect(results.violations.map(({id,help,nodes})=>({id,help,targets:nodes.flatMap(node=>node.target.map(String))}))).toEqual([]);
   });
+
+  it('A392 行動計畫確認畫面 axe-core 啟用規則無違規',async()=>{
+    await act(async()=>host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+    expect(host.querySelector('.plan-review[role="region"]')).not.toBeNull();
+    const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+    expect(results.violations.map(({id,help,nodes})=>({id,help,targets:nodes.flatMap(node=>node.target.map(String))}))).toEqual([]);
+  });
 });
