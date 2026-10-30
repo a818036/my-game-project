@@ -7,7 +7,7 @@ describe('166、168 年東漢朝廷史實切片', () => {
   it('A375 依來源觸發兩個年級節點，並只追加遷移、不回補舊存檔', () => {
     const partisanId = 'partisan-frictions-emerge-166';
     const courtId = 'ling-emperor-accession-court-purge-168';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(166);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(177);
 
     const fresh = advancePhase4(createPhase4Model(165, 1, persons, PHASE4_CONTENT_VERSION), 3 * 360);
     expect(fresh.nodes.find((node) => node.contentId === partisanId)?.status).toBe('triggered');
@@ -47,7 +47,7 @@ describe('169–178 年東漢政局、教育與邊防切片', () => {
       'han-campaign-against-xianbei-defeated-177',
       'jiaozhi-wuhuh-man-uprising-178',
     ];
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(166);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(177);
 
     const fresh = advancePhase4(createPhase4Model(168, 1, persons, PHASE4_CONTENT_VERSION), 10 * 360);
     for (const id of ids) expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
@@ -71,5 +71,54 @@ describe('169–178 年東漢政局、教育與邊防切片', () => {
       expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: year });
     }
     expect(late.eventLedger.filter((item) => ids.some((id) => item.detail.includes(HISTORY_CONTENT.find((node) => node.id === id)!.title)))).toHaveLength(0);
+  });
+});
+
+describe('170–182 年東漢地方、朝廷與災異年表', () => {
+  it('A377 新增十一筆來源節點；v145 遷移保留事件帳且不回補', () => {
+    const ids = [
+      'jinan-revolt-dongpingling-170',
+      'ling-emperor-majority-pardon-171',
+      'xusheng-yue-king-revolt-172',
+      'epidemic-east-commandery-flood-173',
+      'xusheng-revolt-suppressed-174',
+      'yizhou-revolt-quelled-176',
+      'cao-luan-executed-party-purge-176',
+      'epidemic-party-ban-relief-179',
+      'jiangxia-local-uprising-180',
+      'xianbei-raids-you-bing-181',
+      'epidemic-drought-182',
+    ];
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(177);
+
+    const fresh = (function(){ let model=createPhase4Model(169,1,persons,PHASE4_CONTENT_VERSION); for(let year=170;year<=182;year++) model=advancePhase4(model,360); return model; })();
+    for (const id of ids) expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    const newEvents = fresh.eventLedger.filter((item) => ids.some((id) => item.detail.includes(HISTORY_CONTENT.find((node) => node.id === id)!.title)));
+    expect(newEvents).toHaveLength(ids.length);
+    expect(newEvents.find((item) => item.detail.includes('靈帝加元服'))?.source).toContain('唯黨人不赦');
+    expect(newEvents.find((item) => item.detail.includes('會稽許生'))?.source).toContain('臧旻');
+    expect(newEvents.find((item) => item.detail.includes('疫與北海'))?.source).toContain('使者巡行致醫藥');
+    expect(newEvents.find((item) => item.detail.includes('曹鸞'))?.source).toContain('門生故吏父兄子弟');
+    expect(newEvents.find((item) => item.detail.includes('江夏地方'))?.source).toContain('江夏蠻叛');
+    expect(newEvents.find((item) => item.detail.includes('大疫與旱災'))?.source).toContain('光和五年');
+
+    const old = createPhase4Model(169, 1, persons, 'phase4-scenario-145');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    for (const id of ids) expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const continued = (function(){ let model=upgraded; for(let year=170;year<=182;year++) model=advancePhase4(model,360); return model; })();
+    for (const id of ids) expect(continued.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+
+    const late = upgradePhase4Content(createPhase4Model(183, 1, persons, 'phase4-scenario-145'), PHASE4_CONTENT_VERSION);
+    for (const [id, year] of ids.map((id, index) => [id, [170, 171, 172, 173, 174, 176, 176, 179, 180, 181, 182][index]!] as const)) {
+      expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: year });
+    }
+    expect(late.eventLedger.filter((item) => ids.some((id) => item.detail.includes(HISTORY_CONTENT.find((node) => node.id === id)!.title)))).toHaveLength(0);
+
+    const sameYear = upgradePhase4Content(createPhase4Model(176, 1, persons, 'phase4-scenario-145'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === 'yizhou-revolt-quelled-176')).toMatchObject({ status: 'resolved', resolvedYear: 176 });
+    expect(sameYear.nodes.find((node) => node.contentId === 'cao-luan-executed-party-purge-176')).toMatchObject({ status: 'resolved', resolvedYear: 176 });
+    expect(sameYear.eventLedger.some((item) => item.detail.includes('曹鸞訟黨人'))).toBe(false);
   });
 });

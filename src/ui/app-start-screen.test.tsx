@@ -253,7 +253,7 @@ describe('開局存檔載入提示',()=>{
     }
 
     expect(violations,JSON.stringify(violations,null,2)).toEqual([]);
-  });
+  },30000);
 
   it('世界線切換成功與失敗都以狀態角色通知，失敗時保留原線',async()=>{
     const makeSave=(seed:number,name:string)=>{

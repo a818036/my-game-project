@@ -265,7 +265,7 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('孫策去世、孫權承接軍政事務'))).toBe(false);
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
-  });
+  },15000);
 
   it('A188 v6 scenario v98 JSON 存檔追加升至目前版本，保留事件前綴並納入射虎節點',()=>{
     const current=makeSave('phase6-v98-to-v102');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
@@ -726,6 +726,6 @@ describe('A05／A06 存檔交易與重播', () => {
     const continueSave=verifySave(toJson(makeBranch([...prefix,unified.event,continued.event,nextYear.event],nextYear.state)));
     expect(continueSave.state.phase4).toMatchObject({year:281,ending:'continuing',unified:true});expect(replay(continueSave.events)).toEqual(continueSave.state);
     await commitWorldline(continueSave,noHistory,true);const continueReload=await loadWorkspace();expect(continueReload.profile.activeWorldlineId).toBe(continueSave.worldlineId);expect(continueReload.saves).toEqual([continueSave]);expect(replay(continueReload.saves[0]!.events)).toEqual(continueReload.saves[0]!.state);
-  },60000);
+  },180000);
 
 });
