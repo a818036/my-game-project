@@ -425,3 +425,5 @@ scenario-132 補充既有 219 年荊州戰局節點，未增加節點或重複�
 
 A312 2026-10-30 年表來源加入後重跑 npm run check:history-links：78 個不同網址全數回應 HTTP 2xx、0 次重試。前一次 Harvard CHGIS V6 的 ECONNRESET 為暫時性連線錯誤。
 | `cao-zhen-expedition-against-shu-230` | 曹真、司馬懿等多路伐蜀，因大雨撤軍 | 一般史實事件 | 230 年級（原史太和四年秋七月出兵、九月撤軍） | [《三國志》卷三〈魏書·明帝紀〉](https://zh.wikisource.org/zh-hant/%E4%B8%89%E5%9C%8B%E5%BF%97/%E5%8D%B703)記下詔與九月還軍；[卷九〈魏書·曹真傳〉](https://zh.wikisource.org/zh-hant/%E4%B8%89%E5%9C%8B%E5%BF%97/%E5%8D%B709)記曹真由子午道、司馬懿由漢水、其他諸軍分道並進，連月大雨致棧道斷絕後撤回。 | 記錄多路出兵與因天候撤軍；不推演接戰、傷亡、完整路線日程或玩家疆界。scenario v142 遷移保留事件前綴，229 年存檔跨年至 230 年可觸發；230 年及更晚存檔不回補。 |
+
+A317（2026-10-30）：重跑 `npm run check:history-links`，79 個來源網址中 78 個由 Node 端取得 HTTP 2xx；Harvard CHGIS V6 連續五次 `ECONNRESET`。以網頁讀取工具開啟同一官方頁面，頁面可讀且列出 V6 資料集、發表資訊與授權限制。這次自動檢查未全通過，但沒有證據顯示來源頁不存在；保留原典連結並記錄端點差異，不改用會回應 WAF 202 challenge 的其他網址。
