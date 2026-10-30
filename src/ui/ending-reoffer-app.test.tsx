@@ -106,6 +106,8 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(decision?.textContent).toContain('選擇繼續人生');
     expect(decision?.querySelector('label[for="ending-direction"]')?.textContent).toBe('你決定的結局方向');
     expect(decision?.querySelector('#ending-direction')).not.toBeNull();
+    expect(decision?.querySelector('#ending-direction')?.getAttribute('aria-describedby')).toBe('ending-direction-help');
+    expect(decision?.querySelector('#ending-direction-help')?.textContent).toContain('留白或繼續人生都不會結束這條世界線');
     expect(decision?.querySelector('button[type="submit"]')?.textContent).toBe('確認選擇結局');
     expect(host.querySelector('.phase4-panel [data-testid="ending-decision-main"]')).toBeNull();
   }, 30000);
