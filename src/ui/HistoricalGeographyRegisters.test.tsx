@@ -47,6 +47,7 @@ describe('史料郡縣名錄的可存取標記', () => {
       });
       expect(host.querySelector('[role="status"]')?.textContent).toBe('找到 99 個名目，來自 6 份名錄。');
       expect(host.querySelectorAll('.county-search-result')).toHaveLength(6);
+      expect(host.querySelector('.county-search-result h3')?.tagName).toBe('H3');
       expect(host.textContent).toContain('豫州・潁川郡縣名錄');
 
       await act(async () => {

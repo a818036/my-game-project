@@ -12,6 +12,17 @@ vi.mock('../storage',async(importOriginal)=>{
   return {...actual,commitWorldline:vi.fn(),loadWorkspace:vi.fn()};
 });
 vi.mock('./ChatGptConnection',()=>({ChatGptConnection:()=>null}));
+vi.mock('./HistoricalGeographyRegisters',async()=>{
+  const {createElement,useState}=await import('react');
+  return {HistoricalGeographyRegisters:()=>{
+    const [query,setQuery]=useState('');
+    return createElement('div',{className:'county-register-search'},[
+      createElement('label',{key:'label',htmlFor:'county-register-search'},'搜尋郡縣名目'),
+      createElement('input',{key:'input',id:'county-register-search',type:'search',value:query,onChange:(event:{target:{value:string}})=>setQuery(event.target.value)}),
+      query&&createElement('section',{key:'result',className:'county-search-result'},createElement('h3',null,`豫州・${query}`)),
+    ]);
+  }};
+});
 
 import App from './App';
 
@@ -127,7 +138,7 @@ describe('開局存檔載入提示',()=>{
       if(panel==='軍政'){
         const geographyDisclosure=[...host.querySelectorAll('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'));
         expect(geographyDisclosure).toBeDefined();
-        await act(async()=>{geographyDisclosure!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+        await act(async()=>{geographyDisclosure!.click();await Promise.resolve();});
         const search=host.querySelector<HTMLInputElement>('#county-register-search');
         expect(search).not.toBeNull();
         const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
