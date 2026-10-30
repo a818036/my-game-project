@@ -5,6 +5,10 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const source = await readFile(resolve(root, 'docs/HISTORY_CONTENT.md'), 'utf8');
 const urls = [...new Set([...source.matchAll(/\[[^\]]+\]\((https:\/\/[^)]+)\)/g)].map((match) => match[1]))];
+if (urls.length === 0) {
+  console.error('失敗：來源索引中找不到任何 HTTPS 原典連結');
+  process.exit(1);
+}
 const results = new Array(urls.length);
 let next = 0;
 
@@ -28,7 +32,7 @@ async function checkNext() {
 
 await Promise.all(Array.from({ length: 6 }, () => checkNext()));
 
-const failures = results.filter((result) => result.error || result.status < 200 || result.status >= 400);
+const failures = results.filter((result) => result.error || result.status < 200 || result.status >= 300);
 if (failures.length > 0) {
   for (const failure of failures) console.error(JSON.stringify(failure));
   console.error(`失敗：${failures.length}/${urls.length} 個不同網址無法取得`);
