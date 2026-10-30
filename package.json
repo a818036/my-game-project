@@ -13,7 +13,8 @@
     "check:preview": "node scripts/check-production-preview.mjs",
     "typecheck": "tsc -b --pretty",
     "test": "vitest run",
-    "benchmark:history": "node scripts/benchmark-history.mjs"
+    "benchmark:history": "node scripts/benchmark-history.mjs",
+    "fixture:ending-reoffer": "node scripts/create-phase6-ending-reoffer-fixture.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",

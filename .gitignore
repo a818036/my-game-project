@@ -1,5 +1,7 @@
 node_modules/
 dist/
 *.tsbuildinfo
+.phase6-ending-reoffer-fixture.json
+docs/fixtures/phase6-ending-reoffer-v6.json
 .env
 .env.*.local
