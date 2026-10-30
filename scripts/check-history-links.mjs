@@ -16,16 +16,34 @@ async function checkNext() {
   while (next < urls.length) {
     const index = next++;
     const url = urls[index];
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        redirect: 'follow',
-        signal: AbortSignal.timeout(15_000),
-      });
-      await response.body?.cancel().catch(() => {});
-      results[index] = { url, status: response.status, finalUrl: response.url };
-    } catch (error) {
-      results[index] = { url, error: error instanceof Error ? error.message : String(error) };
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          redirect: 'follow',
+          signal: AbortSignal.timeout(15_000),
+        });
+        const shouldRetry = response.status === 429 || response.status >= 500;
+        if (shouldRetry && attempt < 2) {
+          await response.body?.cancel().catch(() => {});
+        } else {
+          results[index] = { url, status: response.status, finalUrl: response.url };
+          await response.body?.cancel().catch(() => {});
+          break;
+        }
+      } catch (error) {
+        if (attempt === 2) {
+          const cause = error instanceof Error && 'cause' in error ? error.cause : undefined;
+          results[index] = {
+            url,
+            error: error instanceof Error ? error.message : String(error),
+            ...(cause && typeof cause === 'object' && 'code' in cause ? { cause: cause.code } : {}),
+          };
+          break;
+        }
+      }
+
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, 500 * (attempt + 1)));
     }
   }
 }
