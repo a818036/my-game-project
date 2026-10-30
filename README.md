@@ -195,3 +195,5 @@ A324：再次檢查史料原典連結，79 個網址全數 HTTP 2xx、0 次重�
 Phase 6 A336：可用 `npm run fixture:ending-reoffer` 產生固定種子、280 年、已達自然節點門檻的合成 v6 存檔，供人工在隔離瀏覽器測結局重提入口。產物位於 `docs/fixtures/phase6-ending-reoffer-v6.json` 並由 `.gitignore` 排除；它含示例條款，只供驗收，不代表史實或正式遊戲進度。實際瀏覽器流程仍待人工驗收。
 
 Phase 6 A337：結局自然節點重提的 App 整合測試新增 fake IndexedDB 保存／重載循環；操作主故事區入口後，以正式 storage adapter 載回 ending=pending 的 280 年存檔，且事件重播一致。完整測試 56 檔、500 項通過；仍未代替真實 Chromium 介面、螢幕閱讀器或手機驗收。
+
+Phase 6 A338：2026-10-30 重查 79 個史料網址，均回應 HTTP 2xx、0 次重試。這是當次外站狀態快照，不保證日後持續可用。
