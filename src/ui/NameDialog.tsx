@@ -35,10 +35,10 @@ export function NameDialog({ role, value, busy, onChange, onConfirm }: NameDialo
     };
   }, []);
 
-  return createPortal(<div className="modal-backdrop"><section ref={dialogRef} className="name-dialog" role="dialog" aria-modal="true" aria-labelledby="name-dialog-title" tabIndex={-1}>
+  return createPortal(<div className="modal-backdrop"><section ref={dialogRef} className="name-dialog" role="dialog" aria-modal="true" aria-labelledby="name-dialog-title" aria-describedby="name-dialog-description" tabIndex={-1}>
     <div className="section-kicker">玩家命名權・待決</div>
     <h2 id="name-dialog-title">請為「{role}」命名</h2>
-    <p>命名完成前，此人物不會加入正式家族圖。</p>
+    <p id="name-dialog-description">命名完成前，此人物不會加入正式家族圖。</p>
     <label>姓名<input ref={inputRef} maxLength={20} value={value} onChange={(event) => onChange(event.target.value)} /></label>
     <button className="primary" disabled={!value.trim() || busy} onClick={onConfirm}>確認姓名</button>
   </section></div>, document.body);

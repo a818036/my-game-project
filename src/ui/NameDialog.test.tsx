@@ -36,6 +36,10 @@ describe('必要命名對話框焦點管理', () => {
   it('開啟時將焦點放入姓名欄，卸載時回到開啟前的控制項', () => {
     render();
     expect(document.activeElement).toBe(document.body.querySelector('[role="dialog"] input'));
+    const dialog = document.body.querySelector<HTMLElement>('[role="dialog"]')!;
+    expect(dialog.getAttribute('aria-labelledby')).toBe('name-dialog-title');
+    expect(dialog.getAttribute('aria-describedby')).toBe('name-dialog-description');
+    expect(document.getElementById('name-dialog-description')?.textContent).toContain('命名完成前');
     expect(appRoot.inert).toBe(true);
     expect(document.querySelector('#root [role="dialog"]')).toBeNull();
     act(() => root.render(null));
