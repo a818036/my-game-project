@@ -33,6 +33,38 @@ import App from './App';
 
 const emptyWorkspace={saves:[],profile:{regions:[],surnames:[],activeWorldlineId:null}};
 
+function visibleText(node:Node):string{
+  if(node instanceof Element&&(node.hasAttribute('hidden')||node.getAttribute('aria-hidden')==='true'))return '';
+  if(node.nodeType===Node.TEXT_NODE)return node.textContent??'';
+  return [...node.childNodes].map(visibleText).join(' ');
+}
+
+function hasReferencedName(element:Element,root:ParentNode):boolean{
+  const label=element.getAttribute('aria-label')?.trim();
+  if(label)return true;
+  const ids=element.getAttribute('aria-labelledby')?.trim().split(/\s+/).filter(Boolean)??[];
+  return ids.length>0&&ids.every(id=>{
+    const target=[...root.querySelectorAll<HTMLElement>('[id]')].find(candidate=>candidate.id===id);
+    return !!target&&!!target.textContent?.trim();
+  });
+}
+
+function hasControlName(control:HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement,root:ParentNode):boolean{
+  return [...(control.labels??[])].some(label=>!!visibleText(label).trim())||hasReferencedName(control,root);
+}
+
+function hasButtonName(button:HTMLButtonElement,root:ParentNode):boolean{
+  return !!visibleText(button).trim()||hasReferencedName(button,root);
+}
+
+function invalidAriaIdReferences(root:ParentNode):string[]{
+  const attributes=['aria-labelledby','aria-describedby','aria-controls','aria-owns','aria-details','aria-errormessage'];
+  return [...root.querySelectorAll<HTMLElement>(attributes.map(attribute=>`[${attribute}]`).join(','))].flatMap(element=>attributes.flatMap(attribute=>{
+    const ids=element.getAttribute(attribute)?.trim().split(/\s+/).filter(Boolean)??[];
+    return ids.filter(id=>![...root.querySelectorAll<HTMLElement>('[id]')].some(target=>target.id===id)).map(id=>`${element.tagName.toLowerCase()}[${attribute}="${id}"]`);
+  }));
+}
+
 describe('開局存檔載入提示',()=>{
   let host:HTMLDivElement;
   let root:ReturnType<typeof createRoot>;
@@ -43,6 +75,31 @@ describe('開局存檔載入提示',()=>{
   afterEach(async()=>{
     await act(async()=>root.unmount());
     host.remove();
+  });
+
+  it('A362 名稱抽查排除隱藏裝飾文字並拒絕無效的 ARIA 參照',()=>{
+    const button=document.createElement('button');
+    const icon=document.createElement('span');
+    icon.setAttribute('aria-hidden','true');
+    icon.textContent='›';
+    button.append(icon);
+    host.append(button);
+    expect(hasButtonName(button,host)).toBe(false);
+
+    const field=document.createElement('input');
+    field.setAttribute('aria-labelledby','missing-name');
+    host.append(field);
+    expect(hasControlName(field,host)).toBe(false);
+    expect(invalidAriaIdReferences(host)).toEqual(['input[aria-labelledby="missing-name"]']);
+
+    const label=document.createElement('label');
+    label.htmlFor='named-field';
+    label.textContent='有效欄位名稱';
+    field.id='named-field';
+    field.removeAttribute('aria-labelledby');
+    host.append(label);
+    expect(hasControlName(field,host)).toBe(true);
+    expect(invalidAriaIdReferences(host)).toEqual([]);
   });
 
   it('IndexedDB 載入失敗時，將錯誤顯示在出生確認畫面並以 alert 播報',async()=>{
@@ -106,7 +163,8 @@ describe('開局存檔載入提示',()=>{
     expect(controls.length).toBeGreaterThan(0);
     expect(controls.every(control=>control.labels?.length)).toBe(true);
     const buttons=[...host.querySelectorAll<HTMLButtonElement>('button')];
-    expect(buttons.every(button=>!!(button.textContent?.trim()||button.getAttribute('aria-label')?.trim()))).toBe(true);
+    expect(buttons.filter(button=>!hasButtonName(button,host)).map(button=>button.outerHTML)).toEqual([]);
+    expect(invalidAriaIdReferences(host)).toEqual([]);
   });
 
   it('遊戲畫面保持地標、標題層級及可見控制項名稱',async()=>{
@@ -131,17 +189,23 @@ describe('開局存檔載入提示',()=>{
     expect(headingLevels[0]).toBe(1);
     expect(headingLevels.slice(1).every((level,index)=>level<=headingLevels[index]+1)).toBe(true);
     const controls=[...host.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('input:not([type="hidden"]):not([hidden]),select,textarea')];
-    expect(controls.every(control=>!!(control.labels?.length||control.getAttribute('aria-label')||control.getAttribute('aria-labelledby')))).toBe(true);
+    expect(controls.filter(control=>!hasControlName(control,host)).map(control=>control.outerHTML)).toEqual([]);
     const buttons=[...host.querySelectorAll<HTMLButtonElement>('button')];
-    expect(buttons.every(button=>!!(button.textContent?.trim()||button.getAttribute('aria-label')?.trim()))).toBe(true);
+    expect(buttons.filter(button=>!hasButtonName(button,host)).map(button=>button.outerHTML)).toEqual([]);
+    const initialTabs=[...host.querySelectorAll<HTMLButtonElement>('nav[aria-label="遊戲資料與操作"] button')];
+    expect(initialTabs.filter(tab=>tab.getAttribute('aria-pressed')==='true')).toHaveLength(1);
     for(const panel of ['家產','天生技','軍政','記事']){
       const tab=[...host.querySelectorAll<HTMLButtonElement>('nav[aria-label="遊戲資料與操作"] button')].find(button=>button.textContent?.trim().startsWith(panel));
       expect(tab,`找不到「${panel}」分頁控制項`).toBeDefined();
       await act(async()=>{tab!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+      const selectedTabs=[...host.querySelectorAll<HTMLButtonElement>('nav[aria-label="遊戲資料與操作"] button')].filter(button=>button.getAttribute('aria-pressed')==='true');
+      expect(selectedTabs,`「${panel}」切換後應只有目前分頁標記為選取`).toHaveLength(1);
+      expect(selectedTabs[0]?.textContent).toContain(panel);
       const panelControls=[...host.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('input:not([type="hidden"]):not([hidden]),select,textarea')];
-      expect(panelControls.filter(control=>!(control.labels?.length||control.getAttribute('aria-label')||control.getAttribute('aria-labelledby'))).map(control=>control.outerHTML),`「${panel}」分頁有未命名表單欄位`).toEqual([]);
+      expect(panelControls.filter(control=>!hasControlName(control,host)).map(control=>control.outerHTML),`「${panel}」分頁有無有效名稱的表單欄位`).toEqual([]);
       const panelButtons=[...host.querySelectorAll<HTMLButtonElement>('button')];
-      expect(panelButtons.filter(button=>!(button.textContent?.trim()||button.getAttribute('aria-label')?.trim())).map(button=>button.outerHTML),`「${panel}」分頁有未命名按鈕`).toEqual([]);
+      expect(panelButtons.filter(button=>!hasButtonName(button,host)).map(button=>button.outerHTML),`「${panel}」分頁有無有效名稱的按鈕`).toEqual([]);
+      expect(invalidAriaIdReferences(host),`「${panel}」分頁有指向不存在元素的 ARIA ID`).toEqual([]);
       const levels=[...host.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(heading=>Number(heading.tagName.slice(1)));
       expect(levels.slice(1).every((level,index)=>level<=levels[index]+1),`「${panel}」分頁標題層級跳階：${levels.join('→')}`).toBe(true);
       if(panel==='軍政'){

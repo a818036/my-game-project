@@ -61,6 +61,7 @@
 | 五個資料分頁互動名稱抽查 | 2026-10-31／隔離 Chromium、localhost:5199 | 通過：以 DOM 名稱線索（關聯標籤、`aria-label`／`aria-labelledby`、按鈕文字）盤點當時可見控制項；人物 47、家產 30、天生技 33、軍政 44、記事 22 項，未發現名稱空白。僅為單一合成世界線的簡易 DOM 抽查，不是 axe 全站稽核，也不代表 NVDA／Firefox 語音驗收 | A357 後續抽查；隔離 IndexedDB |
 | 詢問回覆即時播報區 | 2026-10-31／Vitest jsdom | 通過：行動表單先建立空白 `role=status` 節點，模擬提問後更新同一節點為回答摘要；答案區不再重複建立 status role，並保留 220 字摘要上限。這是程式 DOM 回歸，不是 NVDA／Firefox 語音或真實模型驗收 | A358；Vitest jsdom 模擬回答 |
 | 敘事失敗播報區 | 2026-10-31／Vitest jsdom | 通過：App 先建立空白敘事錯誤 `role=status` 節點；模擬結算後服務拒絕時，同一節點播報錯誤，畫面保留可見範本回退訊息但不重複提供 status role。服務使用 mock，未連線或呼叫真實模型；不是螢幕閱讀器語音驗收 | A359；App 整合測試 |
+| 遊戲畫面名稱與 ARIA 參照回歸 | 2026-10-31／Vitest jsdom | 通過：分頁逐一切換時確認表單欄位與按鈕有非裝飾名稱、ARIA ID 參照都有目標、恰有一個分頁按鈕標示選取；負向案例確認純 `aria-hidden` 圖示文字及不存在的 `aria-labelledby` 會失敗。此為 DOM 測試，不等於完整名稱計算演算法、axe 全站稽核或 NVDA／Firefox 語音 | A362；React App 整合測試 |
 | 結局自然節點逐步累積 App 整合 | 2026-10-31／Vitest jsdom、合成 280 年存檔 | 通過：從尚無重大節點的已統一／繼續人生狀態切入軍政分頁，透過 UI 建立並明確批准三個主權節點；前兩項後主故事區沒有重提入口，第三項後入口才出現，世界仍在西元 280 年。敘事以 mock 隔離，未呼叫 AI。這是 React App 整合測試，不是 Chromium 實際操作，人工瀏覽器驗收仍待補 | A360；沒有使用者存檔 |
 | 手機版面瀏覽器模擬 | 2026-10-30／隔離 Chrome、390×844 CSS viewport | 通過：24px 閱讀字級逐一檢視五個遊戲資料分頁，viewport 與文件寬度一致，未見水平溢出；完成後恢復 18px 及預設 viewport。這不是實體手機／OS 字級放大驗收 | A327；隔離 localhost origin |
 | 結局自然節點重提 App 整合 | 2026-10-30／Vitest jsdom、fake IndexedDB | 通過：280 年長局選擇繼續並達門檻，入口在主故事區顯示且可操作；A337 以正式 storage adapter 寫入 fake IndexedDB，從 `loadWorkspace` 載回 ending=pending、年份仍為 280 的同一世界線，事件重播相等。仍非真實 Chromium UI、實體瀏覽器磁碟或 NVDA 語音測試 | A331–A332、A337；56 個測試檔中的 App 整合案例 |
