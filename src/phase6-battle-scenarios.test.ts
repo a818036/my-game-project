@@ -1,6 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {applyPhase4Action,createPhase4Model} from './phase4';
 import {battleScenarioOptions,createBattleScenario,type BattleScenarioId} from './battle-scenario-examples';
+import {isBattleScenarioRevisionCurrent} from './battle-scenario-safety';
 
 const people=[{id:'protagonist',name:'主角',alive:true,location:'汝南郡',office:''}];
 
@@ -37,5 +38,15 @@ describe('A291 多類戰役場景的可驗證敘事資料',()=>{
       {...scenario.scene.narrativeContext!,aftermathLimits:['x'.repeat(301)]},
       {...scenario.scene.narrativeContext!,confirmedConsequences:Array.from({length:9},()=> '已確認')},
     ])expect(()=>applyPhase4Action(createPhase4Model(184,1,people),{type:'StartBattle',id:'invalid-context',location:scenario.location,units:scenario.units,protagonistPresent:false,scene:{...scenario.scene,narrativeContext}},people)).toThrow('戰場敘事事實與限制無效');
+  });
+});
+
+describe('A292 動態載入戰役資料的世界線版本檢查',()=>{
+  it('只有來源世界線與 revision 都未變時才允許派發',()=>{
+    const origin={worldlineId:'line-a',revision:12};
+    expect(isBattleScenarioRevisionCurrent(origin,{...origin})).toBe(true);
+    expect(isBattleScenarioRevisionCurrent(origin,{worldlineId:'line-b',revision:12})).toBe(false);
+    expect(isBattleScenarioRevisionCurrent(origin,{worldlineId:'line-a',revision:13})).toBe(false);
+    expect(isBattleScenarioRevisionCurrent(origin,null)).toBe(false);
   });
 });

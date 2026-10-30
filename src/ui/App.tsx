@@ -7,7 +7,8 @@ import { ENGINEERING, HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES, type ControlLe
 import { HAN_DIVISION_INDEX, HAN_DIVISION_SOURCE_URLS, HAN_INSPECTOR_COMMANDERY_TOTAL, HAN_INSPECTOR_DIVISION_COUNT } from '../phase4-geography';
 import { characterAgeLabel } from '../narration/status';
 import {computeBattleVisibility} from '../battle-geometry';
-import {battleScenarioOptions,createBattleScenario,type BattleScenarioId} from '../battle-scenario-examples';
+import {isBattleScenarioRevisionCurrent} from '../battle-scenario-safety';
+import type {BattleScenarioId} from '../battle-scenario-examples';
 import { ActivityAnnouncer, LoadingScreen, StatusAlert } from './ActivityAnnouncer';
 import { BattlePersonnelRegister } from './BattlePersonnelRegister';
 import { NameDialog } from './NameDialog';
@@ -110,6 +111,7 @@ export default function App() {
   const [p4Person, setP4Person] = useState('example-clerk');
   const [p4Candidate, setP4Candidate] = useState('sample-scribe');
   const [p4BattleScenario,setP4BattleScenario]=useState<'ford'|BattleScenarioId>('ford');
+  const [p4BattleLoading,setP4BattleLoading]=useState(false);
   const [p4Treaty, setP4Treaty] = useState('永久割讓示例郡縣');
   const [p4TreatyTerritory, setP4TreatyTerritory] = useState('sample-county');
   const [p4TreatySuccessor, setP4TreatySuccessor] = useState('鄰近勢力（示例）');
@@ -126,6 +128,7 @@ export default function App() {
   const narrationPayload=useRef<NarrationPayload|null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const activeSave = workspace.saves.find((save) => save.worldlineId === workspace.profile.activeWorldlineId) ?? null;
+  const activeSaveRef=useRef(activeSave);activeSaveRef.current=activeSave;
   const state = activeSave?.state ?? null;
   const events = activeSave?.events ?? [];
   const phase2 = state?.phase2 ?? null;
@@ -194,14 +197,21 @@ export default function App() {
     if(!state)return;
     void run({version:ENGINE_VERSION,commandId:commandId(),expectedRevision:state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action});
   }
-  function startBattleExample(){
-    if(!state)return;
+  async function startBattleExample(){
+    if(!state||p4BattleLoading)return;
     if(p4BattleScenario==='ford'){
       const units:WarUnit[]=[{id:'blue-vanguard',faction:'郡縣守備（示例）',commanderId:'captain-blue',commanderName:'守備校尉・示例',location:'汝南渡口（示例）',strength:4000,reserve:1000,supply:5,morale:70,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命',position:{x:12,y:0},sightRadius:8},{id:'red-vanguard',faction:'來犯部隊（示例）',commanderId:'captain-red',commanderName:'前軍校尉・示例',location:'汝南渡口（示例）',strength:5000,reserve:0,supply:4,morale:65,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命',position:{x:18,y:0},sightRadius:8}];
       phase4Action({type:'StartBattle',id:commandId(),location:'汝南渡口・前線（示例）',units,protagonistPresent:true,scene:exampleBattleScene()});return;
     }
-    const scenario=createBattleScenario(p4BattleScenario);
-    phase4Action({type:'StartBattle',id:commandId(),location:scenario.location,units:scenario.units,protagonistPresent:true,scene:scenario.scene});
+    const origin={worldlineId:state.worldlineId,revision:state.revision};setP4BattleLoading(true);
+    try{
+      const {createBattleScenario}=await import('../battle-scenario-examples');
+      const current=activeSaveRef.current;
+      if(!current||!isBattleScenarioRevisionCurrent(origin,{worldlineId:current.worldlineId,revision:current.state.revision})){setNotice('載入戰役期間，世界線狀態已有變更；請重新確認後再開始。');return;}
+      const scenario=createBattleScenario(p4BattleScenario),id=commandId();
+      void run({version:ENGINE_VERSION,commandId:id,expectedRevision:current.state.revision,worldlineId:current.worldlineId,type:'Phase4Action',action:{type:'StartBattle',id,location:scenario.location,units:scenario.units,protagonistPresent:true,scene:scenario.scene}});
+    }catch{setNotice('戰役示例資料載入失敗；世界線未變更，請稍後再試。');}
+    finally{setP4BattleLoading(false);}
   }
   function submitCombination() {
     if (!state || !phase2 || !innate) return;
@@ -386,7 +396,7 @@ export default function App() {
       <p>{phase4.territories.map(t=><span key={t.id} className="p4-chip">{t.name}・{t.control}・糧 {t.grain}・人口 {t.population}・支持 {t.support}</span>)}</p><label>普通糧運量<input id="p4-quantity" type="number" min="1" max="100" defaultValue="20" /></label><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'SendConvoy',routeId:'route-county-market',owner:'家族帳・示例',item:'糧',quantity:Number((document.getElementById('p4-quantity') as HTMLInputElement).value),from:phase4.routes[0].from,to:phase4.routes[0].to})}>沿驛路運糧（按日抵達）</button>{phase4.convoys.map(c=><p className="caption" key={c.id}>{c.quantity} {c.item}・{c.from} → {c.to}・{c.status}・尚需 {c.daysRemaining} 日・所有者 {c.owner}</p>)}
       </div>
       <div className="phase4-subsection"><h3>雙線調度示例</h3>{!phase4.campaign&&<button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'StartMultiFrontExample'})}>建立兩線編制與獨立指揮</button>}{phase4.campaign&&<><p className="caption">總帥只負戰區決策，不另加兵力；各部有唯一位置。調動先從原線除名，抵達前標為行軍中，兵力不重複計入。</p>{phase4.campaign.fronts.map(front=><section className="front-row" key={front.id}><h4>{front.name}</h4><p>戰區總指揮：{front.overallCommanderName}；地點：{front.location}</p>{front.unitIds.map(id=>{const unit=phase4.campaign!.units.find(entry=>entry.id===id)!;const target=phase4.campaign!.fronts.find(entry=>entry.id!==front.id)!;return <div className="item-row" key={id}><span>{unit.commanderName}・現役 {unit.strength}／預備 {unit.reserve}・位置 {unit.location}</span><button className="quiet" disabled={busy} onClick={()=>phase4Action({type:'TransferBetweenFronts',unitId:id,toFrontId:target.id})}>調往{target.name}（依路程到達）</button></div>;})}</section>)}{phase4.campaign.transfers.map(transfer=><p className="caption" key={transfer.id}>{transfer.unitId}調動中・尚需 {Math.max(0,transfer.arrivalDay-phase4.day)} 日；離開原線後不計入其他戰線。</p>)}</>}</div>
-      <div className="phase4-subsection"><h3>戰役示例・單一部隊清冊</h3>{!phase4.battle&&<><label>戰場情境<select value={p4BattleScenario} onChange={event=>setP4BattleScenario(event.target.value as 'ford'|BattleScenarioId)}><option value="ford">渡口牽索與拒馬（示例）</option>{battleScenarioOptions().map(option=><option key={option.id} value={option.id}>{option.label}（示例）</option>)}</select></label><button className="quiet" disabled={busy} onClick={startBattleExample}>進入所選戰役情境（主角親臨）</button></>}
+      <div className="phase4-subsection"><h3>戰役示例・單一部隊清冊</h3>{!phase4.battle&&<><label>戰場情境<select value={p4BattleScenario} onChange={event=>setP4BattleScenario(event.target.value as 'ford'|BattleScenarioId)}><option value="ford">渡口牽索與拒馬（示例）</option><option value="city-gate">城門攻守（示例）</option><option value="mountain-retreat">山道撤退與補給車（示例）</option></select></label><button className="quiet" disabled={busy||p4BattleLoading} onClick={()=>void startBattleExample()}>{p4BattleLoading?'正在載入戰場資料…':'進入所選戰役情境（主角親臨）'}</button></>}
       {phase4.battle&&<><p>{phase4.battle.location}・第 {phase4.battle.rounds} 輪・{phase4.battle.status}・主角{phase4.battle.protagonistPresent?'親臨':'未親臨'}。總指揮：{phase4.battle.overallCommander.name}（不直接領一軍）</p>{phase4.battle.scene&&<details><summary>場景預置與視線（示例，未代表已發生結果）</summary>
 <p className="caption">座標與完整度均為可調示例工程值，不代表史實距離、器械規格或傷亡公式。因果鏈只在前件實際摧毀、距離成立時結算，且每條僅一次。</p>
 {phase4.battle.scene.narrativeContext&&<><p><b>戰術目標：</b>{phase4.battle.scene.narrativeContext.tacticalObjectives.join('；')}</p><p><b>已確認後果：</b>{phase4.battle.scene.narrativeContext.confirmedConsequences.join('；')}</p><p><b>敘事界線：</b>{phase4.battle.scene.narrativeContext.aftermathLimits.join('；')}</p></>}
