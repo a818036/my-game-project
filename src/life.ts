@@ -40,14 +40,49 @@ function protectMajorAction(clean:string):InteractionResult|null{
   if(/使用|施展|治療|救治|復活|救活|救援|調兵|出兵|攻城|戰役|批准|同意|割地|割讓|簽訂|締結|臣服|獨立|命令|幫我|我要|我想|請/.test(clean))return{kind:'unclear',answer:'這段文字涉及天生技救援、戰爭或主權條約等重大操作，不能轉成一般生活行動，也沒有建立任何行動候選。請改用對應的天生技操作台或軍政面板。',choiceIds:[],questions:['你可以在專用介面查看條件並明確確認；這次文字不會推進時間或改變存檔。'],source:'重大操作保護'};
   return null;
 }
+interface HistoricalRulerSpan{state:string;title:string;startYear:number;endYear:number;source:string;}
+const historicalRulerSpans:HistoricalRulerSpan[]=[
+  {state:'曹魏',title:'魏文帝曹丕',startYear:220,endYear:226,source:'《三國志》卷二〈魏書·文帝紀〉'},
+  {state:'曹魏',title:'魏明帝曹叡',startYear:226,endYear:239,source:'《三國志》卷三〈魏書·明帝紀〉'},
+  {state:'曹魏',title:'齊王曹芳（曹魏皇帝）',startYear:239,endYear:254,source:'《三國志》卷四〈魏書·三少帝紀〉'},
+  {state:'曹魏',title:'高貴鄉公曹髦（曹魏皇帝）',startYear:254,endYear:260,source:'《三國志》卷四〈魏書·三少帝紀〉'},
+  {state:'曹魏',title:'陳留王曹奐（曹魏皇帝）',startYear:260,endYear:265,source:'《三國志》卷四〈魏書·三少帝紀〉'},
+  {state:'蜀漢',title:'漢昭烈帝劉備',startYear:221,endYear:223,source:'《三國志》卷三十二〈蜀書·先主傳〉'},
+  {state:'蜀漢',title:'後主劉禪',startYear:223,endYear:263,source:'《三國志》卷三十三〈蜀書·後主傳〉'},
+  {state:'孫吳',title:'吳王孫權（非皇帝稱號）',startYear:221,endYear:229,source:'《三國志》卷四十七〈吳書·吳主傳〉'},
+  {state:'孫吳',title:'吳大帝孫權',startYear:229,endYear:252,source:'《三國志》卷四十七〈吳書·吳主傳〉'},
+  {state:'孫吳',title:'吳少帝孫亮',startYear:252,endYear:258,source:'《三國志》卷四十八〈吳書·三嗣主傳〉'},
+  {state:'孫吳',title:'吳景帝孫休',startYear:258,endYear:264,source:'《三國志》卷四十八〈吳書·三嗣主傳〉'},
+  {state:'孫吳',title:'吳末帝孫皓',startYear:264,endYear:280,source:'《三國志》卷四十八〈吳書·三嗣主傳〉'},
+  {state:'西晉',title:'晉武帝司馬炎',startYear:265,endYear:280,source:'《晉書》卷三〈武帝紀〉'},
+];
+const rulerTransitionNotes:Record<number,string>={
+  220:'漢獻帝劉協禪位於魏王曹丕，漢魏更替。',
+  221:'劉備於成都即皇帝位；孫權此時仍以吳王名義稱國。',
+  223:'劉備去世後，後主劉禪於同年繼位。',
+  226:'曹丕去世，魏明帝曹叡於同年即位。',
+  229:'孫權於南郊即皇帝位，吳國的君主稱號改變。',
+  239:'魏明帝曹叡去世，齊王曹芳於同年即位。',
+  252:'孫權去世，太子孫亮於同年即位。',
+  254:'曹芳被廢，曹髦於同年即位。',
+  258:'孫亮被廢，孫休於同年即位。',
+  260:'曹髦去世，曹奐於同年即位。',
+  263:'蜀漢後主劉禪向魏軍投降，蜀漢政權結束。',
+  264:'孫休去世，孫皓於同年即位。',
+  265:'魏帝曹奐禪位於晉王司馬炎，魏亡晉立。',
+  280:'孫皓向晉投降，孫吳政權結束，三國分立告終。',
+};
 export function currentRulerFact(year:number):string|null{
   if(year>=168&&year<=188)return `西元 ${year} 年，東漢皇帝是漢靈帝劉宏（《後漢書·孝靈帝紀》）。`;
   if(year===189)return '西元 189 年內皇位數度更替：先是漢少帝劉辯即位，後為漢獻帝劉協。本原型只用年級史實與簡化月曆，無法據此判定模型中的當下是哪位皇帝。資料見《後漢書·孝靈帝紀》《孝獻帝紀》。';
   if(year>=190&&year<220)return `西元 ${year} 年，東漢皇帝是漢獻帝劉協（《後漢書·孝獻帝紀》）。`;
-  if(year===220)return '西元 220 年，漢獻帝劉協禪位於魏王曹丕，漢魏政權更替；本原型只記年級節點，不表示遊戲模型月對應禪代日期。資料見《三國志》卷二〈魏書·文帝紀〉。';
-  if(year===221)return '西元 221 年，劉備於成都即皇帝位，建立蜀漢政權；本原型只記年級節點，不表示遊戲模型月對應即位日期。資料見《三國志》卷三十二〈蜀書·先主傳〉。';
-  if(year===229)return '西元 229 年，孫權於南郊即皇帝位，建立孫吳帝制；本原型只記年級節點，不表示遊戲模型月對應即位日期。資料見《三國志》卷四十七〈吳主傳〉。';
-  return null;
+  if(year===220)return '西元 220 年，漢獻帝劉協禪位於魏王曹丕，漢魏政權更替；本原型只記年級節點，不表示遊戲模型月對應禪代日期。資料見《三國志》卷二〈魏書·文帝紀〉及《後漢書》卷九〈孝獻帝紀〉。';
+  if(year<221||year>280)return null;
+  const rulers=historicalRulerSpans.filter(span=>year>=span.startYear&&year<=span.endYear);
+  if(!rulers.length)return null;
+  const details=rulers.map(ruler=>`${ruler.state}：${ruler.title}（${ruler.source}）`).join('；');
+  const transition=rulerTransitionNotes[year];
+  return `西元 ${year} 年，多個政權並立，不能只用一位全國皇帝概括。年表可查的主要統治者：${details}。${transition?`${transition}本原型只採年級資料，不能據此判定模型中的當月更替先後。`:'以上列出各政權在該年可查的統治者。'}`;
 }
 export function answerKnownRulerQuestion(text:string,state:GameState):InteractionResult|null{
   const clean=text.trim();
