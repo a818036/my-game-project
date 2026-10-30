@@ -433,3 +433,5 @@ A317（2026-10-30）：重跑 `npm run check:history-links`，79 個來源網址
 A333（2026-10-30）：再次執行 `npm run check:history-links`，79 個不同網址均回應 HTTP 2xx、0 次重試。這是本次連線快照；較早的 78/79 結果保留作為歷史紀錄，外站日後仍可能變動。
 
 A348（2026-10-30）：再跑 `npm run check:history-links`，79 個不同網址全數 HTTP 2xx、0 次重試。未下載或保存來源頁面；這只確認本次連線狀態，不代表人工校勘或未來持續可用。
+
+A356（2026-10-31）替代漢末地理資料來源審核：國家地球系統科學數據中心列有公元 140 年東漢行政區地理資料，但頁面說明資料由《中國歷史地圖集》印刷圖配準、數位化拼接而成；資料僅限科學研究，且平台聲明未經書面許可不得複製、修改、抄錄、傳播或銷售，因此不匯入公開遊戲。[官方資料頁](https://www.geodata.cn/data/datadetails.html?dataguid=109230036661066&docId=18475)。[歷史地圖開放資料頁](https://www.historiamap.com/download)此次列出的朝代為春秋、戰國及明朝，下載需透過微信索取限時連結；頁面稱坐標、名稱等來自《中國歷史地圖集》的配準與向量化、部分描述由 AI 輔助，具體授權僅在壓縮包說明中，未取得及核閱前不作可再散布來源。另有 2026 年東漢地名研究報告 2,822 筆地名座標；期刊文章標示 CC BY-NC-ND，King's College London 同時列有 CC BY 的作者稿，但官方紀錄未確認座標資料另有獨立、允許公開遊戲再散布的授權，故不擷取其座標。[研究文章與授權](https://www.nature.com/articles/s40494-026-02775-2)、[KCL 研究紀錄](https://kclpure.kcl.ac.uk/portal/en/publications/spatial-distribution-naming-patterns-and-formation-mechanisms-of-/)。本次未找到可確認適用本專案的替代空間資料；現有行政清單仍是原典文字索引，不是地圖或邊界資料。
