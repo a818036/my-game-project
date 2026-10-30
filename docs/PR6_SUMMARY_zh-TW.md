@@ -399,3 +399,8 @@ A313 加入開局及遊戲畫面 DOM 檢查：單一 main landmark 與 h1、有�
 
 - 把既有的指定年份事件查詢接回玩家實際輸入路徑。玩家可問某年發生的已收錄史事；限定人物時只列相符來源節點，未收錄年份明示資料缺口，混合行動仍要求拆解。
 - 新增整合測試涵蓋事件來源、孫權限定查詢、年表外年份、混合行動及狀態不變。專項測試 `src/life.test.ts` 與 `src/phase4.test.ts` 共 151 項通過；完整測試 61 個測試檔、532 項通過，`npm run typecheck`、`npm run build`、`npm run check:bundle`、`npm run check:preview` 與 `git diff --check` 均通過。首頁 JavaScript 489,470／500,000 bytes，戰役示例 chunk 8,572／10,000 bytes。另於隔離 Chromium 的 184 年新局從文字欄查 206 年事件，畫面顯示周瑜及高幹兩筆帶原典的結果，回合仍為 0。提交 `714dd65` 的 GitHub Actions run [41138072662](https://github.com/a818036/my-game-project/actions/runs/41138072662) 已完成且全綠。
+
+## 本輪追加（A390）
+
+- 文字欄的常駐輔助說明加入史實年表查詢範例，說明其使用本機內容、不呼叫模型；SSR／DOM 回歸測試確認提示仍存在且輸入欄仍以 `aria-describedby` 關聯說明。
+- 隔離 Chromium／localhost:5222 重載 184 年合成測試線後，AX tree 可讀到新增提示；第 0 回合、原有隔離存檔狀態未變。這不代表 NVDA／Firefox 真實語音驗收。

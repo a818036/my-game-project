@@ -15,6 +15,7 @@ describe('LifeActionPanel 無障礙語意',()=>{
     expect(html).toContain('<div class="intent-grid" role="group" aria-labelledby="life-action-heading">');
     expect([...html.matchAll(/type="checkbox"/g)]).toHaveLength(4);
     expect(html).toContain('行動、詢問或想說的話');
+    expect(html).toContain('史實問答查本機已收錄年表，例如「西元 206 年發生了什麼事？」；不呼叫模型。');
   });
 
   it('A267–A268 對話歷史以可展開清單呈現，輸入欄關聯完整資料說明',()=>{
