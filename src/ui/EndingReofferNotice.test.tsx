@@ -37,10 +37,13 @@ describe('重大節點後的大結局入口提示', () => {
 
   it('尚未達門檻或正在保存時不顯示可用入口', async () => {
     await act(async () => root.render(createElement(EndingReofferNotice, { due: false, busy: false, onPromptEnding: vi.fn() })));
-    expect(host.querySelector('[role="status"]')?.textContent).toBe('');
+    const status = host.querySelector('[role="status"]');
+    expect(status?.textContent).toBe('');
     expect(host.querySelector('.finale-reoffer')).toBeNull();
 
     await act(async () => root.render(createElement(EndingReofferNotice, { due: true, busy: true, onPromptEnding: vi.fn() })));
+    expect(host.querySelector('[role="status"]')).toBe(status);
+    expect(status?.textContent).toContain('重大節點累積完成');
     expect(host.querySelector('button')?.disabled).toBe(true);
   });
 });
