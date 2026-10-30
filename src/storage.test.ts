@@ -668,4 +668,13 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(verifySave(toJson(continued))).toEqual(continued);
   },15000);
 
+  it('A288 v138 v6 存檔升至 v139 後保留下邳補充、事件前綴並可再次重播',()=>{
+    const current=makeSave('phase6-v138-xiapi-liu-bei');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-138'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v138 fixture');const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
+    const migrated=verifySave(toJson(old));const nodeId='lu-bu-xiapi-198';
+    expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.evidence).toEqual([expect.stringContaining('劉備隨曹操東征')]);
+    expect(migrated.state.phase4?.eventLedger).toEqual(oldState.phase4?.eventLedger);expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
+
 });
