@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   HAN_CANGWU_COUNTY_NAMES,
   HAN_CHEN_COUNTY_NAMES,
@@ -874,9 +875,50 @@ const registers = [
   },
 ] as const;
 
+type RegisterId = (typeof registers)[number]['id'];
+const registerDivision = {
+  chenliu: '兗州', dong: '兗州', dongping: '兗州', rencheng: '兗州', taishan: '兗州', jibei: '兗州', shanyang: '兗州', jiyin: '兗州',
+  donghai: '徐州', langya: '徐州', pengcheng: '徐州', guangling: '徐州', xiapi: '徐州',
+  jinan: '青州', pingyuan: '青州', lean: '青州', beihai: '青州', donglai: '青州', qi: '青州',
+  henanYin: '司隸校尉部', henei: '司隸校尉部', hedong: '司隸校尉部', hongnong: '司隸校尉部', jingzhao: '司隸校尉部', zuofengyi: '司隸校尉部', youfufeng: '司隸校尉部',
+  yingchuan: '豫州', runan: '豫州', liang: '豫州', pei: '豫州', chen: '豫州', lu: '豫州',
+  nanyang: '荊州', nanCommandery: '荊州', jiangxia: '荊州', lingling: '荊州', guiyang: '荊州', wuling: '荊州', changsha: '荊州',
+  yuzhang: '揚州', kuaiji: '揚州', danyang: '揚州', jiujiang: '揚州', lujiang: '揚州', wu: '揚州',
+  hanzhong: '益州', ba: '益州', guanghan: '益州', shu: '益州', qianwei: '益州', zangke: '益州', yuesui: '益州', yizhou: '益州', yongchang: '益州', guanghanDependent: '益州', shuDependent: '益州', qianweiDependent: '益州',
+  longxi: '涼州', hanyang: '涼州', wudu: '涼州', jincheng: '涼州', anding: '涼州', beidi: '涼州', wuwei: '涼州', zhangye: '涼州', jiuquan: '涼州', dunhuang: '涼州', zhangyeDependent: '涼州', juyanDependent: '涼州',
+  shangdang: '并州', taiyuan: '并州', shangjun: '并州', xihe: '并州', wuyuan: '并州', yunzhong: '并州', dingxiang: '并州', yanmen: '并州', shuofang: '并州',
+  zhuo: '幽州', guangyang: '幽州', dai: '幽州', shanggu: '幽州', yuyang: '幽州', youbeiping: '幽州', liaoxi: '幽州', liaodong: '幽州', xuantu: '幽州', lelang: '幽州', liaodongDependent: '幽州',
+  nanhai: '交州', cangwu: '交州', yulin: '交州', hep: '交州', jiaozhi: '交州', jiuzhen: '交州', rinan: '交州',
+  wei: '冀州', julu: '冀州', changshan: '冀州', zhongshan: '冀州', anping: '冀州', hejian: '冀州', qinghe: '冀州', zhao: '冀州', bohai: '冀州',
+} satisfies Record<RegisterId, string>;
+
 export function HistoricalGeographyRegisters() {
+  const [query, setQuery] = useState('');
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  const searchResults = normalizedQuery ? registers.flatMap((register) => {
+    const registerName = register.summary.replace(/^展開/, '').replace(/名錄.*$/, '').toLocaleLowerCase();
+    const matchesRegister = registerName.startsWith(normalizedQuery) || registerDivision[register.id].toLocaleLowerCase().startsWith(normalizedQuery);
+    const names = matchesRegister
+      ? register.names
+      : register.names.filter((name) => name.toLocaleLowerCase().includes(normalizedQuery));
+    return names.length ? [{ register, names }] : [];
+  }) : [];
+  const resultCount = searchResults.reduce((total, result) => total + result.names.length, 0);
+
   return <>
-    {registers.map((register) => <details className="county-index-details" key={register.id}>
+    <div className="county-register-search">
+      <label htmlFor="county-register-search">搜尋郡縣名目</label>
+      <input id="county-register-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} aria-describedby="county-register-search-help" />
+      <p id="county-register-search-help" className="caption">可輸入郡國、州部或城縣名稱；清空搜尋可返回逐份名錄。名稱依《後漢書》底本保留原字。</p>
+    </div>
+    {normalizedQuery ? <>
+      <p className="caption" role="status" aria-live="polite" aria-atomic="true">{resultCount ? `找到 ${resultCount} 個名目，來自 ${searchResults.length} 份名錄。` : '沒有符合的郡縣名目；可調整搜尋文字。'}</p>
+      {searchResults.map(({ register, names }) => <section className="county-search-result" key={register.id} aria-labelledby={`county-search-${register.id}`}>
+        <h4 id={`county-search-${register.id}`}>{registerDivision[register.id]}・{register.summary.replace(/^展開/, '').replace(/（.*$/, '')}</h4>
+        <ol className="county-index" aria-label={`${register.ariaLabel}搜尋結果`}>{names.map((name) => <li key={name}>{name}</li>)}</ol>
+        <p className="caption"><a href={HAN_DIVISION_SOURCE_URLS[register.id]} target="_blank" rel="noreferrer">{register.sourceText}</a></p>
+      </section>)}
+    </> : registers.map((register) => <details className="county-index-details" key={register.id}>
       <summary>{register.summary}</summary>
       <p className="caption">{register.description}</p>
       <ol className="county-index" aria-label={register.ariaLabel}>{register.names.map((name) => <li key={name}>{name}</li>)}</ol>
