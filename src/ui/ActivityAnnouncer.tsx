@@ -7,5 +7,5 @@ export function LoadingScreen(){
 }
 
 export function StatusAlert({message,onRetry,retrying=false}:{message:string;onRetry?:()=>void;retrying?:boolean}){
-  return message?<div className="notice" role="alert"><span>{message}</span>{onRetry&&<button type="button" onClick={onRetry} disabled={retrying}>{retrying?'正在重新讀取…':'重新讀取存檔'}</button>}</div>:null;
+  return message?<div className="notice"><p role="alert">{message}</p>{onRetry&&<button type="button" onClick={onRetry} disabled={retrying}>{retrying?'正在重新讀取…':'重新讀取存檔'}</button>}</div>:null;
 }

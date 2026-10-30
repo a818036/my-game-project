@@ -39,7 +39,7 @@ describe('異步操作螢幕閱讀器狀態',()=>{
 
   it('開局存檔錯誤以 alert 顯示且空訊息不佔畫面',()=>{
     const error=renderToStaticMarkup(createElement(StatusAlert,{message:'無法讀取瀏覽器存檔；請確認 IndexedDB 可用。',onRetry:()=>undefined}));
-    expect(error).toContain('role="alert"');
+    expect(error).toContain('<p role="alert">');
     expect(error).toContain('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');
     expect(error).toContain('重新讀取存檔');
     expect(renderToStaticMarkup(createElement(StatusAlert,{message:''}))).toBe('');

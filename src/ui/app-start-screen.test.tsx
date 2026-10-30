@@ -32,7 +32,7 @@ describe('開局存檔載入提示',()=>{
     vi.mocked(loadWorkspace).mockRejectedValueOnce(new Error('IndexedDB unavailable'));
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
     const alert=host.querySelector('[role="alert"]');
-    expect(alert?.querySelector('span')?.textContent).toBe('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');
+    expect(alert?.textContent).toBe('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');
     expect(host.querySelector('#start-content')?.contains(alert)).toBe(true);
   });
 
@@ -43,7 +43,7 @@ describe('開局存檔載入提示',()=>{
     vi.mocked(loadWorkspace).mockRejectedValueOnce(new Error('temporary IndexedDB error')).mockReturnValueOnce(retryResult);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
     expect(host.querySelector('[role="alert"]')).not.toBeNull();
-    const retry=host.querySelector<HTMLButtonElement>('[role="alert"] button');
+    const retry=host.querySelector<HTMLButtonElement>('.notice button');
     expect(retry?.textContent).toBe('重新讀取存檔');
     await act(async()=>{retry?.click();});
     expect(retry?.disabled).toBe(true);
@@ -57,9 +57,9 @@ describe('開局存檔載入提示',()=>{
   it('重試仍失敗時保留說明並重新啟用重試按鈕',async()=>{
     vi.mocked(loadWorkspace).mockRejectedValueOnce(new Error('initial IndexedDB error')).mockRejectedValueOnce(new Error('retry IndexedDB error'));
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
-    const retry=host.querySelector<HTMLButtonElement>('[role="alert"] button');
+    const retry=host.querySelector<HTMLButtonElement>('.notice button');
     await act(async()=>{retry?.click();await Promise.resolve();});
-    expect(host.querySelector('[role="alert"] span')?.textContent).toBe('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');
+    expect(host.querySelector('[role="alert"]')?.textContent).toBe('仍無法讀取瀏覽器存檔；請確認 IndexedDB 可用，再試一次。');
     expect(retry?.disabled).toBe(false);
     expect(retry?.textContent).toBe('重新讀取存檔');
   });
@@ -102,8 +102,8 @@ describe('開局存檔載入提示',()=>{
     await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
     const saveButton=[...host.querySelectorAll('button')].find(button=>button.textContent==='確認出生並開始')!;
     await act(async()=>{saveButton.click();await Promise.resolve();});
-    expect(host.querySelector('[role="alert"] span')?.textContent).toBe('未保存任何變更：disk full');
-    expect(host.querySelector('[role="alert"] button')).toBeNull();
+    expect(host.querySelector('[role="alert"]')?.textContent).toBe('未保存任何變更：disk full');
+    expect(host.querySelector('.notice button')).toBeNull();
     expect(loadWorkspace).toHaveBeenCalledTimes(1);
   });
 });
