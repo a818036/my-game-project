@@ -244,7 +244,7 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='sun-quan-inferred-birth-182')).toMatchObject({status:'resolved',resolvedYear:182,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='winter-cold-eastern-commandries-183')).toMatchObject({status:'resolved',resolvedYear:183,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});
     expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('孫權推定出生年'))).toBe(false);
-    expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('北海、東萊、琅邪冬寒記錄'))).toBe(false);
+    expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('光和六年大旱與冬寒記錄'))).toBe(false);
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });

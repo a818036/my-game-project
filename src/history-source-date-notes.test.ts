@@ -45,7 +45,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
 
   it('所有月份註記都對應來源明載的年級事件', () => {
     const evidence: Record<string, string[]> = {
-      'winter-cold-eastern-commandries-183': ['光和六年冬大寒'],
+      'winter-cold-eastern-commandries-183': ['光和六年夏大旱', '同年冬大寒'],
       'yuan-shu-proclaims-emperor-195': ['興平二年冬條記袁術議稱帝'],
       'emperor-relocates-xu-196': ['建安元年秋車駕西出洛陽'],
       'zhao-ci-revolt-186': ['中平三年', '二月江夏兵', '六月荊州刺史'],

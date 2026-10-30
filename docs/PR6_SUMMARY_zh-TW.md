@@ -413,3 +413,7 @@ A313 加入開局及遊戲畫面 DOM 檢查：單一 main landmark 與 h1、有�
 
 - 以 React 整合流程勾選生活選項並開啟確認計畫，再用 axe-core 掃描確認介面；啟用規則無違規，色彩對比仍因 jsdom 限制停用。真實瀏覽器與 NVDA／Firefox 驗收仍待人工執行。
 - `src/ui/LifeActionPanel.reply.test.tsx` 專項 3 項全過；最新提交 `118e3ba` 的完整 GitHub Actions run [41139308827](https://github.com/a818036/my-game-project/actions/runs/41139308827) 全綠：61 個測試檔／534 項測試、型別檢查、正式建置、bundle 預算與正式預覽 smoke check 均通過。
+
+## 本輪追加（A393）
+
+依《後漢書》卷八補列 183 年夏旱，與《後漢書》卷一〇五所記冬寒分清季節及來源，不推斷兩者因果或未載損失。v147→v148 遷移只向既有節點追加證據，完全保留舊事件帳，不新增重複事件、不回溯觸發；回歸測試涵蓋遷移、跨年結算、玩家問答狀態不變及重複升級冪等性。

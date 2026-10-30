@@ -290,22 +290,24 @@ describe('234 年孫權進向合肥新城', () => {
   });
 });
 
-describe('183 年北海、東萊、琅邪寒候記錄', () => {
+describe('183 年光和六年大旱與冬寒記錄', () => {
   const coldId = 'winter-cold-eastern-commandries-183';
 
   it('按原典只記年級寒候，不推演每天氣候或生活細節', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === coldId);
     expect(content).toMatchObject({ startYear: 183, endYear: 183, precision: 'year', introducedIn: 'phase4-scenario-90' });
-    expect(content?.source).toContain('《後漢書》卷一〇五');
+    expect(content?.source).toContain('卷一〇五〈五行志〉');
     expect(content?.source).toContain('北海、東萊、琅邪');
     expect(content?.source).toContain('冰厚尺餘');
-    expect(content?.description).toContain('不推演農損、疾病');
+    expect(content?.description).toContain('不推定夏旱影響區域、農損或疾病');
   });
 
   it('新局跨年至 183 年時觸發；v89 遷移不回補該年事件', () => {
     const fresh = advancePhase4(createPhase4Model(182, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === coldId)?.status).toBe('triggered');
-    expect(fresh.eventLedger.find((item) => item.detail.includes('北海、東萊、琅邪冬寒記錄'))?.source).toContain('光和六年冬');
+    const freshEvent = fresh.eventLedger.find((item) => item.source?.includes('卷一〇五〈五行志〉'));
+    expect(freshEvent?.source).toContain('卷八〈孝靈帝紀〉');
+    expect(freshEvent?.source).toContain('同年冬大寒');
 
     const old = createPhase4Model(182, 1, persons, 'phase4-scenario-89');
     const prefix = structuredClone(old.eventLedger);
@@ -316,7 +318,7 @@ describe('183 年北海、東萊、琅邪寒候記錄', () => {
 
     const late = upgradePhase4Content(createPhase4Model(184, 1, persons, 'phase4-scenario-89'), PHASE4_CONTENT_VERSION);
     expect(late.nodes.find((node) => node.contentId === coldId)).toMatchObject({ status: 'resolved', resolvedYear: 183 });
-    expect(late.eventLedger.some((item) => item.detail.includes('北海、東萊、琅邪冬寒記錄'))).toBe(false);
+    expect(late.eventLedger.some((item) => item.detail.includes('光和六年大旱與冬寒記錄'))).toBe(false);
   });
 });
 
