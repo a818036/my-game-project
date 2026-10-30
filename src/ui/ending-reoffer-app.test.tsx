@@ -186,4 +186,32 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(chosen.state.turn).toBe(0);
     expect(chosen.state.actions.at(-1)?.elapsedDays).toBe(save.state.actions.at(-1)?.elapsedDays);
   }, 30000);
+
+  it('結局重提保存失敗時保留原入口與焦點，不假裝開啟新結局', async () => {
+    const save = makeSaveWithDueReoffer();
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({
+      saves: [save],
+      profile: { regions: [], surnames: [], activeWorldlineId: save.worldlineId },
+    });
+    vi.mocked(commitWorldline).mockRejectedValueOnce(new Error('配額不足'));
+    await act(async () => {
+      root.render(createElement(App));
+      await Promise.resolve();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    const button = host.querySelector<HTMLButtonElement>('.finale-reoffer button');
+    expect(button).not.toBeNull();
+    button?.focus();
+    await act(async () => {
+      button?.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(commitWorldline).toHaveBeenCalledOnce();
+    expect(host.querySelector('[data-testid="ending-decision-main"]')).toBeNull();
+    expect(host.querySelector('.finale-reoffer button')).toBe(button);
+    expect(document.activeElement).toBe(button);
+    expect(host.textContent).toContain('未保存任何變更：配額不足');
+    expect(host.textContent).toContain('第 0 回合');
+  }, 30000);
 });
