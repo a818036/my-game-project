@@ -69,3 +69,4 @@
 
 | 史料來源網址連線快照 | 2026-10-31／Windows、`npm run check:history-links` | 通過：83 個不同網址全數回應 HTTP 2xx、0 次重試。僅為本次連線快照；不代表內容校勘、授權審查或外站永久可用 | A363；非 CI 檢查 |
 | 跳至主要內容鍵盤焦點 | 2026-10-31／隔離 Chromium、localhost:5198 | 通過：以 Enter 啟用「跳至主要內容」連結後，焦點落在 `#main-content`，該節點可程式聚焦且 URL 錨點同步改為 `#main-content`。使用合成世界線；僅驗實際瀏覽器焦點，未驗 NVDA／Firefox 語音 | A364；隔離 IndexedDB |
+| axe-core 選定畫面掃描 | 2026-10-31／Vitest jsdom、axe-core | 通過：實際開局畫面與遊戲人物、家產、天生技、軍政、記事分頁，逐一展開收合內容掃描；當次啟用規則未回報違規。色彩對比規則因 jsdom 不可靠而停用；不代表全站／真實瀏覽器稽核或 NVDA／Firefox 語音驗收 | A365；DOM 整合測試 |

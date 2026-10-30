@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import {act,createElement} from 'react';
 import {createRoot} from 'react-dom/client';
+import axe from 'axe-core';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {activateWorldline,commitWorldline,loadWorkspace} from '../storage';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
@@ -221,6 +222,37 @@ describe('開局存檔載入提示',()=>{
         expect(searchLevels.slice(1).every((level,index)=>level<=searchLevels[index]+1),`郡縣搜尋結果標題層級跳階：${searchLevels.join('→')}`).toBe(true);
       }
     }
+  });
+
+  it('A365 axe-core 檢查開局與遊戲五個資料分頁',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    const violations:Array<{panel:string;id:string;impact:string|null;targets:string[];help:string}>=[];
+    const scan=async(panel:string)=>{
+      const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+      for(const violation of results.violations){
+        violations.push({panel,id:violation.id,impact:violation.impact??null,targets:violation.nodes.flatMap(node=>node.target.map(String)),help:violation.help});
+      }
+    };
+    const expandDetails=async()=>act(async()=>{
+      for(const summary of host.querySelectorAll<HTMLElement>('details:not([open]) > summary'))summary.click();
+    });
+    await expandDetails();
+    await scan('開局');
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'無障礙');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    await act(async()=>{host.querySelector<HTMLButtonElement>('button.primary')!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+    await expandDetails();
+    await scan('人物');
+    for(const panel of ['家產','天生技','軍政','記事']){
+      await act(async()=>{[...host.querySelectorAll<HTMLButtonElement>('nav[aria-label="遊戲資料與操作"] button')].find(button=>button.textContent?.trim().startsWith(panel))!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+      await expandDetails();
+      await scan(panel);
+    }
+
+    expect(violations,JSON.stringify(violations,null,2)).toEqual([]);
   });
 
   it('世界線切換成功與失敗都以狀態角色通知，失敗時保留原線',async()=>{
