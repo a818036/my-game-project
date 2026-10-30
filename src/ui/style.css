@@ -86,7 +86,7 @@ body{background:linear-gradient(180deg,#efe6d4 0,#f7f1e4 38rem,#f2eadb 100%);col
 .story-panel .section-kicker{font-size:16px;color:#6d5b45}
 .story-panel .scene-place{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:8px 0;color:var(--ink);font-size:19px!important}
 .scene-place b{font-size:21px}
-.scene-place span,.scene-arrivals{font-size:16px!important;color:#74624c!important}
+.scene-place span,.scene-arrivals{font-size:16px!important;color:#6d5b45!important}
 .scene-arrivals{margin:0 0 16px}
 .story-panel .speech{max-width:68ch;margin:18px 0;padding:0 0 0 18px;border-left:2px solid #b94d3c;color:#2c241c;line-height:1.85}
 .main-column .trend{display:none}
@@ -99,7 +99,7 @@ body{background:linear-gradient(180deg,#efe6d4 0,#f7f1e4 38rem,#f2eadb 100%);col
 .profile .skills{gap:5px;margin-top:9px}
 .profile .skills span{background:transparent;border-color:#d4c4a9;color:var(--ink-soft);font-size:16px!important;padding:3px 7px}
 .profile .skills b{color:var(--seal)}
-.profile .caption{margin:8px 0;color:#75634c}
+.profile .caption{margin:8px 0;color:#6d5b45}
 .profile details{margin-top:12px}
 .profile summary,.log summary,.folds summary,.summary summary{color:var(--wood);font-weight:600}
 .feature-nav{display:grid;gap:2px;padding:8px 0 12px;border-bottom:1px solid var(--rule)}

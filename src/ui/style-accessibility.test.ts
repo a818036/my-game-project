@@ -68,6 +68,11 @@ describe('主要淺色介面的文字對比', () => {
     }
   });
 
+  it('場景時間、抵達資訊及人物潛質註解在紙色背景達 WCAG AA 對比', () => {
+    expect(contrastRatio(lastRuleColor('.scene-place span,.scene-arrivals'), '#f5eedf')).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(lastRuleColor('.profile .caption'), '#f5eedf')).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('開局表單標籤跟隨閱讀字級，出生確認文字至少 16px 並達 AA 對比', () => {
     expect(lastRule('.start-card label')).toMatch(/font-size:\s*1rem/);
     const confirmation = lastRule('.start-card .confirm');
