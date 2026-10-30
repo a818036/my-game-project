@@ -78,3 +78,4 @@
 | 確認對話框 axe-core DOM 掃描 | 2026-10-31／Vitest jsdom、axe-core | 通過：在遊戲內確認對話框實際掛載、背景設為 inert 時掃描，當次啟用規則無違規；停用 jsdom 不可靠的色彩對比規則。不代表 Chromium／全站掃描或 NVDA／Firefox 語音驗收 | A368；元件測試 |
 
 | 恩怨文字輸入與保存界線 | 2026-10-31／Vitest jsdom | 程式測試通過：恩怨欄有標籤、空白時保存停用、輸入文字後 Enter 保存至指定人物且回合不變；對話框關閉並將焦點還給觸發按鈕，沒有呼叫原生 prompt。使用合成世界線／mock storage；不代表 Chromium／NVDA／Firefox 語音驗收 | A369；App 整合測試 |
+| 取消恩怨輸入的負向路徑 | 2026-10-31／Vitest jsdom | 程式測試通過：先輸入文字再按 Escape，不呼叫保存、不新增恩怨、不推進回合；對話框關閉、背景 inert 還原，焦點回到觸發按鈕。使用合成世界線／mock storage；不代表 Chromium／NVDA／Firefox 語音驗收 | A370；App 整合測試 |

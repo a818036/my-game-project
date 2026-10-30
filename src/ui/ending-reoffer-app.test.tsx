@@ -237,6 +237,50 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(document.activeElement).toBe(trigger);
   }, 30000);
 
+  it('取消恩怨輸入不保存文字、不推進回合並恢復焦點', async () => {
+    const save = makeSaveWithDueReoffer(0);
+    host.id = 'root';
+    const phase2 = save.state.phase2!;
+    phase2.persons.push({ id:'a370-grievance-person', name:'取消測試關係人', role:'友人', birthYear:150, deathYear:null, alive:true, office:'故吏', gender:'不詳' });
+    phase2.relationships = [{ personId:'a370-grievance-person', trust:20, loyalty:30, fear:0, grievances:[] }];
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({
+      saves: [save],
+      profile: { regions: [], surnames: [], activeWorldlineId: save.worldlineId },
+    });
+    await act(async () => {
+      root.render(createElement(App));
+      await Promise.resolve();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    await act(async () => {
+      [...host.querySelectorAll<HTMLElement>('summary')].find((summary) => summary.textContent?.includes('信任、忠誠、恐懼與恩怨'))?.click();
+    });
+    const trigger = [...host.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent?.trim()==='記錄恩怨');
+    expect(trigger).not.toBeNull();
+    trigger?.focus();
+    await act(async () => { trigger?.click(); });
+    const field = document.querySelector<HTMLInputElement>('#confirm-dialog-input');
+    expect(field).not.toBeNull();
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(field, '取消後不得寫入的測試文字');
+      field?.dispatchEvent(new Event('input', { bubbles:true }));
+    });
+    expect(document.querySelector<HTMLInputElement>('#confirm-dialog-input')?.value).toBe('取消後不得寫入的測試文字');
+
+    await act(async () => {
+      document.querySelector<HTMLInputElement>('#confirm-dialog-input')?.dispatchEvent(new KeyboardEvent('keydown', { key:'Escape', bubbles:true }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(commitWorldline).not.toHaveBeenCalled();
+    expect(save.state.phase2?.relationships.find((relation) => relation.personId==='a370-grievance-person')?.grievances).toEqual([]);
+    expect(save.state.turn).toBe(0);
+    expect(document.querySelector('.confirm-dialog')).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+    expect(host.inert).toBe(false);
+  }, 30000);
+
   it('操作自然節點重提入口後，待決結局可從 IndexedDB 重新載入', async () => {
     const actualStorage = await vi.importActual<typeof import('../storage')>('../storage');
     Object.defineProperty(globalThis, 'indexedDB', { configurable: true, value: indexedDB });
