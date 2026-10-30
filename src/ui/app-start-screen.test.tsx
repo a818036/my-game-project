@@ -76,6 +76,20 @@ describe('開局存檔載入提示',()=>{
     expect(host.querySelector('[role="alert"]')).toBeNull();
   });
 
+  it('開局畫面有單一主要地標、頁面標題及具可讀標籤的表單控制項',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    expect(host.querySelectorAll('main')).toHaveLength(1);
+    expect(host.querySelectorAll('h1')).toHaveLength(1);
+    expect(host.querySelector('h1')?.textContent).toBe('神洲三國');
+    const controls=[...host.querySelectorAll<HTMLInputElement>('input:not([type="hidden"]):not([hidden])')];
+    expect(controls.length).toBeGreaterThan(0);
+    expect(controls.every(control=>control.labels?.length)).toBe(true);
+    const buttons=[...host.querySelectorAll<HTMLButtonElement>('button')];
+    expect(buttons.every(button=>!!(button.textContent?.trim()||button.getAttribute('aria-label')?.trim()))).toBe(true);
+  });
+
   it('單一世界線無法驗證時仍顯示開局畫面與原始備份操作',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce({...emptyWorkspace,unreadableSaves:[{worldlineId:'broken-world',version:6,reason:'存檔狀態與事件重播結果不一致',raw:{format:'shenzhou-save',version:6,worldlineId:'broken-world',events:[],state:{worldlineId:'broken-world'}} as never}]});
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});

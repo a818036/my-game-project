@@ -168,3 +168,5 @@ Phase 6 A310：東漢郡縣名錄加入跨表搜尋，涵蓋 105 份、1,181 個
 
 
 2026-10-30 A312 年表來源加入後重跑 npm run check:history-links，78 個不同網址全數回應 HTTP 2xx、0 次重試。
+
+2026-10-30 A313 開局頁語意回歸檢查：唯一 main landmark／h1、可見欄位 label 與按鈕名稱均通過；NVDA／Firefox 語音驗收仍待人工。
