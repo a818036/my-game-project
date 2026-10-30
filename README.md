@@ -127,3 +127,6 @@ Phase 6 A293：PR 自動建置檢查首頁 JavaScript 小於 500,000 bytes、戰
 
 
 Phase 6 A294：CI 會啟動暫時 Vite 正式預覽，確認首頁 JavaScript、CSS 及延後載入戰役 chunk 可取得，再自動關閉伺服器；不部署，也不讀寫其他瀏覽器來源的存檔。
+
+
+Phase 6 A295：真實螢幕閱讀器、手機與低階裝置、真實模型品質及結局人工驗收步驟與紀錄格式，整理於 [人工驗收清單](docs/PHASE6_MANUAL_ACCEPTANCE_zh-TW.md)。目前全部仍標示待驗。
