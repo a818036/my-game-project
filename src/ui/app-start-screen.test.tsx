@@ -166,19 +166,27 @@ describe('開局存檔載入提示',()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[first,second],profile:{regions:[],surnames:[],activeWorldlineId:first.worldlineId}});
     vi.mocked(activateWorldline).mockResolvedValue(undefined);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    const persistentStatus=host.querySelector<HTMLElement>('.game-shell > .visually-hidden[role="status"]');
+    expect(persistentStatus?.textContent).toBe('');
 
     const select=host.querySelector<HTMLSelectElement>('select[aria-label="切換世界線"]');
     expect(select).not.toBeNull();
     await act(async()=>{select!.value=second.worldlineId;select!.dispatchEvent(new Event('change',{bubbles:true}));await Promise.resolve();});
     expect(activateWorldline).toHaveBeenCalledWith(second.worldlineId);
     expect(host.querySelector('h1')?.textContent).toContain('測試乙');
-    expect(host.querySelector('p.notice[role="status"]')?.textContent).toBe('已切換世界線；舊存檔仍保留。');
+    expect(host.querySelector('.game-shell > .visually-hidden[role="status"]')).toBe(persistentStatus);
+    expect(persistentStatus?.textContent).toBe('已切換世界線；舊存檔仍保留。');
+    expect(host.querySelector('p.notice')?.textContent).toBe('已切換世界線；舊存檔仍保留。');
+    expect(host.querySelector('p.notice')?.hasAttribute('role')).toBe(false);
 
     vi.mocked(activateWorldline).mockRejectedValueOnce(new Error('storage unavailable'));
     await act(async()=>{select!.value=first.worldlineId;select!.dispatchEvent(new Event('change',{bubbles:true}));await Promise.resolve();});
     expect(host.querySelector('h1')?.textContent).toContain('測試乙');
     expect(host.querySelector<HTMLSelectElement>('select[aria-label="切換世界線"]')?.value).toBe(second.worldlineId);
-    expect(host.querySelector('p.notice[role="status"]')?.textContent).toBe('切換失敗；所有存檔均保留。');
+    expect(host.querySelector('.game-shell > .visually-hidden[role="status"]')).toBe(persistentStatus);
+    expect(persistentStatus?.textContent).toBe('切換失敗；所有存檔均保留。');
+    expect(host.querySelector('p.notice')?.textContent).toBe('切換失敗；所有存檔均保留。');
+    expect(host.querySelector('p.notice')?.hasAttribute('role')).toBe(false);
   });
 
   it('單一世界線無法驗證時仍顯示開局畫面與原始備份操作',async()=>{
