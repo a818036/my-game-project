@@ -1,7 +1,10 @@
-import {describe,expect,it} from 'vitest';
+import {afterEach,describe,expect,it,vi} from 'vitest';
 import {answerKnownHistoricalPersonTimelineQuestion,localInteraction} from './life';
 import {HISTORY_CONTENT} from './phase4';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from './engine';
+import {understandInput} from './narration/interaction';
+
+afterEach(()=>vi.unstubAllGlobals());
 
 describe('A373 other-person historical timeline queries',()=>{
   it('answers a Liu Bei timeline from sourced nodes without claiming a complete biography',()=>{
@@ -20,16 +23,22 @@ describe('A373 other-person historical timeline queries',()=>{
     expect(result?.answer).not.toContain('劉備殺車胄');
   });
 
-  it('A383 distinguishes the 20-item display limit from missing historical years',()=>{
+  it('A383 distinguishes the 20-item display limit from missing years through the player input path',async()=>{
     const person='曹操';
     const records=HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&`${item.title} ${item.description} ${item.carrier}`.includes(person)).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
     expect(records).toHaveLength(24);
-    const result=answerKnownHistoricalPersonTimelineQuestion(`請整理${person}生平年表`);
+    const facts=createOpeningFacts(383,184,{regions:[],surnames:[]});
+    const state=dispatch(null,{version:ENGINE_VERSION,commandId:'a383-person-timeline-start',expectedRevision:0,type:'StartGame',name:'測試玩家',seed:383,facts}).state!;
+    const before=structuredClone(state),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    const result=await understandInput(`請整理${person}生平年表`,state,new AbortController().signal);
     expect(result?.answer).toContain('前 20 筆');
     expect(result?.answer).toContain('20 筆顯示上限');
     for(const record of records.slice(0,20))expect(result?.answer).toContain(record.title);
     expect(result?.answer).not.toContain(records[20]!.title);
     expect(result?.answer).toContain('沒有列出的年份可能是索引缺口，也可能是符合條件的節點超過本次 20 筆顯示上限');
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(state).toEqual(before);
+    expect(state.turn).toBe(0);
   });
 
   it('leaves Sun Quan to the existing precision-aware biography path and ignores ordinary questions',()=>{
