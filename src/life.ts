@@ -89,7 +89,9 @@ export function currentRulerFact(year:number):string|null{
 }
 export function answerKnownRulerQuestion(text:string,state:GameState):InteractionResult|null{
   const clean=text.trim();
-  if(!/(皇帝|天子|君主)/.test(clean)||!/(誰|何人|哪位|是誰)/.test(clean)||/(然後|接著|再去)/.test(clean))return null;
+  const mentionsRuler=/(皇帝|皇上|天子|君主|君王|在位者)/.test(clean);
+  const asksIdentity=/(誰|何人|哪位|哪一位)/.test(clean)&&mentionsRuler||/誰.{0,6}(?:在位|統治|稱帝|當皇帝|做皇帝)/.test(clean);
+  if(!asksIdentity||/(然後|接著|再去)/.test(clean))return null;
   const fact=currentRulerFact(state.world.year);
   return {kind:'question',answer:fact??`目前是西元 ${state.world.year} 年；這份原型的史實年表尚未涵蓋該年的皇帝資料，我不臆測答案。`,choiceIds:[],questions:[]};
 }
