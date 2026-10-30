@@ -197,3 +197,5 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .save-recovery{margin:16px 0;padding:14px;border:1px solid #a66a46;background:#382a24;color:#eadfd0}.save-recovery h2{margin:0 0 8px;font-size:1.15em}.save-recovery p,.save-recovery li{line-height:1.65}.save-recovery ul{padding-left:22px}.save-recovery li+li{margin-top:12px}.save-recovery details{margin:5px 0}.save-recovery summary{cursor:pointer}.save-recovery code{display:block;overflow-wrap:anywhere;white-space:normal}.save-recovery .quiet{border-color:#d3b49e;color:#f3e8dc}
 
 .family-list .deceased,.deceased{color:#6d5b45}
+
+.confirm-dialog{width:min(100%,520px);max-height:90vh;overflow:auto;padding:25px;background:#f5eedf;border:1px solid #8b7657;box-shadow:0 12px 36px #48371d20}.confirm-dialog h2{color:#2a2118}.confirm-dialog p{font-size:14px;line-height:1.8;color:#342b21}.confirm-dialog .button-row{justify-content:flex-end;margin-top:22px}@media(max-width:720px){.confirm-dialog{padding:20px}}

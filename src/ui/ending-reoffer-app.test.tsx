@@ -129,7 +129,6 @@ describe('重大節點後重新提供結局的 App 流程', () => {
       saves: [save],
       profile: { regions: [], surnames: [], activeWorldlineId: save.worldlineId },
     });
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     await act(async () => {
       root.render(createElement(App));
       await Promise.resolve();
@@ -164,14 +163,15 @@ describe('重大節點後重新提供結局的 App 流程', () => {
       });
       const pending = [...host.querySelectorAll<HTMLButtonElement>('.phase4-panel button')].find((button) => button.textContent?.includes('明確批准條款'));
       expect(pending).not.toBeNull();
+      await act(async () => { pending?.click(); });
+      expect(document.querySelector('[role=\"dialog\"]')?.textContent).toContain('批准後會變更所列領地控制者');
       await act(async () => {
-        pending?.click();
+        document.querySelector<HTMLButtonElement>('.confirm-dialog button.primary')?.click();
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
       if (milestone < ENGINEERING.endingReofferNaturalNodeCount) expect(host.querySelector('.finale-reoffer')).toBeNull();
     }
 
-    expect(window.confirm).toHaveBeenCalledTimes(ENGINEERING.endingReofferNaturalNodeCount);
     const offer = host.querySelector<HTMLElement>('.finale-reoffer');
     expect(offer).not.toBeNull();
     expect(host.querySelector('#main-content')?.contains(offer)).toBe(true);
