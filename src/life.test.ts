@@ -36,6 +36,17 @@ describe('人生情境計畫',()=>{
     expect(localInteraction('對父親說：不要擔心',state).kind).toBe('dialogue');
     expect(localInteraction('我要觀察眼前',state).choiceIds).toEqual(['observe']);expect(state).toEqual(before);
   });
+  it('A389 指定年份史實問答可由玩家文字路徑取得且不推進或改變世界',()=>{
+    const state=start().state!,before=structuredClone(state);
+    const known=localInteraction('西元 206 年發生了什麼事？',state);
+    expect(known.kind).toBe('question');expect(known.answer).toContain('高幹敗走與壺關平定');expect(known.answer).toContain('《三國志》卷一');expect(known.choiceIds).toEqual([]);
+    const person=localInteraction('孫權在 202 年發生了什麼事？',state);
+    expect(person.kind).toBe('question');expect(person.answer).toContain('孫權拒絕曹操索取人質');expect(person.answer).not.toContain('劉備殺車胄');
+    const absent=localInteraction('西元 281 年發生了什麼事？',state);
+    expect(absent.kind).toBe('question');expect(absent.answer).toContain('尚未涵蓋');
+    expect(localInteraction('西元 206 年發生什麼事？然後再去耕讀',state).kind).toBe('mixed');
+    expect(state).toEqual(before);
+  });
   it('孫權生平問題保留史料精度；無來源的日常時辰明確回答未記載',()=>{
     const appointed=answerKnownSunQuanBiographyQuestion('孫權幾歲任陽羨長？');
     expect(appointed?.answer).toContain('年十五');expect(appointed?.answer).toContain('郡察孝廉、州舉茂才、行奉義校尉');expect(appointed?.answer).toContain('不將年齡反推成特定年份');

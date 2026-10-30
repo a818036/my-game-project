@@ -174,6 +174,7 @@ export function localInteraction(text:string,state:GameState):InteractionResult{
   const personTimelineAnswer=answerKnownHistoricalPersonTimelineQuestion(clean);if(personTimelineAnswer)return personTimelineAnswer;
   const biographyAnswer=answerKnownSunQuanBiographyQuestion(clean);if(biographyAnswer)return biographyAnswer;
   const rulerAnswer=answerKnownRulerQuestion(clean,state);if(rulerAnswer)return rulerAnswer;
+  const historicalEventAnswer=answerKnownHistoricalEventQuestion(clean,state);if(historicalEventAnswer)return historicalEventAnswer;
   if(/幾歲|年齡|多大/.test(clean)&&!/(然後|接著|再去)/.test(clean))return {kind:/才|怎麼|為什麼|不合理/.test(clean)?'objection':'question',answer:`你目前 ${currentAge(state)} 歲 ${Math.max(0,state.world.month-1)} 個月。現代記憶不代表身體成年，普通生活選項會依當下階段安排；天生技仍依各自規則處理。`,choiceIds:[],questions:[]};
   if(/不合理|沒邏輯|有問題|怎麼會|為什麼/.test(clean))return{kind:'objection',answer:'這是對情境的質疑，並非行動指令。我會保留目前狀態；請指出不合理的人物、行動或結果。',choiceIds:[],questions:[]};
   if(/[?？]|能不能|可不可以|可以嗎|在哪|現在能|能做什麼/.test(clean))return{kind:'question',answer:`目前在${state.phase2?.scene.location??state.character.home}。可確認的生活選項：${catalog.map(c=>c.label).join('、')}。其他能力請使用天生技操作台；詢問不會執行已勾選行動。`,choiceIds:[],questions:[]};
