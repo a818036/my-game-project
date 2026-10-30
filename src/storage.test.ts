@@ -677,4 +677,10 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.eventLedger).toEqual(oldState.phase4?.eventLedger);expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
 
+  it('A289 v139 v6 存檔升至 v140 後可重播 200 年劉備史實節點',()=>{
+    const current=makeSave('phase6-v139-liu-bei-200');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-139'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v139 fixture');const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState};
+    const migrated=verifySave(toJson(old)),nodeId='cao-defeats-liu-bei-200';expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
+
 });

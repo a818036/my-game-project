@@ -6,7 +6,7 @@ const eventId = 'yizhou-ma-xiang-revolt-188';
 
 describe('188 年益州馬相起事節點', () => {
   it('按來源觸發，將 v85 舊存檔追加升級且不回補較晚年份', () => {
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(158);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(159);
 
     const fresh = advancePhase4(createPhase4Model(187, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
@@ -32,7 +32,7 @@ describe('188 年益州馬相起事節點', () => {
 describe('187 年長沙區星起事節點', () => {
   it('保留史料異名並按年觸發，遷移不補寫晚年存檔', () => {
     const eventId = 'changsha-ou-xing-revolt-187';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(158);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(159);
 
     const fresh = advancePhase4(createPhase4Model(186, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
@@ -88,7 +88,7 @@ describe('185–186 年涼州與江夏事件', () => {
 describe('199 年孫權隨孫策征伐節點', () => {
   it('按《三國志》年級來源觸發，v104 遷移保留事件前綴且不回補', () => {
     const eventId = 'sun-quan-joins-sun-ce-expedition-199';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(158);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(159);
 
     const fresh = advancePhase4(createPhase4Model(198, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
