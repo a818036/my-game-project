@@ -116,7 +116,9 @@ const HISTORICAL_SUBJECT_ALIASES=['曹操','曹丕','曹叡','曹仁','曹真','
 export function answerKnownHistoricalPersonTimelineQuestion(text:string):InteractionResult|null{
   const asksTimeline=/(一生|生平|年表|完整經歷|經歷|事蹟|做過什麼|有哪些事)/.test(text);
   if(!asksTimeline)return null;
-  const subjects=HISTORICAL_SUBJECT_ALIASES.filter(name=>text.includes(name));
+  const normalizedText=text.replaceAll('孫仲謀','孫權');
+  const subjects=HISTORICAL_SUBJECT_ALIASES.filter(name=>name!=='孫仲謀'&&normalizedText.includes(name));
+  if(subjects.length>1)return {kind:'question',answer:`這個年表問題同時提到${subjects.join('、')}。目前只能依來源索引逐一整理單一人物，尚未提供可靠的生平比較；請指定其中一位，我不會擅自挑選或補寫比較結論。`,choiceIds:[],questions:[],source:'人物範圍需先確認'};
   if(subjects.length!==1)return null;
   const subject=subjects[0];
   if(subject==='孫權'||subject==='孫仲謀')return null;
@@ -162,8 +164,8 @@ export function localInteraction(text:string,state:GameState):InteractionResult{
   if(/^(?:(?:我)?(?:想要|想|要)\s*)?(對|向|跟|與).*(說|問|道|講|詢問|表示)|^「|^"/.test(clean))return{kind:'dialogue',answer:'已辨識為對話。',choiceIds:[],questions:[]};
   const major=protectMajorAction(clean);if(major)return major;
   if((/[?？]/.test(clean)&&/然後|接著|再去/.test(clean))||/不要|先別|不去|不做|除非|如果|若是/.test(clean))return{kind:'mixed',answer:'這段話包含條件、否定或不同用途，需要先拆開確認，沒有執行任何一部分。',choiceIds:[],questions:['請先說明要查詢的問題，或單獨列出這次確定要做的行動。']};
-  const biographyAnswer=answerKnownSunQuanBiographyQuestion(clean);if(biographyAnswer)return biographyAnswer;
   const personTimelineAnswer=answerKnownHistoricalPersonTimelineQuestion(clean);if(personTimelineAnswer)return personTimelineAnswer;
+  const biographyAnswer=answerKnownSunQuanBiographyQuestion(clean);if(biographyAnswer)return biographyAnswer;
   const rulerAnswer=answerKnownRulerQuestion(clean,state);if(rulerAnswer)return rulerAnswer;
   if(/幾歲|年齡|多大/.test(clean)&&!/(然後|接著|再去)/.test(clean))return {kind:/才|怎麼|為什麼|不合理/.test(clean)?'objection':'question',answer:`你目前 ${currentAge(state)} 歲 ${Math.max(0,state.world.month-1)} 個月。現代記憶不代表身體成年，普通生活選項會依當下階段安排；天生技仍依各自規則處理。`,choiceIds:[],questions:[]};
   if(/不合理|沒邏輯|有問題|怎麼會|為什麼/.test(clean))return{kind:'objection',answer:'這是對情境的質疑，並非行動指令。我會保留目前狀態；請指出不合理的人物、行動或結果。',choiceIds:[],questions:[]};

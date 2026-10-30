@@ -44,10 +44,10 @@ export async function understandInput(text:string,state:GameState,signal:AbortSi
   const local=localInteraction(text,state);
   if(local.kind==='dialogue')return answerDialogue(text,state,signal,history);
   if(local.source==='重大操作保護'||local.source==='重大操作專用入口')return local;
-  const biographyAnswer=answerKnownSunQuanBiographyQuestion(text);
-  if(biographyAnswer)return {...biographyAnswer,source:biographyAnswer.source??'已核對的《三國志》生平資料'};
   const personTimelineAnswer=answerKnownHistoricalPersonTimelineQuestion(text);
   if(personTimelineAnswer)return {...personTimelineAnswer,source:'已核對的遊戲年表'};
+  const biographyAnswer=answerKnownSunQuanBiographyQuestion(text);
+  if(biographyAnswer)return {...biographyAnswer,source:biographyAnswer.source??'已核對的《三國志》生平資料'};
   const factualAnswer=answerKnownRulerQuestion(text,state);
   if(factualAnswer)return {...factualAnswer,source:'已核對的遊戲年表'};
   const trendAnswer=answerKnownTrendQuestion(text,state);

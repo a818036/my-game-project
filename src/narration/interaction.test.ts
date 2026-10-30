@@ -55,6 +55,13 @@ describe('即時人物對話',()=>{
     expect(result.answer).toContain('劉備殺車胄、屯兵沛地');expect(result.answer).toContain('《三國志》');
     expect(fetchMock).not.toHaveBeenCalled();expect(current).toEqual(before);expect(current.turn).toBe(0);
   });
+  it('多人物生平比較先請玩家指定對象，不交由模型任意選一人回答',async()=>{
+    const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    const result=await understandInput('請比較孫權與劉備的生平年表',current,new AbortController().signal);
+    expect(result).toMatchObject({kind:'question',source:'已核對的遊戲年表',choiceIds:[]});
+    expect(result.answer).toContain('請指定其中一位');expect(result.answer).not.toContain('孫權於 252 年去世');
+    expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);
+  });
   it('逐年核對孫權 182–252 年問答，只列有來源節點或明示缺口',async()=>{
     const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);const before=structuredClone(current);
     for(let year=182;year<=252;year++){

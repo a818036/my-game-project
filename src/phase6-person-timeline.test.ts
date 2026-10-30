@@ -22,7 +22,8 @@ describe('A373 other-person historical timeline queries',()=>{
   it('leaves Sun Quan to the existing precision-aware biography path and ignores ordinary questions',()=>{
     expect(answerKnownHistoricalPersonTimelineQuestion('請整理孫權生平年表')).toBeNull();
     expect(answerKnownHistoricalPersonTimelineQuestion('曹操是誰？')).toBeNull();
-    expect(answerKnownHistoricalPersonTimelineQuestion('比較劉備與曹操的生平年表')).toBeNull();
+    expect(answerKnownHistoricalPersonTimelineQuestion('比較劉備與曹操的生平年表')?.answer).toContain('請指定其中一位');
+    expect(answerKnownHistoricalPersonTimelineQuestion('比較孫權與劉備的生平年表')?.answer).toContain('不會擅自挑選');
   });
 
   it('routes a player timeline question through the local interaction without mutating the game',()=>{
