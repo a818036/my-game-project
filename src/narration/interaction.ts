@@ -22,14 +22,20 @@ function dialogueTarget(text:string,state:GameState):{error:string}|{target:Phas
 async function answerDialogue(text:string,state:GameState,signal:AbortSignal,history:DialogueExchange[]):Promise<InteractionResult>{
   const resolved=dialogueTarget(text,state);
   if('error'in resolved)return{kind:'dialogue',answer:resolved.error,choiceIds:[],questions:[],source:'在場人物檢查'};
-  const {target,line}=resolved,observations=state.phase2?.observations??[],knownFacts=observations.filter(item=>item.witnessId===target.id).flatMap(item=>item.known).slice(-20);
+  const {target,line}=resolved;
+  if(line.length>1200)return{kind:'dialogue',answer:'這段對話超過 1,200 字，請縮短後再送。沒有呼叫對話服務或保存內容。',choiceIds:[],questions:[],source:'對話長度檢查',speakerName:target.name};
+  const observations=state.phase2?.observations??[],knownFacts=observations.filter(item=>item.witnessId===target.id).flatMap(item=>item.known).slice(-6).map(fact=>fact.slice(0,160));
   try{
-    const conversation=history.filter(turn=>turn.speakerId===target.id).slice(-4).flatMap(turn=>[{role:'player' as const,text:turn.playerText},{role:'npc' as const,text:turn.npcText}]);
-    const response=await fetch('/api/dialogue',{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({text:line,history:conversation,protagonist:{name:state.character.name,age:currentAge(state),ageMonths:Math.max(0,state.world.month-1)},scene:{location:state.phase2?.scene.location??state.character.home},npc:{id:target.id,name:target.name,age:Math.max(0,state.world.year-target.birthYear),role:target.role,office:target.office,knownFacts}})});
+    const conversation=history.filter(turn=>turn.speakerId===target.id).slice(-4).flatMap(turn=>[{role:'player' as const,text:turn.playerText},{role:'npc' as const,text:turn.npcText}]).map(turn=>({...turn,text:turn.text.length>240?`${turn.text.slice(0,239)}…`:turn.text}));
+    const payload={text:line,history:conversation,protagonist:{name:state.character.name.slice(0,120),age:currentAge(state),ageMonths:Math.max(0,state.world.month-1)},scene:{location:(state.phase2?.scene.location??state.character.home).slice(0,200)},npc:{id:target.id,name:target.name.slice(0,120),age:Math.max(0,state.world.year-target.birthYear),role:target.role.slice(0,120),office:target.office.slice(0,120),knownFacts}};
+    while(JSON.stringify(payload).length>5600&&payload.history.length)payload.history.splice(0,2);
+    while(JSON.stringify(payload).length>5600&&payload.npc.knownFacts.length)payload.npc.knownFacts.shift();
+    if(JSON.stringify(payload).length>6000)return{kind:'dialogue',answer:'這段對話情境仍超過服務上限，請縮短本次文字後再送。沒有呼叫對話服務或保存內容。',choiceIds:[],questions:[],source:'對話情境長度檢查',speakerName:target.name};
+    const response=await fetch('/api/dialogue',{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     const result=await response.json();if(!response.ok)throw new Error(result.error??'人物暫時無法回話');
     if(result.speakerId!==target.id||typeof result.text!=='string'||!result.text.trim()||result.text.length>1000)throw new Error('人物回應未通過檢查');
     const provider=response.headers.get('X-Narration-Provider');
-    return{kind:'dialogue',answer:result.text,choiceIds:[],questions:['對話會寫入此世界線存檔；之後只會向同一人物提供最近四次交談作為話題脈絡。對話不推進時間，也不改變人物關係。'],source:provider==='chatgpt'?'ChatGPT 訂閱對話':provider==='openai'?'AI 對話':'本機對話範本',speakerName:target.name,speakerId:target.id};
+    return{kind:'dialogue',answer:result.text,choiceIds:[],questions:['對話會寫入此世界線存檔；之後最多向同一人物提供最近四次交談作為話題脈絡，較長內容會節錄或略去較舊輪次。對話不推進時間，也不改變人物關係。'],source:provider==='chatgpt'?'ChatGPT 訂閱對話':provider==='openai'?'AI 對話':'本機對話範本',speakerName:target.name,speakerId:target.id,playerText:line};
   }catch(error){if(signal.aborted)throw error;return{kind:'dialogue',answer:`${target.name}沒有回話：${error instanceof Error?error.message:'對話服務暫時無法使用'}。沒有推進時間或改變存檔。`,choiceIds:[],questions:[],source:'對話服務未完成',speakerName:target.name};}
 }
 export async function understandInput(text:string,state:GameState,signal:AbortSignal,history:DialogueExchange[]=[]):Promise<InteractionResult>{
