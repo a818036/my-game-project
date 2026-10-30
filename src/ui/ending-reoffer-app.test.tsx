@@ -68,6 +68,8 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     await act(async () => root.unmount());
     host.remove();
     vi.clearAllMocks();
+    vi.mocked(commitWorldline).mockReset().mockResolvedValue(undefined);
+    vi.mocked(loadWorkspace).mockReset();
   });
 
   it('在主故事區播報重提入口，提交後只開啟結局選擇且不推進時間', async () => {
@@ -143,5 +145,45 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(workspace.saves).toHaveLength(1);
     expect(workspace.saves[0]?.state.phase4).toMatchObject({ year: 280, ending: 'pending', unified: true });
     expect(replay(workspace.saves[0]!.events)).toEqual(workspace.saves[0]!.state);
+  }, 30000);
+
+  it('主故事結局表單可保存不同結局文字且不推進世界時間', async () => {
+    const save = makeSaveWithDueReoffer();
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({
+      saves: [save],
+      profile: { regions: [], surnames: [], activeWorldlineId: save.worldlineId },
+    });
+    await act(async () => {
+      root.render(createElement(App));
+      await Promise.resolve();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const reofferButton = host.querySelector<HTMLButtonElement>('.finale-reoffer button');
+    expect(reofferButton).not.toBeNull();
+    await act(async () => {
+      reofferButton?.click();
+      await import('./EndingChoice');
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(commitWorldline).toHaveBeenCalledOnce();
+    expect(host.querySelector('[data-testid="ending-decision-main"]')).not.toBeNull();
+    const input = host.querySelector<HTMLInputElement>('#ending-direction');
+    expect(input).not.toBeNull();
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(input, '建立新朝，安定四方');
+      input?.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await act(async () => {
+      host.querySelector<HTMLFormElement>('.finale-choice-main form')?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(commitWorldline).toHaveBeenCalledTimes(2);
+    const chosen = vi.mocked(commitWorldline).mock.calls[1]![0] as SaveFile;
+    expect(chosen.state.phase4).toMatchObject({ year: 280, ending: 'chosen', chosenEnding: '建立新朝，安定四方' });
+    expect(chosen.state.turn).toBe(0);
+    expect(chosen.state.actions.at(-1)?.elapsedDays).toBe(save.state.actions.at(-1)?.elapsedDays);
   }, 30000);
 });
