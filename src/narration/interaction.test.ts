@@ -85,4 +85,42 @@ describe('即時人物對話',()=>{
     const result=await understandInput('對縣亭佐吏說：那你近來忙些什麼？',current,new AbortController().signal,history);
     expect(result).toMatchObject({kind:'dialogue',speakerId:'example-clerk',speakerName:'縣亭佐吏',answer:'尚可。'});expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+  it('對話請求只帶同一人物最近四次、每句最多 240 字的前文',async()=>{
+    const current=state(),history=[
+      ...Array.from({length:5},(_,index)=>({speakerId:'example-clerk',speakerName:'縣亭佐吏',playerText:`舊問${index}。`.padEnd(260,'問'),npcText:`舊答${index}。`.padEnd(260,'答')})),
+      {speakerId:'opening-father',speakerName:'父親',playerText:'父親的私下談話',npcText:'不應送給佐吏'},
+    ];
+    const fetchMock=vi.fn(async(_input:RequestInfo|URL,init?:RequestInit)=>{
+      const payload=JSON.parse(String(init?.body));
+      expect(payload.history).toHaveLength(8);
+      expect(payload.history[0].text).toMatch(/^舊問1。問+…$/);
+      expect(payload.history[0].text).toHaveLength(240);
+      expect(payload.history.every((turn:{text:string})=>turn.text.length<=240)).toBe(true);
+      expect(JSON.stringify(payload)).not.toContain('父親的私下談話');
+      expect(JSON.stringify(payload).length).toBeLessThanOrEqual(5600);
+      return new Response(JSON.stringify({speakerId:'example-clerk',text:'我只記得與你談過的事。'}),{status:200,headers:{'Content-Type':'application/json'}});
+    });vi.stubGlobal('fetch',fetchMock);
+    const result=await understandInput('對縣亭佐吏說：請接續上次的話。',current,new AbortController().signal,history);
+    expect(result.kind).toBe('dialogue');expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+  it('玩家本次對話超過 1,200 字時不呼叫服務且不改變狀態',async()=>{
+    const current=state(),before=structuredClone(current),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    const result=await understandInput(`對縣亭佐吏說：${'請聽我說。'.repeat(241)}`,current,new AbortController().signal);
+    expect(result).toMatchObject({kind:'dialogue',source:'對話長度檢查'});
+    expect(result.answer).toContain('沒有呼叫對話服務或保存內容');
+    expect(fetchMock).not.toHaveBeenCalled();expect(current).toEqual(before);
+  });
+  it('送往對話服務的是主角實際年齡及關係粗略分檔，不含原始關係數值',async()=>{
+    const base=state();
+    const current={...base,world:{...base.world,year:185,month:6},character:{...base.character,birthYear:184},phase2:{...base.phase2!,relationships:base.phase2!.relationships.map(record=>record.personId==='example-clerk'?{...record,trust:82,loyalty:20,fear:75}:record)}};
+    const fetchMock=vi.fn(async(_input:RequestInfo|URL,init?:RequestInit)=>{
+      const payload=JSON.parse(String(init?.body));
+      expect(payload.protagonist).toMatchObject({age:1,ageMonths:5});
+      expect(payload.relationship).toEqual({trust:'信任較高',loyalty:'忠誠較低',fear:'畏懼較高'});
+      expect(JSON.stringify(payload)).not.toMatch(/(?:82|20|75)/);
+      return new Response(JSON.stringify({speakerId:'example-clerk',text:'請你再說明今日所指何事。'}),{status:200,headers:{'Content-Type':'application/json'}});
+    });vi.stubGlobal('fetch',fetchMock);
+    const result=await understandInput('對縣亭佐吏說：我想請教一件事。',current,new AbortController().signal);
+    expect(result).toMatchObject({kind:'dialogue',speakerId:'example-clerk'});expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

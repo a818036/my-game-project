@@ -93,6 +93,48 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(toJson(original)).toBe(originalJson);
   });
 
+  it('A266 NPC 對話寫入世界線事件後，可重載續聊並重播且不推進回合或關係', async () => {
+    const start = makeSave('phase6-dialogue-roundtrip');
+    const speakerId = start.state.phase2!.scene.presentIds.find(id => id !== 'protagonist')!;
+    const speaker = start.state.phase2!.persons.find(person => person.id === speakerId)!;
+    const beforeTurn = start.state.turn;
+    const beforeWorld = start.state.world;
+    const beforeRelationships = start.state.phase2!.relationships;
+    const first = dispatch(start.state, {
+      version:ENGINE_VERSION,
+      commandId:'phase6-dialogue-first',
+      expectedRevision:start.state.revision,
+      worldlineId:start.worldlineId,
+      type:'Phase2Action',
+      action:{type:'RecordDialogueExchange',exchange:{speakerId,speakerName:speaker.name,turn:start.state.turn,playerText:'第一次問候',npcText:'第一次答覆'}},
+    });
+    if (!first.state || !first.event) throw new Error('對話事件未建立');
+    const firstSave:SaveFile={...start,events:[...start.events,first.event],state:first.state};
+    await commitWorldline(firstSave,noHistory);
+
+    const loaded=(await loadWorkspace()).saves.find(save=>save.worldlineId===start.worldlineId)!;
+    expect(loaded.state.phase2?.dialogueHistory).toEqual([{speakerId,speakerName:speaker.name,turn:beforeTurn,playerText:'第一次問候',npcText:'第一次答覆'}]);
+    expect(loaded.events.slice(0,start.events.length)).toEqual(start.events);
+    expect(replay(loaded.events)).toEqual(loaded.state);
+    expect(loaded.state.turn).toBe(beforeTurn);
+    expect(loaded.state.world).toEqual(beforeWorld);
+    expect(loaded.state.phase2?.relationships).toEqual(beforeRelationships);
+
+    const second=dispatch(loaded.state,{version:ENGINE_VERSION,commandId:'phase6-dialogue-second',expectedRevision:loaded.state.revision,worldlineId:loaded.worldlineId,type:'Phase2Action',action:{type:'RecordDialogueExchange',exchange:{speakerId,speakerName:speaker.name,turn:beforeTurn,playerText:'承接上次談話',npcText:'延續回應'}}});
+    if(!second.state||!second.event)throw new Error('續聊事件未建立');
+    const continued:SaveFile={...loaded,events:[...loaded.events,second.event],state:second.state};
+    const imported=verifySave(toJson(continued));
+    await commitWorldline(imported,noHistory);
+    const reloaded=(await loadWorkspace()).saves.find(save=>save.worldlineId===start.worldlineId)!;
+    expect(reloaded.state.phase2?.dialogueHistory?.map(exchange=>exchange.playerText)).toEqual(['第一次問候','承接上次談話']);
+    expect(reloaded.events.slice(0,start.events.length)).toEqual(start.events);
+    expect(replay(reloaded.events)).toEqual(reloaded.state);
+    expect(verifySave(toJson(reloaded))).toEqual(reloaded);
+    expect(reloaded.state.turn).toBe(beforeTurn);
+    expect(reloaded.state.world).toEqual(beforeWorld);
+    expect(reloaded.state.phase2?.relationships).toEqual(beforeRelationships);
+  });
+
   it('v6 戰役場景清冊經 JSON 匯入、IndexedDB 載入與續玩後仍可重播', async () => {
     const start=makeSave('battle-scene-roundtrip');
     const units:WarUnit[]=[{id:'guard',faction:'守軍・示例',commanderId:'guard-captain',commanderName:'守將・示例',location:'渡口北岸',strength:100,reserve:10,supply:3,morale:70,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命'},{id:'attacker',faction:'攻軍・示例',commanderId:'attacker-captain',commanderName:'前軍校尉・示例',location:'渡口南岸',strength:120,reserve:0,supply:3,morale:65,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命'}];
