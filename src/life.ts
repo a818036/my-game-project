@@ -74,6 +74,8 @@ const rulerTransitionNotes:Record<number,string>={
   280:'孫皓向晉投降，孫吳政權結束，三國分立告終。',
 };
 export function currentRulerFact(year:number):string|null{
+  if(year>=160&&year<=166)return `西元 ${year} 年，東漢皇帝是漢桓帝劉志（《後漢書》卷七〈孝桓帝紀〉）。`;
+  if(year===167)return '西元 167 年大部分時段的皇帝是漢桓帝劉志；《後漢書》卷七記他於農曆十二月去世。本原型只保留公元年級資料，沒有把漢曆月份換算為遊戲月份，無法判定模型中的當月是否已交接。';
   if(year>=168&&year<=188)return `西元 ${year} 年，東漢皇帝是漢靈帝劉宏（《後漢書·孝靈帝紀》）。`;
   if(year===189)return '西元 189 年內皇位數度更替：先是漢少帝劉辯即位，後為漢獻帝劉協。本原型只用年級史實與簡化月曆，無法據此判定模型中的當下是哪位皇帝。資料見《後漢書·孝靈帝紀》《孝獻帝紀》。';
   if(year>=190&&year<220)return `西元 ${year} 年，東漢皇帝是漢獻帝劉協（《後漢書·孝獻帝紀》）。`;
