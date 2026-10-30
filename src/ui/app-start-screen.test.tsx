@@ -2,13 +2,13 @@
 import {act,createElement} from 'react';
 import {createRoot} from 'react-dom/client';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
-import {loadWorkspace} from '../storage';
+import {commitWorldline,loadWorkspace} from '../storage';
 
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 
 vi.mock('../storage',async(importOriginal)=>{
   const actual=await importOriginal<typeof import('../storage')>();
-  return {...actual,loadWorkspace:vi.fn()};
+  return {...actual,commitWorldline:vi.fn(),loadWorkspace:vi.fn()};
 });
 vi.mock('./ChatGptConnection',()=>({ChatGptConnection:()=>null}));
 
@@ -69,5 +69,26 @@ describe('開局存檔載入提示',()=>{
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
     expect(host.querySelector('#start-content')).not.toBeNull();
     expect(host.querySelector('[role="alert"]')).toBeNull();
+  });
+
+  it('開局保存期間在開局畫面播報狀態，保存後更新同一節點',async()=>{
+    let finishSave!:()=>void;
+    const saveResult=new Promise<void>(resolve=>{finishSave=resolve;});
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    vi.mocked(commitWorldline).mockReturnValueOnce(saveResult);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'安');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    const saveButton=[...host.querySelectorAll('button')].find(button=>button.textContent==='確認出生並開始')!;
+    await act(async()=>{saveButton.click();});
+
+    const status=host.querySelector('[role="status"]');
+    expect(status?.textContent).toBe('正在保存並結算操作。');
+    expect(saveButton.disabled).toBe(true);
+    await act(async()=>{finishSave();await saveResult;});
+    expect(host.querySelector('[role="status"]')?.textContent).toBe('操作已保存。');
   });
 });
