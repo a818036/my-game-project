@@ -304,6 +304,7 @@ export type Phase4Action =
  | {type:'StartBattle';id:string;location:string;units:WarUnit[];protagonistPresent:boolean;scene?:BattleSceneManifest}
  | {type:'ResolveBattleImpact';targetObjectId:string;force:number}
  | {type:'ResolveBattleImpulse';targetObjectId:string;impulseNs:BattleVelocity}
+ | {type:'AdvanceBattlePhysics';seconds:number}
  | {type:'StartMultiFrontExample'}
  | {type:'TransferBetweenFronts';unitId:string;toFrontId:string}
  | {type:'BattleRound';orders:Record<string,WarUnit['order']>}
@@ -385,55 +386,57 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
  return model;
 }
 function battleCoordinateDistance(a:BattleCoordinate,b:BattleCoordinate){return Math.hypot(a.x-b.x,a.y-b.y,(a.z??0)-(b.z??0));}
-function resolveBattleImpulse(battle:Battle,targetObjectId:string,impulseNs:BattleVelocity):string[]{
- const scene=battle.scene,target=scene?.objects.find(object=>object.id===targetObjectId),bodies=scene?.objects.filter(object=>object.rigidBody&&!object.destroyed)??[];
- const validVector=(v:BattleVelocity)=>!!v&&[v.x,v.y,v.z].every(Number.isFinite)&&Math.hypot(v.x,v.y,v.z)<=100000;
- if(battle.status!=='active'||!scene||scene.coordinateScale!=='meters'||!target||!target.position||!target.radius||!target.rigidBody||target.rigidBody.anchored||target.destroyed||!validVector(impulseNs)||Math.hypot(impulseNs.x,impulseNs.y,impulseNs.z)===0||bodies.length<1)throw new Error('戰場動量目標、SI 座標、剛體屬性或戰役狀態無效');
- validateBattleScene(scene,battle.units);
- const norm=(v:BattleVelocity)=>Math.hypot(v.x,v.y,v.z), dot=(a:BattleVelocity,b:BattleVelocity)=>a.x*b.x+a.y*b.y+a.z*b.z;
- const add=(a:BattleVelocity,b:BattleVelocity):BattleVelocity=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z});
- const scale=(a:BattleVelocity,n:number):BattleVelocity=>({x:a.x*n,y:a.y*n,z:a.z*n});
+function battlePhysicsVectors(){
+ const norm=(v:BattleVelocity)=>Math.hypot(v.x,v.y,v.z),dot=(a:BattleVelocity,b:BattleVelocity)=>a.x*b.x+a.y*b.y+a.z*b.z;
+ const add=(a:BattleVelocity,b:BattleVelocity):BattleVelocity=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z}),scale=(a:BattleVelocity,n:number):BattleVelocity=>({x:a.x*n,y:a.y*n,z:a.z*n});
  const velocity=(object:BattleSceneObject)=>object.rigidBody!.anchored?{x:0,y:0,z:0}:object.rigidBody!.velocityMps??{x:0,y:0,z:0};
- const initialVelocity=velocity(target);
- if(norm(add(initialVelocity,scale(impulseNs,1/target.rigidBody.massKg)))>1000)throw new Error('戰場剛體速度超出示例模型上限');
- const initialEnergy=new Map(bodies.map(object=>[object.id,.5*object.rigidBody!.massKg*norm(velocity(object))**2]));
- target.rigidBody.velocityMps=add(velocity(target),scale(impulseNs,1/target.rigidBody.massKg));
- const contacts:string[]=[];let collisionDissipation=0;
+ return{norm,dot,add,scale,velocity};
+}
+function resolveRigidBodyContacts(scene:BattleSceneManifest){
+ const bodies=scene.objects.filter(object=>object.rigidBody&&!object.destroyed),{norm,dot,add,scale,velocity}=battlePhysicsVectors(),contacts=new Set<string>();let collisionDissipation=0;
  for(let iteration=0;iteration<ENGINEERING.battlePhysicsContactIterations;iteration++){
   let changed=false;
   for(let i=0;i<bodies.length;i++)for(let j=i+1;j<bodies.length;j++){
-   const a=bodies[i]!,b=bodies[j]!,pa=a.position!,pb=b.position!,ba=a.rigidBody!,bb=b.rigidBody!;
-   const delta:BattleVelocity={x:pb.x-pa.x,y:pb.y-pa.y,z:(pb.z??0)-(pa.z??0)},distance=norm(delta),contactLimit=a.radius!+b.radius!+ENGINEERING.battlePhysicsContactSlopMeters;
-   if(distance>contactLimit)continue;
-   const normal=distance>1e-9?scale(delta,1/distance):{x:1,y:0,z:0};
-   const inverseA=ba.anchored?0:1/ba.massKg,inverseB=bb.anchored?0:1/bb.massKg,inverseTotal=inverseA+inverseB;
+   const a=bodies[i]!,b=bodies[j]!,pa=a.position!,pb=b.position!,ba=a.rigidBody!,bb=b.rigidBody!,delta:BattleVelocity={x:pb.x-pa.x,y:pb.y-pa.y,z:(pb.z??0)-(pa.z??0)},distance=norm(delta);
+   if(distance>a.radius!+b.radius!+ENGINEERING.battlePhysicsContactSlopMeters)continue;
+   const normal=distance>1e-9?scale(delta,1/distance):{x:1,y:0,z:0},inverseA=ba.anchored?0:1/ba.massKg,inverseB=bb.anchored?0:1/bb.massKg,inverseTotal=inverseA+inverseB;
    const penetration=Math.max(0,a.radius!+b.radius!-distance-ENGINEERING.battlePhysicsContactSlopMeters);
    if(penetration>0&&inverseTotal>0){const correction=scale(normal,penetration*ENGINEERING.battlePhysicsPositionCorrection/inverseTotal),nextA={...pa,x:pa.x-correction.x*inverseA,y:pa.y-correction.y*inverseA,z:(pa.z??0)-correction.z*inverseA},nextB={...pb,x:pb.x+correction.x*inverseB,y:pb.y+correction.y*inverseB,z:(pb.z??0)+correction.z*inverseB};if([nextA.x,nextA.y,nextA.z,nextB.x,nextB.y,nextB.z].some(value=>!Number.isFinite(value)||Math.abs(value)>100000))throw new Error('碰撞位置修正超出座標範圍');if(!ba.anchored)a.position=nextA;if(!bb.anchored)b.position=nextB;changed=true;}
-   const relative=dot({x:bb.velocityMps?.x??0,y:bb.velocityMps?.y??0,z:bb.velocityMps?.z??0},{x:normal.x,y:normal.y,z:normal.z})-dot({x:ba.velocityMps?.x??0,y:ba.velocityMps?.y??0,z:ba.velocityMps?.z??0},normal);
-   if(relative>=-1e-9)continue;
-   if(inverseTotal===0)continue;
-   const reducedMass=1/inverseTotal,beforeRelativeEnergy=.5*reducedMass*relative*relative;
-   const magnitude=-(1+Math.min(ba.restitution,bb.restitution))*relative/inverseTotal,contactImpulse=scale(normal,magnitude);
-   if(!ba.anchored)ba.velocityMps=add(velocity(a),scale(contactImpulse,-inverseA));
-   if(!bb.anchored)bb.velocityMps=add(velocity(b),scale(contactImpulse,inverseB));
+   const relative=dot(velocity(b),normal)-dot(velocity(a),normal);if(relative>=-1e-9||inverseTotal===0)continue;
+   const reducedMass=1/inverseTotal,beforeRelativeEnergy=.5*reducedMass*relative*relative,magnitude=-(1+Math.min(ba.restitution,bb.restitution))*relative/inverseTotal,contactImpulse=scale(normal,magnitude);
+   if(!ba.anchored)ba.velocityMps=add(velocity(a),scale(contactImpulse,-inverseA));if(!bb.anchored)bb.velocityMps=add(velocity(b),scale(contactImpulse,inverseB));
    if(norm(velocity(a))>1000||norm(velocity(b))>1000)throw new Error('戰場剛體速度超出示例模型上限');
    const afterRelative=dot(velocity(b),normal)-dot(velocity(a),normal),pairDissipation=Math.max(0,beforeRelativeEnergy-.5*reducedMass*afterRelative*afterRelative);
-   collisionDissipation+=pairDissipation;
-   ba.accumulatedDissipationJ=(ba.accumulatedDissipationJ??0)+pairDissipation/2;
-   bb.accumulatedDissipationJ=(bb.accumulatedDissipationJ??0)+pairDissipation/2;
-   if((ba.accumulatedDissipationJ??0)>1e12||(bb.accumulatedDissipationJ??0)>1e12)throw new Error('戰場剛體耗散能量超出示例模型上限');
-   contacts.push(`${a.label}↔${b.label}`);changed=true;
+   collisionDissipation+=pairDissipation;ba.accumulatedDissipationJ=(ba.accumulatedDissipationJ??0)+pairDissipation/2;bb.accumulatedDissipationJ=(bb.accumulatedDissipationJ??0)+pairDissipation/2;
+   if((ba.accumulatedDissipationJ??0)>1e12||(bb.accumulatedDissipationJ??0)>1e12)throw new Error('戰場剛體耗散能量超出示例模型上限');contacts.add(`${a.label}↔${b.label}`);changed=true;
   }
   if(!changed)break;
  }
- // Energy supplied by the impulse is reported separately from collision dissipation.
- const afterImpulseVelocity=add(initialVelocity,scale(impulseNs,1/target.rigidBody.massKg));
- const suppliedEnergy=.5*target.rigidBody.massKg*norm(afterImpulseVelocity)**2-(initialEnergy.get(target.id)??0);
  const failed:string[]=[];for(const object of bodies){const body=object.rigidBody!;if(body.failureEnergyJ!==undefined&&(body.accumulatedDissipationJ??0)>=body.failureEnergyJ){object.integrity=0;object.destroyed=true;object.condition=`結構失效（${object.condition}）`;failed.push(object.label);}}
- const vectorText=(v:BattleVelocity)=>`(${Number(v.x.toFixed(3))}, ${Number(v.y.toFixed(3))}, ${Number(v.z.toFixed(3))})`;
- const supplied=Math.max(0,suppliedEnergy);
- const beat=`對${target.label}施加動量 ${vectorText(impulseNs)} N·s；輸入能量約 ${Number(supplied.toFixed(3))} J，結算速度 ${vectorText(target.rigidBody.velocityMps!)} m/s。接觸 ${contacts.length?contacts.join('、'):'無球形剛體接觸'}；本次碰撞耗散能量 ${Number(collisionDissipation.toFixed(3))} J${failed.length?`，達到明示失效閾值的構件：${failed.join('、')}`:''}。此模型不推算人員傷亡、地形、空氣阻力或器械細節。`;
- battle.logs.push(beat);return [beat];
+ return{bodies,contacts:[...contacts],collisionDissipation,failed};
+}
+function validatePhysicsBattle(battle:Battle){const scene=battle.scene;if(battle.status!=='active'||!scene||scene.coordinateScale!=='meters')throw new Error('戰場物理結算需要進行中的公尺座標戰役');validateBattleScene(scene,battle.units);const bodies=scene.objects.filter(object=>object.rigidBody&&!object.destroyed);if(!bodies.length)throw new Error('此場景沒有可結算的剛體');return{scene,bodies};}
+function resolveBattleImpulse(battle:Battle,targetObjectId:string,impulseNs:BattleVelocity):string[]{
+ const {scene}=validatePhysicsBattle(battle),target=scene.objects.find(object=>object.id===targetObjectId),{norm,add,scale,velocity}=battlePhysicsVectors(),validVector=(v:BattleVelocity)=>!!v&&[v.x,v.y,v.z].every(Number.isFinite)&&norm(v)<=100000;
+ if(!target||!target.position||!target.radius||!target.rigidBody||target.rigidBody.anchored||target.destroyed||!validVector(impulseNs)||norm(impulseNs)===0)throw new Error('戰場動量目標、SI 座標、剛體屬性或戰役狀態無效');
+ const initialVelocity=velocity(target),newVelocity=add(initialVelocity,scale(impulseNs,1/target.rigidBody.massKg));if(norm(newVelocity)>1000)throw new Error('戰場剛體速度超出示例模型上限');
+ const initialEnergy=.5*target.rigidBody.massKg*norm(initialVelocity)**2;target.rigidBody.velocityMps=newVelocity;
+ const result=resolveRigidBodyContacts(scene),supplied=Math.max(0,.5*target.rigidBody.massKg*norm(newVelocity)**2-initialEnergy),vectorText=(v:BattleVelocity)=>`(${Number(v.x.toFixed(3))}, ${Number(v.y.toFixed(3))}, ${Number(v.z.toFixed(3))})`;
+ const beat=`對${target.label}施加動量 (${impulseNs.x}, ${impulseNs.y}, ${impulseNs.z}) N·s；輸入能量約 ${Number(supplied.toFixed(3))} J，結算速度 ${vectorText(velocity(target))} m/s。接觸 ${result.contacts.length?result.contacts.join('、'):'無球形剛體接觸'}；本次碰撞耗散能量 ${Number(result.collisionDissipation.toFixed(3))} J${result.failed.length?`，達到明示失效閾值的構件：${result.failed.join('、')}`:''}。此模型不推算人員傷亡、地形、空氣阻力或器械細節。`;
+ battle.logs.push(beat);return[beat];
+}
+function advanceBattlePhysics(battle:Battle,seconds:number):string[]{
+ const {scene,bodies}=validatePhysicsBattle(battle);if(!Number.isFinite(seconds)||seconds<=0||seconds>10)throw new Error('物理推進秒數須大於 0 且不超過 10 秒');
+ const{norm,velocity}=battlePhysicsVectors(),minRadius=Math.min(...bodies.map(object=>object.radius!)),maxSpeed=Math.max(...bodies.map(object=>norm(velocity(object)))),timeStep=Math.min(.01,maxSpeed>0?minRadius/(2*maxSpeed):.01),steps=Math.ceil(seconds/timeStep);
+ if(steps>5000)throw new Error('所需物理子步超出上限，請縮短推進時間或降低物件速度');
+ const dt=seconds/steps,contacts=new Set<string>();let collisionDissipation=0;
+ for(let step=0;step<steps;step++){
+  for(const object of bodies){if(object.destroyed||object.rigidBody!.anchored)continue;const v=velocity(object),p=object.position!,next={x:p.x+v.x*dt,y:p.y+v.y*dt,z:(p.z??0)+v.z*dt};if([next.x,next.y,next.z].some(value=>!Number.isFinite(value)||Math.abs(value)>100000))throw new Error('物理推進位置超出座標範圍');object.position=next;}
+  const result=resolveRigidBodyContacts(scene);result.contacts.forEach(contact=>contacts.add(contact));collisionDissipation+=result.collisionDissipation;
+ }
+ const bodySummary=bodies.map(object=>`${object.label}位置 (${Number(object.position!.x.toFixed(3))}, ${Number(object.position!.y.toFixed(3))}, ${Number((object.position!.z??0).toFixed(3))}) m、速度 (${Number(velocity(object).x.toFixed(3))}, ${Number(velocity(object).y.toFixed(3))}, ${Number(velocity(object).z.toFixed(3))}) m/s`).join('；');
+ const beat=`剛體依目前速度推進 ${seconds} 秒（${steps} 個有限子步）；${bodySummary}。接觸 ${contacts.size?[...contacts].join('、'):'無'}；本次碰撞耗散 ${Number(collisionDissipation.toFixed(3))} J。未加入外力或重力；不推算人員傷亡。`;
+ battle.logs.push(beat);return[beat];
 }
 function resolveBattleImpact(battle:Battle,targetObjectId:string,force:number):string[]{
  const scene=battle.scene,target=scene?.objects.find(object=>object.id===targetObjectId);
@@ -523,6 +526,7 @@ export function applyPhase4Action(model:Phase4Model,action:Phase4Action,people:P
  }
  case'ResolveBattleImpact':{if(!n.battle)throw new Error('沒有可結算的戰場');const beats=resolveBattleImpact(n.battle,action.targetObjectId,action.force);pushEvent(n,'戰場因果連鎖',beats.join(' '));break;}
  case'ResolveBattleImpulse':{if(!n.battle)throw new Error('沒有可結算的戰場');const beats=resolveBattleImpulse(n.battle,action.targetObjectId,action.impulseNs);pushEvent(n,'戰場碰撞物理結算',beats.join(' '));break;}
+ case'AdvanceBattlePhysics':{if(!n.battle)throw new Error('沒有可結算的戰場');const beats=advanceBattlePhysics(n.battle,action.seconds);pushEvent(n,'戰場短時物理推進',beats.join(' '));break;}
  case'BattleRound':{if(!n.battle||n.battle.status!=='active')throw new Error('目前沒有進行中的戰役');n.battle.rounds++;const b=n.battle;for(const u of b.units){const order=action.orders[u.id]??u.order;u.order=order;if(order==='撤退'){const trackedActive=countPersonnel(u.personnel??[],'active'),routed=Math.min(Math.max(0,u.strength-trackedActive),Math.floor(u.strength*.1));u.routed+=routed;u.strength-=routed;continue;}if(order==='進攻'&&u.reserve){u.strength+=u.reserve;u.reserve=0;b.logs.push(`${u.commanderName}奉令投入預備隊；該兵力由預備轉為現役一次。`);}u.fatigue=Math.min(100,u.fatigue+10);u.morale=Math.max(0,Math.min(100,u.morale+(order==='防守'?2:-3)-(u.supply===0?10:0)));u.supply=Math.max(0,u.supply-1);const trackedActive=countPersonnel(u.personnel??[],'active'),loss=Math.min(Math.max(0,u.strength-trackedActive),Math.max(0,ENGINEERING.battleBaseCasualties+Math.floor(u.fatigue/25)+(u.terrain==='山地'?1:0)));u.strength-=loss;u.killed+=Math.floor(loss*.4);u.wounded+=loss-Math.floor(loss*.4);}
  b.logs.push(`第 ${b.rounds} 輪：地形、命令、士氣、疲勞與補給已結算；傷亡已回寫各部。${b.protagonistPresent?'主角親臨：近旁目擊先起，旗號與傳令沿前陣擴散；不在場者仍不知道主角身份與能力。':''}`);if(b.units.filter(u=>u.order!=='撤退').length<=1)b.status='ended';pushEvent(n,'戰役輪次',b.logs.at(-1)!);dateAdd(n,1);break;}
  case'Retreat':{const b=n.battle,u=b?.units.find(x=>x.id===action.unitId);if(!b||b.status!=='active'||!u)throw new Error('撤退部隊不存在');u.order='撤退';const trackedActive=countPersonnel(u.personnel??[],'active'),routed=Math.min(Math.max(0,u.strength-trackedActive),Math.floor(u.strength*.1));u.routed+=routed;u.strength-=routed;b.logs.push(`${u.commanderName}率部沿既定退路撤出；只將未具名現役兵記為潰散，已登錄人員仍待明確結算。`);pushEvent(n,'部隊撤退',b.logs.at(-1)!);break;}

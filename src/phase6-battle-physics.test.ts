@@ -56,7 +56,29 @@ describe('A271 公尺座標球形剛體接觸動量',()=>{
 
   it('不改變沒有剛體屬性的舊版戰場與直接打擊行為',()=>{
     const legacy:BattleSceneManifest={example:true,objects:[{id:'beam',label:'木梁',location:'前沿',condition:'完整',position:{x:0,y:0},integrity:5}],potentialChains:[],observers:[]},started=start(legacy);
-    expect(()=>act(started,impulse)).toThrow('無效');
+    expect(()=>act(started,impulse)).toThrow('戰場物理結算需要進行中的公尺座標戰役');
     expect(act(started,{type:'ResolveBattleImpact',targetObjectId:'beam',force:2}).battle!.scene!.objects[0]!.integrity).toBe(3);
+  });
+});
+
+describe('A272 有界短時剛體推進',()=>{
+  it('物件先有間距再推進接觸，時間與部隊傷亡帳保持不變',()=>{
+    const started=start({...scene,objects:[scene.objects[0]!,{...scene.objects[1]!,position:{x:2,y:0,z:0}}]}),launched=act(started,impulse),action:Phase4Action={type:'AdvanceBattlePhysics',seconds:.1},advanced=act(launched,action),objects=advanced.battle!.scene!.objects;
+    expect(objects[0]).toMatchObject({destroyed:true,integrity:0});
+    expect(objects[0]!.position!.x).toBeGreaterThan(.9);
+    expect(objects[1]!.position!.x).toBe(2);
+    expect(advanced.battle!.logs.at(-1)).toContain('撞木↔木門');
+    expect(advanced.battle!.units[0]).toMatchObject({strength:20,killed:0,wounded:0,routed:0});
+    expect(advanced.day).toBe(started.day);
+    expect(act(launched,action)).toEqual(advanced);
+    expect(JSON.parse(JSON.stringify(advanced)).battle.scene).toEqual(advanced.battle!.scene);
+  });
+
+  it('限制推進時長及防止高速小半徑物件以過少子步穿越',()=>{
+    const started=start();
+    expect(()=>act(started,{type:'AdvanceBattlePhysics',seconds:10.1})).toThrow('不超過 10 秒');
+    const fast={...scene,objects:[{...scene.objects[0]!,radius:.01,rigidBody:{massKg:1,restitution:0,velocityMps:{x:1000,y:0,z:0}}}]},fastBattle=start(fast);
+    expect(()=>act(fastBattle,{type:'AdvanceBattlePhysics',seconds:10})).toThrow('子步超出上限');
+    expect(fastBattle.battle!.scene!.objects[0]!.position!.x).toBe(0);
   });
 });

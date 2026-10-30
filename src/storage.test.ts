@@ -153,6 +153,18 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(loaded.state.phase4?.battle?.units.every(unit=>unit.killed+unit.wounded<=20)).toBe(true);
   });
 
+  it('v6 剛體碰撞推進經 JSON 匯入、IndexedDB 載入與事件重播保持一致',async()=>{
+    const start=makeSave('physics-scene-roundtrip'),units:WarUnit[]=[{id:'guard',faction:'守軍・示例',commanderId:'captain',commanderName:'守將・示例',location:'木門旁',strength:10,reserve:0,supply:2,morale:60,fatigue:0,terrain:'平地',wounded:0,killed:0,routed:0,order:'防守'}],scene:BattleSceneManifest={example:true,coordinateScale:'meters',objects:[{id:'ram',label:'撞木',location:'木門外',condition:'待推',position:{x:0,y:0,z:0},radius:.5,rigidBody:{massKg:1,restitution:0,velocityMps:{x:0,y:0,z:0},failureEnergyJ:20}},{id:'gate',label:'固定木門',location:'門洞',condition:'固定',position:{x:2,y:0,z:0},radius:.5,rigidBody:{massKg:100,restitution:0,anchored:true,velocityMps:{x:0,y:0,z:0}}}],potentialChains:[],observers:[]};
+    const battle=dispatch(start.state,{version:ENGINE_VERSION,commandId:'physics-battle-start',expectedRevision:start.state.revision,worldlineId:start.worldlineId,type:'Phase4Action',action:{type:'StartBattle',id:'physics-roundtrip',location:'木門（示例）',units,protagonistPresent:false,scene}});
+    const impact=dispatch(battle.state!,{version:ENGINE_VERSION,commandId:'physics-impulse',expectedRevision:battle.state!.revision,worldlineId:start.worldlineId,type:'Phase4Action',action:{type:'ResolveBattleImpulse',targetObjectId:'ram',impulseNs:{x:10,y:0,z:0}}});
+    const step=dispatch(impact.state!,{version:ENGINE_VERSION,commandId:'physics-step',expectedRevision:impact.state!.revision,worldlineId:start.worldlineId,type:'Phase4Action',action:{type:'AdvanceBattlePhysics',seconds:.1}});
+    const save:SaveFile={...start,events:[...start.events,battle.event!,impact.event!,step.event!],state:step.state!},imported=verifySave(toJson(save));
+    await commitWorldline(imported,noHistory,true);
+    const loaded=(await loadWorkspace()).saves.find(item=>item.worldlineId===start.worldlineId)!;
+    expect(loaded.events).toEqual(save.events);expect(loaded.state.phase4?.battle?.scene?.objects[0]).toMatchObject({destroyed:true,integrity:0});expect(replay(loaded.events)).toEqual(loaded.state);
+    expect(loaded.state.phase4?.battle?.units[0]).toMatchObject({strength:10,killed:0,wounded:0,routed:0});
+  });
+
   it('舊 v6 歷史內容版只追加一次更新事件，保留原事件並將當年新增節點接入重播',async()=>{
     const current=makeSave('phase6-content-migration');const originalStart=current.events[0];if(originalStart.type!=='WorldCreated')throw new Error('expected opening event');
     const {phase4ContentVersion:_contentVersion,rulesVersion:_rulesVersion,sourceHashes:_sourceHashes,...legacyPayload}=originalStart.payload;
