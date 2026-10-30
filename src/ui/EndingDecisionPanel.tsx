@@ -6,6 +6,7 @@ const EndingResult = lazy(() => import('./EndingChoice').then(({ EndingResult })
 interface EndingDecisionPanelProps {
   unified: boolean;
   ending: 'pending' | 'continuing' | 'chosen' | 'complete';
+  reofferDue: boolean;
   chosenEnding?: string;
   busy: boolean;
   endingDraft: string;
@@ -19,6 +20,7 @@ interface EndingDecisionPanelProps {
 export function EndingDecisionPanel({
   unified,
   ending,
+  reofferDue,
   chosenEnding,
   busy,
   endingDraft,
@@ -30,7 +32,7 @@ export function EndingDecisionPanel({
 }: EndingDecisionPanelProps) {
   return <>
     {!unified && <button className="quiet" disabled={busy} onClick={onRecordUnification}>記錄完成統一（開啟善後，不自動結局）</button>}
-    {unified && ending === 'continuing' && <button className="quiet" disabled={busy} onClick={onPromptEnding}>考慮進入大結局（仍可繼續人生）</button>}
+    {unified && ending === 'continuing' && reofferDue && <button className="quiet" disabled={busy} onClick={onPromptEnding}>進入大結局（仍可選擇繼續）</button>}
     {ending === 'pending' && <>
       <p>天下已統一，善後與人生仍繼續。</p>
       <button className="quiet" disabled={busy} onClick={onContinue}>選擇繼續人生</button>
