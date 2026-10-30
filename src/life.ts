@@ -49,7 +49,7 @@ const historicalRulerSpans:HistoricalRulerSpan[]=[
   {state:'曹魏',title:'陳留王曹奐（曹魏皇帝）',startYear:260,endYear:265,source:'《三國志》卷四〈魏書·三少帝紀〉'},
   {state:'蜀漢',title:'漢昭烈帝劉備',startYear:221,endYear:223,source:'《三國志》卷三十二〈蜀書·先主傳〉'},
   {state:'蜀漢',title:'後主劉禪',startYear:223,endYear:263,source:'《三國志》卷三十三〈蜀書·後主傳〉'},
-  {state:'孫吳',title:'吳王孫權（非皇帝稱號）',startYear:221,endYear:229,source:'《三國志》卷四十七〈吳書·吳主傳〉'},
+  {state:'孫吳',title:'吳王孫權（非皇帝稱號）',startYear:222,endYear:229,source:'《三國志》卷四十七〈吳書·吳主傳〉'},
   {state:'孫吳',title:'吳大帝孫權',startYear:229,endYear:252,source:'《三國志》卷四十七〈吳書·吳主傳〉'},
   {state:'孫吳',title:'吳少帝孫亮',startYear:252,endYear:258,source:'《三國志》卷四十八〈吳書·三嗣主傳〉'},
   {state:'孫吳',title:'吳景帝孫休',startYear:258,endYear:264,source:'《三國志》卷四十八〈吳書·三嗣主傳〉'},
@@ -58,7 +58,8 @@ const historicalRulerSpans:HistoricalRulerSpan[]=[
 ];
 const rulerTransitionNotes:Record<number,string>={
   220:'漢獻帝劉協禪位於魏王曹丕，漢魏更替。',
-  221:'劉備於成都即皇帝位；孫權此時仍以吳王名義稱國。',
+  221:'劉備於成都即皇帝位；孫權受曹魏封為吳王，名義上向魏稱臣，不能把整年列作獨立孫吳政權。',
+  222:'孫權於同年改元黃武並與魏決裂；史料只給年內節點，模型月份不能判定轉變發生時點。',
   223:'劉備去世後，後主劉禪於同年繼位。',
   226:'曹丕去世，魏明帝曹叡於同年即位。',
   229:'孫權於南郊即皇帝位，吳國的君主稱號改變。',
