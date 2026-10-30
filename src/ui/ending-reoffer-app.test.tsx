@@ -103,6 +103,8 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(host.textContent).toContain('已開啟大結局選擇；沒有呼叫 AI 或推進時間。');
     const decision = host.querySelector<HTMLElement>('#main-content [data-testid="ending-decision-main"]');
     expect(decision).not.toBeNull();
+    expect(document.activeElement).toBe(decision?.querySelector('h2'));
+    expect(decision?.querySelector('h2')?.getAttribute('tabindex')).toBe('-1');
     expect(decision?.textContent).toContain('選擇繼續人生');
     expect(decision?.querySelector('label[for="ending-direction"]')?.textContent).toBe('你決定的結局方向');
     expect(decision?.querySelector('#ending-direction')).not.toBeNull();

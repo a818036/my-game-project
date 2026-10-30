@@ -125,6 +125,8 @@ export default function App() {
   const [bodyImprovement, setBodyImprovement] = useState(10);
   const [rejuvenationConsent, setRejuvenationConsent] = useState(false);
   const busyRef = useRef(false);
+  const endingDecisionHeadingRef = useRef<HTMLHeadingElement>(null);
+  const focusEndingDecisionAfterPrompt = useRef(false);
   const narrationAbort=useRef<AbortController|null>(null);
   const narrationPayload=useRef<NarrationPayload|null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -139,6 +141,13 @@ export default function App() {
   const selectedRelation = phase2?.relationships.find((entry) => entry.personId === relationTarget) ?? phase2?.relationships[0];
   const selectedContact = livingContacts.find((person) => person.id === messageTarget) ?? livingContacts[0];
   const preview = useMemo(() => createOpeningFacts(seed, birthYear, workspace.profile), [seed, birthYear, workspace.profile]);
+
+  useEffect(() => {
+    if (focusEndingDecisionAfterPrompt.current && phase4?.ending === 'pending') {
+      focusEndingDecisionAfterPrompt.current = false;
+      endingDecisionHeadingRef.current?.focus();
+    }
+  }, [phase4?.ending]);
 
   useEffect(() => { document.documentElement.style.setProperty('--reader-size', `${fontSize}px`); localStorage.setItem('shenzhou-font-size', String(fontSize)); }, [fontSize]);
 
@@ -198,6 +207,12 @@ export default function App() {
   function phase4Action(action:Phase4Action) {
     if(!state)return;
     void run({version:ENGINE_VERSION,commandId:commandId(),expectedRevision:state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action});
+  }
+  async function promptEndingFromNaturalMilestone() {
+    if (!state) return;
+    focusEndingDecisionAfterPrompt.current = true;
+    const saved = await run({version:ENGINE_VERSION,commandId:commandId(),expectedRevision:state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action:{type:'PromptEnding'}});
+    if (!saved) focusEndingDecisionAfterPrompt.current = false;
   }
   async function startBattleExample(){
     if(!state||p4BattleLoading)return;
@@ -312,9 +327,9 @@ export default function App() {
         {narrative&&<section className="ai-narrative" aria-live="off"><div className="section-kicker">本回合敘事・{narrationPending?'生成中':narrationError?'範本回退':narrative.source==='mock'?'本機 mock':narrative.source==='chatgpt'?'ChatGPT 訂閱生成':narrative.source==='openai'?'供應者生成':'範本'}</div>{narrative.paragraphs.map((paragraph,index)=><p className="narrative-paragraph" key={`p-${index}`}>{paragraph}</p>)}{(()=>{const spoken=new Set(phase2.scene.speeches.map(item=>item.speakerId));return narrative.dialogue.map((line,index)=>{const speaker=phase2.persons.find(person=>person.id===line.speakerId);if(!speaker||!phase2.scene.presentIds.includes(speaker.id))return null;const age=Math.max(0,(state?.world.year??speaker.birthYear)-speaker.birthYear);const prior=spoken.has(speaker.id);spoken.add(speaker.id);return <p className="speech" key={`d-${index}`}><b>{prior?speaker.name:`${speaker.name}（${age}歲，${speaker.office||'白身'}）`}：</b>「{line.text}」</p>;});})()}{narrative.suggestions.length>0&&<p className="narrative-suggestions">可考慮：{narrative.suggestions.join('；')}</p>}{narrationError&&<p className="notice" role="status">{narrationError}</p>}<div className="button-row">{narrationPending&&<button className="quiet" onClick={()=>narrationAbort.current?.abort()}>取消敘事生成</button>}{!narrationPending&&narrationError&&<button className="quiet" onClick={()=>{if(narrationPayload.current)void generateNarrative(narrationPayload.current);}}>重試敘事（不重跑行動）</button>}</div></section>}</article>}
       {phase2?.worldUpdates.length ? <article className="panel folds"><details><summary>收合世界外事件・自動後台</summary>{phase2.worldUpdates.slice(-4).map((update, index) => <p key={`${state.worldlineId}-world-${index}`}>{update}</p>)}</details></article> : null}
       {state.historicalNodes.length > 0 && <article className="panel trend"><div className="section-kicker">歷史節點・示例</div>{state.historicalNodes.slice(-2).map((node, i) => <p key={i}>{node}</p>)}</article>}
-      {phase4 && <EndingReofferNotice due={shouldReofferEnding(phase4)} busy={busy} onPromptEnding={()=>phase4Action({type:'PromptEnding'})}/>}
+      {phase4 && <EndingReofferNotice due={shouldReofferEnding(phase4)} busy={busy} onPromptEnding={()=>void promptEndingFromNaturalMilestone()}/>}
       {state.status === 'playing' ? <><Suspense fallback={<p className="panel" role="status">正在載入行動表單…</p>}><LifeActionPanel key={state.worldlineId} state={state} busy={busy||narrationPending} onRun={run}/></Suspense><button className="continue" disabled={busy} onClick={()=>void run(nextCommand('Continue'))}>繼續目前人生（不推進時間）</button>{notice&&<p role="status" className="notice">{notice}</p>}</> : <article className="panel finish"><div className="section-kicker">第一人生階段示例完成</div><h2>這條世界線已保存。</h2><p>{state.summaries.at(-1)?.text}</p><button className="quiet" onClick={() => { setNewTimeline(true); setConfirmed(false); }}>建立另一條世界線</button></article>}
-      {phase4?.unified && (phase4.ending === 'pending' || !!phase4.chosenEnding) && <article className="panel finale-choice-main" data-testid="ending-decision-main"><h2>大結局選擇</h2><p>結局決定會記錄在目前世界線；你也可以選擇繼續人生。</p><EndingDecisionPanel unified={phase4.unified} ending={phase4.ending} chosenEnding={phase4.chosenEnding} busy={busy} endingDraft={endingDraft} onRecordUnification={()=>phase4Action({type:'SetUnified',unified:true})} onContinue={()=>phase4Action({type:'ContinueAfterUnification'})} onEndingDraftChange={setEndingDraft} onChooseEnding={()=>phase4Action({type:'ChooseEnding',ending:endingDraft.trim()})}/></article>}
+      {phase4?.unified && (phase4.ending === 'pending' || !!phase4.chosenEnding) && <article className="panel finale-choice-main" data-testid="ending-decision-main"><h2 ref={endingDecisionHeadingRef} tabIndex={-1}>大結局選擇</h2><p>結局決定會記錄在目前世界線；你也可以選擇繼續人生。</p><EndingDecisionPanel unified={phase4.unified} ending={phase4.ending} chosenEnding={phase4.chosenEnding} busy={busy} endingDraft={endingDraft} onRecordUnification={()=>phase4Action({type:'SetUnified',unified:true})} onContinue={()=>phase4Action({type:'ContinueAfterUnification'})} onEndingDraftChange={setEndingDraft} onChooseEnding={()=>phase4Action({type:'ChooseEnding',ending:endingDraft.trim()})}/></article>}
       <article className="panel log"><details><summary>旅程紀錄・{state.actions.length} 回合</summary>{state.actions.length ? <ol>{state.actions.slice().reverse().map((action) => <li key={action.turn}><span className="log-turn">{String(action.turn).padStart(2, '0')}</span><div><strong>{action.title}</strong><p>{action.details}</p>{action.supplement&&<p className="caption">補充說明原文：{action.supplement}</p>}</div></li>)}</ol> : <p className="muted">新生後的第一個決策節點由你選擇。</p>}</details></article>
     </section><aside className="side-column">
       <nav className="feature-nav" aria-label="遊戲資料與操作"><div className="section-kicker">查閱與行動</div>{(['人物','家產','天生技','軍政','記事'] as const).map(panel=><button key={panel} className={activePanel===panel?'active':''} aria-pressed={activePanel===panel} onClick={()=>setActivePanel(panel)}>{panel}<span aria-hidden="true">›</span></button>)}</nav>
