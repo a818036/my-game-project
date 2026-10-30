@@ -66,3 +66,5 @@
 | 手機版面瀏覽器模擬 | 2026-10-30／隔離 Chrome、390×844 CSS viewport | 通過：24px 閱讀字級逐一檢視五個遊戲資料分頁，viewport 與文件寬度一致，未見水平溢出；完成後恢復 18px 及預設 viewport。這不是實體手機／OS 字級放大驗收 | A327；隔離 localhost origin |
 | 結局自然節點重提 App 整合 | 2026-10-30／Vitest jsdom、fake IndexedDB | 通過：280 年長局選擇繼續並達門檻，入口在主故事區顯示且可操作；A337 以正式 storage adapter 寫入 fake IndexedDB，從 `loadWorkspace` 載回 ending=pending、年份仍為 280 的同一世界線，事件重播相等。仍非真實 Chromium UI、實體瀏覽器磁碟或 NVDA 語音測試 | A331–A332、A337；56 個測試檔中的 App 整合案例 |
 | 長局規則引擎效能基準 | 2026-10-30／Windows x64、Node v24.20.0、Intel Core i5-6500 | 三輪獨立執行，每輪 2 次暖機及 9 次量測。推進中位數／p95：7,342.5／7,520.8ms、5,287.6／5,403.2ms、4,864.0／5,071.6ms；重播：5,856.8／7,483.1ms、4,906.0／5,208.2ms、4,865.1／4,926.7ms。首輪較慢，保留全部結果，不推論為程式退化。這是規則引擎，不是瀏覽器冷啟動或低階手機效能；正式裝置門檻仍待目標機實測後訂定 | A334–A335；`npm run benchmark:history` |
+
+| 史料來源網址連線快照 | 2026-10-31／Windows、`npm run check:history-links` | 通過：83 個不同網址全數回應 HTTP 2xx、0 次重試。僅為本次連線快照；不代表內容校勘、授權審查或外站永久可用 | A363；非 CI 檢查 |
