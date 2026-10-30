@@ -23,7 +23,7 @@ describe('A256 孫權年表新增 243 年擒獲彭綺記事', () => {
     const old = createPhase4Model(242, 1, persons, 'phase4-scenario-133');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-135');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-136');
     expect(upgraded.eventLedger).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === nodeId)?.status).toBe('pending');
     expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === nodeId)?.status).toBe('triggered');
