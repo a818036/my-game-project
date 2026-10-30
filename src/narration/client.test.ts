@@ -56,6 +56,14 @@ describe('第五階段・敘事資訊分層與回應驗證',()=>{
     expect(()=>validateNarrationResult({paragraphs:['此輪陣亡 2 人、受傷 3 人。'],dialogue:[],suggestions:[]},payload)).not.toThrow();
     expect(()=>validateNarrationResult({paragraphs:['此輪陣亡 200 人。'],dialogue:[],suggestions:[]},payload)).toThrow('不存在的數字事實');
   });
+  it('A291 戰場敘事候選明確收到目標、已確認後果與事實界線',()=>{
+    const current=state(),scenario={tacticalObjectives:['守方守住門洞'],confirmedConsequences:['尚未新增傷亡'],aftermathLimits:['門扇受損不代表全城陷落']};
+    const battle={id:'gate-context',location:'城門外（示例）',startedDay:0,rounds:0,status:'active' as const,overallCommander:{id:'overall',name:'戰區總指揮・示例',unitId:null},units:[],logs:['城門仍閉合。'],protagonistPresent:true,witnesses:['城門旁目擊者'],scene:{example:true,objects:[],potentialChains:[],observers:[],narrativeContext:scenario}};
+    const event={version:ENGINE_VERSION as typeof ENGINE_VERSION,eventId:'battle-context',commandId:'command',commandHash:'hash',revision:1,type:'Phase4Changed' as const,payload:{action:{type:'StartBattle' as const,id:'gate-context',location:battle.location,units:[],protagonistPresent:true,scene:battle.scene}}};
+    const withBattle={...current,phase4:{...current.phase4!,battle,eventLedger:[{id:'battle-context',day:0,year:184,month:1,dayOfMonth:1,type:'戰役開始',detail:'城門示例'}]}} as GameState;
+    const payload=buildNarrationPayload(withBattle,event),details=payload.settledEvents[0]!.details;
+    expect(details).toContain('戰術目標 守方守住門洞');expect(details).toContain('已確認後果 尚未新增傷亡');expect(details).toContain('門扇受損不代表全城陷落');
+  });
   it('A230 戰場因果打擊旁白附上最新傷亡軍籍與已結算結果',()=>{
     const current=state();
     const battle={id:'impact-narration',location:'渡口北岸（示例）',startedDay:3,rounds:0,status:'active' as const,overallCommander:{id:'overall',name:'總指揮・示例',unitId:null},protagonistPresent:true,witnesses:['近旁目擊者'],scene:{example:true,objects:[{id:'beam',label:'斷梁（示例）',location:'弩臺下',condition:'已摧毀',position:{x:0,y:0},integrity:0,destroyed:true},{id:'shield',label:'盾列（示例）',location:'梁下前沿',condition:'受損',position:{x:2,y:0},integrity:0,destroyed:true}],potentialChains:[{id:'beam-shield',fromObjectId:'beam',toObjectId:'shield',triggerCondition:'斷梁砸向盾列',possibleEffect:'傷亡依預置軍籍結算',affectedUnitIds:['unit-test'],impactForce:8,maxDistance:3,affectedRadius:2,moraleImpact:4,casualties:[{unitId:'unit-test',killed:1,wounded:2,routed:0}]}],observers:[],settledChainIds:['beam-shield']},logs:['斷梁失效後，斷梁砸向盾列；傷亡名冊結算：守備校尉部陣亡 1、受傷 2、潰散 0，現役 87。'],units:[{id:'unit-test',faction:'郡縣守備（示例）',commanderId:'captain-test',commanderName:'守備校尉・示例',location:'渡口北側（示例）',strength:87,reserve:5,supply:2,morale:57,fatigue:20,terrain:'渡口',wounded:2,killed:1,routed:0,order:'防守' as const}]};
