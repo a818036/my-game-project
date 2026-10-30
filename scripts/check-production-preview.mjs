@@ -38,6 +38,8 @@ try{
   }
   if(!page)throw new Error('等待正式預覽首頁逾時。');
   const html=await page.text();
+  if(!html.match(/<html[^>]*\blang="zh-Hant"/i)||!html.includes('<title>神洲三國・亂世生涯</title>')||!html.includes('<div id="root"></div>'))throw new Error('正式預覽缺少繁中語系、遊戲標題或應用程式掛載根節點。');
+  console.log('通過：繁中語系、遊戲標題與應用程式根節點');
   const assets=[...html.matchAll(/(?:src|href)="([^\"]+\.(?:js|css)(?:\?[^\"]*)?)"/g)].map(match=>match[1]);
   if(!assets.some(path=>/\.js(?:\?|$)/.test(path))||!assets.some(path=>/\.css(?:\?|$)/.test(path)))throw new Error('正式預覽首頁缺少主要 JavaScript 或 CSS 入口。');
   const scenario=(await readdir(new URL('../dist/assets/',import.meta.url))).find(name=>/^battle-scenario-examples-[\w-]+\.js$/.test(name));

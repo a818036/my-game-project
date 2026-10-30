@@ -130,3 +130,6 @@ Phase 6 A294：CI 會啟動暫時 Vite 正式預覽，確認首頁 JavaScript、
 
 
 Phase 6 A295：真實螢幕閱讀器、手機與低階裝置、真實模型品質及結局人工驗收步驟與紀錄格式，整理於 [人工驗收清單](docs/PHASE6_MANUAL_ACCEPTANCE_zh-TW.md)。目前全部仍標示待驗。
+
+
+Phase 6 A296：正式預覽冒煙檢查也會核對首頁繁中語系、遊戲標題與 React 掛載節點，避免空白入口頁通過。
