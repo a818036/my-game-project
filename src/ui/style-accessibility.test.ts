@@ -17,6 +17,12 @@ function lastRule(selector: string): string {
   return declarations;
 }
 
+function lastRuleColor(selector: string): string {
+  const match = lastRule(selector).match(/(?:^|;)\s*color:\s*(#[0-9a-fA-F]{6})/);
+  if (!match) throw new Error(`Missing color declaration for ${selector}`);
+  return match[1];
+}
+
 function luminance(hex: string): number {
   const channels = hex.match(/[0-9a-fA-F]{2}/g)!.map((channel) => {
     const value = Number.parseInt(channel, 16) / 255;
@@ -39,6 +45,20 @@ describe('主要淺色介面的文字對比', () => {
     const foreground = ruleColor('.feature-nav button span');
     expect(contrastRatio(foreground, '#f5eedf')).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(foreground, '#eee3cf')).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('故事輔助文字、行動說明及主要按鈕均達 WCAG AA 一般文字對比', () => {
+    expect(contrastRatio(ruleColor('.story-panel .section-kicker'), '#e9dfc7')).toBeGreaterThanOrEqual(4.5);
+
+    const intentDescription = lastRuleColor('.intent small');
+    expect(contrastRatio(intentDescription, '#f5eedf')).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(intentDescription, '#efe3cf')).toBeGreaterThanOrEqual(4.5);
+
+    const planText = lastRuleColor('.plan-review');
+    expect(contrastRatio(planText, '#f0dfd2')).toBeGreaterThanOrEqual(4.5);
+
+    const seal = stylesheet.match(/--seal:\s*(#[0-9a-fA-F]{6})/)![1];
+    expect(contrastRatio(lastRuleColor('.primary'), seal)).toBeGreaterThanOrEqual(4.5);
   });
 
   it('開局表單標籤跟隨閱讀字級，出生確認文字至少 16px 並達 AA 對比', () => {

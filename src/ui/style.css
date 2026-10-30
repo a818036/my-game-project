@@ -83,7 +83,7 @@ body{background:linear-gradient(180deg,#efe6d4 0,#f7f1e4 38rem,#f2eadb 100%);col
 .panel h2{font-size:clamp(24px,2.4vw,31px);line-height:1.35;color:var(--ink);margin:4px 0 18px}
 .section-kicker{font-family:inherit;font-size:16px;font-weight:600;line-height:1.5;letter-spacing:.08em;color:var(--seal);text-transform:none}
 .story-panel{max-width:76ch;padding:0 0 24px;border-bottom:1px solid var(--rule)}
-.story-panel .section-kicker{font-size:16px;color:#77664f}
+.story-panel .section-kicker{font-size:16px;color:#6d5b45}
 .story-panel .scene-place{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:8px 0;color:var(--ink);font-size:19px!important}
 .scene-place b{font-size:21px}
 .scene-place span,.scene-arrivals{font-size:16px!important;color:#74624c!important}
@@ -103,7 +103,7 @@ body{background:linear-gradient(180deg,#efe6d4 0,#f7f1e4 38rem,#f2eadb 100%);col
 .profile details{margin-top:12px}
 .profile summary,.log summary,.folds summary,.summary summary{color:var(--wood);font-weight:600}
 .feature-nav{display:grid;gap:2px;padding:8px 0 12px;border-bottom:1px solid var(--rule)}
-.feature-nav .section-kicker{margin:0 0 5px;color:#77664f}
+.feature-nav .section-kicker{margin:0 0 5px;color:#6d5b45}
 .feature-nav button{display:flex;justify-content:space-between;align-items:center;text-align:left;border:0;border-left:2px solid transparent;background:transparent;color:var(--ink-soft);padding:8px 12px;font-size:17px!important}
 .feature-nav button span{color:#6d5b45;font-size:20px}
 .feature-nav button:hover,.feature-nav button.active{border-left-color:var(--seal);background:#eee3cf;color:var(--ink)}
