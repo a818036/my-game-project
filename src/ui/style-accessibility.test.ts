@@ -105,6 +105,19 @@ describe('主要淺色介面的文字對比', () => {
     expect(contrastRatio(lastRuleColor('.primary'), seal)).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('停用的主要按鈕仍保留可讀標籤與明確邊界', () => {
+    const disabled = rulesForSelector('.primary:disabled').find((rule) => rule.conditions.length === 0)?.declarations;
+    expect(disabled).toBeDefined();
+    const declarations = disabled!;
+    const foreground = declarations.match(/(?:^|;)color:\s*(#[0-9a-fA-F]{6})/)?.[1];
+    const background = declarations.match(/(?:^|;)background:\s*(#[0-9a-fA-F]{6})/)?.[1];
+    expect(declarations).toMatch(/opacity:\s*1(?:;|$)/);
+    expect(foreground).toBeDefined();
+    expect(background).toBeDefined();
+    expect(contrastRatio(foreground!, background!)).toBeGreaterThanOrEqual(4.5);
+    expect(declarations).toMatch(/border:\s*1px solid #[0-9a-fA-F]{6}/);
+  });
+
   it('已故家庭成員標示在淺色閱讀背景達 WCAG AA 一般文字對比', () => {
     const deceased = lastRuleColor('.family-list .deceased,.deceased');
     for (const background of ['#f5eedf', '#f7f1e4', '#f2eadb']) {
