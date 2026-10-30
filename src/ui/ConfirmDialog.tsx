@@ -38,7 +38,7 @@ export function ConfirmDialog({ title, description, confirmLabel, busy = false, 
         if (!busyRef.current) cancelHandlerRef.current();
         return;
       }
-      if (event.key === 'Enter' && event.target === inputRef.current && !event.isComposing && !busyRef.current && inputRef.current?.value.trim()) {
+      if (event.key === 'Enter' && event.target === inputRef.current && !event.isComposing && event.keyCode !== 229 && !busyRef.current && inputRef.current?.value.trim()) {
         event.preventDefault();
         onConfirm();
         return;

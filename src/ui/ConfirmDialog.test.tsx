@@ -54,4 +54,29 @@ describe('ConfirmDialog', () => {
     expect(document.getElementById('root')?.inert).toBe(false);
     expect(document.activeElement).toBe(trigger);
   });
+
+  it('中文輸入法組字期間按 Enter 不會送出確認', async () => {
+    const onConfirm = vi.fn();
+    const onCancel = vi.fn();
+    app = document.createElement('div');
+    app.id = 'root';
+    trigger = document.createElement('button');
+    document.body.append(app, trigger);
+    root = createRoot(app);
+    await act(async () => root!.render(createElement(ConfirmDialog, {
+      title: '記錄具體恩怨', description: '保存前再次確認。', confirmLabel: '保存恩怨紀錄',
+      input: { label: '恩怨內容', value: '組字中的文字', onChange: vi.fn() }, onConfirm, onCancel,
+    })));
+
+    const field = document.querySelector<HTMLInputElement>('#confirm-dialog-input');
+    expect(document.activeElement).toBe(field);
+    const composingEnter = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, isComposing: true });
+    field?.dispatchEvent(composingEnter);
+    const legacyComposingEnter = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+    Object.defineProperty(legacyComposingEnter, 'keyCode', { value: 229 });
+    field?.dispatchEvent(legacyComposingEnter);
+
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+  });
 });
