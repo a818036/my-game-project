@@ -4,6 +4,7 @@ import {createRoot} from 'react-dom/client';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {activateWorldline,commitWorldline,loadWorkspace} from '../storage';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
+import {fetchNarration} from '../narration/client';
 
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 
@@ -12,6 +13,10 @@ vi.mock('../storage',async(importOriginal)=>{
   return {...actual,activateWorldline:vi.fn(),commitWorldline:vi.fn(),loadWorkspace:vi.fn()};
 });
 vi.mock('./ChatGptConnection',()=>({ChatGptConnection:()=>null}));
+vi.mock('../narration/client',async(importOriginal)=>{
+  const actual=await importOriginal<typeof import('../narration/client')>();
+  return {...actual,fetchNarration:vi.fn()};
+});
 vi.mock('./HistoricalGeographyRegisters',async()=>{
   const {createElement,useState}=await import('react');
   return {HistoricalGeographyRegisters:()=>{
@@ -168,7 +173,7 @@ describe('開局存檔載入提示',()=>{
     await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
     const persistentStatuses=host.querySelectorAll<HTMLElement>('.game-shell > .visually-hidden[role="status"]');
     const persistentStatus=persistentStatuses[1];
-    expect(persistentStatuses).toHaveLength(2);
+    expect(persistentStatuses).toHaveLength(3);
     expect(persistentStatus?.textContent).toBe('');
 
     const select=host.querySelector<HTMLSelectElement>('select[aria-label="切換世界線"]');
@@ -237,5 +242,31 @@ describe('開局存檔載入提示',()=>{
     expect(host.querySelector('[role="alert"]')?.textContent).toBe('未保存任何變更：disk full');
     expect(host.querySelector('.notice button')).toBeNull();
     expect(loadWorkspace).toHaveBeenCalledTimes(1);
+  });
+
+  it('A359 敘事服務失敗時以預先掛載播報區通知並保留畫面錯誤',async()=>{
+    const facts=createOpeningFacts(359,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a359-start',expectedRevision:0,type:'StartGame',name:'播報測試',seed:359,facts});
+    if(!started.event||!started.state)throw new Error('建立敘事錯誤測試世界線失敗');
+    const save={format:'shenzhou-save' as const,version:6 as const,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    vi.mocked(commitWorldline).mockResolvedValue(undefined);
+    vi.mocked(fetchNarration).mockRejectedValueOnce(new Error('敘事服務暫時不可用'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{await new Promise(resolve=>setTimeout(resolve,50));});
+
+    const statusNodes=host.querySelectorAll<HTMLElement>('.game-shell > .visually-hidden[role="status"]');
+    expect(statusNodes).toHaveLength(3);
+    const errorAnnouncer=statusNodes[2];
+    expect(errorAnnouncer.textContent).toBe('');
+    await act(async()=>host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+    await act(async()=>host.querySelector<HTMLButtonElement>('.plan-review button.primary')!.click());
+
+    expect(fetchNarration).toHaveBeenCalledOnce();
+    expect(host.querySelectorAll('.game-shell > .visually-hidden[role="status"]')[2]).toBe(errorAnnouncer);
+    expect(errorAnnouncer.textContent).toBe('敘事服務暫時不可用');
+    expect(host.querySelector('.ai-narrative .notice')?.textContent).toBe('敘事服務暫時不可用');
+    expect(host.querySelector('.ai-narrative .notice')?.hasAttribute('role')).toBe(false);
   });
 });

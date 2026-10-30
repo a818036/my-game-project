@@ -326,3 +326,8 @@ A313 加入開局及遊戲畫面 DOM 檢查：單一 main landmark 與 h1、有�
 
 - 行動／詢問面板的回覆播報區現在於表單掛載時先建立空白 polite live region；答案到達後更新同一節點，避免依賴事件後才插入的 `role=status`。
 - React／jsdom 整合測試以玩家提問及模擬回答檢查節點同一性、回覆區沒有第二個 status role，並保留 220 字摘要限制；不代表 NVDA／Firefox 真實語音驗收。
+
+## 本輪追加（A359）
+
+- 敘事回退錯誤現在由遊戲頁預先掛載的 polite live region 播報；故事區仍顯示可見錯誤與重試按鈕，不另插入第二個 status role。
+- App 整合測試用假敘事服務模擬失敗，確認原節點更新並使用範本回退；未連線真實模型，也未驗 NVDA／Firefox 語音。
