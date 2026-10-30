@@ -73,6 +73,10 @@ describe('主要淺色介面的文字對比', () => {
     expect(contrastRatio(lastRuleColor('.profile .caption'), '#f5eedf')).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('州郡名錄的所屬欄文字在索引底色達 WCAG AA 對比', () => {
+    expect(contrastRatio(lastRuleColor('.division-index li span'), '#f5eddd')).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('開局表單標籤跟隨閱讀字級，出生確認文字至少 16px 並達 AA 對比', () => {
     expect(lastRule('.start-card label')).toMatch(/font-size:\s*1rem/);
     const confirmation = lastRule('.start-card .confirm');
