@@ -70,6 +70,8 @@ describe('ConfirmDialog', () => {
 
     const field = document.querySelector<HTMLInputElement>('#confirm-dialog-input');
     expect(document.activeElement).toBe(field);
+    const scan = await axe.run(document.querySelector('[role="dialog"]')!, { rules: { 'color-contrast': { enabled: false } } });
+    expect(scan.violations.map((violation) => `${violation.id}: ${violation.nodes.map((node) => node.target.join(',')).join('; ')}`)).toEqual([]);
     const composingEnter = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, isComposing: true });
     field?.dispatchEvent(composingEnter);
     const legacyComposingEnter = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });

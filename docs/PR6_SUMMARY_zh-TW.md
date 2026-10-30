@@ -345,6 +345,6 @@ A313 加入開局及遊戲畫面 DOM 檢查：單一 main landmark 與 h1、有�
 - A369：恩怨紀錄移除原生 prompt，改用具名稱的遊戲內文字對話框；測試涵蓋空白防護、Enter 保存、回合不變及焦點復原，使用 mock storage，仍待實際 Chromium／螢幕閱讀器驗收。
 - A370：隔離 Chromium 實測恩怨文字輸入後按 Escape 會取消；關係與回合不變、焦點回到觸發按鈕，重新開啟時草稿為空。App 整合測試確認不寫入；未觸及正式存檔或讀屏語音驗收。
 - A371：隔離 Chromium 確認恩怨可保存至指定關係並在重載後保留，焦點復原且回合不變；只用合成 IndexedDB 世界線。
-- A372：輸入法組字中按 Enter 不會誤提交對話框；測試涵蓋 `isComposing` 與 `keyCode=229`，真實裝置輸入法仍待人工抽查。
+- A372：輸入法組字中按 Enter 不會誤提交對話框；測試涵蓋 `isComposing`、`keyCode=229`，並以 axe-core 掃描輸入型對話框；真實裝置輸入法與螢幕閱讀器仍待人工抽查。
 
 本輪 A372 驗證：完整測試 58 個檔案、514 項通過；型別檢查、正式建置、bundle 預算、正式預覽 smoke check 與 diff 檢查通過。首頁 JavaScript 486,575／500,000 bytes、戰役 chunk 8,572／10,000 bytes。GitHub Actions #236 通過。PR 維持草稿、開啟、未合併、未部署。
