@@ -38,6 +38,8 @@ describe('人生情境計畫',()=>{
   });
   it('A389 指定年份史實問答可由玩家文字路徑取得且不推進或改變世界',()=>{
     const state=start().state!,before=structuredClone(state);
+    const current=localInteraction('今年發生了什麼事？',state);
+    expect(current.kind).toBe('question');expect(current.answer).toContain('西元 184 年');expect(current.answer).toContain('黃巾起事');
     const known=localInteraction('西元 206 年發生了什麼事？',state);
     expect(known.kind).toBe('question');expect(known.answer).toContain('高幹敗走與壺關平定');expect(known.answer).toContain('《三國志》卷一');expect(known.choiceIds).toEqual([]);
     const person=localInteraction('孫權在 202 年發生了什麼事？',state);
