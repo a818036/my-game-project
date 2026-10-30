@@ -35,6 +35,20 @@ describe('LifeActionPanel 無障礙語意',()=>{
     expect(html).toContain('每人最多保留最近四次，全體最多四十次');
   });
 
+  it('A394 欄位聚焦說明保持簡短，較少用的結局與對話資料另可展開查閱',()=>{
+    const facts=createOpeningFacts(21,184,{regions:[],surnames:[]});
+    const state=dispatch(null,{version:ENGINE_VERSION,commandId:'concise-input-help',expectedRevision:0,type:'StartGame',name:'主角',seed:21,facts}).state!;
+    const html=renderToStaticMarkup(createElement(LifeActionPanel,{state,busy:false,onRun:vi.fn(async()=>true)}));
+    const help=html.match(/<p id="action-input-help" class="caption">([^<]+)<\/p>/)?.[1]??'';
+
+    expect(help).toContain('西元 206 年發生了什麼事？');
+    expect(help).toContain('不呼叫模型');
+    expect(help).toContain('不推進時間');
+    expect(help).not.toContain('主角年齡與所在地');
+    expect(html).toContain('<details class="action-input-more-help"><summary>結局與人物對話說明</summary>');
+    expect(html).toContain('主角年齡與所在地');
+  });
+
   it('A290 回應更新只播報短摘要，不重讀先前對話全文',()=>{
     const reply={kind:'dialogue' as const,answer:'田畝已經播種，近來雨水尚可，家中正準備修補南面的籬笆。',choiceIds:[],questions:[],source:'本機 mock',speakerId:'opening-family-0',speakerName:'父親'};
     const previousDialogue=[{speakerId:'opening-family-0',speakerName:'父親',turn:2,playerText:'昨日談到收成，想問今年田裡如何？',npcText:'前些日子下了幾場雨，田地還算濕潤。'}];
