@@ -137,7 +137,7 @@ describe('重大節點後重新提供結局的 App 流程', () => {
 
     expect(host.querySelector('.finale-reoffer')).toBeNull();
     await act(async () => {
-      [...host.querySelectorAll<HTMLButtonElement>('.feature-nav button')].find((button) => button.textContent?.trim().startsWith('軍政'))?.click();
+      host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')?.click();
       [...host.querySelectorAll<HTMLElement>('summary')].find((summary) => summary.textContent?.includes('歷史、軍政與重大決策'))?.click();
     });
 

@@ -185,7 +185,7 @@ describe('開局存檔載入提示',()=>{
     expect(host.querySelector('footer')?.textContent).not.toContain('第四階段示例原型');
     expect(host.querySelector('a.skip-link')?.getAttribute('href')).toBe('#main-content');
     expect(host.querySelector<HTMLElement>('#main-content')?.tabIndex).toBe(-1);
-    expect(host.querySelector('nav[aria-label="遊戲資料與操作"]')).not.toBeNull();
+    expect(host.querySelector('[role="radiogroup"][aria-labelledby="feature-nav-label"]')).not.toBeNull();
     const headingLevels=[...host.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(heading=>Number(heading.tagName.slice(1)));
     expect(headingLevels[0]).toBe(1);
     expect(headingLevels.slice(1).every((level,index)=>level<=headingLevels[index]+1)).toBe(true);
@@ -193,15 +193,16 @@ describe('開局存檔載入提示',()=>{
     expect(controls.filter(control=>!hasControlName(control,host)).map(control=>control.outerHTML)).toEqual([]);
     const buttons=[...host.querySelectorAll<HTMLButtonElement>('button')];
     expect(buttons.filter(button=>!hasButtonName(button,host)).map(button=>button.outerHTML)).toEqual([]);
-    const initialTabs=[...host.querySelectorAll<HTMLButtonElement>('nav[aria-label="遊戲資料與操作"] button')];
-    expect(initialTabs.filter(tab=>tab.getAttribute('aria-pressed')==='true')).toHaveLength(1);
+    const panelRadios=[...host.querySelectorAll<HTMLInputElement>('.feature-nav input[type="radio"][name="game-panel"]')];
+    expect(panelRadios.map(radio=>radio.value)).toEqual(['人物','家產','天生技','軍政','記事']);
+    expect(panelRadios.filter(radio=>radio.checked)).toHaveLength(1);
     for(const panel of ['家產','天生技','軍政','記事']){
-      const tab=[...host.querySelectorAll<HTMLButtonElement>('nav[aria-label="遊戲資料與操作"] button')].find(button=>button.textContent?.trim().startsWith(panel));
-      expect(tab,`找不到「${panel}」分頁控制項`).toBeDefined();
-      await act(async()=>{tab!.click();await new Promise(resolve=>setTimeout(resolve,0));});
-      const selectedTabs=[...host.querySelectorAll<HTMLButtonElement>('nav[aria-label="遊戲資料與操作"] button')].filter(button=>button.getAttribute('aria-pressed')==='true');
-      expect(selectedTabs,`「${panel}」切換後應只有目前分頁標記為選取`).toHaveLength(1);
-      expect(selectedTabs[0]?.textContent).toContain(panel);
+      const radio=panelRadios.find(input=>input.value===panel);
+      expect(radio,`找不到「${panel}」單選控制項`).toBeDefined();
+      await act(async()=>{radio!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+      const selectedRadios=[...host.querySelectorAll<HTMLInputElement>('.feature-nav input[type="radio"][name="game-panel"]')].filter(input=>input.checked);
+      expect(selectedRadios,`「${panel}」切換後應只有目前選項為選取`).toHaveLength(1);
+      expect(selectedRadios[0]?.value).toBe(panel);
       const panelControls=[...host.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('input:not([type="hidden"]):not([hidden]),select,textarea')];
       expect(panelControls.filter(control=>!hasControlName(control,host)).map(control=>control.outerHTML),`「${panel}」分頁有無有效名稱的表單欄位`).toEqual([]);
       const panelButtons=[...host.querySelectorAll<HTMLButtonElement>('button')];
@@ -247,7 +248,7 @@ describe('開局存檔載入提示',()=>{
     await expandDetails();
     await scan('人物');
     for(const panel of ['家產','天生技','軍政','記事']){
-      await act(async()=>{[...host.querySelectorAll<HTMLButtonElement>('nav[aria-label="遊戲資料與操作"] button')].find(button=>button.textContent?.trim().startsWith(panel))!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+      await act(async()=>{host.querySelector<HTMLInputElement>(`.feature-nav input[type="radio"][value="${panel}"]`)!.click();await new Promise(resolve=>setTimeout(resolve,0));});
       await expandDetails();
       await scan(panel);
     }

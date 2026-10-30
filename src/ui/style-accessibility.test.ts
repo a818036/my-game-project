@@ -86,7 +86,7 @@ describe('主要淺色介面的文字對比', () => {
   });
 
   it('分頁箭頭在一般與選取狀態下保持清楚可見', () => {
-    const foreground = ruleColor('.feature-nav button span');
+    const foreground = ruleColor('.feature-nav label span:last-child');
     expect(contrastRatio(foreground, '#f5eedf')).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(foreground, '#eee3cf')).toBeGreaterThanOrEqual(4.5);
   });
