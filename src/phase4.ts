@@ -317,7 +317,8 @@ export type Phase4Action =
  | {type:'AuthorizeTreaty';id:string;scope:string;clauses:string[]}
  | {type:'SetUnified';unified:boolean}
  | {type:'ChooseEnding';ending:string}
- | {type:'ContinueAfterUnification'};
+ | {type:'ContinueAfterUnification'}
+ | {type:'PromptEnding'};
 export interface PersonRef { id:string; name:string; alive:boolean; location:string; office:string; }
 
 export function createPhase4Model(year:number,month:number,persons:PersonRef[],contentVersion=PHASE4_LEGACY_CONTENT_VERSION):Phase4Model {
@@ -547,6 +548,7 @@ export function applyPhase4Action(model:Phase4Model,action:Phase4Action,people:P
  case'SetUnified':n.unified=action.unified;if(action.unified){n.ending='pending';pushEvent(n,'一統後善後','完成一統但人生繼續；已開啟善後與結局選擇節點。');}break;
  case'ChooseEnding':if(!n.unified||n.ending!=='pending'||!action.ending.trim())throw new Error('結局只能在統一後由玩家明確選擇');n.chosenEnding=action.ending.trim();n.ending='chosen';pushEvent(n,'玩家選擇結局',n.chosenEnding);break;
  case'ContinueAfterUnification':if(!n.unified||n.ending!=='pending')throw new Error('目前沒有統一後待決節點');n.ending='continuing';n.chosenEnding=undefined;pushEvent(n,'繼續人生','玩家選擇暫不進入結局；人生與世界仍繼續。');break;
+ case'PromptEnding':if(!n.unified||n.ending!=='continuing')throw new Error('目前沒有可重新詢問的大結局節點');n.ending='pending';pushEvent(n,'重新詢問大結局','一統後仍可選擇進入大結局或繼續人生；由玩家決定。');break;
  }
  return n;
 }
