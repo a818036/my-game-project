@@ -76,3 +76,5 @@
 | 取消主權批准的狀態與焦點 | 2026-10-31／Vitest jsdom | 通過：App 整合測試聚焦批准按鈕並開啟確認框，取消後無新增儲存／重大節點，對話框關閉且焦點返回批准按鈕；之後再次明確確認仍能提交。使用合成存檔及 mock storage；不代表隔離 Chromium、NVDA／Firefox 語音或真實 IndexedDB | A367；React App 整合測試 |
 
 | 確認對話框 axe-core DOM 掃描 | 2026-10-31／Vitest jsdom、axe-core | 通過：在遊戲內確認對話框實際掛載、背景設為 inert 時掃描，當次啟用規則無違規；停用 jsdom 不可靠的色彩對比規則。不代表 Chromium／全站掃描或 NVDA／Firefox 語音驗收 | A368；元件測試 |
+
+| 恩怨文字輸入與保存界線 | 2026-10-31／Vitest jsdom | 程式測試通過：恩怨欄有標籤、空白時保存停用、輸入文字後 Enter 保存至指定人物且回合不變；對話框關閉並將焦點還給觸發按鈕，沒有呼叫原生 prompt。使用合成世界線／mock storage；不代表 Chromium／NVDA／Firefox 語音驗收 | A369；App 整合測試 |

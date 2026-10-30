@@ -189,6 +189,54 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(host.textContent).toContain('西元 280 年');
   }, 30000);
 
+  it('記錄恩怨使用遊戲內文字對話框，空白遭阻止且 Enter 保存文字而不推進回合', async () => {
+    const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue(null);
+    const save = makeSaveWithDueReoffer(0);
+    const phase2 = save.state.phase2!;
+    phase2.persons.push({ id:'a367-grievance-person', name:'測試關係人', role:'友人', birthYear:150, deathYear:null, alive:true, office:'故吏', gender:'不詳' });
+    phase2.relationships = [{ personId:'a367-grievance-person', trust:20, loyalty:30, fear:0, grievances:[] }];
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({
+      saves: [save],
+      profile: { regions: [], surnames: [], activeWorldlineId: save.worldlineId },
+    });
+    await act(async () => {
+      root.render(createElement(App));
+      await Promise.resolve();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    await act(async () => {
+      [...host.querySelectorAll<HTMLElement>('summary')].find((summary) => summary.textContent?.includes('信任、忠誠、恐懼與恩怨'))?.click();
+    });
+    const trigger = [...host.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent?.trim()==='記錄恩怨');
+    expect(trigger).not.toBeNull();
+    trigger?.focus();
+    await act(async () => { trigger?.click(); });
+    const field = document.querySelector<HTMLInputElement>('#confirm-dialog-input');
+    const confirm = document.querySelector<HTMLButtonElement>('.confirm-dialog button.primary');
+    expect(field?.labels?.[0]?.textContent).toContain('恩怨內容');
+    expect(document.activeElement).toBe(field);
+    expect(confirm?.disabled).toBe(true);
+    expect(promptSpy).not.toHaveBeenCalled();
+
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(field, '在約定日期拒絕交還借物');
+      field?.dispatchEvent(new Event('input', { bubbles:true }));
+    });
+    expect(confirm?.disabled).toBe(false);
+    await act(async () => {
+      field?.dispatchEvent(new KeyboardEvent('keydown', { key:'Enter', bubbles:true }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(commitWorldline).toHaveBeenCalledOnce();
+    const candidate = vi.mocked(commitWorldline).mock.calls[0]![0] as SaveFile;
+    expect(candidate.state.phase2?.relationships.find((relation) => relation.personId==='a367-grievance-person')?.grievances.at(-1)?.text).toBe('在約定日期拒絕交還借物');
+    expect(candidate.state.turn).toBe(save.state.turn);
+    expect(document.querySelector('.confirm-dialog')).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+  }, 30000);
+
   it('操作自然節點重提入口後，待決結局可從 IndexedDB 重新載入', async () => {
     const actualStorage = await vi.importActual<typeof import('../storage')>('../storage');
     Object.defineProperty(globalThis, 'indexedDB', { configurable: true, value: indexedDB });
