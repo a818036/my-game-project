@@ -9,6 +9,7 @@
     "narration:chatgpt": "node server/index.mjs --chatgpt",
     "build": "tsc -b && vite build",
     "check:bundle": "node scripts/check-bundle-budget.mjs",
+    "check:history-links": "node scripts/check-history-links.mjs",
     "check:preview": "node scripts/check-production-preview.mjs",
     "typecheck": "tsc -b --pretty",
     "test": "vitest run",
