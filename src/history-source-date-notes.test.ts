@@ -179,9 +179,10 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'lu-xun-pacifies-pengdan-revolt-237',
       'wu-captures-pengqi-243',
       'sun-quan-moves-capital-to-jianye-229',
+      'wu-surrenders-280',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(79);
-    expect(uniqueNotedEvents.size).toBe(93);
+    expect(uniqueNotedEvents.size).toBe(94);
   });
 });
