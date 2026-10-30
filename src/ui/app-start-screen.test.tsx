@@ -2,14 +2,14 @@
 import {act,createElement} from 'react';
 import {createRoot} from 'react-dom/client';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
-import {commitWorldline,loadWorkspace} from '../storage';
+import {activateWorldline,commitWorldline,loadWorkspace} from '../storage';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
 
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 
 vi.mock('../storage',async(importOriginal)=>{
   const actual=await importOriginal<typeof import('../storage')>();
-  return {...actual,commitWorldline:vi.fn(),loadWorkspace:vi.fn()};
+  return {...actual,activateWorldline:vi.fn(),commitWorldline:vi.fn(),loadWorkspace:vi.fn()};
 });
 vi.mock('./ChatGptConnection',()=>({ChatGptConnection:()=>null}));
 vi.mock('./HistoricalGeographyRegisters',async()=>{
@@ -152,6 +152,33 @@ describe('開局存檔載入提示',()=>{
         expect(searchLevels.slice(1).every((level,index)=>level<=searchLevels[index]+1),`郡縣搜尋結果標題層級跳階：${searchLevels.join('→')}`).toBe(true);
       }
     }
+  });
+
+  it('世界線切換成功與失敗都以狀態角色通知，失敗時保留原線',async()=>{
+    const makeSave=(seed:number,name:string)=>{
+      const facts=createOpeningFacts(seed,184,{regions:[],surnames:[]});
+      const started=dispatch(null,{version:ENGINE_VERSION,commandId:`a355-start-${seed}`,expectedRevision:0,type:'StartGame',name,facts,seed});
+      if(!started.state||!started.event)throw new Error('建立世界線切換測試存檔失敗');
+      return {format:'shenzhou-save' as const,version:6 as const,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    };
+    const first=makeSave(355,'測試甲');
+    const second=makeSave(356,'測試乙');
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[first,second],profile:{regions:[],surnames:[],activeWorldlineId:first.worldlineId}});
+    vi.mocked(activateWorldline).mockResolvedValue(undefined);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+
+    const select=host.querySelector<HTMLSelectElement>('select[aria-label="切換世界線"]');
+    expect(select).not.toBeNull();
+    await act(async()=>{select!.value=second.worldlineId;select!.dispatchEvent(new Event('change',{bubbles:true}));await Promise.resolve();});
+    expect(activateWorldline).toHaveBeenCalledWith(second.worldlineId);
+    expect(host.querySelector('h1')?.textContent).toContain('測試乙');
+    expect(host.querySelector('p.notice[role="status"]')?.textContent).toBe('已切換世界線；舊存檔仍保留。');
+
+    vi.mocked(activateWorldline).mockRejectedValueOnce(new Error('storage unavailable'));
+    await act(async()=>{select!.value=first.worldlineId;select!.dispatchEvent(new Event('change',{bubbles:true}));await Promise.resolve();});
+    expect(host.querySelector('h1')?.textContent).toContain('測試乙');
+    expect(host.querySelector<HTMLSelectElement>('select[aria-label="切換世界線"]')?.value).toBe(second.worldlineId);
+    expect(host.querySelector('p.notice[role="status"]')?.textContent).toBe('切換失敗；所有存檔均保留。');
   });
 
   it('單一世界線無法驗證時仍顯示開局畫面與原始備份操作',async()=>{
