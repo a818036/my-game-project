@@ -6,6 +6,7 @@ import { indexedDB } from 'fake-indexeddb';
 import { createOpeningFacts, dispatch, ENGINE_VERSION, replay, type GameEvent, type GameState, type OpeningHistory } from '../engine';
 import { ENGINEERING, shouldReofferEnding } from '../phase4';
 import { commitWorldline, loadWorkspace, type SaveFile } from '../storage';
+import { fetchNarration } from '../narration/client';
 import App from './App';
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -16,8 +17,12 @@ vi.mock('../storage', async (importOriginal) => {
 });
 vi.mock('./ChatGptConnection', () => ({ ChatGptConnection: () => null }));
 vi.mock('./HistoricalGeographyRegisters', () => ({ HistoricalGeographyRegisters: () => null }));
+vi.mock('../narration/client', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../narration/client')>();
+  return { ...actual, fetchNarration: vi.fn() };
+});
 
-function makeSaveWithDueReoffer(): SaveFile {
+function makeSaveWithDueReoffer(approvedMilestones = ENGINEERING.endingReofferNaturalNodeCount): SaveFile {
   const history: OpeningHistory = { regions: [], surnames: [] };
   const facts = createOpeningFacts(23, 160, history);
   const events: GameEvent[] = [];
@@ -39,7 +44,7 @@ function makeSaveWithDueReoffer(): SaveFile {
   if (!continueLife.state || !continueLife.event) throw new Error('記錄繼續人生失敗');
   state = continueLife.state;
   events.push(continueLife.event);
-  for (let index = 0; index < ENGINEERING.endingReofferNaturalNodeCount; index++) {
+  for (let index = 0; index < approvedMilestones; index++) {
     const id = `a330-reoffer-treaty-${index}`;
     const draft = dispatch(state, { version: ENGINE_VERSION, commandId: `${id}-draft`, expectedRevision: state.revision, worldlineId: state.worldlineId, type: 'Phase4Action', action: { type: 'DraftTreaty', id, proposer: '玩家', clauses: [{ id: `${id}-clause`, text: `依玩家決策調整示例領地 ${index + 1}`, sovereign: true, territoryId: 'sample-county', successorOwner: `玩家治理 ${index}` }] } });
     if (!draft.state || !draft.event) throw new Error(`建立重大節點失敗：${index}`);
@@ -50,7 +55,7 @@ function makeSaveWithDueReoffer(): SaveFile {
     state = approve.state;
     events.push(approve.event);
   }
-  if (!state.phase4 || !shouldReofferEnding(state.phase4)) throw new Error('測試存檔未達重新提議條件');
+  if (!state.phase4 || (approvedMilestones >= ENGINEERING.endingReofferNaturalNodeCount) !== shouldReofferEnding(state.phase4)) throw new Error('測試存檔的重新提議門檻狀態不符');
   return { format: 'shenzhou-save', version: 6, worldlineId: state.worldlineId, events, state };
 }
 
@@ -62,6 +67,7 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     host = document.createElement('div');
     document.body.append(host);
     root = createRoot(host);
+    vi.mocked(fetchNarration).mockResolvedValue({ paragraphs: ['隔離測試敘事'], dialogue: [], suggestions: [], source: 'mock' });
   });
 
   afterEach(async () => {
@@ -70,6 +76,7 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     vi.clearAllMocks();
     vi.mocked(commitWorldline).mockReset().mockResolvedValue(undefined);
     vi.mocked(loadWorkspace).mockReset();
+    vi.mocked(fetchNarration).mockReset();
   });
 
   it('在主故事區播報重提入口，提交後只開啟結局選擇且不推進時間', async () => {
@@ -114,6 +121,62 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(decision?.querySelector('#ending-direction-help')?.textContent).toContain('留白或繼續人生都不會結束這條世界線');
     expect(decision?.querySelector('button[type="submit"]')?.textContent).toBe('確認選擇結局');
     expect(host.querySelector('.phase4-panel [data-testid="ending-decision-main"]')).toBeNull();
+  }, 30000);
+
+  it('玩家在軍政介面逐一批准三個自然節點後，主故事區才出現結局重提入口', async () => {
+    const save = makeSaveWithDueReoffer(0);
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({
+      saves: [save],
+      profile: { regions: [], surnames: [], activeWorldlineId: save.worldlineId },
+    });
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    await act(async () => {
+      root.render(createElement(App));
+      await Promise.resolve();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(host.querySelector('.finale-reoffer')).toBeNull();
+    await act(async () => {
+      [...host.querySelectorAll<HTMLButtonElement>('.feature-nav button')].find((button) => button.textContent?.trim().startsWith('軍政'))?.click();
+      [...host.querySelectorAll<HTMLElement>('summary')].find((summary) => summary.textContent?.includes('歷史、軍政與重大決策'))?.click();
+    });
+
+    const treatyLabel = [...host.querySelectorAll<HTMLLabelElement>('.phase4-panel label')].find((label) => label.textContent?.includes('談判提出的具體條款'));
+    const successorLabel = [...host.querySelectorAll<HTMLLabelElement>('.phase4-panel label')].find((label) => label.textContent?.includes('條款生效後的控制者'));
+    const treatyInput = treatyLabel?.querySelector<HTMLTextAreaElement>('textarea');
+    const successorInput = successorLabel?.querySelector<HTMLInputElement>('input');
+    expect(treatyInput).not.toBeNull();
+    expect(successorInput).not.toBeNull();
+
+    for (let milestone = 1; milestone <= ENGINEERING.endingReofferNaturalNodeCount; milestone++) {
+      await act(async () => {
+        const textareaSetter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')?.set;
+        const inputSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+        textareaSetter?.call(treatyInput, `隔離介面自然節點 ${milestone}`);
+        treatyInput?.dispatchEvent(new Event('input', { bubbles: true }));
+        inputSetter?.call(successorInput, `隔離治理 ${milestone}`);
+        successorInput?.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      await act(async () => {
+        [...host.querySelectorAll<HTMLButtonElement>('.phase4-panel button')].find((button) => button.textContent?.includes('保存草案（不改主權）'))?.click();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+      const pending = [...host.querySelectorAll<HTMLButtonElement>('.phase4-panel button')].find((button) => button.textContent?.includes('明確批准條款'));
+      expect(pending).not.toBeNull();
+      await act(async () => {
+        pending?.click();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+      if (milestone < ENGINEERING.endingReofferNaturalNodeCount) expect(host.querySelector('.finale-reoffer')).toBeNull();
+    }
+
+    expect(window.confirm).toHaveBeenCalledTimes(ENGINEERING.endingReofferNaturalNodeCount);
+    const offer = host.querySelector<HTMLElement>('.finale-reoffer');
+    expect(offer).not.toBeNull();
+    expect(host.querySelector('#main-content')?.contains(offer)).toBe(true);
+    expect(offer?.textContent).toContain('重大節點後可以重新考慮大結局');
+    expect(host.textContent).toContain('西元 280 年');
   }, 30000);
 
   it('操作自然節點重提入口後，待決結局可從 IndexedDB 重新載入', async () => {
