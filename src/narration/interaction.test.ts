@@ -33,6 +33,18 @@ describe('即時人物對話',()=>{
     const result=await understandInput('西元 206 年發生了什麼事？',current,new AbortController().signal);
     expect(result).toMatchObject({kind:'question',source:'已核對的遊戲年表'});expect(result.answer).toContain('高幹敗走與壺關平定');expect(result.answer).toContain('《三國志》卷一');expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
   });
+  it('指定其他歷史人物時只列與該人物相符的已收錄節點，並對空白年份明示缺口',async()=>{
+    const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    const known=await understandInput('曹操在西元 198 年發生了哪些史實？',current,new AbortController().signal);
+    expect(known).toMatchObject({kind:'question',source:'已核對的遊戲年表'});
+    expect(known.answer).toContain('下邳之戰與呂布敗亡');
+    expect(known.answer).not.toContain('孫權');
+    const missing=await understandInput('劉備在西元 198 年發生了哪些史實？',current,new AbortController().signal);
+    expect(missing.answer).toContain('未收錄');
+    expect(missing.answer).toContain('劉備');
+    expect(missing.answer).not.toContain('下邳之戰');
+    expect(fetchMock).not.toHaveBeenCalled();expect(current.turn).toBe(0);expect(current.world.year).toBe(184);
+  });
   it('逐年核對孫權 182–252 年問答，只列有來源節點或明示缺口',async()=>{
     const current=state(),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);const before=structuredClone(current);
     for(let year=182;year<=252;year++){
