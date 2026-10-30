@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { indexedDB } from 'fake-indexeddb';
-import { applyEvent, createOpeningFacts, createStartEvent, dispatch, ENGINE_VERSION, LEGACY_ENGINE_VERSION, RULES_VERSION, SOURCE_HASHES, replay, type GameCommand, type GameEvent, type OpeningHistory } from './engine';
+import { applyEvent, createOpeningFacts, createStartEvent, dispatch, ENGINE_VERSION, LEGACY_ENGINE_VERSION, RULES_VERSION, SOURCE_HASHES, replay, type GameCommand, type GameEvent, type GameState, type OpeningHistory } from './engine';
 import { commitWorldline, loadWorkspace, openSaveDb, parseSave, toJson, verifySave, assertSlotCompatible, type LegacySaveFile, type SaveFile } from './storage';
 import { dispatch as dispatchV3 } from './engine.v3';
 import { buildNarrationPayload } from './narration/client';
@@ -698,5 +698,34 @@ describe('A05／A06 存檔交易與重播', () => {
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v141-red-cliffs-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not trigger migrated Red Cliffs save');expect(continued.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&(item.source??'').includes('《三國志》卷五十四'))).toBe(true);
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   },15000);
+
+  it('A303 280 年長局的結局與繼續人生分支均可 JSON 匯入、IndexedDB 重載及重播',async()=>{
+    const current=makeSave('phase6-ending-storage-roundtrip',160);const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    let state=current.state;const prefix:GameEvent[]=[start];
+    for(let decade=1;decade<=12;decade++){
+      const result=dispatch(state,{version:ENGINE_VERSION,commandId:`phase6-ending-storage-decade-${decade}`,expectedRevision:state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:3600}});
+      if(!result.state||!result.event)throw new Error('could not advance the long game');state=result.state;prefix.push(result.event);
+    }
+    expect(state.phase4?.year).toBe(280);
+    const makeBranch=(events:GameEvent[],branchState:GameState):SaveFile=>({format:'shenzhou-save',version:6,worldlineId:branchState.worldlineId,events,state:branchState});
+    const choose=(base:GameState,id:string)=>{
+      const unified=dispatch(base,{version:ENGINE_VERSION,commandId:`${id}-unify`,expectedRevision:base.revision,worldlineId:base.worldlineId,type:'Phase4Action',action:{type:'SetUnified',unified:true}});
+      if(!unified.state||!unified.event)throw new Error('could not record unification');
+      const ending=dispatch(unified.state,{version:ENGINE_VERSION,commandId:`${id}-ending`,expectedRevision:unified.state.revision,worldlineId:base.worldlineId,type:'Phase4Action',action:{type:'ChooseEnding',ending:'歸隱故里'}});
+      if(!ending.state||!ending.event)throw new Error('could not choose an ending');
+      return makeBranch([...prefix,unified.event,ending.event],ending.state);
+    };
+    const endingSave=verifySave(toJson(choose(state,'phase6-storage-ending')));
+    expect(endingSave.state.phase4).toMatchObject({ending:'chosen',chosenEnding:'歸隱故里'});expect(replay(endingSave.events)).toEqual(endingSave.state);
+    await commitWorldline(endingSave,noHistory,true);const endingReload=await loadWorkspace();expect(endingReload.profile.activeWorldlineId).toBe(endingSave.worldlineId);expect(endingReload.saves).toEqual([endingSave]);expect(replay(endingReload.saves[0]!.events)).toEqual(endingReload.saves[0]!.state);
+
+    await deleteDatabase();
+    const unified=dispatch(state,{version:ENGINE_VERSION,commandId:'phase6-storage-continue-unify',expectedRevision:state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action:{type:'SetUnified',unified:true}});if(!unified.state||!unified.event)throw new Error('could not record unification for continuation');
+    const continued=dispatch(unified.state,{version:ENGINE_VERSION,commandId:'phase6-storage-continue',expectedRevision:unified.state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action:{type:'ContinueAfterUnification'}});if(!continued.state||!continued.event)throw new Error('could not continue life');
+    const nextYear=dispatch(continued.state,{version:ENGINE_VERSION,commandId:'phase6-storage-continue-year',expectedRevision:continued.state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!nextYear.state||!nextYear.event)throw new Error('could not advance after unification');
+    const continueSave=verifySave(toJson(makeBranch([...prefix,unified.event,continued.event,nextYear.event],nextYear.state)));
+    expect(continueSave.state.phase4).toMatchObject({year:281,ending:'continuing',unified:true});expect(replay(continueSave.events)).toEqual(continueSave.state);
+    await commitWorldline(continueSave,noHistory,true);const continueReload=await loadWorkspace();expect(continueReload.profile.activeWorldlineId).toBe(continueSave.worldlineId);expect(continueReload.saves).toEqual([continueSave]);expect(replay(continueReload.saves[0]!.events)).toEqual(continueReload.saves[0]!.state);
+  },60000);
 
 });
