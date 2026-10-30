@@ -6,7 +6,7 @@ import {HISTORY_CONTENT} from '../phase4';
 export interface NarrationKnowledgeRecord { turn:number; observation:string; facts:string[]; }
 export interface NarrationPayload {
   eventBatchId:string;
-  protagonist?:{name:string;age:number;ageMonths:number;birthYear:number;modernMemory:boolean};
+  protagonist?:{name:string;age:number;ageMonths:number;birthYear:number;modernMemory:boolean;personality?:readonly string[]};
   /** Player-only memories derived from persisted, player-confirmed action records. */
   protagonistMemory?:Array<{turn:number;title:string;details:string}>;
   settledEvents:Array<{turn:number;title:string;details:string;resolvedActions?:PlannedActionDetail[]}>;
@@ -51,7 +51,7 @@ export function buildNarrationPayload(state:GameState,event:GameEvent):Narration
     .filter(action=>!actionResolution||action!==latest)
     .slice(-5)
     .map(action=>({turn:action.turn,title:action.title.slice(0,160),details:(action.supplement?action.details.replaceAll(action.supplement,'').replace(/；補充說明[^；]*/g,''):action.details).slice(0,800)}));
-  return{eventBatchId:event.eventId,protagonist:{name:state.character.name,age:currentAge(state),ageMonths:Math.max(0,state.world.month-1),birthYear:state.character.birthYear,modernMemory:state.character.profile.modernMemory},protagonistMemory,settledEvents,playerView:{location:state.phase2?.scene.location??state.character.home,trend:state.trend,knownFacts},visibleNpcs};
+  return{eventBatchId:event.eventId,protagonist:{name:state.character.name,age:currentAge(state),ageMonths:Math.max(0,state.world.month-1),birthYear:state.character.birthYear,modernMemory:state.character.profile.modernMemory,personality:state.character.profile.personality},protagonistMemory,settledEvents,playerView:{location:state.phase2?.scene.location??state.character.home,trend:state.trend,knownFacts},visibleNpcs};
 }
 export function templateNarration(payload:NarrationPayload):NarrationResult{
   const action=payload.settledEvents.at(-1);
@@ -63,7 +63,7 @@ export function validateNarrationResult(value:unknown,payload:NarrationPayload):
   if(Object.keys(value).some(key=>!['paragraphs','dialogue','suggestions'].includes(key))||!Array.isArray(result.paragraphs)||!result.paragraphs.every(item=>typeof item==='string')||!Array.isArray(result.suggestions)||!result.suggestions.every(item=>typeof item==='string')||!Array.isArray(result.dialogue))throw new Error('敘事資料格式無效');
   const allowed=new Set(payload.visibleNpcs.map(person=>person.id));
   if(result.dialogue.some(line=>!line||typeof line.speakerId!=='string'||!allowed.has(line.speakerId)||typeof line.text!=='string'))throw new Error('敘事提及不在場或未知的發言者');
-  const privateMemory=[...(payload.protagonistMemory??[]).flatMap(item=>[item.title,item.details]),...payload.playerView.knownFacts.flatMap(record=>record.facts)].filter(secret=>secret.trim().length>=5);
+  const privateMemory=[...(payload.protagonistMemory??[]).flatMap(item=>[item.title,item.details]),...payload.playerView.knownFacts.flatMap(record=>record.facts),...(payload.protagonist?.personality??[])].filter(secret=>secret.trim().length>=5);
   if(result.dialogue.some(line=>privateMemory.some(secret=>line.text.includes(secret.trim()))))throw new Error('NPC 對話洩漏主角的私人回憶');
   const facts=JSON.stringify([payload.settledEvents,payload.protagonist,payload.protagonistMemory]),numbers=new Set(facts.match(/\d+(?:\.\d+)?/g)??[]),text=[...result.paragraphs,...result.suggestions,...result.dialogue.map(line=>line.text)].join('\n');
   if((text.match(/\d+(?:\.\d+)?/g)??[]).some(number=>!numbers.has(number)))throw new Error('敘事包含結算紀錄中不存在的數字事實');
