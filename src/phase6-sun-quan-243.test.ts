@@ -16,14 +16,14 @@ describe('A256 孫權年表新增 243 年擒獲彭綺記事', () => {
     expect(event?.source).toContain('諸將獲彭綺');
     expect(event?.detail).not.toContain('孫權親自出戰');
     expect(answerKnownSunQuanBiographyQuestion('請整理孫權七十一年生平年表')?.answer)
-      .toContain('57 筆可考年級紀錄，分布於 45 個年次');
+      .toContain('58 筆可考年級紀錄，分布於 46 個年次');
   });
 
   it('v133 存檔升至 v134 僅追加節點，跨至 243 年才觸發；同年及 244 年存檔不回補', () => {
     const old = createPhase4Model(242, 1, persons, 'phase4-scenario-133');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-136');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-137');
     expect(upgraded.eventLedger).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === nodeId)?.status).toBe('pending');
     expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === nodeId)?.status).toBe('triggered');

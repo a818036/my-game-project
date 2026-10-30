@@ -61,7 +61,7 @@ describe('人生情境計畫',()=>{
     const biography=answerKnownSunQuanBiographyQuestion('請整理孫權七十一年生平年表');
     expect(biography?.kind).toBe('question');
     expect(biography?.answer).toContain('孫權約 182 年至 252 年（享年七十一）');
-    expect(biography?.answer).toContain('57 筆可考年級紀錄，分布於 45 個年次');
+    expect(biography?.answer).toContain('58 筆可考年級紀錄，分布於 46 個年次');
     expect(biography?.answer).toContain('年十五時任陽羨長');
     expect(biography?.answer).toContain('郡察孝廉、州舉茂才、行奉義校尉');
     expect(biography?.answer).toContain('未給出這些任官可換算的公元年份');
