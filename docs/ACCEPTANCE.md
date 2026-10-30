@@ -443,3 +443,4 @@
 | A354 | 世界線切換結果以狀態角色呈現 | 隔離 Chromium 在兩條合成／測試世界線間往返切換；每次均讀到正確角色、日期及 `role=status` 的「已切換世界線；舊存檔仍保留。」訊息。`status` 角色具隱含 polite live-region 語意；此為瀏覽器無障礙樹確認，不代表 NVDA／Firefox 實際語音已驗收，也未操作正式玩家存檔。 |
 | A355 | 世界線切換通知的自動回歸 | App 整合測試確認切換成功時主角更新且成功訊息為 `role=status`；注入儲存層錯誤後，原主角與選取線保留，失敗訊息同樣為 `role=status`。只驗 DOM 角色及 React 狀態，不等同螢幕閱讀器語音驗收。 |
 | A357 | 遊戲內通知使用持續存在的 live region | 遊戲頁另掛載專用 `ActivityAnnouncer` 接收所有 `notice`；App 整合測試保存該 `role=status`／polite／atomic 節點參照，再驗成功切線及儲存失敗都更新同一節點。可見通知保留但移除重複 status role，避免事件後才插入的節點成為唯一播報途徑。隔離 Chromium 切線後的無障礙樹可讀到成功訊息；未驗 NVDA／Firefox 真實語音。 |
+| A358 | 詢問回覆使用持續存在的 live region | 行動表單首次載入時即掛載空白 `ActivityAnnouncer`；App／面板整合測試記住節點參照，再送出詢問並確認原節點更新為回答摘要，回覆內容區不再插入另一個 `role=status`。既有摘要仍限 220 字。此為 jsdom DOM 與 React 狀態驗證，不代表 NVDA／Firefox 語音。 |

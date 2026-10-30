@@ -3,7 +3,7 @@ import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
 import {LifeActionPanel} from './LifeActionPanel';
-import {InteractionReply} from './InteractionReply';
+import {InteractionReply,interactionReplyAnnouncement} from './InteractionReply';
 
 describe('LifeActionPanel 無障礙語意',()=>{
   it('將可複選的生活行動以標題命名為同一組',()=>{
@@ -34,22 +34,22 @@ describe('LifeActionPanel 無障礙語意',()=>{
     expect(html).toContain('每人最多保留最近四次，全體最多四十次');
   });
 
-  it('A290 回應更新只即時播報短摘要，不重讀先前對話全文',()=>{
+  it('A290 回應更新只播報短摘要，不重讀先前對話全文',()=>{
     const reply={kind:'dialogue' as const,answer:'田畝已經播種，近來雨水尚可，家中正準備修補南面的籬笆。',choiceIds:[],questions:[],source:'本機 mock',speakerId:'opening-family-0',speakerName:'父親'};
     const previousDialogue=[{speakerId:'opening-family-0',speakerName:'父親',turn:2,playerText:'昨日談到收成，想問今年田裡如何？',npcText:'前些日子下了幾場雨，田地還算濕潤。'}];
     const html=renderToStaticMarkup(createElement(InteractionReply,{reply,previousDialogue,selectedChoiceLabels:[]}));
 
-    expect(html).toContain('<p class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">父親回應：田畝已經播種，近來雨水尚可，家中正準備修補南面的籬笆。</p>');
+    expect(interactionReplyAnnouncement(reply)).toBe('父親回應：田畝已經播種，近來雨水尚可，家中正準備修補南面的籬笆。');
     expect(html).toContain('<section class="plan-review" role="region" aria-labelledby="interaction-reply-title">');
     expect(html).not.toContain('plan-review" aria-live=');
+    expect(html).not.toContain('role="status"');
     expect(html).toContain('昨日談到收成，想問今年田裡如何？');
     expect(html).toContain('前些日子下了幾場雨，田地還算濕潤。');
   });
 
   it('即時播報的長回答截短至 220 字並明示省略',()=>{
     const reply={kind:'question' as const,answer:'甲'.repeat(260),choiceIds:[],questions:[],source:'本機'};
-    const html=renderToStaticMarkup(createElement(InteractionReply,{reply,previousDialogue:[],selectedChoiceLabels:[]}));
-    const spoken=html.match(/role="status"[^>]*>(.*?)<\/p>/)?.[1]??'';
+    const spoken=interactionReplyAnnouncement(reply);
     expect(spoken).toBe(`回應你的詢問：${'甲'.repeat(220)}…`);
   });
 });

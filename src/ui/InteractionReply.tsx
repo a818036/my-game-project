@@ -6,7 +6,8 @@ function replyTitle(reply:InteractionResult):string{
   return ({question:'回應你的詢問',objection:'回應你的質疑',dialogue:'對話內容',action:'理解你的行動',mixed:'需要拆開確認',unclear:'需要說明'} as const)[reply.kind];
 }
 
-function announcementText(reply:InteractionResult):string{
+export function interactionReplyAnnouncement(reply:InteractionResult|null):string{
+  if(!reply)return '';
   const answer=reply.answer.trim().replace(/\s+/g,' ');
   const concise=answer.length>220?`${answer.slice(0,220).trimEnd()}…`:answer;
   return concise?`${replyTitle(reply)}：${concise}`:replyTitle(reply);
@@ -14,7 +15,6 @@ function announcementText(reply:InteractionResult):string{
 
 export function InteractionReply({reply,previousDialogue,selectedChoiceLabels}:{reply:InteractionResult;previousDialogue:DialogueExchange[];selectedChoiceLabels:string[]}){
   return <>
-    <p className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">{announcementText(reply)}</p>
     <section className="plan-review" role="region" aria-labelledby="interaction-reply-title">
       <h3 id="interaction-reply-title">{replyTitle(reply)}</h3>
       {previousDialogue.map((turn,index)=><div className="conversation-turn" key={`${turn.speakerId}-${index}`}><p><b>你：</b>{turn.playerText}</p><p><b>{turn.speakerName}：</b>{turn.npcText}</p></div>)}

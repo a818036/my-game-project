@@ -2,7 +2,8 @@ import {useEffect,useRef,useState} from 'react';
 import {inspectActionPlan,type GameCommand,type GameState} from '../engine';
 import {currentAge,lifeChoices,lifeStage,inspectLifePlan,type InteractionResult} from '../life';
 import {understandInput,type DialogueExchange} from '../narration/interaction';
-import {InteractionReply} from './InteractionReply';
+import {ActivityAnnouncer} from './ActivityAnnouncer';
+import {InteractionReply,interactionReplyAnnouncement} from './InteractionReply';
 
 function explicitEndingRequest(text:string){return /^(?:(?:我想|我要|請|請幫我)(?:立即)?\s*)?(?:進入大結局|進入最終章|收尾|最終章)(?:吧)?[。！!]*$/.test(text.trim());}
 
@@ -36,7 +37,7 @@ export function LifeActionPanel({state,busy,onRun}:{state:GameState;busy:boolean
     try{const ok=await onRun({version:5,commandId:crypto.randomUUID(),expectedRevision:state.revision,worldlineId:state.worldlineId,type:'SubmitLifePlan',choiceIds:[...review],supplement:text.trim(),paceDays});if(ok){setSelected([]);setText('');setReply(null);setReview(null);}else setError('保存或結算失敗；原文仍保留，請檢查頁面提示。');}
     finally{lock.current=false;setPending(false);}
   }
-  return <article className="panel intents"><div className="panel-heading"><div><div className="section-kicker">{lifeStage(age)}・此刻的選擇</div><h2 id="life-action-heading">你想怎麼做？</h2></div><span className="round">第 {state.turn} 回合</span></div>
+  return <article className="panel intents"><ActivityAnnouncer message={interactionReplyAnnouncement(reply)}/><div className="panel-heading"><div><div className="section-kicker">{lifeStage(age)}・此刻的選擇</div><h2 id="life-action-heading">你想怎麼做？</h2></div><span className="round">第 {state.turn} 回合</span></div>
     <div className="intent-grid" role="group" aria-labelledby="life-action-heading">{choices.map(c=><label key={c.id} className={`intent ${selected.includes(c.id)?'selected':''}`}><input type="checkbox" checked={selected.includes(c.id)} disabled={busy||pending} onChange={e=>{setSelected(s=>e.target.checked?[...s,c.id]:s.filter(x=>x!==c.id));setReview(null);setReply(null);}}/><span><strong>{c.label}</strong><small>{c.description}・{age<15?paceDays:c.days} 日</small></span></label>)}</div>
     {age<15&&<label>每項日常安排的時間<select disabled={busy||pending} value={paceDays} onChange={e=>{setPaceDays(Number(e.target.value));setReview(null);}}>{[1,7,30,90].map(d=><option value={d} key={d}>{d} 日</option>)}</select></label>}
     <label className="supplement-label">行動、詢問或想說的話<textarea aria-describedby="action-input-help" rows={4} value={text} disabled={busy||pending} onChange={e=>{setText(e.target.value);setReview(null);setReply(null);}} placeholder="例如：對在場人物說「今日可好？」／我想觀察眼前。"/></label>
