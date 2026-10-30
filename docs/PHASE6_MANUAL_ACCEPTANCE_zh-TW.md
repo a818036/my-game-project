@@ -74,3 +74,5 @@
 | 遊戲內高影響確認對話框 | 2026-10-31／Vitest jsdom | 程式測試通過：確認元件檢查模態標題／說明、初始焦點、Tab 循環、Escape 取消、背景 inert 及關閉後焦點復原；自然節點 App 整合測試改為逐次點擊遊戲內批准對話框。隔離 Chromium 完整長局及 NVDA／Firefox 語音仍待驗；本輪內嵌瀏覽器操作未能可靠切換開局核取方塊或開啟檔案選擇器，因此沒有把這項列為瀏覽器通過 | A366；jsdom 元件與 App 整合測試 |
 
 | 取消主權批准的狀態與焦點 | 2026-10-31／Vitest jsdom | 通過：App 整合測試聚焦批准按鈕並開啟確認框，取消後無新增儲存／重大節點，對話框關閉且焦點返回批准按鈕；之後再次明確確認仍能提交。使用合成存檔及 mock storage；不代表隔離 Chromium、NVDA／Firefox 語音或真實 IndexedDB | A367；React App 整合測試 |
+
+| 確認對話框 axe-core DOM 掃描 | 2026-10-31／Vitest jsdom、axe-core | 通過：在遊戲內確認對話框實際掛載、背景設為 inert 時掃描，當次啟用規則無違規；停用 jsdom 不可靠的色彩對比規則。不代表 Chromium／全站掃描或 NVDA／Firefox 語音驗收 | A368；元件測試 |

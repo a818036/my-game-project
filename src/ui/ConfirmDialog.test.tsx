@@ -2,6 +2,7 @@
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import axe from 'axe-core';
 import { ConfirmDialog } from './ConfirmDialog';
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -40,6 +41,8 @@ describe('ConfirmDialog', () => {
     expect(dialog?.getAttribute('aria-labelledby')).toBe('confirm-dialog-title');
     expect(document.getElementById('root')?.inert).toBe(true);
     expect(document.activeElement).toBe(cancel);
+    const scan = await axe.run(dialog!, { rules: { 'color-contrast': { enabled: false } } });
+    expect(scan.violations.map((violation) => `${violation.id}: ${violation.nodes.map((node) => node.target.join(',')).join('; ')}`)).toEqual([]);
 
     confirm?.focus();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
