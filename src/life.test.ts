@@ -1,6 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {createOpeningFacts,dispatch,ENGINE_VERSION,replay,type GameCommand,type GameEvent} from './engine';
-import {inspectLifePlan,lifeChoices,localInteraction} from './life';
+import {answerKnownSunQuanBiographyQuestion,inspectLifePlan,lifeChoices,localInteraction} from './life';
+import {HISTORY_CONTENT} from './phase4';
 import {toJson,parseSave,migrateSaveFile} from './storage';
 function start(){const facts=createOpeningFacts(81,184,{regions:[],surnames:[]});return dispatch(null,{version:ENGINE_VERSION,type:'StartGame',name:'測試',seed:81,facts,commandId:'life-start',expectedRevision:0});}
 describe('人生情境計畫',()=>{
@@ -34,6 +35,77 @@ describe('人生情境計畫',()=>{
     for(const text of ['我才幾歲就叫我經商？','我能做什麼？','對母親說你好','我幾歲？然後再去經商','不要觀察眼前']){const r=localInteraction(text,state);expect(r.kind).not.toBe('action');expect(r.choiceIds).toEqual([]);}
     expect(localInteraction('對父親說：不要擔心',state).kind).toBe('dialogue');
     expect(localInteraction('我要觀察眼前',state).choiceIds).toEqual(['observe']);expect(state).toEqual(before);
+  });
+  it('A389 指定年份史實問答可由玩家文字路徑取得且不推進或改變世界',()=>{
+    const state=start().state!,before=structuredClone(state);
+    const current=localInteraction('今年發生了什麼事？',state);
+    expect(current.kind).toBe('question');expect(current.answer).toContain('西元 184 年');expect(current.answer).toContain('黃巾起事');
+    const known=localInteraction('西元 206 年發生了什麼事？',state);
+    expect(known.kind).toBe('question');expect(known.answer).toContain('高幹敗走與壺關平定');expect(known.answer).toContain('《三國志》卷一');expect(known.choiceIds).toEqual([]);
+    const person=localInteraction('孫權在 202 年發生了什麼事？',state);
+    expect(person.kind).toBe('question');expect(person.answer).toContain('孫權拒絕曹操索取人質');expect(person.answer).not.toContain('劉備殺車胄');
+    const absent=localInteraction('西元 281 年發生了什麼事？',state);
+    expect(absent.kind).toBe('question');expect(absent.answer).toContain('尚未涵蓋');
+    expect(localInteraction('西元 206 年發生什麼事？然後再去耕讀',state).kind).toBe('mixed');
+    expect(state).toEqual(before);
+  });
+  it('孫權生平問題保留史料精度；無來源的日常時辰明確回答未記載',()=>{
+    const appointed=answerKnownSunQuanBiographyQuestion('孫權幾歲任陽羨長？');
+    expect(appointed?.answer).toContain('年十五');expect(appointed?.answer).toContain('郡察孝廉、州舉茂才、行奉義校尉');expect(appointed?.answer).toContain('不將年齡反推成特定年份');
+    const undatedOffice=answerKnownSunQuanBiographyQuestion('孫權幾歲任奉義校尉？');expect(undatedOffice?.answer).toContain('不能把十五歲套用到它們');
+    const earlyOffices=answerKnownSunQuanBiographyQuestion('孫權早年做過哪些官？');expect(earlyOffices?.answer).toContain('年十五時任陽羨長');expect(earlyOffices?.answer).toContain('行奉義校尉');
+    const died=answerKnownSunQuanBiographyQuestion('孫權幾歲去世？');expect(died?.answer).toContain('時年七十一');
+    const routine=answerKnownSunQuanBiographyQuestion('孫權每天幾時小便出恭？');expect(routine?.answer).toContain('不是逐日生活日誌');expect(routine?.answer).toContain('我不能用模擬補造');
+    expect(localInteraction('孫權每天幾時小便出恭？',start().state!).kind).toBe('question');
+  });
+  it('孫權日常作息的不同問法都走本機史料界線回答，不交模型猜測',()=>{
+    for(const text of ['孫權平時作息如何？','孫權平常的生活習慣是什麼？','孫權每天幾點上廁所？','孫權活著的71年裡每天每日幾時幾刻小便出恭？','孫權一天上幾次大號？','孫仲謀早上方便幾時？','孫權夜裡幾點解手？','孫權小號時間是什麼？','孫權每天幾點睡覺？']){
+      const result=localInteraction(text,start().state!);
+      expect(result.kind).toBe('question');
+      expect(result.answer).toContain('不是逐日生活日誌');
+      expect(result.answer).toContain('我不能用模擬補造時辰或行程');
+      expect(result.source).toContain('日常細節未記載');
+    }
+    expect(answerKnownSunQuanBiographyQuestion('孫權現在方便出兵嗎？')).toBeNull();
+    expect(answerKnownSunQuanBiographyQuestion('孫權每天出兵嗎？')).toBeNull();
+    expect(answerKnownSunQuanBiographyQuestion('孫權平常怎麼打仗？')).toBeNull();
+  });
+  it('孫權一生問題整理現有來源節點，不把空白年份或日常作息編成史實',()=>{
+    const biography=answerKnownSunQuanBiographyQuestion('請整理孫權七十一年生平年表');
+    expect(biography?.kind).toBe('question');
+    expect(biography?.answer).toContain('孫權約 182 年至 252 年（享年七十一）');
+    expect(biography?.answer).toContain('59 筆可考年級紀錄，分布於 46 個年次');
+    expect(biography?.answer).toContain('年十五時任陽羨長');
+    expect(biography?.answer).toContain('郡察孝廉、州舉茂才、行奉義校尉');
+    expect(biography?.answer).toContain('未給出這些任官可換算的公元年份');
+    expect(biography?.answer).toContain('孫權隨孫策征劉勳');
+    expect(biography?.answer).toContain('孫權遣衛溫、諸葛直浮海求夷洲');
+    expect(biography?.answer).toContain('孫權遣潘濬率眾征武陵');
+    expect(biography?.answer).toContain('吳廷遣呂岱等分部討擊多地起事');
+    expect(biography?.answer).toContain('呂岱討平廬陵賊，事畢還屯陸口');
+    expect(biography?.answer).toContain('陸遜討平鄱陽彭旦等起事');
+    expect(biography?.answer).toContain('吳將擒獲鄱陽賊彭綺');
+    expect(biography?.answer).toContain('孫權在位期間：孫邵去世、顧雍繼任吳丞相');
+    expect(biography?.answer).toContain('孫權之弟、丹楊太守翊遇害');
+    expect(biography?.answer).toContain('孫權遣賀齊討上饒');
+    expect(biography?.answer).toContain('孫權分置鄱陽、漢昌二郡並任魯肅');
+    expect(biography?.answer).toContain('孫權再征黃祖、克其城並分置新都郡');
+    expect(biography?.answer).toContain('孫權征皖城、克城並獲朱光');
+    expect(biography?.answer).toContain('孫權於庱亭射虎');
+    expect(biography?.answer).toContain('孫權下令不得因部下亡叛而殺其妻子');
+    expect(biography?.answer).toContain('裴松之注引《江表傳》');
+    expect(biography?.answer).toContain('趙咨使魏、孫權辭魏封孫登而立為太子');
+    expect(biography?.answer).toContain('孫權去世、孫亮即位');
+    expect(biography?.answer).toContain('這些是資料覆蓋缺口，不代表他當年沒有活動');
+    expect(biography?.answer).toContain('目前索引未收錄孫權相關節點的年次：');
+    const gapText=biography?.answer.match(/目前索引未收錄孫權相關節點的年次：([^。]+)/)?.[1]??'';
+    const displayedMissingYears=new Set<number>();
+    for(const [,startText,endText] of gapText.matchAll(/(\d{3})(?:–(\d{3}))?/g)){const start=Number(startText),end=Number(endText??startText);for(let year=start;year<=end;year++)displayedMissingYears.add(year);}
+    const coveredYears=new Set<number>();
+    for(const item of HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&item.startYear>=182&&item.endYear<=252&&/(孫權|孫仲謀)/.test(`${item.title} ${item.description} ${item.carrier} ${item.source}`))){for(let year=item.startYear;year<=item.endYear;year++)coveredYears.add(year);}
+    expect([...displayedMissingYears].sort((a,b)=>a-b)).toEqual(Array.from({length:71},(_,i)=>182+i).filter(year=>!coveredYears.has(year)));
+    expect(biography?.answer).not.toContain('197年・');
+    expect(localInteraction('請整理孫權七十一年生平年表',start().state!).answer).toBe(biography?.answer);
   });
   it('能力命令不經普通人生階段選項過濾',()=>{
     const state=start().state!;expect(inspectLifePlan(state,['軒轅閃']).errors.length).toBeGreaterThan(0);

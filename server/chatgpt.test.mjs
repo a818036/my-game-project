@@ -2,7 +2,7 @@ import {describe,it,expect,vi} from 'vitest';
 import {createChatGptSession,readCompletedResponse,chatGptFetchAdapter,validateChatGptIdToken} from './chatgpt.mjs';
 import {generateKeyPair,SignJWT} from 'jose';
 import {createNarrationServer} from './index.mjs';
-import {openAiInterpretation} from './narration.mjs';
+import {openAiInterpretation,openAiNarration} from './narration.mjs';
 
 const candidate={actions:[],questions:['請補充行動'],unsupported:[],unparsedText:'試試'};
 const json=data=>new Response(JSON.stringify(data),{headers:{'Content-Type':'application/json'}});
@@ -35,6 +35,16 @@ describe('ChatGPT 官方訂閱登入（離線假服務，不消耗額度）',()=
     const f=fixture();const auth=await f.login();expect(auth.searchParams.get('client_id')).toBe('dynamic_agent_client');expect(auth.searchParams.get('code_challenge_method')).toBe('S256');expect(auth.searchParams.get('scope')).toContain('chatgpt.tokens.use.direct');
     const exchange=f.calls.find(c=>c.url.endsWith('/oauth/token')).options.body;expect(exchange.get('client_id')).toBe('oaiapp_test');expect(exchange.get('redirect_uri')).toBe('http://127.0.0.1:8787/auth/callback');expect(exchange.get('code_verifier')).toBeTruthy();
     expect(JSON.stringify(await f.session.status())).not.toContain('secret-');expect(JSON.stringify(f.persisted())).not.toContain('secret-');expect(f.verifyToken).toHaveBeenCalled();
+  });
+  it('ChatGPT 訂閱敘事代理也傳送 v3.17 戰場規則與已結算傷亡邊界',async()=>{
+    const output={paragraphs:['渡口北側的部隊依既有軍籍重整。'],dialogue:[],suggestions:[]};
+    const f=fixture({streamEvents:[{type:'response.output_text.delta',output_index:0,content_index:0,delta:JSON.stringify(output)},{type:'response.completed',response:{status:'completed',output:[]}}]});
+    await f.login();await f.session.listModels();await f.session.select({model:'available'});
+    const payload={eventBatchId:'chatgpt-battle-1',settledEvents:[{turn:2,title:'戰役輪次',details:'渡口北側，陣亡累計2、受傷累計3。'}],playerView:{location:'渡口北側',trend:'',knownFacts:[]},visibleNpcs:[]};
+    await openAiNarration(payload,{apiKey:'oauth-managed-in-server',fetchImpl:chatGptFetchAdapter(f.session)});
+    const request=JSON.parse(f.calls.find(call=>call.url.endsWith('/responses')).options.body);
+    expect(request.instructions).toContain('依規則 v3.17');expect(request.instructions).toContain('任何描寫不得改變引擎已結算的傷亡帳');
+    expect(request.input[0].content).toContain('陣亡累計2');expect(request.store).toBe(false);expect(request.stream).toBe(true);
   });
   it('state 錯誤、過期與重播回呼均不能交換憑證',async()=>{
     const f=fixture();await f.session.start({redirectUri:'http://127.0.0.1:8787/auth/callback'});await expect(f.session.callback(new URLSearchParams({state:'wrong',code:'x'}))).rejects.toThrow('驗證');expect(f.fetchImpl).not.toHaveBeenCalled();
