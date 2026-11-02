@@ -147,7 +147,7 @@ describe('A393 183 年夏旱史料補充遷移',()=>{
   const old=createPhase4Model(182,1,persons,'phase4-scenario-147'),prefix=structuredClone(old.eventLedger),id='winter-cold-eastern-commandries-183';
   const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION),climateNode=upgraded.nodes.filter(node=>node.contentId===id);
   expect(climateNode).toHaveLength(1);
-  expect(upgraded.eventLedger).toEqual(prefix);
+  expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
   expect(climateNode[0].evidence.join(' ')).toContain('不推斷因果、受災範圍或農損');
   const advanced=advancePhase4(upgraded,360),event=advanced.eventLedger.find(item=>item.type==='史實事件形成'&&item.source?.includes('卷一〇五'));
   expect(advanced.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
@@ -174,7 +174,7 @@ describe('A397 231 年蜀魏隴右戰事史料節點',()=>{
   const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
   expect(upgraded.nodes.filter(node=>node.contentId===id)).toHaveLength(1);
   expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
-  expect(upgraded.eventLedger).toEqual(prefix);
+  expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
   expect(advancePhase4(upgraded,360).nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
 
   for(const year of [231,232]){
@@ -243,7 +243,7 @@ describe('A414 靈帝宋皇后廢黜記事與內容遷移',()=>{
   const id='song-empress-deposed-178';
   const old=createPhase4Model(177,1,persons,'phase4-scenario-153'),prefix=structuredClone(old.eventLedger);
   const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-  expect(migrated.eventLedger).toEqual(prefix);
+  expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
   expect(migrated.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
   const fresh=advancePhase4(createPhase4Model(177,1,persons,PHASE4_CONTENT_VERSION),360);
   const continued=advancePhase4(migrated,360);
@@ -262,5 +262,27 @@ describe('A414 靈帝宋皇后廢黜記事與內容遷移',()=>{
   const late=upgradePhase4Content(createPhase4Model(179,1,persons,'phase4-scenario-153'),PHASE4_CONTENT_VERSION);
   expect(late.nodes.find(node=>node.contentId===id)).toMatchObject({status:'resolved',resolvedYear:178});
   expect(upgradePhase4Content(migrated,PHASE4_CONTENT_VERSION)).toEqual(migrated);
+ });
+});
+
+describe('A415 江夏起事新增《後漢書》卷八十六列傳補記',()=>{
+ it('擴充來源與史載後果；舊存檔只追加證據，事件不重複觸發',()=>{
+  const id='jiangxia-local-uprising-180',content=HISTORY_CONTENT.find(item=>item.id===id);
+  expect(content?.source).toContain('卷八十六〈南蠻西南夷列傳〉');
+  expect(content?.source).toContain('黃穰');
+  expect(content?.source).toContain('十餘萬人');
+  expect(content?.source).toContain('攻沒四縣');
+  expect(content?.source).toContain('陸康討破');
+  const old=advancePhase4(createPhase4Model(179,1,persons,'phase4-scenario-154'),360);
+  const prefix=structuredClone(old.eventLedger),migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+  expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+  expect(migrated.eventLedger.filter(item=>item.type==='史實來源補充'&&item.detail.includes('180 年江夏地方起事'))).toHaveLength(1);
+  expect(migrated.nodes.find(node=>node.contentId===id)?.evidence.filter(item=>item.includes('《南蠻西南夷列傳》補記'))).toHaveLength(1);
+  expect(upgradePhase4Content(migrated,PHASE4_CONTENT_VERSION)).toEqual(migrated);
+  const continued=advancePhase4(upgradePhase4Content(createPhase4Model(179,1,persons,'phase4-scenario-154'),PHASE4_CONTENT_VERSION),360);
+  expect(continued.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+  const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.source?.includes('卷八十六'));
+  expect(event?.source).toContain('卷八十六');
+  expect(event?.source).toContain('廬江太守陸康');
  });
 });

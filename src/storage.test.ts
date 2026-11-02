@@ -803,4 +803,15 @@ describe('A05／A06 存檔交易與重播', () => {
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   });
 
+  it('A415 v154 v6 JSON 存檔補入江夏列傳來源後仍可續玩與重播',()=>{
+    const current=makeSave('phase6-v154-jiangxia-source-storage',179),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-154'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v154 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState},migrated=verifySave(toJson(old));
+    expect(migrated.events[0]).toEqual(oldStart);expect(migrated.state.phase4?.eventLedger.filter(item=>item.type==='史實來源補充'&&item.detail.includes('180 年江夏地方起事'))).toHaveLength(1);expect(replay(migrated.events)).toEqual(migrated.state);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v154-jiangxia-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not continue v154 save');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId==='jiangxia-local-uprising-180')?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.source?.includes('卷八十六'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  });
+
 });

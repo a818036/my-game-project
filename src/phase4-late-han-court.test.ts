@@ -128,7 +128,7 @@ describe('170–182 年東漢地方、朝廷與災異年表', () => {
     expect(newEvents.find((item) => item.detail.includes('會稽許生'))?.source).toContain('臧旻');
     expect(newEvents.find((item) => item.detail.includes('疫與北海'))?.source).toContain('使者巡行致醫藥');
     expect(newEvents.find((item) => item.detail.includes('曹鸞'))?.source).toContain('門生故吏父兄子弟');
-    expect(newEvents.find((item) => item.detail.includes('江夏地方'))?.source).toContain('江夏蠻叛');
+    expect(newEvents.find((item) => item.detail.includes('江夏、廬江起事擴大'))?.source).toContain('江夏蠻叛');
     expect(newEvents.find((item) => item.detail.includes('大疫與旱災'))?.source).toContain('光和五年');
 
     const old = createPhase4Model(169, 1, persons, 'phase4-scenario-145');
