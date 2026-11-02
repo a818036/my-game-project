@@ -875,4 +875,12 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.source?.includes('八關都尉')&&item.source.includes('四萬餘人'))).toBe(true);
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   });
+  it('A423 v160 同年 v6 JSON 存檔遷移黃巾部署來源但不重複觸發事件',()=>{
+    const current=makeSave('phase6-v160-yellow-turban-same-year-storage',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-160'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v160 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState},prefix=structuredClone(oldState.phase4?.eventLedger??[]),oldStatus=oldState.phase4?.nodes.find(node=>node.contentId==='yellow-turban-184')?.status,migrated=verifySave(toJson(old));
+    expect(migrated.state.phase4?.eventLedger.slice(0,prefix.length)).toEqual(prefix);expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='yellow-turban-184')?.status).toBe(oldStatus);
+    expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.source?.includes('八關都尉'))).toHaveLength(0);expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷七十一'))).toHaveLength(1);
+    expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });

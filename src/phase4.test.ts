@@ -237,6 +237,17 @@ describe('A422 補足 184 年黃巾起事後的朝廷軍事部署',()=>{
   const continued=advancePhase4(upgraded,360),events=continued.eventLedger.filter(item=>item.type==='史實事件形成'&&item.source?.includes('八關都尉'));
   expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');expect(events).toHaveLength(1);expect(events[0].source).toContain('四萬餘人');
  });
+
+ it('v160 同年與晚年存檔保留既有節點狀態且不補觸發黃巾事件',()=>{
+  for(const year of [184,185]){
+   const old=createPhase4Model(year,1,persons,'phase4-scenario-160'),prefix=structuredClone(old.eventLedger),status=old.nodes.find(item=>item.contentId==='yellow-turban-184')?.status;
+   const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+   expect(upgraded.nodes.find(item=>item.contentId==='yellow-turban-184')?.status).toBe(status);
+   expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+   expect(upgraded.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.source?.includes('八關都尉'))).toHaveLength(0);
+   expect(upgraded.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷七十一'))).toHaveLength(1);
+  }
+ });
 });
 
 describe('A397 231 年蜀魏隴右戰事史料節點',()=>{
