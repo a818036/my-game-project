@@ -7,7 +7,7 @@ describe('166、168 年東漢朝廷史實切片', () => {
   it('A375 依來源觸發兩個年級節點，並只追加遷移、不回補舊存檔', () => {
     const partisanId = 'partisan-frictions-emerge-166';
     const courtId = 'ling-emperor-accession-court-purge-168';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(186);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(187);
 
     const fresh = advancePhase4(createPhase4Model(165, 1, persons, PHASE4_CONTENT_VERSION), 3 * 360);
     expect(fresh.nodes.find((node) => node.contentId === partisanId)?.status).toBe('triggered');
@@ -43,7 +43,7 @@ describe('A404 光和元年鴻都門學生記事', () => {
   const id = 'hongdu-mencourt-founded-178';
 
   it('新局可觸發，v150 舊存檔保留事件前綴且同年與晚年不回補', () => {
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(186);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(187);
     const fresh = advancePhase4(createPhase4Model(177, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
     const event = fresh.eventLedger.find((item) => item.detail.includes('光和元年置鴻都門學生'));
@@ -76,7 +76,7 @@ describe('169–178 年東漢政局、教育與邊防切片', () => {
       'han-campaign-against-xianbei-defeated-177',
       'jiaozhi-wuhuh-man-uprising-178',
     ];
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(186);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(187);
 
     const fresh = advancePhase4(createPhase4Model(168, 1, persons, PHASE4_CONTENT_VERSION), 10 * 360);
     for (const id of ids) expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
@@ -118,7 +118,7 @@ describe('170–182 年東漢地方、朝廷與災異年表', () => {
       'xianbei-raids-you-bing-181',
       'epidemic-drought-182',
     ];
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(186);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(187);
 
     const fresh = (function(){ let model=createPhase4Model(169,1,persons,PHASE4_CONTENT_VERSION); for(let year=170;year<=182;year++) model=advancePhase4(model,360); return model; })();
     for (const id of ids) expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
@@ -163,7 +163,7 @@ describe('160–167 年桓帝朝廷與地方史事', () => {
       'hu-lan-zhu-gai-revolt-165',
       'huan-emperor-death-party-ban-lifted-167',
     ];
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(186);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(187);
     const runTo167 = (start: ReturnType<typeof createPhase4Model>) => {
       let model = start;
       for (let year = 160; year <= 167; year++) model = advancePhase4(model, 360);
@@ -195,5 +195,37 @@ describe('160–167 年桓帝朝廷與地方史事', () => {
       expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: year });
     }
     expect(late.eventLedger.some((item) => item.detail.includes('悉除黨錮'))).toBe(false);
+  });
+});
+
+describe('A411 光和二年江夏與丹陽記事', () => {
+  const id = 'jiangxia-danyang-revolts-179';
+
+  it('新增來源節點並讓 v151 舊存檔只追加遷移、不回補已過年份', () => {
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(187);
+    const fresh = advancePhase4(createPhase4Model(178, 1, persons, PHASE4_CONTENT_VERSION), 360);
+    expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    const event = fresh.eventLedger.find((item) => item.detail.includes('江夏起事與丹陽圍守事件'));
+    expect(event?.source).toContain('《後漢書》卷八');
+    expect(event?.source).toContain('江夏蠻叛，州郡討平之');
+    expect(event?.source).toContain('丹陽山越賊圍太守陳夤、陳夤擊破之');
+    expect(event?.source).toContain('不把兩地事件視為同一原因');
+
+    const old = createPhase4Model(178, 1, persons, 'phase4-scenario-151');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(upgradePhase4Content(upgraded, PHASE4_CONTENT_VERSION)).toEqual(upgraded);
+    const continued = advancePhase4(upgraded, 360);
+    expect(continued.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    expect(continued.eventLedger.find((item) => item.detail.includes('江夏起事與丹陽圍守事件'))?.source).toContain('《後漢書》卷八');
+
+    const sameYear = upgradePhase4Content(createPhase4Model(179, 1, persons, 'phase4-scenario-151'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 179 });
+    expect(sameYear.eventLedger.some((item) => item.detail.includes('江夏起事與丹陽圍守事件'))).toBe(false);
+    const late = upgradePhase4Content(createPhase4Model(180, 1, persons, 'phase4-scenario-151'), PHASE4_CONTENT_VERSION);
+    expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 179 });
+    expect(late.eventLedger.some((item) => item.detail.includes('江夏起事與丹陽圍守事件'))).toBe(false);
   });
 });

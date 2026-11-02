@@ -739,6 +739,18 @@ describe('A05／A06 存檔交易與重播', () => {
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   });
 
+  it('A411 v151 v6 JSON 存檔遷移 179 年記事後可續玩並再次匯入',()=>{
+    const current=makeSave('phase6-v151-jiangxia-danyang-storage',178),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-151'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v151 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState},migrated=verifySave(toJson(old)),id='jiangxia-danyang-revolts-179';
+    expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');expect(replay(migrated.events)).toEqual(migrated.state);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v151-jiangxia-danyang-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not continue v151 save');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('江夏起事與丹陽圍守事件')&&item.source?.includes('《後漢書》卷八'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  });
+
   it('A303 280 年長局的結局與繼續人生分支均可 JSON 匯入、IndexedDB 重載及重播',async()=>{
     const current=makeSave('phase6-ending-storage-roundtrip',160);const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     let state=current.state;const prefix:GameEvent[]=[start];
