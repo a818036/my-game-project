@@ -942,4 +942,20 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.eventLedger.slice(oldLedger.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷九〈孝獻帝紀〉'))).toHaveLength(1);
     expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+  it('A436 v165 190 年 v6 JSON 舊存檔補列遷都記事且可重播',()=>{
+    const current=makeSave('phase6-v165-capital-relocation-storage'),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-165'}};let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v165 fixture');
+    const oldEvents:GameEvent[]=[oldStart];
+    for(let year=185;year<=190;year++){
+      const continued=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v165-capital-relocation-${year}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+      if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not advance the v165 fixture');
+      oldState=continued.state;oldEvents.push(continued.event);
+    }
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState},oldLedger=structuredClone(oldState.phase4?.eventLedger??[]),migrated=verifySave(toJson(old)),id='eastern-coalition-capital-relocation-190';
+    expect(migrated.events.slice(0,old.events.length)).toEqual(old.events);
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.evidence.some(item=>item.includes('初平元年遷都記事補充'))).toBe(true);
+    expect(migrated.state.phase4?.eventLedger.slice(0,oldLedger.length)).toEqual(oldLedger);
+    expect(migrated.state.phase4?.eventLedger.slice(oldLedger.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷九〈孝獻帝紀〉'))).toHaveLength(1);
+    expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });

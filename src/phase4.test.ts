@@ -550,3 +550,38 @@ describe('A432 補足 189 年皇位更替的原典時序',()=>{
   expect(upgradePhase4Content(migrated,PHASE4_CONTENT_VERSION)).toEqual(migrated);
  });
 });
+
+describe('A436 補足 190 年遷都長安記事的原典時序',()=>{
+ const id='eastern-coalition-capital-relocation-190';
+ it('新局列出正月、二月與三月記事，但仍只按 190 年級結算',()=>{
+  const fresh=advancePhase4(createPhase4Model(189,1,persons,PHASE4_CONTENT_VERSION),360);
+  const node=fresh.nodes.find(item=>item.contentId===id),event=fresh.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('關東州郡起兵與獻帝遷都長安'));
+  expect(node?.status).toBe('triggered');
+  expect(event?.source).toContain('春正月山東州郡起兵');
+  expect(event?.source).toContain('二月丁亥遷都長安');
+  expect(event?.source).toContain('三月乙巳車駕入長安');
+  expect(event?.source).toContain('己酉董卓焚洛陽宮廟及人家');
+  expect(HISTORY_CONTENT.find(item=>item.id===id)?.sourceDateNote).toContain('不換算成遊戲日期');
+ });
+
+ it('v165 舊存檔升版只追加來源，不回寫舊事件或重複遷都',()=>{
+  const old=advancePhase4(createPhase4Model(189,1,persons,'phase4-scenario-165'),360),prefix=structuredClone(old.eventLedger);
+  const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION),node=migrated.nodes.find(item=>item.contentId===id);
+  expect(old.eventLedger.filter(item=>item.type==='史實事件形成'&&item.detail.includes('關東州郡起兵與獻帝遷都長安'))).toHaveLength(1);
+  expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+  expect(node?.evidence.some(item=>item.includes('初平元年遷都記事補充'))).toBe(true);
+  expect(migrated.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷九〈孝獻帝紀〉'))).toHaveLength(1);
+  expect(migrated.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.detail.includes('關東州郡起兵與獻帝遷都長安'))).toHaveLength(0);
+  expect(upgradePhase4Content(migrated,PHASE4_CONTENT_VERSION)).toEqual(migrated);
+ });
+
+ it('v165 尚未到 190 年的舊存檔升版後可正常觸發且不預先補登來源帳目',()=>{
+  const old=createPhase4Model(189,1,persons,'phase4-scenario-165'),prefix=structuredClone(old.eventLedger),migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+  expect(migrated.eventLedger).toEqual(prefix);
+  expect(migrated.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
+  const continued=advancePhase4(migrated,360),event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('關東州郡起兵與獻帝遷都長安'));
+  expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
+  expect(event?.source).toContain('三月乙巳車駕入長安');
+  expect(continued.eventLedger.filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷九〈孝獻帝紀〉'))).toHaveLength(0);
+ });
+});
