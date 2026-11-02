@@ -515,6 +515,17 @@ describe('A418 182 年板楯蠻降服記事與 v157 舊存檔遷移',()=>{
 
 describe('A432 補足 189 年皇位更替的原典時序',()=>{
  const id='palace-succession-189';
+ it('A433 年表問答回傳皇位更替次序與日期界線且不改動世界狀態',()=>{
+  const state=world(),before=structuredClone(state),answer=answerKnownHistoricalEventQuestion('西元 189 年發生了什麼事？',state);
+  expect(answer?.answer).toContain('四月少帝即位');
+  expect(answer?.answer).toContain('劉協先封勃海王、後徙封陳留王');
+  expect(answer?.answer).toContain('九月甲戌劉協即皇帝位');
+  expect(answer?.answer).toContain('年九歲');
+  expect(answer?.answer).toContain('丙子董卓殺皇太后何氏');
+  expect(answer?.answer).toContain('不換算成遊戲日期');
+  expect(state).toEqual(before);
+ });
+
  it('新局保留四月、九月與丙子記事，但只以 189 年級節點結算',()=>{
   const fresh=advancePhase4(createPhase4Model(188,1,persons,PHASE4_CONTENT_VERSION),360);
   expect(fresh.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
