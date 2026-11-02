@@ -883,4 +883,14 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.source?.includes('八關都尉'))).toHaveLength(0);expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷七十一'))).toHaveLength(1);
     expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+  it('A424 v161 v6 JSON 存檔補入 185 年涼州戰事來源後可續玩及重播',()=>{
+    const current=makeSave('phase6-v161-liangzhou-source-storage',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-161'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v161 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState},prefix=structuredClone(oldState.phase4?.eventLedger??[]),id='liangzhou-meiyang-campaign-185',migrated=verifySave(toJson(old));
+    expect(migrated.state.phase4?.eventLedger.slice(0,prefix.length)).toEqual(prefix);expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.evidence.join(' ')).toContain('《董卓列傳》戰事補記');expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷七十二'))).toHaveLength(1);expect(replay(migrated.events)).toEqual(migrated.state);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v161-liangzhou-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not continue v161 save');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.source?.includes('董卓率三萬討先零羌')&&item.source.includes('望垣'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  });
 });

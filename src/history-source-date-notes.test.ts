@@ -162,6 +162,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'winter-cold-eastern-commandries-183',
       'yellow-turban-184',
       'partisan-amnesty-return-184',
+      'liangzhou-meiyang-campaign-185',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-falls-ill-after-southern-suburb-sacrifice-251',
@@ -190,6 +191,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(80);
-    expect(uniqueNotedEvents.size).toBe(99);
+    expect(uniqueNotedEvents.size).toBe(100);
   });
 });

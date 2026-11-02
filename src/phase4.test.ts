@@ -250,6 +250,25 @@ describe('A422 補足 184 年黃巾起事後的朝廷軍事部署',()=>{
  });
 });
 
+describe('A424 補足 185 年涼州戰事的多路記載',()=>{
+ it('新局與既有節點保留卷七十二的周慎、孫堅及董卓軍路',()=>{
+  const fresh=advancePhase4(createPhase4Model(184,1,persons,PHASE4_CONTENT_VERSION),360),node=fresh.nodes.find(item=>item.contentId==='liangzhou-meiyang-campaign-185');
+  const event=fresh.eventLedger.find(item=>item.type==='史實事件形成'&&item.source?.includes('望垣'));
+  expect(node?.status).toBe('triggered');expect(event?.source).toContain('卷七十二');expect(event?.source).toContain('周慎');expect(event?.source).toContain('三萬人追擊');expect(event?.source).toContain('董卓率三萬討先零羌');expect(event?.source).toContain('《資治通鑑》卷五十八');
+  expect(HISTORY_CONTENT.find(item=>item.id==='liangzhou-meiyang-campaign-185')?.sourceDateNote).toContain('不換算成原型 30 日制');
+ });
+
+ it('v161 遷移只補來源並保留事件帳與節點狀態，升版冪等',()=>{
+  const id='liangzhou-meiyang-campaign-185',old=createPhase4Model(184,1,persons,'phase4-scenario-161'),prefix=structuredClone(old.eventLedger),status=old.nodes.find(item=>item.contentId===id)?.status;
+  const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION),node=upgraded.nodes.find(item=>item.contentId===id);
+  expect(node?.status).toBe(status);expect(node?.evidence.join(' ')).toContain('《董卓列傳》戰事補記');expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+  expect(upgraded.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷七十二'))).toHaveLength(1);
+  expect(upgradePhase4Content(upgraded,PHASE4_CONTENT_VERSION)).toEqual(upgraded);
+  const continued=advancePhase4(upgraded,360),result=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.source?.includes('望垣'));
+  expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');expect(result?.source).toContain('周慎不從');expect(result?.source).toContain('董卓率三萬討先零羌');
+ });
+});
+
 describe('A397 231 年蜀魏隴右戰事史料節點',()=>{
  it('多方節點於新局及未到年份存檔觸發，同年與晚年遷移不回補',()=>{
   const id='shu-wei-qishan-lucheng-campaign-231';
