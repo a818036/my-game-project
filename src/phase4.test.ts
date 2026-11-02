@@ -280,6 +280,24 @@ describe('A424 補足 185 年涼州戰事的多路記載',()=>{
  });
 });
 
+describe('A426 以《後漢書》本紀互證趙慈起事',()=>{
+ it('來源索引並列卷八與《資治通鑑》，只採年級精度',()=>{
+  const node=HISTORY_CONTENT.find(item=>item.id==='zhao-ci-revolt-186');
+  expect(node?.source).toContain('《後漢書》卷八〈孝靈帝紀〉');expect(node?.source).toContain('中平三年二月');expect(node?.source).toContain('六月');expect(node?.source).toContain('《資治通鑑》卷五十八');
+  expect(node?.source).toContain('不換算為遊戲模型日期');expect(node?.precision).toBe('year');
+ });
+
+ it('v162 遷移只補趙慈來源並保留已觸發節點與舊事件帳',()=>{
+  const id='zhao-ci-revolt-186',old=createPhase4Model(185,1,persons,'phase4-scenario-162'),continued=advancePhase4(old,360),prefix=structuredClone(continued.eventLedger);
+  expect(continued.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+  const upgraded=upgradePhase4Content(continued,PHASE4_CONTENT_VERSION),node=upgraded.nodes.find(item=>item.contentId===id);
+  expect(node?.status).toBe('triggered');expect(node?.evidence.join(' ')).toContain('《孝靈帝紀》趙慈記事補充');expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+  expect(upgraded.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.source?.includes('王敏討平'))).toHaveLength(0);
+  expect(upgraded.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷八'))).toHaveLength(1);
+  expect(upgradePhase4Content(upgraded,PHASE4_CONTENT_VERSION)).toEqual(upgraded);
+ });
+});
+
 describe('A397 231 年蜀魏隴右戰事史料節點',()=>{
  it('多方節點於新局及未到年份存檔觸發，同年與晚年遷移不回補',()=>{
   const id='shu-wei-qishan-lucheng-campaign-231';

@@ -903,4 +903,15 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.source?.includes('望垣'))).toHaveLength(0);expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷七十二'))).toHaveLength(1);
     expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+  it('A426 v162 趙慈起事同年 v6 JSON 存檔補列本紀來源而不重播事件',()=>{
+    const current=makeSave('phase6-v162-zhao-ci-same-year-storage',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-162'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v162 fixture');
+    const continued=dispatch(oldState,{version:ENGINE_VERSION,commandId:'phase6-v162-zhao-ci-advance',expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:720}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not advance the v162 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart,continued.event],state:continued.state},prefix=structuredClone(continued.state.phase4?.eventLedger??[]),id='zhao-ci-revolt-186',migrated=verifySave(toJson(old));
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(migrated.state.phase4?.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.source?.includes('王敏討平'))).toHaveLength(0);
+    expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('《後漢書》卷八'))).toHaveLength(1);
+    expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
