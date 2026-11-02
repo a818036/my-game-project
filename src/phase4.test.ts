@@ -585,3 +585,17 @@ describe('A436 補足 190 年遷都長安記事的原典時序',()=>{
   expect(continued.eventLedger.filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷九〈孝獻帝紀〉'))).toHaveLength(0);
  });
 });
+
+describe('A437 190 年遷都記事可由本機年表問答查詢',()=>{
+ it('指定 190 年時交代起兵、遷都與洛陽焚毀次序，且不改動世界狀態',()=>{
+  const state=world(),before=structuredClone(state),answer=answerKnownHistoricalEventQuestion('西元 190 年發生了什麼事？',state);
+  expect(answer?.answer).toContain('關東州郡起兵與獻帝遷都長安');
+  expect(answer?.answer).toContain('春正月山東州郡起兵');
+  expect(answer?.answer).toContain('二月丁亥遷都長安');
+  expect(answer?.answer).toContain('三月乙巳車駕入長安');
+  expect(answer?.answer).toContain('己酉董卓焚洛陽宮廟及人家');
+  expect(answer?.answer).toContain('只按 190 年級觸發');
+  expect(answer?.answer).toContain('《後漢書》卷九〈孝獻帝紀〉');
+  expect(state).toEqual(before);
+ });
+});

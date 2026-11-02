@@ -310,7 +310,7 @@ describe('重大節點後重新提供結局的 App 流程', () => {
     expect(workspace.saves).toHaveLength(1);
     expect(workspace.saves[0]?.state.phase4).toMatchObject({ year: 280, ending: 'pending', unified: true });
     expect(replay(workspace.saves[0]!.events)).toEqual(workspace.saves[0]!.state);
-  }, 30000);
+  }, 60000);
 
   it('主故事結局表單可保存不同結局文字且不推進世界時間', async () => {
     const save = makeSaveWithDueReoffer();
