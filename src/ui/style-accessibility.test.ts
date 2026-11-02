@@ -202,6 +202,17 @@ describe('主要淺色介面的文字對比', () => {
     expect(contrastRatio(lastRuleColor('.confirm-dialog p'), dialogBackground)).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('ChatGPT 模型選擇欄使用高對比閱讀底色與易操作高度', () => {
+    const select = lastRule('.chatgpt-connection select');
+    const ink = stylesheet.match(/--ink:\s*(#[0-9a-fA-F]{6})/)![1];
+    expect(select).toMatch(/min-height:\s*44px/);
+    expect(select).toMatch(/padding:\s*8px 10px/);
+    expect(select).toMatch(/background:\s*#fffaf0/);
+    expect(select).toMatch(/color:\s*var\(--ink\)/);
+    expect(select).toMatch(/border:\s*1px solid #b8a486/);
+    expect(contrastRatio(ink, '#fffaf0')).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('強制色彩模式將程式焦點落點改用系統高亮色', () => {
     const focus = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector === ':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus')?.declarations;
     expect(focus).toMatch(/outline-color:Highlight!important/);

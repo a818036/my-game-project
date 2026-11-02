@@ -182,7 +182,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .chatgpt-connection { margin: 1rem 0; padding: 1rem; border-bottom: 1px solid var(--line, #c8baa5); overflow-wrap: anywhere; }
 .chatgpt-connection summary { cursor: pointer; font-weight: 600; }
 .chatgpt-connection p { line-height: 1.7; }
-.chatgpt-connection select { max-width: 100%; width: 100%; }
+.chatgpt-connection select { max-width: 100%; width: 100%; min-height: 44px; padding: 8px 10px; background: #fffaf0; color: var(--ink); border: 1px solid #b8a486; }
 .chatgpt-connection .button-row { flex-wrap: wrap; }
 .skip-link{position:fixed;top:8px;left:-10000px;z-index:30;padding:10px 14px;background:#8e3329;color:#fffaf0;font-weight:700;border:2px solid #fffaf0}
 .skip-link:focus{left:8px;outline:3px solid #8e3329;outline-offset:3px}
