@@ -196,6 +196,12 @@ describe('主要淺色介面的文字對比', () => {
     expect(contrastRatio(lastRuleColor('.plan-review .conflict'), '#f0dfd2')).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('高影響確認對話框的標題與說明文字達 WCAG AA 對比', () => {
+    const dialogBackground = '#f5eedf';
+    expect(contrastRatio(lastRuleColor('.confirm-dialog h2'), dialogBackground)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(lastRuleColor('.confirm-dialog p'), dialogBackground)).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('強制色彩模式將程式焦點落點改用系統高亮色', () => {
     const focus = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector === ':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus')?.declarations;
     expect(focus).toMatch(/outline-color:Highlight!important/);
