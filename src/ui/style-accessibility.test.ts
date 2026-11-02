@@ -186,6 +186,16 @@ describe('主要淺色介面的文字對比', () => {
     expect(ruleMatching('.skip-link:focus', /outline:\s*3px solid/)).toMatch(/outline:\s*3px solid/);
   });
 
+  it('跳轉連結、存檔救援及行動衝突文字在各自底色達 WCAG AA 對比', () => {
+    expect(contrastRatio(lastRuleColor('.skip-link'), '#8e3329')).toBeGreaterThanOrEqual(4.5);
+
+    const recoveryBackground = '#382a24';
+    expect(contrastRatio(lastRuleColor('.save-recovery'), recoveryBackground)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(lastRuleColor('.save-recovery .quiet'), recoveryBackground)).toBeGreaterThanOrEqual(4.5);
+
+    expect(contrastRatio(lastRuleColor('.plan-review .conflict'), '#f0dfd2')).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('強制色彩模式將程式焦點落點改用系統高亮色', () => {
     const focus = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector === ':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus')?.declarations;
     expect(focus).toMatch(/outline-color:Highlight!important/);
