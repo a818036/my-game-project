@@ -108,5 +108,17 @@ describe('第五階段・敘事資訊分層與回應驗證',()=>{
     expect(details).toContain('原文不載月內日期');
     expect(details).not.toContain('主角目睹');
   });
+  it('A435 189 年皇位更替旁白取得原典時序且不誤作主角親歷',()=>{
+    const current=state(),content=HISTORY_CONTENT.find(item=>item.id==='palace-succession-189')!;
+    const withHistory={...current,phase4:{...current.phase4!,eventLedger:[{id:'history-189',day:1800,year:189,month:1,dayOfMonth:1,type:'史實事件形成',detail:'少帝與獻帝更替、董卓入朝',source:content.source}]}} as GameState;
+    const event={version:ENGINE_VERSION as typeof ENGINE_VERSION,eventId:'history-189',commandId:'history-189-command',commandHash:'h',revision:2,type:'Phase4Changed' as const,payload:{action:{type:'AdvanceDays' as const,days:360}}};
+    const payload=buildNarrationPayload(withHistory,event),details=payload.settledEvents[0].details;
+    expect(details).toContain('不表示主角親見');
+    expect(details).toContain('四月少帝即位');
+    expect(details).toContain('九月甲戌劉協即皇帝位');
+    expect(details).toContain('丙子董卓殺何太后');
+    expect(details).toContain('只採公元年級觸發');
+    expect(details).not.toContain('主角目睹');
+  });
 });
 
