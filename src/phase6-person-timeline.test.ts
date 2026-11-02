@@ -26,7 +26,7 @@ describe('A373 other-person historical timeline queries',()=>{
   it('A383 distinguishes the 20-item display limit from missing years through the player input path',async()=>{
     const person='曹操';
     const records=HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&`${item.title} ${item.description} ${item.carrier}`.includes(person)).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
-    expect(records).toHaveLength(24);
+    expect(records).toHaveLength(25);
     const facts=createOpeningFacts(383,184,{regions:[],surnames:[]});
     const state=dispatch(null,{version:ENGINE_VERSION,commandId:'a383-person-timeline-start',expectedRevision:0,type:'StartGame',name:'測試玩家',seed:383,facts}).state!;
     const before=structuredClone(state),fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);

@@ -234,6 +234,19 @@ describe('A05／A06 存檔交易與重播', () => {
     const archiveDb=await openSaveDb();const archived=await new Promise<SaveFile|undefined>((resolve,reject)=>{const tx=archiveDb.transaction('profile','readonly');const request=tx.objectStore('profile').get(`legacy:${old.worldlineId}:v6-phase4-scenario-1`);request.onsuccess=()=>resolve(request.result as SaveFile|undefined);request.onerror=()=>reject(request.error);});archiveDb.close();expect(archived).toEqual(old);
   });
 
+  it('A444 v166 的 184 年 v6 JSON 存檔可升版、續玩至 192 年並重播青州兵記事',()=>{
+    const current=makeSave('a444-v166-json-migration',184),originalStart=current.events[0];if(originalStart.type!=='WorldCreated')throw new Error('expected opening event');
+    const legacyStart:GameEvent={...originalStart,payload:{...originalStart.payload,phase4ContentVersion:'phase4-scenario-166'}};
+    const oldState=applyEvent(null,legacyStart)!;const old:SaveFile={...current,events:[legacyStart],state:oldState};
+    const migrated=verifySave(toJson(old)),id='qingzhou-yellow-turbans-surrender-192';
+    expect(migrated.events[0]).toEqual(legacyStart);expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'a444-v166-advance-to-192',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:2880}});
+    expect(continued.state?.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(continued.state?.phase4?.eventLedger.find(event=>event.type==='史實事件形成'&&event.detail.includes('青州黃巾入兗'))?.source).toContain('號為青州兵');
+    const resumed:SaveFile={...migrated,events:[...migrated.events,continued.event!],state:continued.state!},reimported=verifySave(toJson(resumed));
+    expect(reimported.events.slice(0,migrated.events.length)).toEqual(migrated.events);expect(replay(reimported.events)).toEqual(reimported.state);
+    expect(reimported.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(verifySave(toJson(reimported))).toEqual(reimported);
+  });
+
   it('A167 舊 v6 v88 存檔升至目前 scenario 時不回補新增史事且可重播',()=>{
     const current=makeSave('phase6-v88-to-v90');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-88'}};
