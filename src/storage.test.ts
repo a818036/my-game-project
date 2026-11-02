@@ -926,4 +926,20 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.source?.includes('冬十月武陵蠻')&&item.source.includes('郡兵討破'))).toBe(true);
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   });
+  it('A432 v164 189 年 v6 JSON 舊存檔補列皇位更替來源並保留事件前綴',()=>{
+    const current=makeSave('phase6-v164-palace-succession-storage'),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-164'}};let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v164 fixture');
+    const oldEvents:GameEvent[]=[oldStart];
+    for(let year=185;year<=189;year++){
+      const continued=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v164-palace-succession-${year}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+      if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not advance the v164 fixture');
+      oldState=continued.state;oldEvents.push(continued.event);
+    }
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState},oldLedger=structuredClone(oldState.phase4?.eventLedger??[]),migrated=verifySave(toJson(old)),id='palace-succession-189';
+    expect(migrated.events.slice(0,old.events.length)).toEqual(old.events);
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.evidence.some(item=>item.includes('中平六年皇位更替記事補充'))).toBe(true);
+    expect(migrated.state.phase4?.eventLedger.slice(0,oldLedger.length)).toEqual(oldLedger);
+    expect(migrated.state.phase4?.eventLedger.slice(oldLedger.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷九〈孝獻帝紀〉'))).toHaveLength(1);
+    expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });

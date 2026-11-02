@@ -512,3 +512,30 @@ describe('A418 182 年板楯蠻降服記事與 v157 舊存檔遷移',()=>{
   expect(upgradePhase4Content(migrated,PHASE4_CONTENT_VERSION)).toEqual(migrated);
  });
 });
+
+describe('A432 補足 189 年皇位更替的原典時序',()=>{
+ const id='palace-succession-189';
+ it('新局保留四月、九月與丙子記事，但只以 189 年級節點結算',()=>{
+  const fresh=advancePhase4(createPhase4Model(188,1,persons,PHASE4_CONTENT_VERSION),360);
+  expect(fresh.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+  const event=fresh.eventLedger.find(item=>item.type==='史實事件形成'&&item.source?.includes('九月甲戌劉協即皇帝位'));
+  expect(event?.source).toContain('四月少帝即位');
+  expect(event?.source).toContain('年九歲');
+  expect(event?.source).toContain('丙子董卓殺皇太后何氏');
+  const content=HISTORY_CONTENT.find(item=>item.id===id)!;
+  expect(content.precision).toBe('year');
+  expect(content.description).toContain('不換算成遊戲日期');
+  expect(content.sourceDateNote).toContain('九月甲戌');
+ });
+
+ it('v164 已到 189 年的舊節點只追加來源補充，不改事件前綴或重複結算',()=>{
+  const old=advancePhase4(createPhase4Model(188,1,persons,'phase4-scenario-164'),360),prefix=structuredClone(old.eventLedger);
+  expect(old.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+  const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION),node=migrated.nodes.find(item=>item.contentId===id);
+  expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+  expect(node?.evidence.some(item=>item.includes('中平六年皇位更替記事補充'))).toBe(true);
+  expect(migrated.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷九〈孝獻帝紀〉'))).toHaveLength(1);
+  expect(migrated.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.source?.includes('九月甲戌劉協即皇帝位'))).toHaveLength(0);
+  expect(upgradePhase4Content(migrated,PHASE4_CONTENT_VERSION)).toEqual(migrated);
+ });
+});
