@@ -14,19 +14,33 @@ const maxAttempts = 5;
 const concurrency = 4;
 let next = 0;
 
+function retryDelayMs(value, fallback) {
+  if (!value) return fallback;
+  const seconds = Number(value);
+  const delay = Number.isFinite(seconds)
+    ? seconds * 1000
+    : Date.parse(value) - Date.now();
+  return Number.isFinite(delay) && delay > 0 ? Math.min(delay, 30_000) : fallback;
+}
+
 async function checkNext() {
   while (next < urls.length) {
     const index = next++;
     const url = urls[index];
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      let retryDelay = 500 * 2 ** attempt;
       try {
         const response = await fetch(url, {
           method: 'GET',
           redirect: 'follow',
+          headers: {
+            'user-agent': 'my-game-project-source-link-check/1.0 (+https://github.com/a818036/my-game-project; read-only source link validation)',
+          },
           signal: AbortSignal.timeout(20_000),
         });
         const shouldRetry = response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500;
         if (shouldRetry && attempt < maxAttempts - 1) {
+          retryDelay = retryDelayMs(response.headers.get('retry-after'), retryDelay);
           await response.body?.cancel().catch(() => {});
         } else {
           results[index] = { url, status: response.status, finalUrl: response.url, attempts: attempt + 1 };
@@ -46,7 +60,7 @@ async function checkNext() {
         }
       }
 
-      await new Promise((resolveDelay) => setTimeout(resolveDelay, 500 * 2 ** attempt));
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, retryDelay));
     }
   }
 }
