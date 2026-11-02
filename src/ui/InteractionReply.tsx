@@ -22,7 +22,7 @@ export function InteractionReply({reply,previousDialogue,selectedChoiceLabels}:{
       {reply.questions.map((question,index)=><p key={index}>{question}</p>)}
       {reply.kind!=='action'&&selectedChoiceLabels.length>0&&<p>你勾選的「{selectedChoiceLabels.join('、')}」已列入下方待確認計畫；確認前不會執行。</p>}
       {reply.kind!=='action'&&selectedChoiceLabels.length===0&&<p>{reply.kind==='dialogue'&&reply.speakerId?'沒有執行勾選項目；這段對話已保存，但時間與人物關係未變。':'沒有執行勾選項目，時間與存檔未變更。'}</p>}
-      <details><summary>回應來源</summary>{reply.source}</details>
+      <details><summary>回應來源</summary><p>來源說明：{reply.source??'此回應未提供來源標記。'}</p></details>
     </section>
   </>;
 }

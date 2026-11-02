@@ -76,6 +76,7 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     expect(response?.textContent).toContain('己酉董卓焚洛陽宮廟及人家');
     expect(response?.textContent).toContain('《後漢書》卷九〈孝獻帝紀〉');
     expect(response?.querySelector('details summary')?.textContent).toBe('回應來源');
+    expect(response?.querySelector('details p')?.textContent).toBe('來源說明：已核對的遊戲年表');
     expect(host.querySelector<HTMLElement>('.intents > .visually-hidden[role="status"]')?.textContent).toContain('回應你的詢問：');
     expect(state.world.year).toBe(184);
     expect(state.turn).toBe(0);
