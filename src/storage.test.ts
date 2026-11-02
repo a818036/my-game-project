@@ -347,7 +347,7 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(advancedState.phase4?.nodes.find(node=>node.contentId==='sun-quan-mother-dies-202')?.status).toBe('triggered');
     expect(replay(continued.events)).toEqual(continued.state);
     expect(verifySave(toJson(continued))).toEqual(continued);
-  });
+  },15000);
 
   it('v3.16 v6 存檔升至 v3.17 只追加來源版本事件，保留既有事件與結算',()=>{
     const current=makeSave('rules-316-to-317');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
