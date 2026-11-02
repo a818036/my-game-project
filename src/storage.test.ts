@@ -865,4 +865,14 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.source?.includes('大赦天下黨人'))).toBe(true);
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   });
+  it('A422 v160 v6 JSON 存檔補入黃巾軍事部署來源後可續玩及重播',()=>{
+    const current=makeSave('phase6-v160-yellow-turban-deployment-storage',183),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-160'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v160 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState},oldPrefix=structuredClone(oldState.phase4?.eventLedger??[]),migrated=verifySave(toJson(old)),id='yellow-turban-184';
+    expect(migrated.events[0]).toEqual(oldStart);expect(migrated.state.phase4?.eventLedger.slice(0,oldPrefix.length)).toEqual(oldPrefix);expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe(oldState.phase4?.nodes.find(node=>node.contentId===id)?.status);expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.evidence.join(' ')).toContain('中平元年三月軍事部署補記');expect(replay(migrated.events)).toEqual(migrated.state);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v160-yellow-turban-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not continue v160 save');
+    expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.source?.includes('八關都尉')&&item.source.includes('四萬餘人'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  });
 });

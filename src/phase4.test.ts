@@ -217,6 +217,28 @@ describe('A420 184 年大赦黨人與召還徙者史料節點',()=>{
  });
 });
 
+describe('A422 補足 184 年黃巾起事後的朝廷軍事部署',()=>{
+ it('新局保留二、三月史料分別與各路奉命部署，不拼成單一軍隊',()=>{
+  const fresh=advancePhase4(createPhase4Model(183,1,persons,PHASE4_CONTENT_VERSION),360);
+  const node=fresh.nodes.find(item=>item.contentId==='yellow-turban-184');
+  const event=fresh.eventLedger.find(item=>item.type==='史實事件形成'&&item.source?.includes('八關都尉'));
+  expect(node?.status).toBe('triggered');expect(event?.detail).toContain('黃巾起事');
+  expect(event?.source).toContain('中平元年二月');expect(event?.source).toContain('三月戊申');expect(event?.source).toContain('三月壬子');
+  expect(event?.source).toContain('盧植討張角');expect(event?.source).toContain('皇甫嵩與朱儁');expect(event?.source).toContain('四萬餘人');
+  expect(HISTORY_CONTENT.find(item=>item.id==='yellow-turban-184')?.sourceDateNote).toContain('不換算成原型 30 日制');
+ });
+
+ it('v160 遷移只追加來源證據並保留黃巾節點狀態，續玩不重複補記事件',()=>{
+  const id='yellow-turban-184',old=createPhase4Model(183,1,persons,'phase4-scenario-160'),prefix=structuredClone(old.eventLedger),oldStatus=old.nodes.find(item=>item.contentId===id)?.status;
+  const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION),node=upgraded.nodes.find(item=>item.contentId===id);
+  expect(node?.status).toBe(oldStatus);expect(node?.evidence.join(' ')).toContain('中平元年三月軍事部署補記');expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+  expect(upgraded.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷七十一'))).toHaveLength(1);
+  expect(upgradePhase4Content(upgraded,PHASE4_CONTENT_VERSION)).toEqual(upgraded);
+  const continued=advancePhase4(upgraded,360),events=continued.eventLedger.filter(item=>item.type==='史實事件形成'&&item.source?.includes('八關都尉'));
+  expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');expect(events).toHaveLength(1);expect(events[0].source).toContain('四萬餘人');
+ });
+});
+
 describe('A397 231 年蜀魏隴右戰事史料節點',()=>{
  it('多方節點於新局及未到年份存檔觸發，同年與晚年遷移不回補',()=>{
   const id='shu-wei-qishan-lucheng-campaign-231';
