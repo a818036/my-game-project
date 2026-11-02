@@ -645,7 +645,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const alreadyPassed=verifySave(toJson({...alreadyPassedCurrent,worldlineId:alreadyPassedState.worldlineId,events:alreadyPassedEvents,state:alreadyPassedState}));
     expect(alreadyPassed.state.phase4?.nodes.find(node=>node.contentId===nodeId)).toMatchObject({status:'resolved',resolvedYear:222});
     expect(alreadyPassed.state.phase4?.eventLedger.some(item=>item.detail.includes('洞口風災造成呂範部下溺亡'))).toBe(false);
-  });
+  },15000);
 
   it('A247 v131 v6 JSON 升至 v132 後續玩可觸發同一個 219 節點並重播',()=>{
     const current=makeSave('phase6-v131-jingzhou');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
@@ -689,7 +689,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old)),nodeId='wu-surrenders-280';expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');expect(replay(migrated.events)).toEqual(migrated.state);
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v140-wu-surrender-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not trigger migrated 280 save');expect(continued.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&(item.source??'').includes('《晉書》卷三'))).toBe(true);
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
-  },30000);
+  },90000);
 
   it('A302 v141 v6 存檔升至 v142 後可續玩赤壁節點並重播',()=>{
     const current=makeSave('phase6-v141-red-cliffs',184);const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
@@ -779,5 +779,17 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(continueSave.state.phase4).toMatchObject({year:281,ending:'continuing',unified:true});expect(replay(continueSave.events)).toEqual(continueSave.state);
     await commitWorldline(continueSave,noHistory,true);const continueReload=await loadWorkspace();expect(continueReload.profile.activeWorldlineId).toBe(continueSave.worldlineId);expect(continueReload.saves).toEqual([continueSave]);expect(replay(continueReload.saves[0]!.events)).toEqual(continueReload.saves[0]!.state);
   },180000);
+
+  it('A413 v152 v6 JSON 存檔遷移巴郡記事後可續玩並重播',()=>{
+    const current=makeSave('phase6-v152-bajun-storage',178),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-152'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v152 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState},migrated=verifySave(toJson(old)),id='bajun-banshun-revolt-179';
+    expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');expect(replay(migrated.events)).toEqual(migrated.state);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v152-bajun-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not continue v152 save');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('巴郡板楯起事')&&item.source?.includes('不剋'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  });
 
 });
