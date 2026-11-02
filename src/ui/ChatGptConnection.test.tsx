@@ -47,6 +47,39 @@ describe('ChatGPT 訂閱連線介面',()=>{
     }
   });
 
+  it('A431 模型選單變更會保存所選模型並在重新整理後回顯',async()=>{
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT',true);
+    let selectedModel='gpt-test';
+    const fetchMock=vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{
+      const url=String(input);
+      if(url==='/api/health')return new Response(JSON.stringify({provider:'chatgpt'}),{status:200});
+      if(url==='/api/chatgpt/status')return new Response(JSON.stringify({accounts:[{id:'primary',email:'main@example.test',connected:true}],activeId:'primary',connected:true,planEnabled:true,model:selectedModel,models:[{slug:'gpt-test',displayName:'測試模型'},{slug:'gpt-next',displayName:'下一個模型'}],message:'',pending:false}),{status:200});
+      if(url==='/api/chatgpt/select'){
+        selectedModel=JSON.parse(String(init?.body)).model;
+        return new Response(JSON.stringify({ok:true}),{status:200});
+      }
+      throw new Error(`未預期的連線要求：${url}`);
+    });
+    vi.stubGlobal('fetch',fetchMock);
+    const container=document.createElement('div');document.body.append(container);const root=createRoot(container);
+    try{
+      await act(async()=>{root.render(createElement(ChatGptConnection));});
+      const panel=container.querySelector('details')!;panel.open=true;
+      const select=container.querySelector('select')!;
+      expect(select.labels[0]?.textContent).toContain('遊戲使用的模型');
+      expect(select.value).toBe('gpt-test');
+      await act(async()=>{
+        select.value='gpt-next';
+        select.dispatchEvent(new Event('change',{bubbles:true}));
+        await new Promise(resolve=>setTimeout(resolve,0));
+      });
+      expect(fetchMock).toHaveBeenCalledWith('/api/chatgpt/select',expect.objectContaining({method:'POST',body:JSON.stringify({model:'gpt-next'})}));
+      expect(select.value).toBe('gpt-next');
+    }finally{
+      await act(async()=>{root.unmount();});container.remove();
+    }
+  });
+
   it('A408 模型取得失敗時以可及錯誤訊息呈現',async()=>{
     vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT',true);
     vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL)=>{
