@@ -621,3 +621,13 @@ describe('A437 190 年遷都記事可由本機年表問答查詢',()=>{
   expect(state).toEqual(before);
  });
 });
+
+describe('A445 192 年青州黃巾記事可由本機年表問答查詢',()=>{
+ it('指定年份時列出青州兵來源與原典概數界線，且不改動世界狀態',()=>{
+  const state=world(),before=structuredClone(state),answer=answerKnownHistoricalEventQuestion('西元 192 年有哪些事件？',state);
+  expect(answer?.answer).toContain('青州黃巾入兗與受降編為青州兵');
+  expect(answer?.answer).toContain('《三國志》卷一〈魏書·武帝紀〉');
+  expect(answer?.answer).toContain('不視作現代精確統計');
+  expect(state).toEqual(before);
+ });
+});
