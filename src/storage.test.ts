@@ -914,4 +914,16 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('《後漢書》卷八'))).toHaveLength(1);
     expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+  it('A427 186 年前的 v163 v6 存檔升版後可續玩觸發武陵記事並重播',()=>{
+    const current=makeSave('phase6-v163-wuling-before-event-storage',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-163'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v163 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState},migrated=verifySave(toJson(old)),id='wuling-revolt-suppressed-186';
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+    expect(migrated.state.phase4?.eventLedger.some(item=>item.type==='史實來源補充'&&item.detail.includes('武陵蠻起事'))).toBe(true);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v163-wuling-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:720}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not advance v163 save');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.source?.includes('冬十月武陵蠻')&&item.source.includes('郡兵討破'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  });
 });

@@ -3,8 +3,8 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-163';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:161},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-164';
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:162},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -210,6 +210,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'sun-jian-death-191',kind:'death',title:'孫堅死亡硬節點',startYear:191,endYear:191,precision:'year',source:'《三國志》卷四十六〈吳書一·孫破虜討逆傳〉；此內容包僅取 191 年年級精度，不主張精確月日。',causes:['campaign-risk'],carrier:'孫堅',historicalPersonId:'sun-jian',description:'無直接、充分且成功的救援介入時，須在史實年級窗口退場。一般治療能力或局勢改變不算介入。' },
   { id:'sample-local-vacancy',kind:'event',title:'郡府文書職缺（示例）',startYear:184,endYear:300,precision:'year',source:'本專案示例情境，非史實人物／職缺。',causes:['local-office-vacancy'],carrier:'示例郡府',description:'已標明為示例的人事內容，用於驗證遞補流程。',example:true },
   { id:'cao-zhen-expedition-against-shu-230',kind:'event',title:'曹真、司馬懿等多路伐蜀，因大雨撤軍',startYear:230,endYear:230,precision:'year',source:'《三國志》卷三〈魏書·明帝紀〉記太和四年秋七月詔曹真、司馬懿等伐蜀，九月因大雨詔令還軍；卷九〈魏書·曹真傳〉記曹真由子午道、司馬懿由漢水進軍，其他諸軍分道並進，連月大雨造成棧道斷絕，遂奉詔撤回。本內容包只採年級精度，不推演接戰、傷亡或完整行軍日程。',causes:['cao-zhen-expedition-against-shu-230'],carrier:'曹真、司馬懿與魏軍（史書所載多路行動）',description:'記錄魏軍多路伐蜀及因連月大雨、棧道斷絕而撤回；史料未載本節點所需的逐路接戰結果，不推演戰鬥、傷亡、疆界或玩家控制權。',sourceDateNote:'原史記太和四年秋七月下詔出兵、九月詔令還軍；保留漢曆月份註記，不換算成遊戲日曆。',introducedIn:'phase4-scenario-143',sameYearMigrationIsLate:true },
+  { id:'wuling-revolt-suppressed-186',kind:'event',title:'武陵蠻起事、郡兵討破',startYear:186,endYear:186,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉記中平三年冬十月武陵蠻叛、寇郡界，郡兵討破。本內容包只採公元年級精度，不把原史季節與漢曆月份換算為遊戲日期。',causes:['wuling-revolt-suppressed-186'],carrier:'武陵地方起事者與郡兵（史料記載）',description:'記錄武陵蠻起事、侵擾郡界及郡兵討破；不推演群體身分、戰場細節、額外傷亡或後續控制。',introducedIn:'phase4-scenario-164',sameYearMigrationIsLate:true },
 ];
 /** Sourced Han-calendar dates shown separately from the annual simulation trigger. */
 export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
@@ -222,6 +223,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'yuan-shu-proclaims-emperor-195': '原史紀年：《三國志》繫於興平二年冬；《資治通鑑》卷六十二將同一稱帝記事繫於建安二年（197）。此為來源紀年差異，不作兩次事件結算。保留《三國志》季節，不推定月份。',
   'emperor-relocates-xu-196': '原史紀年：建安元年秋車駕西出洛陽，曹操迎奉並都許。季節註記不轉成模型月份。',
   'zhao-ci-revolt-186': '原史紀年：中平三年二月起事、六月討平。月份採原典漢曆，不換算為遊戲日曆日期。',
+  'wuling-revolt-suppressed-186': '原史紀年：中平三年冬十月武陵蠻叛、寇郡界，郡兵討破。冬十月是漢曆月份，遊戲仍按年級觸發。',
   'changsha-ou-xing-revolt-187': '原史紀年：中平四年冬十月。這是漢曆月份註記；本節點仍按公元年級觸發。',
   'yizhou-ma-xiang-revolt-188': '原史紀年：中平五年六月。這是漢曆月份註記；本節點仍按公元年級觸發。',
   'emperor-returns-east-195': '原史紀年：興平二年七月車駕東歸。行程仍按年級處理，不補每日路線。',
@@ -481,6 +483,10 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
    if(currentIndex===zhaoCiChronicleVersionIndex-1)pushEvent(model,'史實來源補充','既有 186 年趙慈起事節點補列《後漢書》卷八本紀二月起事、六月討平記載；與《資治通鑑》卷五十八並列，維持年級觸發。','《後漢書》卷八〈孝靈帝紀〉；《資治通鑑》卷五十八');
   }
  }
+ const wulingRevoltVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-164');
+ if(targetIndex>=wulingRevoltVersionIndex&&currentIndex<wulingRevoltVersionIndex){
+  if(currentIndex===wulingRevoltVersionIndex-1)pushEvent(model,'史實來源補充','新增《後漢書》卷八中平三年武陵蠻起事、郡兵討破的年級記事；原典月份保留為註記。','《後漢書》卷八〈孝靈帝紀〉');
+ }
  const luDaiSourceVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-150');
  if(targetIndex>=luDaiSourceVersionIndex&&currentIndex<luDaiSourceVersionIndex){
   const luDaiNode=model.nodes.find(node=>node.contentId==='wu-lu-dai-luling-revolt-response-235');
@@ -505,6 +511,10 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
   if(content.introducedIn)model.causes.push(...content.causes);
   if(model.year>content.endYear||(content.sameYearMigrationIsLate&&model.year===content.endYear)){node.status='resolved';node.resolvedYear=content.endYear;node.evidence.push(model.year===content.endYear?'新增內容只有年級日期，無法判定事件在目前年份內是否已發生；不回溯觸發。':'此歷史內容於目前存檔日期後才加入；不回溯觸發。');}
   else processHistoryNode(model,node);
+ }
+ if(targetIndex>=wulingRevoltVersionIndex&&currentIndex<wulingRevoltVersionIndex){
+  const wulingNode=model.nodes.find(node=>node.contentId==='wuling-revolt-suppressed-186');
+  if(wulingNode&&!wulingNode.evidence.some(item=>item.includes('中平三年武陵蠻記事')))wulingNode.evidence.push('中平三年武陵蠻記事：《後漢書》卷八記冬十月武陵蠻叛、寇郡界，郡兵討破。只按原典年級觸發，不把漢曆月份換算成遊戲日期；同年舊存檔不回溯觸發。');
  }
  const contentOrder=new Map(HISTORY_CONTENT.map((content,index)=>[content.id,index]));
  model.nodes.sort((a,b)=>(contentOrder.get(a.contentId)??Number.MAX_SAFE_INTEGER)-(contentOrder.get(b.contentId)??Number.MAX_SAFE_INTEGER));

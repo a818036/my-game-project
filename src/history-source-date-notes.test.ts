@@ -30,7 +30,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(161);
+    expect(withinCatalogYears).toHaveLength(162);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -49,6 +49,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'yuan-shu-proclaims-emperor-195': ['興平二年冬條記袁術議稱帝'],
       'emperor-relocates-xu-196': ['建安元年秋車駕西出洛陽'],
       'zhao-ci-revolt-186': ['中平三年', '二月江夏兵', '六月荊州刺史'],
+      'wuling-revolt-suppressed-186': ['中平三年', '冬十月武陵蠻叛', '郡兵討破'],
       'changsha-ou-xing-revolt-187': ['中平四年冬十月'],
       'yizhou-ma-xiang-revolt-188': ['中平五年六月'],
       'emperor-returns-east-195': ['興平二年七月'],
@@ -127,7 +128,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(80);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(81);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -190,7 +191,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(80);
-    expect(uniqueNotedEvents.size).toBe(100);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(81);
+    expect(uniqueNotedEvents.size).toBe(101);
   });
 });
