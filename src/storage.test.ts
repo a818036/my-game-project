@@ -893,4 +893,14 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.source?.includes('董卓率三萬討先零羌')&&item.source.includes('望垣'))).toBe(true);
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   });
+  it('A425 v161 同年涼州戰事 v6 JSON 存檔升版不重複觸發戰事',()=>{
+    const current=makeSave('phase6-v161-liangzhou-same-year-storage',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-161'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v161 fixture');
+    const continued=dispatch(oldState,{version:ENGINE_VERSION,commandId:'phase6-v161-liangzhou-same-year-advance',expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not advance the v161 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart,continued.event],state:continued.state},prefix=structuredClone(continued.state.phase4?.eventLedger??[]),id='liangzhou-meiyang-campaign-185',migrated=verifySave(toJson(old));
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(migrated.state.phase4?.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.source?.includes('望垣'))).toHaveLength(0);expect(migrated.state.phase4?.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷七十二'))).toHaveLength(1);
+    expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });

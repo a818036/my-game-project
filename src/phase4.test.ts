@@ -267,6 +267,17 @@ describe('A424 補足 185 年涼州戰事的多路記載',()=>{
   const continued=advancePhase4(upgraded,360),result=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.source?.includes('望垣'));
   expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');expect(result?.source).toContain('周慎不從');expect(result?.source).toContain('董卓率三萬討先零羌');
  });
+
+ it('v161 同年與晚年存檔保留美陽節點且不回補戰事',()=>{
+  for(const year of [185,186]){
+   const old=createPhase4Model(year,1,persons,'phase4-scenario-161'),prefix=structuredClone(old.eventLedger),status=old.nodes.find(item=>item.contentId==='liangzhou-meiyang-campaign-185')?.status;
+   const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+   expect(upgraded.nodes.find(item=>item.contentId==='liangzhou-meiyang-campaign-185')?.status).toBe(status);
+   expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+   expect(upgraded.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.source?.includes('望垣'))).toHaveLength(0);
+   expect(upgraded.eventLedger.slice(prefix.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷七十二'))).toHaveLength(1);
+  }
+ });
 });
 
 describe('A397 231 年蜀魏隴右戰事史料節點',()=>{
