@@ -6,6 +6,7 @@ import axe from 'axe-core';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
 import {answerKnownHistoricalEventQuestion,type InteractionResult} from '../life';
 import {understandInput} from '../narration/interaction';
+import {InteractionReply} from './InteractionReply';
 import {LifeActionPanel} from './LifeActionPanel';
 
 vi.mock('../narration/interaction',async(importOriginal)=>{
@@ -55,6 +56,12 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     expect(host.querySelector('.intents > .visually-hidden[role="status"]')).toBe(status);
     expect(status?.textContent).toBe('回應你的詢問：你目前是零歲。');
     expect(host.querySelector('.plan-review[role="region"]')?.querySelector('[role="status"]')).toBeNull();
+  });
+
+  it('A448 沒有來源標記時仍說明來源欄位狀態',async()=>{
+    const withoutSource={...reply,source:undefined};
+    await act(async()=>root.render(createElement(InteractionReply,{reply:withoutSource,previousDialogue:[],selectedChoiceLabels:[]})));
+    expect(host.querySelector('details p')?.textContent).toBe('來源說明：此回應未提供來源標記。');
   });
 
   it('A439 將 190 年本機年表答案呈現在具名回覆區並保持時間不變',async()=>{
