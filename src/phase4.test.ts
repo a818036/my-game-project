@@ -225,3 +225,15 @@ describe('A409 鴻都門記事可由本機史實問答查詢',()=>{
   expect(state).toEqual(before);
  });
 });
+
+describe('A412 江夏與丹陽記事可由本機年表問答查詢',()=>{
+ it('能回答 179 年記事、保留來源並且不改動世界狀態',()=>{
+  const state=world(),before=structuredClone(state);
+  const answer=answerKnownHistoricalEventQuestion('西元 179 年發生了什麼事？',state);
+  expect(answer?.answer).toContain('江夏起事與丹陽圍守事件');
+  expect(answer?.answer).toContain('江夏蠻叛，州郡討平之');
+  expect(answer?.answer).toContain('丹陽山越賊圍太守陳夤、陳夤擊破之');
+  expect(answer?.answer).toContain('《後漢書》卷八');
+  expect(state).toEqual(before);
+ });
+});
