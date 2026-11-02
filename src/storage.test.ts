@@ -727,6 +727,18 @@ describe('A05／A06 存檔交易與重播', () => {
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   },30000);
 
+  it('A406 v150 v6 JSON 存檔遷移鴻都門記事後可續玩並再次匯入',()=>{
+    const current=makeSave('phase6-v150-hongdu-storage',177),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-150'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v150 fixture');
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState},migrated=verifySave(toJson(old)),id='hongdu-mencourt-founded-178';
+    expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');expect(replay(migrated.events)).toEqual(migrated.state);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v150-hongdu-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not continue v150 save');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  });
+
   it('A303 280 年長局的結局與繼續人生分支均可 JSON 匯入、IndexedDB 重載及重播',async()=>{
     const current=makeSave('phase6-ending-storage-roundtrip',160);const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     let state=current.state;const prefix:GameEvent[]=[start];
