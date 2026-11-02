@@ -281,7 +281,7 @@ describe('A415 江夏起事新增《後漢書》卷八十六列傳補記',()=>{
   expect(upgradePhase4Content(migrated,PHASE4_CONTENT_VERSION)).toEqual(migrated);
   const continued=advancePhase4(upgradePhase4Content(createPhase4Model(179,1,persons,'phase4-scenario-154'),PHASE4_CONTENT_VERSION),360);
   expect(continued.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
-  const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.source?.includes('卷八十六'));
+  const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.source?.includes('陸康討破'));
   expect(event?.source).toContain('卷八十六');
   expect(event?.source).toContain('廬江太守陸康');
  });
@@ -336,6 +336,9 @@ describe('A418 182 年板楯蠻降服記事與 v157 舊存檔遷移',()=>{
   const id='bajun-banshun-submit-182',content=HISTORY_CONTENT.find(item=>item.id===id);
   expect(content?.source).toContain('巴郡板楯蠻詣太守曹謙降');
   expect(content?.source).toContain('《後漢書》卷八');
+  expect(content?.source).toContain('卷八十六');
+  expect(content?.sourceDateNote).toContain('光和三年');
+  expect(content?.sourceDateNote).toContain('光和二年');
   const old=createPhase4Model(181,1,persons,'phase4-scenario-157'),prefix=structuredClone(old.eventLedger);
   const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
   expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);

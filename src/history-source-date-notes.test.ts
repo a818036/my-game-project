@@ -158,6 +158,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     const inlineNotes = HISTORY_CONTENT.filter((item) => item.sourceDateNote).map((item) => item.id);
     expect(inlineNotes).toEqual([
       'ling-emperor-accession-court-purge-168',
+      'bajun-banshun-submit-182',
       'yellow-turban-184',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
@@ -187,6 +188,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(80);
-    expect(uniqueNotedEvents.size).toBe(97);
+    expect(uniqueNotedEvents.size).toBe(98);
   });
 });
