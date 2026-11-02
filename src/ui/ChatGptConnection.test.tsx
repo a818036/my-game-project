@@ -46,4 +46,27 @@ describe('ChatGPT 訂閱連線介面',()=>{
       await act(async()=>{root.unmount();});container.remove();
     }
   });
+
+  it('A408 模型取得失敗時以可及錯誤訊息呈現',async()=>{
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT',true);
+    vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL)=>{
+      const url=String(input);
+      if(url==='/api/health')return new Response(JSON.stringify({provider:'chatgpt'}),{status:200});
+      if(url==='/api/chatgpt/status')return new Response(JSON.stringify({accounts:[{id:'primary',email:'main@example.test',connected:true}],activeId:'primary',connected:true,planEnabled:true,model:'gpt-test',models:[{slug:'gpt-test',displayName:'測試模型'}],message:'',pending:false}),{status:200});
+      if(url==='/api/chatgpt/models')return new Response(JSON.stringify({error:'敘事供應者回應 HTTP 429'}),{status:429});
+      throw new Error(`未預期的連線要求：${url}`);
+    }));
+    const container=document.createElement('div');document.body.append(container);const root=createRoot(container);
+    try{
+      await act(async()=>{root.render(createElement(ChatGptConnection));});
+      const button=[...container.querySelectorAll('button')].find(item=>item.textContent?.includes('取得可用模型'));
+      expect(button).toBeDefined();
+      await act(async()=>{button!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+      expect(container.querySelector('[role="alert"]')?.textContent).toContain('敘事供應者回應 HTTP 429');
+      const scan=await axe.run(container,{rules:{'color-contrast':{enabled:false}}});
+      expect(scan.violations).toEqual([]);
+    }finally{
+      await act(async()=>{root.unmount();});container.remove();
+    }
+  });
 });
