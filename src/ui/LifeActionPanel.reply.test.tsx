@@ -4,7 +4,7 @@ import {createRoot} from 'react-dom/client';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import axe from 'axe-core';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
-import type {InteractionResult} from '../life';
+import {answerKnownHistoricalEventQuestion,type InteractionResult} from '../life';
 import {understandInput} from '../narration/interaction';
 import {LifeActionPanel} from './LifeActionPanel';
 
@@ -55,6 +55,30 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     expect(host.querySelector('.intents > .visually-hidden[role="status"]')).toBe(status);
     expect(status?.textContent).toBe('回應你的詢問：你目前是零歲。');
     expect(host.querySelector('.plan-review[role="region"]')?.querySelector('[role="status"]')).toBeNull();
+  });
+
+  it('A439 將 190 年本機年表答案呈現在具名回覆區並保持時間不變',async()=>{
+    const reply={...answerKnownHistoricalEventQuestion('西元 190 年發生了什麼事？',state)!,source:'已核對的遊戲年表'};
+    vi.mocked(understandInput).mockResolvedValue(reply);
+    const textarea=host.querySelector<HTMLTextAreaElement>('textarea')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')!.set!;
+    await act(async()=>{
+      setValue.call(textarea,'西元 190 年發生了什麼事？');
+      textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+
+    const response=host.querySelector<HTMLElement>('.plan-review[role="region"][aria-labelledby="interaction-reply-title"]');
+    expect(response?.querySelector('h3')?.textContent).toBe('回應你的詢問');
+    expect(response?.textContent).toContain('春正月山東州郡起兵');
+    expect(response?.textContent).toContain('二月丁亥遷都長安');
+    expect(response?.textContent).toContain('三月乙巳車駕入長安');
+    expect(response?.textContent).toContain('己酉董卓焚洛陽宮廟及人家');
+    expect(response?.textContent).toContain('《後漢書》卷九〈孝獻帝紀〉');
+    expect(response?.querySelector('details summary')?.textContent).toBe('回應來源');
+    expect(host.querySelector<HTMLElement>('.intents > .visually-hidden[role="status"]')?.textContent).toContain('回應你的詢問：');
+    expect(state.world.year).toBe(184);
+    expect(state.turn).toBe(0);
   });
 
   it('A391 詢問回覆畫面 axe-core 啟用規則無違規',async()=>{
