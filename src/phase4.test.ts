@@ -214,3 +214,14 @@ describe('A399 235 年呂岱記事雙傳補充與舊存檔遷移',()=>{
   expect(late.eventLedger.some(item=>item.detail.includes('吳廷遣呂岱等分部討擊多地起事'))).toBe(false);
  });
 });
+
+describe('A409 鴻都門記事可由本機史實問答查詢',()=>{
+ it('能回答 178 年新記事並保留世界狀態',()=>{
+  const state=world(),before=structuredClone(state);
+  const answer=answerKnownHistoricalEventQuestion('西元 178 年發生了什麼事？',state);
+  expect(answer?.answer).toContain('光和元年置鴻都門學生');
+  expect(answer?.answer).toContain('《後漢書》卷八');
+  expect(answer?.answer).toContain('卷六十下');
+  expect(state).toEqual(before);
+ });
+});
