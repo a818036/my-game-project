@@ -170,6 +170,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     const inlineNotes = HISTORY_CONTENT.filter((item) => item.sourceDateNote).map((item) => item.id);
     expect(inlineNotes).toEqual([
       'ling-emperor-accession-court-purge-168',
+      'han-campaign-against-xianbei-defeated-177',
       'bajun-banshun-submit-182',
       'chen-dan-yuan-wei-minister-of-masses-182',
       'yongle-palace-office-disaster-182',
@@ -221,6 +222,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(92);
-    expect(uniqueNotedEvents.size).toBe(119);
+    expect(uniqueNotedEvents.size).toBe(120);
   });
 });
