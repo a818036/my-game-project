@@ -30,7 +30,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(182);
+    expect(withinCatalogYears).toHaveLength(183);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -58,6 +58,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'han-sui-kills-bian-zhang-sieges-longxi-187': ['中平四年', '韓遂殺邊章', '北宮伯玉', '李文侯', '十餘萬', '李相如叛而與韓遂連和'],
       'geng-bi-lianzhu-campaign-fu-xie-dies-187': ['中平四年', '耿鄙率六郡兵', '程球', '狄道', '傅爕拒絕投賊並戰死', '馬騰亦擁兵反', '共推王國為主'],
       'zhang-chun-wuhuan-revolt-187': ['中平四年', '張純', '公孫瓚', '丘力居', '十餘萬', '公綦稠', '張舉稱天子'],
+      'tugu-hu-revolt-187': ['中平四年', '十二月', '屠各胡反'],
       'xingyang-revolt-suppressed-187': ['中平四年', '滎陽賊', '何苗出擊', '封濟陽侯'],
       'changsha-ou-xing-revolt-187': ['中平四年冬十月'],
       'yizhou-ma-xiang-revolt-188': ['中平五年六月'],
@@ -137,7 +138,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(90);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(91);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -184,6 +185,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'han-sui-kills-bian-zhang-sieges-longxi-187',
       'geng-bi-lianzhu-campaign-fu-xie-dies-187',
       'zhang-chun-wuhuan-revolt-187',
+      'tugu-hu-revolt-187',
       'xingyang-revolt-suppressed-187',
       'palace-succession-189',
       'eastern-coalition-capital-relocation-190',
@@ -214,7 +216,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(90);
-    expect(uniqueNotedEvents.size).toBe(115);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(91);
+    expect(uniqueNotedEvents.size).toBe(116);
   });
 });
