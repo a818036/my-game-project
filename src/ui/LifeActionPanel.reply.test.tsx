@@ -127,6 +127,7 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
 
     expect(host.querySelector('.plan-review[aria-labelledby="plan-review-title"]')).toBeNull();
     expect(host.querySelector('.plan-review[aria-labelledby="interaction-reply-title"]')?.textContent).toContain('仍保持選取，但未列入計畫，也沒有執行');
+    expect(host.querySelector('.intents > .visually-hidden[role="status"]')?.textContent).toContain('勾選項目仍保留選取，未列入計畫，也沒有執行。');
     expect(host.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked).toBe(true);
     expect(run).not.toHaveBeenCalled();
     expect(state.world.year).toBe(184);

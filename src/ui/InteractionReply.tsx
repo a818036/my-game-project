@@ -6,11 +6,12 @@ function replyTitle(reply:InteractionResult):string{
   return ({question:'回應你的詢問',objection:'回應你的質疑',dialogue:'對話內容',action:'理解你的行動',mixed:'需要拆開確認',unclear:'需要說明'} as const)[reply.kind];
 }
 
-export function interactionReplyAnnouncement(reply:InteractionResult|null):string{
+export function interactionReplyAnnouncement(reply:InteractionResult|null,selectedChoiceLabels:string[]=[]):string{
   if(!reply)return '';
   const answer=reply.answer.trim().replace(/\s+/g,' ');
   const concise=answer.length>220?`${answer.slice(0,220).trimEnd()}…`:answer;
-  return concise?`${replyTitle(reply)}：${concise}`:replyTitle(reply);
+  const selectionNotice=reply.kind!=='action'&&selectedChoiceLabels.length?'勾選項目仍保留選取，未列入計畫，也沒有執行。':'';
+  return `${concise?`${replyTitle(reply)}：${concise}`:replyTitle(reply)}${selectionNotice}`;
 }
 
 export function InteractionReply({reply,previousDialogue,selectedChoiceLabels}:{reply:InteractionResult;previousDialogue:DialogueExchange[];selectedChoiceLabels:string[]}){
