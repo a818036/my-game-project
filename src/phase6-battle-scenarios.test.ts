@@ -31,6 +31,33 @@ describe('A291 多類戰役場景的可驗證敘事資料',()=>{
     }
   });
 
+  it('A469 逐段驗證三個示例完整可達的因果鏈與傷亡界線',()=>{
+    const expectations={
+      'river-ford':{firstCascade:['platform-rope','rope-barrier','barrier-shield-rank'],blockedSource:undefined,finalMorale:57,finalObject:{id:'blue-shield-rank',integrity:16}},
+      'city-gate':{firstCascade:['ram-beam','beam-leaf'],blockedSource:'gate-leaf',finalMorale:60,finalObject:{id:'inner-barrier',integrity:2}},
+      'mountain-retreat':{firstCascade:['cart-rocks','rocks-road'],blockedSource:'narrow-road',finalMorale:59,finalObject:{id:'rear-rank',integrity:18}},
+    } as const;
+
+    for(const [id,expected] of Object.entries(expectations) as [BattleScenarioId,typeof expectations[BattleScenarioId]][]){
+      const scenario=createBattleScenario(id),started=applyPhase4Action(createPhase4Model(184,1,people),{type:'StartBattle',id:`a469-${id}`,location:scenario.location,units:scenario.units,protagonistPresent:true,scene:scenario.scene},people);
+      const firstSourceId=scenario.scene.potentialChains[0]!.fromObjectId;
+      const notBroken=applyPhase4Action(started,{type:'ResolveBattleImpact',targetObjectId:firstSourceId,force:1},people);
+      expect(notBroken.battle?.scene?.settledChainIds??[]).toEqual([]);
+
+      const broken=applyPhase4Action(notBroken,{type:'ResolveBattleImpact',targetObjectId:firstSourceId,force:100},people);
+      expect(broken.battle?.scene?.settledChainIds).toEqual(expected.firstCascade);
+      expect(broken.battle?.units.map(unit=>({killed:unit.killed,wounded:unit.wounded,routed:unit.routed}))).toEqual(started.battle?.units.map(unit=>({killed:unit.killed,wounded:unit.wounded,routed:unit.routed})));
+
+      const completed=expected.blockedSource
+        ? applyPhase4Action(broken,{type:'ResolveBattleImpact',targetObjectId:expected.blockedSource,force:100},people)
+        : broken;
+      expect(completed.battle?.scene?.settledChainIds).toEqual(scenario.scene.potentialChains.map(chain=>chain.id));
+      expect(completed.battle?.units.every(unit=>unit.killed===0&&unit.wounded===0&&unit.routed===0)).toBe(true);
+      expect(completed.battle?.units[0]?.morale).toBe(expected.finalMorale);
+      expect(completed.battle?.scene?.objects.find(object=>object.id===expected.finalObject.id)).toMatchObject(expected.finalObject);
+    }
+  });
+
   it('拒絕過長或空白的敘事目標與後效限制',()=>{
     const scenario=createBattleScenario('city-gate');
     for(const narrativeContext of [
