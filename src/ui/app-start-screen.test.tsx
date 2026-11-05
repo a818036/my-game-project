@@ -245,6 +245,33 @@ describe('開局存檔載入提示',()=>{
     }
   });
 
+  it('A481 載入戰役資料期間鎖定情境選擇，避免顯示與實際戰場不一致',async()=>{
+    const facts=createOpeningFacts(482,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a481-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}載入選擇驗收`,seed:482,facts});
+    if(!started.state||!started.event)throw new Error('建立戰役選擇測試存檔失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    vi.mocked(commitWorldline).mockResolvedValue(undefined);
+    let finishScenarioLoad!:(module:Awaited<ReturnType<typeof loadBattleScenarioModule>>)=>void;
+    const pendingScenarioLoad=new Promise<Awaited<ReturnType<typeof loadBattleScenarioModule>>>(resolve=>{finishScenarioLoad=resolve;});
+    vi.mocked(loadBattleScenarioModule).mockReturnValueOnce(pendingScenarioLoad);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();});
+    await act(async()=>{[...host.querySelectorAll<HTMLElement>('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();});
+    const scenarioLabel=[...host.querySelectorAll<HTMLLabelElement>('.phase4-panel label')].find(label=>label.textContent?.includes('戰場情境'));
+    const scenario=scenarioLabel?.querySelector<HTMLSelectElement>('select');
+    const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+    expect(scenario?.value).toBe('ford');
+    expect(startBattle).toBeDefined();
+    await act(async()=>{startBattle!.click();await Promise.resolve();});
+    expect(scenario?.disabled).toBe(true);
+    expect(scenario?.value).toBe('ford');
+    finishScenarioLoad({battleScenarioOptions,createBattleScenario});
+    await act(async()=>{await new Promise(resolve=>setTimeout(resolve,300));});
+    expect(host.textContent).toContain('汝南渡口・前線（示例）');
+    expect(host.textContent).not.toContain('山道撤退與補給車（示例）');
+  });
+
   it('各戰役選項均由共用場景資料建立',async()=>{
     const facts=createOpeningFacts(474,184,{regions:[],surnames:[]});
     const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a477-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}共用場景`,seed:474,facts});
