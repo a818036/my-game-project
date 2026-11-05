@@ -221,6 +221,14 @@ describe('開局存檔載入提示',()=>{
         expect(host.querySelector('.county-search-result h3')?.textContent).toContain('豫州');
         const searchLevels=[...host.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(heading=>Number(heading.tagName.slice(1)));
         expect(searchLevels.slice(1).every((level,index)=>level<=searchLevels[index]+1),`郡縣搜尋結果標題層級跳階：${searchLevels.join('→')}`).toBe(true);
+        vi.mocked(commitWorldline).mockResolvedValue(undefined);
+        const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+        expect(startBattle).toBeDefined();
+        await act(async()=>{startBattle!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+        const battleText=host.textContent??'';
+        expect(battleText).toContain('後陣觀察者在渡口對岸後陣：北岸木弩臺（示例）可見、牽繫木索（示例）可見');
+        expect(battleText).toContain('拒馬（示例）超出視距');
+        expect(battleText).not.toContain('北岸木弩臺（示例）超出視距');
       }
     }
   });
