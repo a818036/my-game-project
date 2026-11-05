@@ -59,6 +59,41 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(verifySave(toJson(continued))).toEqual(continued);
   }, 15000);
 
+  it('A483 v171 v6 存檔升級後續玩觸發 184 年黃巾戰事，匯出重載與重播一致', () => {
+    const current = makeSave('phase6-v171-huangjin-outcome', 183);
+    const start = current.events[0];
+    if (start.type !== 'WorldCreated') throw new Error('expected opening event');
+    const oldStart: GameEvent = { ...start, payload: { ...start.payload, phase4ContentVersion: 'phase4-scenario-171' } };
+    const oldState = applyEvent(null, oldStart);
+    if (!oldState) throw new Error('could not build v171 fixture');
+    const old: SaveFile = { ...current, worldlineId: oldState.worldlineId, events: [oldStart], state: oldState };
+    const migrated = verifySave(toJson(old));
+    const prefix = structuredClone(old.events);
+    const nodeId = 'huangjin-campaign-outcome-184';
+
+    expect(migrated.events.slice(0, prefix.length)).toEqual(prefix);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === nodeId)?.status).toBe('pending');
+    expect(replay(migrated.events)).toEqual(migrated.state);
+
+    const continuedResult = dispatch(migrated.state, {
+      version: ENGINE_VERSION,
+      commandId: 'phase6-v171-huangjin-outcome-continue',
+      expectedRevision: migrated.state.revision,
+      worldlineId: migrated.worldlineId,
+      type: 'Phase4Action',
+      action: { type: 'AdvanceDays', days: 360 },
+    });
+    if (!continuedResult.state || !continuedResult.event) throw new Error('could not continue v171 fixture');
+    const continued: SaveFile = { ...migrated, events: [...migrated.events, continuedResult.event], state: continuedResult.state };
+    expect(continued.state.phase4?.nodes.find((node) => node.contentId === nodeId)?.status).toBe('triggered');
+    expect(continued.state.phase4?.eventLedger.some((entry) => entry.detail.includes('廣宗、下曲陽戰事與張角兄弟敗亡'))).toBe(true);
+    expect(continued.events.slice(0, prefix.length)).toEqual(prefix);
+    expect(replay(continued.events)).toEqual(continued.state);
+    const reimported = verifySave(toJson(continued));
+    expect(reimported).toEqual(continued);
+    expect(replay(reimported.events)).toEqual(reimported.state);
+  }, 15000);
+
   it('A06 匯出後可驗證事件重播，版本未知或內容毀損會拒絕', () => {
     const save = makeSave(); expect(verifySave(toJson(save))).toEqual(save);
     expect(() => parseSave(JSON.stringify({ ...save, version:7 }))).toThrow('存檔格式或版本不符');
