@@ -20,7 +20,7 @@ export function InteractionReply({reply,previousDialogue,selectedChoiceLabels}:{
       {previousDialogue.map((turn,index)=><div className="conversation-turn" key={`${turn.speakerId}-${index}`}><p><b>你：</b>{turn.playerText}</p><p><b>{turn.speakerName}：</b>{turn.npcText}</p></div>)}
       <p>{reply.answer}</p>
       {reply.questions.map((question,index)=><p key={index}>{question}</p>)}
-      {reply.kind!=='action'&&selectedChoiceLabels.length>0&&<p>你勾選的「{selectedChoiceLabels.join('、')}」已列入下方待確認計畫；確認前不會執行。</p>}
+      {reply.kind!=='action'&&selectedChoiceLabels.length>0&&<p>本次文字未被判定為可執行行動。你勾選的「{selectedChoiceLabels.join('、')}」仍保持選取，但未列入計畫，也沒有執行；若要執行，請另行檢視並確認。</p>}
       {reply.kind!=='action'&&selectedChoiceLabels.length===0&&<p>{reply.kind==='dialogue'&&reply.speakerId?'沒有執行勾選項目；這段對話已保存，但時間與人物關係未變。':'沒有執行勾選項目，時間與存檔未變更。'}</p>}
       <details><summary>回應來源</summary><p>來源說明：{reply.source??'此回應未提供來源標記。'}</p></details>
     </section>

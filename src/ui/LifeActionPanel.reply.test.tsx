@@ -111,6 +111,28 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     expect(state.turn).toBe(0);
   });
 
+  it('A457 純詢問不把既有勾選項目改成待確認計畫',async()=>{
+    const run=vi.fn(async()=>true);
+    vi.mocked(understandInput).mockResolvedValue(reply);
+    await act(async()=>root.render(createElement('main',{id:'main-content'},createElement(LifeActionPanel,{state,busy:false,onRun:run}))));
+    const checkbox=host.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+    await act(async()=>checkbox.click());
+    const textarea=host.querySelector<HTMLTextAreaElement>('textarea')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')!.set!;
+    await act(async()=>{
+      setValue.call(textarea,'我今年幾歲？');
+      textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+
+    expect(host.querySelector('.plan-review[aria-labelledby="plan-review-title"]')).toBeNull();
+    expect(host.querySelector('.plan-review[aria-labelledby="interaction-reply-title"]')?.textContent).toContain('仍保持選取，但未列入計畫，也沒有執行');
+    expect(host.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked).toBe(true);
+    expect(run).not.toHaveBeenCalled();
+    expect(state.world.year).toBe(184);
+    expect(state.turn).toBe(0);
+  });
+
   it('A391 詢問回覆畫面 axe-core 啟用規則無違規',async()=>{
     const textarea=host.querySelector<HTMLTextAreaElement>('textarea')!;
     const setValue=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')!.set!;
