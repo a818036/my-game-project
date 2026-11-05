@@ -1,12 +1,14 @@
-import {readdir,stat} from 'node:fs/promises';
+import {gzipSync} from 'node:zlib';
+import {readFile,readdir,stat} from 'node:fs/promises';
 import {join} from 'node:path';
+import {collectStaticJavaScriptClosure} from './bundle-budget-utils.mjs';
 
 const assets=join(process.cwd(),'dist','assets');
 const files=await readdir(assets);
 const initial=files.filter(name=>/^index-[\w-]+\.js$/.test(name));
 const battle=files.filter(name=>/^battle-scenario-examples-[\w-]+\.js$/.test(name));
 const budgets=[
-  {label:'首頁 JavaScript',files:initial,limit:500_000},
+  {label:'首頁入口 chunk',files:initial,limit:500_000},
   {label:'延後載入戰役示例 JavaScript',files:battle,limit:10_000},
 ];
 let failed=false;
@@ -21,6 +23,23 @@ for(const budget of budgets){
   const status=bytes<budget.limit?'通過':'超出';
   console.log(`${status}：${budget.label} ${bytes.toLocaleString('en-US')}／${budget.limit.toLocaleString('en-US')} bytes`);
   if(bytes>=budget.limit)failed=true;
+}
+
+if(initial.length===1){
+  try{
+    const entry=join(assets,initial[0]);
+    const closure=await collectStaticJavaScriptClosure(entry);
+    const bytes=closure.reduce((total,file)=>total+file.bytes,0);
+    const gzipBytes=(await Promise.all(closure.map(async(file)=>gzipSync(await readFile(file.path)).byteLength)))
+      .reduce((total,size)=>total+size,0);
+    const limit=750_000;
+    const status=bytes<limit?'通過':'超出';
+    console.log(`${status}：首頁初始 JavaScript 靜態相依總量 ${bytes.toLocaleString('en-US')}／${limit.toLocaleString('en-US')} bytes（各檔分別 gzip ${gzipBytes.toLocaleString('en-US')} bytes；${closure.length} 個檔案）`);
+    if(bytes>=limit)failed=true;
+  }catch(error){
+    console.error(`無法核算首頁初始 JavaScript 靜態相依：${error instanceof Error?error.message:String(error)}`);
+    failed=true;
+  }
 }
 
 if(failed){
