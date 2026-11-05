@@ -3,8 +3,8 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-170';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:168},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-171';
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:169},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -65,7 +65,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'zhang-miao-revolt-yanzhou-194',kind:'event',title:'張邈迎呂布與兗州戰事',startYear:194,endYear:194,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉記興平元年張邈、陳宮叛迎呂布，郡縣響應；曹操回軍後在濮陽等地與呂布相持。本內容包採年級精度。',causes:['zhang-miao-revolt-yanzhou-194'],carrier:'曹操、呂布及兗州響應郡縣（歷史事件）',description:'記錄兗州內部倒戈與曹操、呂布爭戰的年級節點；不模擬完整戰役、郡縣逐一歸屬或平民傷亡。',introducedIn:'phase4-scenario-24' },
   { id:'emperor-returns-east-195',kind:'event',title:'獻帝車駕東歸與途中戰事',startYear:195,endYear:195,precision:'year',source:'《後漢書》卷九〈孝獻帝紀〉記興平二年七月車駕東歸；其後經新豐、華陰，並記與李傕、郭汜等追兵交戰。本內容包採年級精度，不將漢曆月日換算為模型月份。',causes:['imperial-court-relocation'],carrier:'漢廷與護送車駕的諸將（歷史事件）',description:'記錄獻帝車駕開始東歸及途中遭遇戰事；不把出發寫成當年已抵達洛陽，也不模擬完整行程、傷亡或沿途郡縣控制。',introducedIn:'phase4-scenario-23' },
   { id:'yuan-shu-proclaims-emperor-195',kind:'event',title:'袁術僭號仲氏（繫年有異）',startYear:195,endYear:195,precision:'year',source:'《三國志》卷六〈魏書·董二袁劉傳〉於興平二年冬條記袁術議稱帝並僭號；《資治通鑑》卷六十二則將袁術稱帝繫於建安二年（197）。本內容包保留《三國志》傳文的繫年供此節點使用，明示兩史繫年差異，不推定月日。',causes:['yuan-shu-self-proclaimed-title-195'],carrier:'袁術及其部下（歷史事件）',description:'記錄袁術僭號及其稱制行動；《三國志》與《資治通鑑》對繫年有異。本節點採前者記載，不推定其名義獲普遍承認、實際疆界或各地控制變化。',introducedIn:'phase4-scenario-25' },
-  { id:'emperor-relocates-xu-196',kind:'event',title:'獻帝遷都許縣',startYear:196,endYear:196,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉記建安元年秋車駕西出洛陽、曹操迎奉並都許；本模型只採年級精度。',causes:['imperial-court-relocation'],carrier:'漢廷與曹操勢力（歷史事件）',description:'洛陽殘破後，朝廷遷往許縣一帶；節點不模擬完整遷徙路線或官署人口。',introducedIn:'phase4-scenario-3' },
+  { id:'emperor-relocates-xu-196',kind:'event',title:'獻帝遷都許縣',startYear:196,endYear:196,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉記建安元年正月曹操遣曹洪西迎天子受阻；二月討破汝南、潁川黃巾，劉辟、黃邵遇斬，何儀及其眾降。七月楊奉、韓暹奉天子還洛陽，曹操入洛陽衛京都，天子授曹操節鉞、錄尚書事；九月車駕西出轘轅而東，曹操迎奉並都許。本內容包只採公元年級呈現，不將漢曆月份換算為模型日期。',causes:['imperial-court-relocation'],carrier:'漢廷、曹操、楊奉、韓暹與汝南、潁川黃巾（史料記載）',description:'並列曹操迎帝受阻、討破汝南與潁川黃巾、獻帝返回洛陽後授曹操節鉞並錄尚書事，以及同年遷都許縣等原典年內記事；不將它們推演成逐月行程、完整戰役或制度改革，也不模擬皇帝行在、官署人口及疆界變化。',introducedIn:'phase4-scenario-3' },
   { id:'cao-zhang-xiu-yushui-197',kind:'event',title:'曹操征張繡與淯水敗績',startYear:197,endYear:197,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉繫於建安二年，記曹操到宛、張繡降而復叛、曹操軍敗且曹昂與曹安民遇害；卷十八〈魏書·典韋傳〉補記典韋戰死；《資治通鑑》卷六十二記曹操軍於淯水。本內容包採年級精度。',causes:['cao-zhang-xiu-conflict-197'],carrier:'曹操、張繡及典韋（歷史事件）',description:'記錄宛城降而復叛及淯水敗績；不模擬完整戰役、兵力或未有來源支持的地理控制變化。典韋、曹昂與曹安民只在史實敘述中記載，不改寫玩家世界線人物狀態。',introducedIn:'phase4-scenario-27' },
   { id:'yuan-shu-proclaims-zhong-jia-197',kind:'event',title:'袁術稱帝的《資治通鑑》異繫年（不另結算）',startYear:197,endYear:197,precision:'year',source:'《資治通鑑》卷六十二建安二年條記「袁術稱帝於壽春，自稱仲家，以九江太守為淮南尹，置公卿百官，郊祀天地」。此與《三國志》卷六繫於興平二年冬的稱帝記事是來源紀年差異，不作第二次事件結算。',causes:['yuan-shu-proclaims-zhong-jia-197'],carrier:'袁術與壽春政權（《資治通鑑》記事）',description:'《資治通鑑》將袁術稱帝繫於 197 年；本內容包以《三國志》所繫 195 年作單一可結算節點，保留此異說供查閱，不推定月份、日辰或具體制度運作。',introducedIn:'phase4-scenario-135',sameYearMigrationIsLate:true,retired:true,retiredIn:'phase4-scenario-136' },
   { id:'lu-bu-xiapi-198',kind:'event',title:'下邳之戰與呂布敗亡',startYear:198,endYear:198,precision:'year',source:'《三國志》卷一〈魏書·武帝紀〉及卷三十二〈蜀書·先主傳〉記建安三年曹操征呂布、圍下邳並擒殺呂布；卷三十二並記劉備隨曹操東征、助圍下邳，呂布被擒後劉備取回妻子並隨曹操還許。本內容包採年級精度。',causes:['lu-bu-downfall'],carrier:'曹操、呂布與劉備（歷史事件）',description:'記錄曹操圍下邳、呂布敗亡，以及劉備隨曹操東征並助圍下邳、事後取回妻子並還許的原文敘述；不補行軍細節，不模擬完整攻城、兵力、決水或徐州控制變化。',introducedIn:'phase4-scenario-10' },
@@ -225,7 +225,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'zhuge-liang-dies-234': '原史紀年：青龍二年秋諸葛亮病卒於渭濱。保留原文季節，不推定月份或日。',
   'winter-cold-eastern-commandries-183': '原史紀年：光和六年夏大旱、秋金城河水溢與五原山岸崩，並稱是歲大有年；冬北海、東萊、琅邪井冰厚尺餘。原文未載月日，不換算為遊戲日曆或推論各記事間因果。',
   'yuan-shu-proclaims-emperor-195': '原史紀年：《三國志》繫於興平二年冬；《資治通鑑》卷六十二將同一稱帝記事繫於建安二年（197）。此為來源紀年差異，不作兩次事件結算。保留《三國志》季節，不推定月份。',
-  'emperor-relocates-xu-196': '原史紀年：建安元年秋車駕西出洛陽，曹操迎奉並都許。季節註記不轉成模型月份。',
+  'emperor-relocates-xu-196': '原史紀年：《三國志》卷一記建安元年正月迎天子受阻、二月討破汝南與潁川黃巾，七月天子還洛陽，九月車駕出轘轅、遷都許。漢曆月份只作原史時序，不換算成模型月份。',
   'zhao-ci-revolt-186': '原史紀年：中平三年二月起事、六月討平。月份採原典漢曆，不換算為遊戲日曆日期。',
   'wuling-revolt-suppressed-186': '原史紀年：中平三年冬十月武陵蠻叛、寇郡界，郡兵討破。冬十月是漢曆月份，遊戲仍按年級觸發。',
   'changsha-ou-xing-revolt-187': '原史紀年：中平四年冬十月。這是漢曆月份註記；本節點仍按公元年級觸發。',
@@ -534,6 +534,13 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
   if(capitalNode&&!capitalNode.evidence.some(item=>item.includes('初平元年遷都記事補充'))){
    capitalNode.evidence.push('初平元年遷都記事補充：《後漢書》卷九記春正月山東州郡起兵，二月丁亥遷都長安，三月乙巳車駕入長安、己酉董卓焚洛陽宮廟及人家。保留原典日期次序，只按 190 年級觸發，不換算模型日期；既有事件帳不回寫、不重複觸發。');
    if(currentIndex===capitalRelocationDetailVersionIndex-1&&capitalNode.status!=='pending')pushEvent(model,'史實來源補充','既有 190 年關東起兵與遷都長安節點補列《後漢書》卷九記載的正月起兵、二月遷都與三月入長安及焚毀洛陽記事；保留年級觸發與原典順序，不換算遊戲日期。','《後漢書》卷九〈孝獻帝紀〉；《三國志》卷一〈魏書·武帝紀〉');
+  }
+ }
+ const emperorXuDetailVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-171');
+ if(targetIndex>=emperorXuDetailVersionIndex&&currentIndex<emperorXuDetailVersionIndex){
+  const emperorXuNode=model.nodes.find(node=>node.contentId==='emperor-relocates-xu-196');
+  if(emperorXuNode&&!emperorXuNode.evidence.some(item=>item.includes('建安元年迎帝與遷都記事補充'))){
+   emperorXuNode.evidence.push('建安元年迎帝與遷都記事補充：《三國志》卷一記正月曹操遣曹洪迎天子受阻、二月討破汝南與潁川黃巾並受降、七月天子還洛陽且曹操入洛陽衛京都、天子授節鉞並錄尚書事，九月遷都許。只保留原典漢曆次序，模型仍按年級處理，不換算遊戲月份；原事件帳不回寫、不重複觸發。');
   }
  }
  const contentOrder=new Map(HISTORY_CONTENT.map((content,index)=>[content.id,index]));
