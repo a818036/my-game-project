@@ -171,6 +171,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     expect(inlineNotes).toEqual([
       'ling-emperor-accession-court-purge-168',
       'bajun-banshun-submit-182',
+      'chen-dan-yuan-wei-minister-of-masses-182',
       'winter-cold-eastern-commandries-183',
       'yellow-turban-184',
       'huangjin-campaign-outcome-184',
@@ -219,6 +220,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(92);
-    expect(uniqueNotedEvents.size).toBe(117);
+    expect(uniqueNotedEvents.size).toBe(118);
   });
 });
