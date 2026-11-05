@@ -261,6 +261,14 @@ describe('開局存檔載入提示',()=>{
       await scan(panel);
     }
 
+    await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{[...host.querySelectorAll<HTMLElement>('details:not([open]) > summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();await Promise.resolve();});
+    const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+    expect(startBattle).toBeDefined();
+    await act(async()=>{startBattle!.click();await new Promise(resolve=>setTimeout(resolve,300));});
+    await expandDetails();
+    await scan('渡口戰役');
+
     expect(violations,JSON.stringify(violations,null,2)).toEqual([]);
   },30000);
 
