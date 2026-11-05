@@ -7,7 +7,7 @@ const eventId = 'yizhou-ma-xiang-revolt-188';
 describe('184 年黃巾戰事結果節點', () => {
   it('A482 補列廣宗與下曲陽戰事，舊存檔續玩可觸發且同年不回補', () => {
     const id = 'huangjin-campaign-outcome-184';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(199);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(200);
 
     const fresh = advancePhase4(createPhase4Model(183, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
@@ -34,9 +34,37 @@ describe('184 年黃巾戰事結果節點', () => {
   });
 });
 
+describe('184 年南陽戰事節點', () => {
+  it('A484 另列朱儁攻取宛城，舊存檔跨年可觸發且不回補', () => {
+    const id = 'zhu-jun-captures-wancheng-184';
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(200);
+    const fresh = advancePhase4(createPhase4Model(183, 1, persons, PHASE4_CONTENT_VERSION), 360);
+    expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    const event = fresh.eventLedger.find((item) => item.detail.includes('朱儁攻取宛城、孫夏敗亡'));
+    expect(event?.source).toContain('《後漢書》卷八');
+    expect(event?.source).toContain('癸巳');
+    expect(event?.source).toContain('斬黃巾別帥孫夏');
+    expect(event?.source).toContain('卷七十一');
+    expect(HISTORY_CONTENT.find((node) => node.id === id)?.description).toContain('不把原文「癸巳」換算為未明載的月日');
+
+    const old = createPhase4Model(183, 1, persons, 'phase4-scenario-172');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+
+    for (const year of [184, 185]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, persons, 'phase4-scenario-172'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 184 });
+      expect(late.eventLedger.some((item) => item.detail.includes('朱儁攻取宛城、孫夏敗亡'))).toBe(false);
+    }
+  });
+});
+
 describe('188 年益州馬相起事節點', () => {
   it('按來源觸發，將 v85 舊存檔追加升級且不回補較晚年份', () => {
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(199);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(200);
 
     const fresh = advancePhase4(createPhase4Model(187, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
@@ -62,7 +90,7 @@ describe('188 年益州馬相起事節點', () => {
 describe('187 年長沙區星起事節點', () => {
   it('保留史料異名並按年觸發，遷移不補寫晚年存檔', () => {
     const eventId = 'changsha-ou-xing-revolt-187';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(199);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(200);
 
     const fresh = advancePhase4(createPhase4Model(186, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
@@ -118,7 +146,7 @@ describe('185–186 年涼州與江夏事件', () => {
 describe('199 年孫權隨孫策征伐節點', () => {
   it('按《三國志》年級來源觸發，v104 遷移保留事件前綴且不回補', () => {
     const eventId = 'sun-quan-joins-sun-ce-expedition-199';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(199);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(200);
 
     const fresh = advancePhase4(createPhase4Model(198, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');

@@ -59,7 +59,7 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(verifySave(toJson(continued))).toEqual(continued);
   }, 15000);
 
-  it('A483 v171 v6 存檔升級後續玩觸發 184 年黃巾戰事，匯出重載與重播一致', () => {
+  it('A483–A484 v171 v6 存檔升級後續玩觸發 184 年戰事，匯出重載與重播一致', () => {
     const current = makeSave('phase6-v171-huangjin-outcome', 183);
     const start = current.events[0];
     if (start.type !== 'WorldCreated') throw new Error('expected opening event');
@@ -70,9 +70,11 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated = verifySave(toJson(old));
     const prefix = structuredClone(old.events);
     const nodeId = 'huangjin-campaign-outcome-184';
+    const wanchengNodeId = 'zhu-jun-captures-wancheng-184';
 
     expect(migrated.events.slice(0, prefix.length)).toEqual(prefix);
     expect(migrated.state.phase4?.nodes.find((node) => node.contentId === nodeId)?.status).toBe('pending');
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === wanchengNodeId)?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
 
     const continuedResult = dispatch(migrated.state, {
@@ -86,39 +88,43 @@ describe('A05／A06 存檔交易與重播', () => {
     if (!continuedResult.state || !continuedResult.event) throw new Error('could not continue v171 fixture');
     const continued: SaveFile = { ...migrated, events: [...migrated.events, continuedResult.event], state: continuedResult.state };
     expect(continued.state.phase4?.nodes.find((node) => node.contentId === nodeId)?.status).toBe('triggered');
+    expect(continued.state.phase4?.nodes.find((node) => node.contentId === wanchengNodeId)?.status).toBe('triggered');
     expect(continued.state.phase4?.eventLedger.some((entry) => entry.detail.includes('廣宗、下曲陽戰事與張角兄弟敗亡'))).toBe(true);
+    expect(continued.state.phase4?.eventLedger.some((entry) => entry.detail.includes('朱儁攻取宛城、孫夏敗亡'))).toBe(true);
     expect(continued.events.slice(0, prefix.length)).toEqual(prefix);
     expect(replay(continued.events)).toEqual(continued.state);
     const reimported = verifySave(toJson(continued));
     expect(reimported).toEqual(continued);
     expect(replay(reimported.events)).toEqual(reimported.state);
 
-    for (const [days, expectedYear, name] of [[360, 184, '同年'], [720, 185, '晚年']] as const) {
-      const datedStart = makeSave(`phase6-v171-huangjin-${name}`, 183).events[0];
+    for (const [expectedYear, name] of [[184, '同年'], [185, '晚年']] as const) {
+      const datedStart = makeSave(`phase6-v172-wancheng-${name}`, 184).events[0];
       if (datedStart.type !== 'WorldCreated') throw new Error('expected opening event');
-      const oldDatedStart: GameEvent = { ...datedStart, payload: { ...datedStart.payload, phase4ContentVersion: 'phase4-scenario-171' } };
+      const oldDatedStart: GameEvent = { ...datedStart, payload: { ...datedStart.payload, phase4ContentVersion: 'phase4-scenario-172' } };
       let datedState = applyEvent(null, oldDatedStart);
-      if (!datedState) throw new Error(`could not build v171 ${name} fixture`);
+      if (!datedState) throw new Error(`could not build v172 ${name} fixture`);
       const datedEvents: GameEvent[] = [oldDatedStart];
-      const aged = dispatch(datedState, {
-        version: ENGINE_VERSION,
-        commandId: `phase6-v171-huangjin-${name}-age`,
-        expectedRevision: datedState.revision,
-        worldlineId: datedState.worldlineId,
-        type: 'Phase4Action',
-        action: { type: 'AdvanceDays', days },
-      });
-      if (!aged.state || !aged.event) throw new Error(`could not age v171 ${name} fixture`);
-      datedState = aged.state;
-      datedEvents.push(aged.event);
+      if (expectedYear === 185) {
+        const aged = dispatch(datedState, {
+          version: ENGINE_VERSION,
+          commandId: `phase6-v172-wancheng-${name}-age`,
+          expectedRevision: datedState.revision,
+          worldlineId: datedState.worldlineId,
+          type: 'Phase4Action',
+          action: { type: 'AdvanceDays', days: 360 },
+        });
+        if (!aged.state || !aged.event) throw new Error(`could not age v172 ${name} fixture`);
+        datedState = aged.state;
+        datedEvents.push(aged.event);
+      }
       expect(datedState.phase4?.year).toBe(expectedYear);
-
       const datedOldSave: SaveFile = { ...current, worldlineId: datedState.worldlineId, events: datedEvents, state: datedState };
       const datedPrefix = structuredClone(datedOldSave.events);
       const datedImported = verifySave(toJson(datedOldSave));
       expect(datedImported.events.slice(0, datedPrefix.length)).toEqual(datedPrefix);
-      expect(datedImported.state.phase4?.nodes.find((node) => node.contentId === nodeId)).toMatchObject({ status: 'resolved', resolvedYear: 184 });
-      expect(datedImported.state.phase4?.eventLedger.some((entry) => entry.detail.includes('廣宗、下曲陽戰事與張角兄弟敗亡'))).toBe(false);
+      expect(datedImported.state.phase4?.year).toBe(expectedYear);
+      expect(datedImported.state.phase4?.nodes.find((node) => node.contentId === wanchengNodeId)).toMatchObject({ status: 'resolved', resolvedYear: 184 });
+      expect(datedImported.state.phase4?.eventLedger.some((entry) => entry.detail.includes('朱儁攻取宛城、孫夏敗亡'))).toBe(false);
       expect(replay(datedImported.events)).toEqual(datedImported.state);
       expect(verifySave(toJson(datedImported))).toEqual(datedImported);
     }
