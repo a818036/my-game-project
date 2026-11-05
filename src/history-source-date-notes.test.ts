@@ -135,11 +135,12 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'sun-quan-builds-shitou-jianye-ruxu-212': ['明年，城石頭', '作濡須塢'],
       'xun-yu-dies-212': ['建安十七年', '病留壽春、以憂薨'],
       'sun-quan-campaigns-against-shiyang-226': ['征江夏、圍石陽'],
+      'taiwei-succession-guanghe-1-178': ['三月太常常山張顥為太尉', '九月張顥罷', '十二月丁巳'],
       'wu-xiangyang-jiangxia-campaign-236': ['嘉禾五年', '攻襄陽'],
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(92);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(93);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -172,6 +173,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'ling-emperor-accession-court-purge-168',
       'han-campaign-against-xianbei-defeated-177',
       'jiaozhi-wuhuh-man-uprising-178',
+      'taiwei-succession-guanghe-1-178',
       'bajun-banshun-submit-182',
       'chen-dan-yuan-wei-minister-of-masses-182',
       'yongle-palace-office-disaster-182',
@@ -222,7 +224,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(92);
-    expect(uniqueNotedEvents.size).toBe(121);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(93);
+    expect(uniqueNotedEvents.size).toBe(122);
   });
 });
