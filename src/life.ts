@@ -162,7 +162,7 @@ export function answerKnownHistoricalEventQuestion(text:string,state:GameState):
     return {kind:'question',answer:`目前內容包未收錄西元 ${year} 年與${subject}直接相關的來源節點；這不表示該年沒有事情發生，我不以其他人物事件代答，也不臆測。${yuanShuChronologyNote}`,choiceIds:[],questions:[]};
   }
   const answer=records.length
-    ? `西元 ${year} 年已收錄的史實年級節點：${records.map(item=>`${item.title}。${item.description} 資料：${item.source}`).join('；')}`
+    ? `西元 ${year} 年已收錄的史實事件（採年級精度）：${records.map(item=>`${item.title}。${item.description} 資料：${item.source}`).join('；')}`
     : `目前年表尚未涵蓋西元 ${year} 年的具體史實；我不臆測。`;
   return {kind:'question',answer:`${answer}${yuanShuChronologyNote}`,choiceIds:[],questions:[]};
 }

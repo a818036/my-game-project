@@ -20,6 +20,7 @@ describe('A463 補足 196 年迎帝、討黃巾與遷都記事', () => {
     const state = dispatch(null, { version: ENGINE_VERSION, commandId: 'a463-history-query', expectedRevision: 0, type: 'StartGame', name: '查史主角', seed: 463, facts }).state!;
     const before = structuredClone(state);
     const answer = answerKnownHistoricalEventQuestion('196 年發生什麼事？', state);
+    expect(answer?.answer).toContain('已收錄的史實事件（採年級精度）');
     expect(answer?.answer).toContain('迎帝受阻');
     expect(answer?.answer).toContain('劉辟、黃邵遇斬');
     expect(answer?.answer).toContain('授曹操節鉞');
