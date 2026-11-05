@@ -33,6 +33,32 @@ describe('A05／A06 存檔交易與重播', () => {
   beforeEach(async () => { vi.stubGlobal('indexedDB', indexedDB); await deleteDatabase(); });
   afterEach(() => vi.unstubAllGlobals());
 
+  it('A461 v169 v6 存檔升至 v170 後保留事件前綴、續玩觸發並可再次匯入重播', () => {
+    const current = makeSave('phase6-v169-yanzhou');
+    const start = current.events[0];
+    if (start.type !== 'WorldCreated') throw new Error('expected opening event');
+    const oldStart: GameEvent = { ...start, payload: { ...start.payload, phase4ContentVersion: 'phase4-scenario-169' } };
+    const oldState = applyEvent(null, oldStart);
+    if (!oldState) throw new Error('could not build v169 fixture');
+    const old: SaveFile = { ...current, worldlineId: oldState.worldlineId, events: [oldStart], state: oldState };
+    const migrated = verifySave(toJson(old));
+    const nodeId = 'cao-cao-recovers-yanzhou-lu-bu-flees-195';
+    expect(migrated.events[0]).toEqual(oldStart);
+    expect(migrated.events[1]).toMatchObject({ type: 'Phase4ContentUpdated', payload: { contentVersion: PHASE4_CONTENT_VERSION } });
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === nodeId)?.status).toBe('pending');
+
+    let continued = migrated;
+    for (const days of [3650, 310]) {
+      const result = dispatch(continued.state, { version: ENGINE_VERSION, commandId: `phase6-v169-yanzhou-${days}`, expectedRevision: continued.state.revision, worldlineId: continued.worldlineId, type: 'Phase4Action', action: { type: 'AdvanceDays', days } });
+      if (!result.state || !result.event) throw new Error('could not continue migrated v169 fixture');
+      continued = { ...continued, events: [...continued.events, result.event], state: result.state };
+    }
+    expect(continued.events.slice(0, old.events.length)).toEqual(old.events);
+    expect(continued.state.phase4?.nodes.find((node) => node.contentId === nodeId)?.status).toBe('triggered');
+    expect(replay(continued.events)).toEqual(continued.state);
+    expect(verifySave(toJson(continued))).toEqual(continued);
+  }, 15000);
+
   it('A06 匯出後可驗證事件重播，版本未知或內容毀損會拒絕', () => {
     const save = makeSave(); expect(verifySave(toJson(save))).toEqual(save);
     expect(() => parseSave(JSON.stringify({ ...save, version:7 }))).toThrow('存檔格式或版本不符');
