@@ -111,6 +111,34 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     expect(state.turn).toBe(0);
   });
 
+  it('A468 196 年許縣遷都問答附來源、標示年精度且不執行行動',async()=>{
+    const run=vi.fn(async()=>true);
+    const reply={...answerKnownHistoricalEventQuestion('西元 196 年發生了什麼事？',state)!,source:'已核對的遊戲年表'};
+    vi.mocked(understandInput).mockResolvedValue(reply);
+    await act(async()=>root.render(createElement('main',{id:'main-content'},createElement(LifeActionPanel,{state,busy:false,onRun:run}))));
+    const textarea=host.querySelector<HTMLTextAreaElement>('textarea')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')!.set!;
+    await act(async()=>{
+      setValue.call(textarea,'西元 196 年發生了什麼事？');
+      textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+
+    const response=host.querySelector<HTMLElement>('.plan-review[role="region"][aria-labelledby="interaction-reply-title"]');
+    expect(response?.textContent).toContain('已收錄的史實事件（日期僅記到年）');
+    expect(response?.textContent).toContain('曹操迎帝受阻');
+    expect(response?.textContent).toContain('獻帝遷都許縣');
+    expect(response?.textContent).toContain('《三國志》卷一');
+    expect(response?.querySelector('details p')?.textContent).toBe('來源說明：已核對的遊戲年表');
+    expect(response?.textContent).toContain('沒有執行勾選項目，時間與存檔未變更。');
+    expect(host.querySelector<HTMLElement>('.intents > .visually-hidden[role="status"]')?.textContent).toContain('回應你的詢問：');
+    expect(run).not.toHaveBeenCalled();
+    expect(state.world.year).toBe(184);
+    expect(state.turn).toBe(0);
+    const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+    expect(results.violations.map(({id,help,nodes})=>({id,help,targets:nodes.flatMap(node=>node.target.map(String))}))).toEqual([]);
+  });
+
   it('A457 純詢問不把既有勾選項目改成待確認計畫',async()=>{
     const run=vi.fn(async()=>true);
     vi.mocked(understandInput).mockResolvedValue(reply);
