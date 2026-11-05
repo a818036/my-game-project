@@ -329,6 +329,36 @@ describe('開局存檔載入提示',()=>{
     expect(startBattle?.disabled).toBe(false);
   });
 
+  it('載入戰役期間世界線修訂改變時不提交舊場景',async()=>{
+    const facts=createOpeningFacts(481,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a480-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}修訂驗收`,seed:481,facts});
+    if(!started.state||!started.event)throw new Error('建立修訂競態測試存檔失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    vi.mocked(commitWorldline).mockClear().mockResolvedValue(undefined);
+    let finishScenarioLoad!:(module:Awaited<ReturnType<typeof loadBattleScenarioModule>>)=>void;
+    const pendingScenarioLoad=new Promise<Awaited<ReturnType<typeof loadBattleScenarioModule>>>(resolve=>{finishScenarioLoad=resolve;});
+    vi.mocked(loadBattleScenarioModule).mockReturnValueOnce(pendingScenarioLoad);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();});
+    await act(async()=>{[...host.querySelectorAll<HTMLElement>('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();});
+    const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+    expect(startBattle).toBeDefined();
+    await act(async()=>{startBattle!.click();await Promise.resolve();});
+    const saveDraft=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('保存草案（不改主權）'));
+    expect(saveDraft?.disabled).toBe(false);
+    await act(async()=>{saveDraft!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+    expect(commitWorldline).toHaveBeenCalledTimes(1);
+    expect(host.textContent).toContain('待決條款');
+    finishScenarioLoad({battleScenarioOptions,createBattleScenario});
+    await act(async()=>{await new Promise(resolve=>setTimeout(resolve,0));});
+    expect(host.querySelector('.visually-hidden[role="status"]')?.textContent).toContain('載入戰役期間，世界線狀態已有變更；請重新確認後再開始。');
+    expect(commitWorldline).toHaveBeenCalledTimes(1);
+    expect(host.textContent).toContain('第 0 回合');
+    expect(host.textContent).not.toContain('汝南渡口・前線（示例）');
+    expect(startBattle?.disabled).toBe(false);
+  });
+
   it('A365 axe-core 檢查開局與遊戲五個資料分頁',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
