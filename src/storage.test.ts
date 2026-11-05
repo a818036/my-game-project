@@ -255,8 +255,10 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.events[0]).toEqual(legacyStart);expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
     expect(replay(migrated.events)).toEqual(migrated.state);
-    const reimported=verifySave(toJson(migrated));
-    expect(reimported.events).toEqual(migrated.events);expect(replay(reimported.events)).toEqual(reimported.state);expect(reimported.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');expect(verifySave(toJson(reimported))).toEqual(reimported);
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'a450-v167-advance-to-193',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:3240}});
+    expect(continued.state?.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(continued.state?.phase4?.eventLedger.find(event=>event.type==='史實事件形成'&&event.detail.includes('劉虞攻公孫瓚敗績'))?.source).toContain('初平四年冬');
+    const resumed:SaveFile={...migrated,events:[...migrated.events,continued.event!],state:continued.state!},reimported=verifySave(toJson(resumed));
+    expect(reimported.events.slice(0,migrated.events.length)).toEqual(migrated.events);expect(replay(reimported.events)).toEqual(reimported.state);expect(reimported.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(verifySave(toJson(reimported))).toEqual(reimported);
   });
 
   it('A167 舊 v6 v88 存檔升至目前 scenario 時不回補新增史事且可重播',()=>{
