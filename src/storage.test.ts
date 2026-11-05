@@ -59,7 +59,7 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(verifySave(toJson(continued))).toEqual(continued);
   }, 15000);
 
-  it('A483–A485 v171 v6 存檔升級後續玩觸發 184 年戰事，匯出重載與重播一致', () => {
+  it('A483–A486 v171 v6 存檔升級後續玩觸發 184 年戰事，匯出重載與重播一致', () => {
     const current = makeSave('phase6-v171-huangjin-outcome', 183);
     const start = current.events[0];
     if (start.type !== 'WorldCreated') throw new Error('expected opening event');
@@ -72,11 +72,13 @@ describe('A05／A06 存檔交易與重播', () => {
     const nodeId = 'huangjin-campaign-outcome-184';
     const wanchengNodeId = 'zhu-jun-captures-wancheng-184';
     const changsheNodeId = 'changshe-battle-184';
+    const zhangManchengNodeId = 'qin-jie-kills-zhang-mancheng-184';
 
     expect(migrated.events.slice(0, prefix.length)).toEqual(prefix);
     expect(migrated.state.phase4?.nodes.find((node) => node.contentId === nodeId)?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find((node) => node.contentId === wanchengNodeId)?.status).toBe('pending');
     expect(migrated.state.phase4?.nodes.find((node) => node.contentId === changsheNodeId)?.status).toBe('pending');
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === zhangManchengNodeId)?.status).toBe('pending');
     expect(replay(migrated.events)).toEqual(migrated.state);
 
     const continuedResult = dispatch(migrated.state, {
@@ -92,9 +94,11 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(continued.state.phase4?.nodes.find((node) => node.contentId === nodeId)?.status).toBe('triggered');
     expect(continued.state.phase4?.nodes.find((node) => node.contentId === wanchengNodeId)?.status).toBe('triggered');
     expect(continued.state.phase4?.nodes.find((node) => node.contentId === changsheNodeId)?.status).toBe('triggered');
+    expect(continued.state.phase4?.nodes.find((node) => node.contentId === zhangManchengNodeId)?.status).toBe('triggered');
     expect(continued.state.phase4?.eventLedger.some((entry) => entry.detail.includes('廣宗、下曲陽戰事與張角兄弟敗亡'))).toBe(true);
     expect(continued.state.phase4?.eventLedger.some((entry) => entry.detail.includes('朱儁攻取宛城、孫夏敗亡'))).toBe(true);
     expect(continued.state.phase4?.eventLedger.some((entry) => entry.detail.includes('長社戰局轉折，漢軍擊破波才'))).toBe(true);
+    expect(continued.state.phase4?.eventLedger.some((entry) => entry.detail.includes('秦頡擊斬張曼成'))).toBe(true);
     expect(continued.events.slice(0, prefix.length)).toEqual(prefix);
     expect(replay(continued.events)).toEqual(continued.state);
     const reimported = verifySave(toJson(continued));
@@ -129,8 +133,10 @@ describe('A05／A06 存檔交易與重播', () => {
       expect(datedImported.state.phase4?.year).toBe(expectedYear);
       expect(datedImported.state.phase4?.nodes.find((node) => node.contentId === wanchengNodeId)).toMatchObject({ status: 'resolved', resolvedYear: 184 });
       expect(datedImported.state.phase4?.nodes.find((node) => node.contentId === changsheNodeId)).toMatchObject({ status: 'resolved', resolvedYear: 184 });
+      expect(datedImported.state.phase4?.nodes.find((node) => node.contentId === zhangManchengNodeId)).toMatchObject({ status: 'resolved', resolvedYear: 184 });
       expect(datedImported.state.phase4?.eventLedger.some((entry) => entry.detail.includes('朱儁攻取宛城、孫夏敗亡'))).toBe(false);
       expect(datedImported.state.phase4?.eventLedger.some((entry) => entry.detail.includes('長社戰局轉折，漢軍擊破波才'))).toBe(false);
+      expect(datedImported.state.phase4?.eventLedger.some((entry) => entry.detail.includes('秦頡擊斬張曼成'))).toBe(false);
       expect(replay(datedImported.events)).toEqual(datedImported.state);
       expect(verifySave(toJson(datedImported))).toEqual(datedImported);
     }
