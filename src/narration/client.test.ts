@@ -2,6 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {buildNarrationPayload,validateNarrationResult} from './client';
 import {createOpeningFacts,dispatch,ENGINE_VERSION,type GameState} from '../engine';
 import {HISTORY_CONTENT} from '../phase4';
+import {createBattleScenario} from '../battle-scenario-examples';
 
 function state(){const facts=createOpeningFacts(81,184,{regions:[],surnames:[]});return dispatch(null,{version:ENGINE_VERSION,commandId:'narration-start',expectedRevision:0,type:'StartGame',name:`${facts.surname}文和`,seed:81,facts}).state!;}
 describe('第五階段・敘事資訊分層與回應驗證',()=>{
@@ -63,6 +64,21 @@ describe('第五階段・敘事資訊分層與回應驗證',()=>{
     const withBattle={...current,phase4:{...current.phase4!,battle,eventLedger:[{id:'battle-context',day:0,year:184,month:1,dayOfMonth:1,type:'戰役開始',detail:'城門示例'}]}} as GameState;
     const payload=buildNarrationPayload(withBattle,event),details=payload.settledEvents[0]!.details;
     expect(details).toContain('戰術目標 守方守住門洞');expect(details).toContain('已確認後果 尚未新增傷亡');expect(details).toContain('門扇受損不代表全城陷落');
+  });
+  it('A472 戰場敘事收到依各觀察位置計算的可見、遮擋與超距資訊',()=>{
+    const current=state(),scenario=createBattleScenario('river-ford');
+    const battle={id:'river-visibility',location:scenario.location,startedDay:0,rounds:0,status:'active' as const,overallCommander:{id:'overall',name:'總指揮・示例',unitId:null},protagonistPresent:false,witnesses:[],scene:scenario.scene,logs:[],units:scenario.units};
+    const entry={id:'river-visibility-event',day:0,year:184,month:1,dayOfMonth:1,type:'戰役開始',detail:'渡口示例'};
+    const withBattle={...current,phase4:{...current.phase4!,battle,eventLedger:[...current.phase4!.eventLedger,entry]}} as GameState;
+    const event={version:ENGINE_VERSION as typeof ENGINE_VERSION,eventId:entry.id,commandId:'river-visibility-command',commandHash:'hash',revision:1,type:'Phase4Changed' as const,payload:{action:{type:'StartBattle' as const,id:battle.id,location:battle.location,units:scenario.units,protagonistPresent:false,scene:scenario.scene}}};
+    const details=buildNarrationPayload(withBattle,event).settledEvents[0]!.details;
+    expect(details).toContain('守軍前列在拒馬後方：依公尺三維座標估算，視距 12');
+    expect(details).toContain('拒馬（示例）可見（三維距離 8）');
+    expect(details).toContain('守軍盾列（示例）被拒馬（示例）遮擋');
+    expect(details).toContain('後陣觀察者在渡口對岸後陣：依公尺三維座標估算，視距 10');
+    expect(details).toContain('北岸木弩臺（示例）可見（三維距離 8.94）');
+    expect(details).toContain('守軍盾列（示例）超出視距（三維距離 12.81）');
+    expect(details).not.toContain('後陣觀察者在渡口對岸後陣：可看見拒馬');
   });
   it('A230 戰場因果打擊旁白附上最新傷亡軍籍與已結算結果',()=>{
     const current=state();
