@@ -23,6 +23,19 @@ describe('A373 other-person historical timeline queries',()=>{
     expect(result?.answer).not.toContain('劉備殺車胄');
   });
 
+  it('A487 answers a Zhang Mancheng timeline from the new sourced 184 event without changing the game',()=>{
+    const facts=createOpeningFacts(487,184,{regions:[],surnames:[]});
+    const state=dispatch(null,{version:ENGINE_VERSION,commandId:'a487-zhang-mancheng-start',expectedRevision:0,type:'StartGame',name:'測試玩家',seed:487,facts}).state!;
+    const before=structuredClone(state);
+    const result=localInteraction('請整理張曼成生平年表',state);
+    expect(result.answer).toContain('秦頡擊斬張曼成');
+    expect(result.answer).toContain('184 年');
+    expect(result.answer).toContain('《後漢書》卷八');
+    expect(result.choiceIds).toEqual([]);
+    expect(state).toEqual(before);
+    expect(state.turn).toBe(0);
+  });
+
   it('A383 distinguishes the 20-item display limit from missing years through the player input path',async()=>{
     const person='曹操';
     const records=HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&`${item.title} ${item.description} ${item.carrier}`.includes(person)).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
