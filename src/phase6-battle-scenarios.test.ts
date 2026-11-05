@@ -2,6 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {applyPhase4Action,createPhase4Model} from './phase4';
 import {battleScenarioOptions,createBattleScenario,type BattleScenarioId} from './battle-scenario-examples';
 import {isBattleScenarioRevisionCurrent} from './battle-scenario-safety';
+import {computeBattleVisibility} from './battle-geometry';
 
 const people=[{id:'protagonist',name:'主角',alive:true,location:'汝南郡',office:''}];
 
@@ -56,6 +57,27 @@ describe('A291 多類戰役場景的可驗證敘事資料',()=>{
       expect(completed.battle?.units[0]?.morale).toBe(expected.finalMorale);
       expect(completed.battle?.scene?.objects.find(object=>object.id===expected.finalObject.id)).toMatchObject(expected.finalObject);
     }
+  });
+
+  it('A470 三個示例的觀察位置都有幾何可見目標，且呈現不同視野',()=>{
+    for(const id of ['river-ford','city-gate','mountain-retreat'] as const){
+      const scenario=createBattleScenario(id);
+      const visibleByObserver=scenario.scene.observers.map(observer=>{
+        const result=computeBattleVisibility(scenario.scene,observer,scenario.units);
+        expect(result,`${id}/${observer.id} 應有座標與視距`).not.toBeNull();
+        const visible=result!.filter(item=>item.visible).map(item=>item.targetId);
+        expect(visible,`${id}/${observer.id} 至少看見一個目標`).not.toHaveLength(0);
+        return visible;
+      });
+      expect(visibleByObserver[0],`${id} 不同觀察者的目標集合應不同`).not.toEqual(visibleByObserver[1]);
+    }
+
+    const river=createBattleScenario('river-ford');
+    const rearView=computeBattleVisibility(river.scene,river.scene.observers[1]!,river.units)!;
+    expect(rearView.find(item=>item.targetId==='object:crossbow-platform')?.visible).toBe(true);
+    expect(rearView.find(item=>item.targetId==='object:tether-rope')?.visible).toBe(true);
+    expect(rearView.find(item=>item.targetId==='object:refuse-barrier')).toMatchObject({visible:false,reason:'beyond-range'});
+    expect(rearView.find(item=>item.targetId==='object:blue-shield-rank')?.visible).toBe(false);
   });
 
   it('拒絕過長或空白的敘事目標與後效限制',()=>{

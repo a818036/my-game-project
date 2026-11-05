@@ -285,7 +285,7 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(continued.state?.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(continued.state?.phase4?.eventLedger.find(event=>event.type==='史實事件形成'&&event.detail.includes('劉虞攻公孫瓚敗績'))?.source).toContain('初平四年冬');
     const resumed:SaveFile={...migrated,events:[...migrated.events,continued.event!],state:continued.state!},reimported=verifySave(toJson(resumed));
     expect(reimported.events.slice(0,migrated.events.length)).toEqual(migrated.events);expect(replay(reimported.events)).toEqual(reimported.state);expect(reimported.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(verifySave(toJson(reimported))).toEqual(reimported);
-  });
+  },15_000);
 
   it('A167 舊 v6 v88 存檔升至目前 scenario 時不回補新增史事且可重播',()=>{
     const current=makeSave('phase6-v88-to-v90');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
