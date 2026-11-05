@@ -119,7 +119,7 @@ export function answerKnownSunQuanBiographyQuestion(text:string):InteractionResu
   }
   return null;
 }
-const HISTORICAL_SUBJECT_ALIASES=['曹操','曹丕','曹叡','曹仁','曹真','曹休','曹洪','袁紹','袁術','袁譚','袁尚','呂布','董卓','張角','劉備','劉禪','劉表','劉焉','劉璋','劉虞','公孫瓚','關羽','張飛','趙雲','諸葛亮','周瑜','魯肅','呂蒙','陸遜','孫堅','孫策','孫權','孫仲謀','孫登','孫和','孫亮','孫休','孫皓','司馬懿','馬超','韓遂','張昭','高幹','蹋頓'];
+const HISTORICAL_SUBJECT_ALIASES=['曹操','曹丕','曹叡','曹仁','曹真','曹休','曹洪','袁紹','袁術','袁譚','袁尚','呂布','董卓','張角','劉備','劉禪','劉表','劉焉','劉璋','劉虞','公孫瓚','陶謙','麋竺','糜竺','陳登','孔融','關羽','張飛','趙雲','諸葛亮','周瑜','魯肅','呂蒙','陸遜','孫堅','孫策','孫權','孫仲謀','孫登','孫和','孫亮','孫休','孫皓','司馬懿','馬超','韓遂','張昭','高幹','蹋頓'];
 export function answerKnownHistoricalPersonTimelineQuestion(text:string):InteractionResult|null{
   const asksTimeline=/(一生|生平|年表|完整經歷|經歷|事蹟|做過什麼|有哪些事)/.test(text);
   if(!asksTimeline)return null;
