@@ -92,6 +92,36 @@ describe('A05／A06 存檔交易與重播', () => {
     const reimported = verifySave(toJson(continued));
     expect(reimported).toEqual(continued);
     expect(replay(reimported.events)).toEqual(reimported.state);
+
+    for (const [days, expectedYear, name] of [[360, 184, '同年'], [720, 185, '晚年']] as const) {
+      const datedStart = makeSave(`phase6-v171-huangjin-${name}`, 183).events[0];
+      if (datedStart.type !== 'WorldCreated') throw new Error('expected opening event');
+      const oldDatedStart: GameEvent = { ...datedStart, payload: { ...datedStart.payload, phase4ContentVersion: 'phase4-scenario-171' } };
+      let datedState = applyEvent(null, oldDatedStart);
+      if (!datedState) throw new Error(`could not build v171 ${name} fixture`);
+      const datedEvents: GameEvent[] = [oldDatedStart];
+      const aged = dispatch(datedState, {
+        version: ENGINE_VERSION,
+        commandId: `phase6-v171-huangjin-${name}-age`,
+        expectedRevision: datedState.revision,
+        worldlineId: datedState.worldlineId,
+        type: 'Phase4Action',
+        action: { type: 'AdvanceDays', days },
+      });
+      if (!aged.state || !aged.event) throw new Error(`could not age v171 ${name} fixture`);
+      datedState = aged.state;
+      datedEvents.push(aged.event);
+      expect(datedState.phase4?.year).toBe(expectedYear);
+
+      const datedOldSave: SaveFile = { ...current, worldlineId: datedState.worldlineId, events: datedEvents, state: datedState };
+      const datedPrefix = structuredClone(datedOldSave.events);
+      const datedImported = verifySave(toJson(datedOldSave));
+      expect(datedImported.events.slice(0, datedPrefix.length)).toEqual(datedPrefix);
+      expect(datedImported.state.phase4?.nodes.find((node) => node.contentId === nodeId)).toMatchObject({ status: 'resolved', resolvedYear: 184 });
+      expect(datedImported.state.phase4?.eventLedger.some((entry) => entry.detail.includes('廣宗、下曲陽戰事與張角兄弟敗亡'))).toBe(false);
+      expect(replay(datedImported.events)).toEqual(datedImported.state);
+      expect(verifySave(toJson(datedImported))).toEqual(datedImported);
+    }
   }, 15000);
 
   it('A06 匯出後可驗證事件重播，版本未知或內容毀損會拒絕', () => {
