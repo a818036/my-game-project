@@ -7,7 +7,7 @@ const eventId = 'yizhou-ma-xiang-revolt-188';
 describe('184 年黃巾戰事結果節點', () => {
   it('A482 補列廣宗與下曲陽戰事，舊存檔續玩可觸發且同年不回補', () => {
     const id = 'huangjin-campaign-outcome-184';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(223);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(224);
 
     const fresh = advancePhase4(createPhase4Model(183, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
@@ -37,7 +37,7 @@ describe('184 年黃巾戰事結果節點', () => {
 describe('184 年南陽戰事節點', () => {
   it('A484 另列朱儁攻取宛城，舊存檔跨年可觸發且不回補', () => {
     const id = 'zhu-jun-captures-wancheng-184';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(223);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(224);
     const fresh = advancePhase4(createPhase4Model(183, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
     const event = fresh.eventLedger.find((item) => item.detail.includes('朱儁攻取宛城、孫夏敗亡'));
@@ -65,7 +65,7 @@ describe('184 年南陽戰事節點', () => {
 describe('184 年長社戰局節點', () => {
   it('A485 另列皇甫嵩、朱儁及曹操擊破波才，保存漢曆月份但按年觸發', () => {
     const id = 'changshe-battle-184';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(223);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(224);
     const fresh = advancePhase4(createPhase4Model(183, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
     const event = fresh.eventLedger.find((item) => item.detail.includes('長社戰局轉折，漢軍擊破波才'));
@@ -93,7 +93,7 @@ describe('184 年長社戰局節點', () => {
 describe('184 年南陽黃巾後續節點', () => {
   it('A486 另列秦頡擊斬張曼成，保存六月來源註記且遷移不回補', () => {
     const id = 'qin-jie-kills-zhang-mancheng-184';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(223);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(224);
     const fresh = advancePhase4(createPhase4Model(183, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
     const event = fresh.eventLedger.find((item) => item.detail.includes('秦頡擊斬張曼成'));
@@ -119,7 +119,7 @@ describe('184 年南陽黃巾後續節點', () => {
 
 describe('188 年益州馬相起事節點', () => {
   it('按來源觸發，將 v85 舊存檔追加升級且不回補較晚年份', () => {
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(223);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(224);
 
     const fresh = advancePhase4(createPhase4Model(187, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
@@ -145,7 +145,7 @@ describe('188 年益州馬相起事節點', () => {
 describe('187 年長沙區星起事節點', () => {
   it('保留史料異名並按年觸發，遷移不補寫晚年存檔', () => {
     const eventId = 'changsha-ou-xing-revolt-187';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(223);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(224);
 
     const fresh = advancePhase4(createPhase4Model(186, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
@@ -201,7 +201,7 @@ describe('185–186 年涼州與江夏事件', () => {
 describe('199 年孫權隨孫策征伐節點', () => {
   it('按《三國志》年級來源觸發，v104 遷移保留事件前綴且不回補', () => {
     const eventId = 'sun-quan-joins-sun-ce-expedition-199';
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(223);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(224);
 
     const fresh = advancePhase4(createPhase4Model(198, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === eventId)?.status).toBe('triggered');
