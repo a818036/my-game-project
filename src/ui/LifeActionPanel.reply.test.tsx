@@ -89,6 +89,28 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     expect(state.turn).toBe(0);
   });
 
+  it('A456 194 年陶謙年表問答在行動介面附來源且不執行計畫',async()=>{
+    const reply={...answerKnownHistoricalEventQuestion('陶謙在194年發生了什麼事？',state)!,source:'已核對的遊戲年表'};
+    vi.mocked(understandInput).mockResolvedValue(reply);
+    const textarea=host.querySelector<HTMLTextAreaElement>('textarea')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')!.set!;
+    await act(async()=>{
+      setValue.call(textarea,'陶謙在194年發生了什麼事？');
+      textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+
+    const response=host.querySelector<HTMLElement>('.plan-review[role="region"][aria-labelledby="interaction-reply-title"]');
+    expect(response?.textContent).toContain('陶謙去世，劉備領徐州');
+    expect(response?.textContent).toContain('《三國志》卷八');
+    expect(response?.textContent).toContain('卷三十二〈蜀書·先主傳〉');
+    expect(response?.querySelector('details p')?.textContent).toBe('來源說明：已核對的遊戲年表');
+    expect(response?.textContent).toContain('沒有執行勾選項目，時間與存檔未變更。');
+    expect(host.querySelector<HTMLElement>('.intents > .visually-hidden[role="status"]')?.textContent).toContain('回應你的詢問：');
+    expect(state.world.year).toBe(184);
+    expect(state.turn).toBe(0);
+  });
+
   it('A391 詢問回覆畫面 axe-core 啟用規則無違規',async()=>{
     const textarea=host.querySelector<HTMLTextAreaElement>('textarea')!;
     const setValue=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')!.set!;
