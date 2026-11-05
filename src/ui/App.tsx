@@ -223,11 +223,11 @@ export default function App() {
   }
   async function startBattleExample(){
     if(!state||p4BattleLoading)return;
-    const origin={worldlineId:state.worldlineId,revision:state.revision};setP4BattleLoading(true);
+    const origin={worldlineId:state.worldlineId,revision:state.revision};setP4BattleLoading(true);setActivityMessage('正在載入戰場資料。');
     try{
       const {createBattleScenario}=await import('../battle-scenario-examples');
       const current=activeSaveRef.current;
-      if(!current||!isBattleScenarioRevisionCurrent(origin,{worldlineId:current.worldlineId,revision:current.state.revision})){setNotice('載入戰役期間，世界線狀態已有變更；請重新確認後再開始。');return;}
+      if(!current||!isBattleScenarioRevisionCurrent(origin,{worldlineId:current.worldlineId,revision:current.state.revision})){const message='載入戰役期間，世界線狀態已有變更；請重新確認後再開始。';setNotice(message);setActivityMessage(message);return;}
       const scenario=createBattleScenario(p4BattleScenario==='ford'?'river-ford':p4BattleScenario);
       if(p4BattleScenario==='ford'){
         scenario.units[0]={...scenario.units[0]!,location:'汝南渡口（示例）',reserve:1000,supply:5,morale:70,order:'待命'};
@@ -239,7 +239,7 @@ export default function App() {
       }
       const id=commandId();
       void run({version:ENGINE_VERSION,commandId:id,expectedRevision:current.state.revision,worldlineId:current.worldlineId,type:'Phase4Action',action:{type:'StartBattle',id,location:scenario.location,units:scenario.units,protagonistPresent:true,scene:scenario.scene}});
-    }catch{setNotice('戰役示例資料載入失敗；世界線未變更，請稍後再試。');}
+    }catch{const message='戰役示例資料載入失敗；世界線未變更，請稍後再試。';setNotice(message);setActivityMessage(message);}
     finally{setP4BattleLoading(false);}
   }
   function submitCombination() {

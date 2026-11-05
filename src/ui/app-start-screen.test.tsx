@@ -224,7 +224,11 @@ describe('開局存檔載入提示',()=>{
         vi.mocked(commitWorldline).mockResolvedValue(undefined);
         const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
         expect(startBattle).toBeDefined();
-        await act(async()=>{startBattle!.click();await new Promise(resolve=>setTimeout(resolve,300));});
+        await act(async()=>{startBattle!.click();await Promise.resolve();});
+        expect(host.querySelector('.visually-hidden[role="status"]')?.textContent).toContain('正在載入戰場資料。');
+        expect(startBattle?.disabled).toBe(true);
+        expect(startBattle?.textContent).toContain('正在載入戰場資料…');
+        await act(async()=>{await new Promise(resolve=>setTimeout(resolve,300));});
         const battleText=host.textContent??'';
         expect(battleText).toContain('後陣觀察者在渡口對岸後陣：北岸木弩臺（示例）可見、牽繫木索（示例）可見');
         expect(battleText).toContain('拒馬（示例）超出視距');
