@@ -3,8 +3,8 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-207';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:205},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-208';
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:206},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -28,7 +28,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'partisan-purge-expands-169',kind:'event',title:'黨錮擴大，士人與親屬遭禁錮',startYear:169,endYear:169,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉建寧二年條記侯覽唆使有司奏虞放、杜密、李膺等為鉤黨，下獄，死者百餘人、妻子徙邊，並令州郡大舉鉤黨；史文記當時豪傑及儒學行義者皆被列為黨人。本內容包採年級精度，不把概數改寫為精確死亡名冊。',causes:['partisan-purge-expands-169'],carrier:'漢廷、遭列鉤黨者及其家屬（史料記載）',description:'記錄建寧二年黨錮措施擴大及史料所述懲處；不推定各地執行細節、受害者完整名單、個別人物的玩家狀態或百餘人的精確統計。',introducedIn:'phase4-scenario-145',sameYearMigrationIsLate:true },
   { id:'taixue-classics-stone-inscription-175',kind:'event',title:'太學校正五經文字並刻石',startYear:175,endYear:175,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉熹平四年條記詔令諸儒校正五經文字，刻石立於太學門外。本內容包只採公元年級精度，不補工程工期、參與者名單或石經保存狀況。',causes:['taixue-classics-stone-inscription-175'],carrier:'漢廷、受詔諸儒與太學（史料記載）',description:'記錄朝廷校正經典文字及太學刻石；不據此推演普及程度、教育政策成效或後世版本傳承。',introducedIn:'phase4-scenario-145',sameYearMigrationIsLate:true },
   { id:'han-campaign-against-xianbei-defeated-177',kind:'event',title:'漢軍三路出塞征鮮卑失利',startYear:177,endYear:177,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉熹平六年條記朝廷於秋八月分三路伐鮮卑：田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並記「晏等大敗」。《資治通鑑》卷五十七補述夏育先請出兵、朝廷議論中蔡邕反對，靈帝未從其議；各路將萬騎、出塞二千餘里，檀石槐命三部大人迎戰，漢軍大敗，三將各帶數十騎退還並下獄，後贖為庶人。《資治通鑑》另以「死者什七八」記載傷亡比例；《後漢書》本紀未列傷亡數。本內容包保留兩書詳略，不換算成精確傷亡總數或遊戲兵力。',causes:['han-campaign-against-xianbei-defeated-177'],carrier:'漢廷出塞諸軍、南匈奴與鮮卑（史料記載）',description:'呈現熹平六年夏育請求出塞、朝廷議論、蔡邕反對、靈帝仍決定出兵及秋八月三路行軍戰敗的史料次序。《後漢書》記田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並稱「晏等大敗」；《資治通鑑》補記各路將萬騎、出塞二千餘里、檀石槐部三部迎戰、漢軍死者「什七八」、三將帶數十騎退還及後續處置。比例只作原書引述，不計算精確人數；不把史載部署寫成玩家部隊狀態、完整戰線或新增具名傷亡名冊。',sourceDateNote:'原史日期：《後漢書》卷八記熹平六年秋八月三路出兵；《資治通鑑》卷五十七另記夏四月鮮卑寇三邊、秋七月夏育請兵與朝議、八月出征。遊戲只按 177 年級呈現，不把漢曆日期換算為模型時間。',introducedIn:'phase4-scenario-145',sameYearMigrationIsLate:true },
-  { id:'jiaozhi-wuhuh-man-uprising-178',kind:'event',title:'合浦、交阯烏滸民起事並攻沒郡縣',startYear:178,endYear:178,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉光和元年條記合浦、交阯烏滸民起事，招引九真、日南民眾攻沒郡縣。本內容包採年級精度，原文未提供本節點採用的逐日戰況。',causes:['jiaozhi-wuhuh-man-uprising-178'],carrier:'合浦、交阯烏滸民及九真、日南地方民眾（史料記載）',description:'記錄嶺南地方起事及郡縣失守的來源概述；不推定起事原因、參與人數、各郡控制持續時間或未載的平定結果。',introducedIn:'phase4-scenario-145',sameYearMigrationIsLate:true },
+  { id:'jiaozhi-wuhuh-man-uprising-178',kind:'event',title:'合浦、交阯烏滸民起事並攻沒郡縣',startYear:178,endYear:178,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉光和元年春正月條記合浦、交阯烏滸蠻起事、招引九真與日南民眾攻沒郡縣；卷八十六〈南蠻西南夷列傳〉補記「合數萬人」。人數保留史料概數，不換算為精確人口或遊戲兵力。本內容包採年級精度，不推演未載的戰況與平定結果。',causes:['jiaozhi-wuhuh-man-uprising-178'],carrier:'合浦、交阯烏滸民及九真、日南地方民眾（史料記載）',description:'記錄嶺南地方起事、招引九真與日南民眾及郡縣失守；卷八十六所記「合數萬人」僅保留為史料概數，不推定精確參與人數、起事原因、各郡控制持續時間或未載的平定結果。',sourceDateNote:'《後漢書》卷八記光和元年春正月合浦、交阯烏滸蠻叛、招引九真與日南民眾攻沒郡縣；卷八十六記合數萬人。春正月與概數均為史料記載；遊戲只按 178 年級觸發，不換算為模型日期或精確兵力。',introducedIn:'phase4-scenario-145',sameYearMigrationIsLate:true },
   { id:'hongdu-mencourt-founded-178',kind:'event',title:'光和元年置鴻都門學生',startYear:178,endYear:178,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉光和元年條記「始置鴻都門學生」；卷六十下〈蔡邕列傳〉補述鴻都門學及其學生被薦舉任官的記載。本節點採年級精度，不將不同傳記外推成完整學制、選才標準或實際任官名單。',causes:['hongdu-mencourt-founded-178'],carrier:'漢廷與鴻都門學生（史料記載）',description:'記錄靈帝朝設置鴻都門學生的史料記事；不自動授予玩家官職、人才、能力或政治效果，也不推定未載的就學者個人經歷。',introducedIn:'phase4-scenario-151',sameYearMigrationIsLate:true },
   { id:'jinan-revolt-dongpingling-170',kind:'event',title:'濟南賊起攻東平陵',startYear:170,endYear:170,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉建寧三年條記「冬，濟南賊起，攻東平陵」。同條另記鬱林烏滸民相率內屬。本節點只採年級精度，不推定起事原因、規模或後續平定。',causes:['jinan-revolt-dongpingling-170'],carrier:'濟南地方起事者與東平陵（史料記載）',description:'記錄濟南地方起事並攻東平陵；不補寫未見於本條的參與者名單、傷亡、控制變化或平定結果。',introducedIn:'phase4-scenario-146',sameYearMigrationIsLate:true },
   { id:'ling-emperor-majority-pardon-171',kind:'event',title:'靈帝加元服，大赦而黨人不赦',startYear:171,endYear:171,precision:'year',source:'《後漢書》卷八〈孝靈帝紀〉建寧四年正月條記帝加元服、大赦天下，「唯黨人不赦」。本節點按年級精度呈現，不將漢曆月日映射為模型日期。',causes:['ling-emperor-majority-pardon-171'],carrier:'漢廷與仍受黨錮者（史料記載）',description:'記錄靈帝加元服及大赦範圍的明文例外；不將一般大赦說成黨錮全面解除。',introducedIn:'phase4-scenario-146',sameYearMigrationIsLate:true },
@@ -587,6 +587,14 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
   const emperorXuNode=model.nodes.find(node=>node.contentId==='emperor-relocates-xu-196');
   if(emperorXuNode&&!emperorXuNode.evidence.some(item=>item.includes('建安元年迎帝與遷都記事補充'))){
    emperorXuNode.evidence.push('建安元年迎帝與遷都記事補充：《三國志》卷一記正月曹操遣曹洪迎天子受阻、二月討破汝南與潁川黃巾並受降、七月天子還洛陽且曹操入洛陽衛京都、天子授節鉞並錄尚書事，九月遷都許。只保留原典漢曆次序，模型仍按年級處理，不換算遊戲月份；原事件帳不回寫、不重複觸發。');
+  }
+ }
+ const wuhuhDetailVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-208');
+ if(targetIndex>=wuhuhDetailVersionIndex&&currentIndex<wuhuhDetailVersionIndex){
+  const wuhuhNode=model.nodes.find(node=>node.contentId==='jiaozhi-wuhuh-man-uprising-178');
+  if(wuhuhNode&&!wuhuhNode.evidence.some(item=>item.includes('光和元年烏滸起事來源補充'))){
+   wuhuhNode.evidence.push('光和元年烏滸起事來源補充：《後漢書》卷八記春正月合浦、交阯烏滸蠻叛並招引九真、日南民攻沒郡縣；卷八十六補記「合數萬人」。僅保留原史月序及概數，不換算成精確人口或遊戲兵力，不補寫未載的起事原因、控制持續時間或平定過程。');
+   if(currentIndex===wuhuhDetailVersionIndex-1&&wuhuhNode.status!=='pending')pushEvent(model,'史實來源補充','既有 178 年烏滸起事節點補列《後漢書》卷八春正月記事與卷八十六「合數萬人」概述；保留年級觸發及史料概數，不新增重複事件或回溯改寫舊事件帳。','《後漢書》卷八〈孝靈帝紀〉光和元年條；卷八十六〈南蠻西南夷列傳〉');
   }
  }
  const contentOrder=new Map(HISTORY_CONTENT.map((content,index)=>[content.id,index]));
