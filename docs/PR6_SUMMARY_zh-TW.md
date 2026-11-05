@@ -645,4 +645,9 @@ A481 修正延後載入戰場期間仍可改動情境選單的問題，避免玩
 
 依《後漢書》卷八補列 185 年張牛角等黑山部眾並起記事。史料「十餘輩」保留為概數；不推定確切數量、組織統一、疆界、傷亡或後續歸屬，遊戲只按年級觸發。v176 舊存檔跨年至 185 年可觸發，舊事件帳前綴保留；185 年同年與較晚遷移不回補。v6 JSON 升級續玩後可重播、再匯出驗證；本機史實問答附卷八來源。
 
-定向測試 2 項，完整測試 67 個檔案／636 項全過；`npm run typecheck`、`npm run build`、`npm run check:bundle`、`npm run check:preview` 與 `git diff --check` 均通過。首頁入口 486,614／500,000 bytes、戰役示例 8,692／10,000 bytes、首頁初始靜態相依 706,281／750,000 bytes。GitHub Actions 待推送後確認；PR #6 維持草稿及開啟。
+定向測試 2 項，完整測試 67 個檔案／636 項全過；`npm run typecheck`、`npm run build`、`npm run check:bundle`、`npm run check:preview` 與 `git diff --check` 均通過。首頁入口 486,614／500,000 bytes、戰役示例 8,692／10,000 bytes、首頁初始靜態相依 706,281／750,000 bytes。GitHub Actions run [42040094685](https://github.com/a818036/my-game-project/actions/runs/42040094685) 全綠；PR #6 維持草稿及開啟。
+## 本輪追加（A491）
+
+依《後漢書》卷八補列中平二年春正月大疫年級記事。原文只明記大疫及正月，未說明地域、病因、傳播、病例或死亡數；內容不延伸成疫病模型或人物狀態變更。正月保留為漢曆來源註記、遊戲按 185 年級觸發。v177 舊存檔跨年至 185 年可觸發且保留事件帳前綴；同年及晚年遷移不回補。v6 JSON 匯入升級、續玩、事件重播與再匯出一致；史實問答引用卷八來源。
+
+A491 定向測試 2 項、完整測試 68 個檔案／638 項通過；`npm run typecheck`、`npm run build`、`npm run check:bundle`、`npm run check:preview` 與 `git diff --check` 均通過。首頁入口 486,614／500,000 bytes、戰役示例 8,692／10,000 bytes、首頁初始靜態相依 707,247／750,000 bytes。GitHub Actions 待推送後確認；PR #6 維持草稿及開啟。
