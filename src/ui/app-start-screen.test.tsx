@@ -311,12 +311,18 @@ describe('開局存檔載入提示',()=>{
     await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
     await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();});
     await act(async()=>{[...host.querySelectorAll<HTMLElement>('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();});
+    const scenarioLabel=[...host.querySelectorAll<HTMLLabelElement>('.phase4-panel label')].find(label=>label.textContent?.includes('戰場情境'));
+    const scenario=scenarioLabel?.querySelector<HTMLSelectElement>('select');
+    expect(scenario).not.toBeNull();
+    await act(async()=>{scenario!.value='city-gate';scenario!.dispatchEvent(new Event('change',{bubbles:true}));});
     const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
     expect(startBattle).toBeDefined();
     await act(async()=>{startBattle!.click();await new Promise(resolve=>setTimeout(resolve,0));});
     expect(host.querySelector('.visually-hidden[role="status"]')?.textContent).toContain('戰役示例資料載入失敗；世界線未變更，請稍後再試。');
     expect(startBattle?.disabled).toBe(false);
     expect(startBattle?.textContent).toContain('進入所選戰役情境');
+    expect(scenario?.disabled).toBe(false);
+    expect(scenario?.value).toBe('city-gate');
     expect(commitWorldline).not.toHaveBeenCalled();
     expect(host.textContent).toContain('第 0 回合');
     expect(host.textContent).not.toContain('汝南渡口・前線（示例）');
