@@ -247,6 +247,18 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(reimported.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(verifySave(toJson(reimported))).toEqual(reimported);
   });
 
+  it('A450 v167 的 184 年 v6 JSON 存檔升版後保留新節點待觸發並可重播',()=>{
+    const current=makeSave('a450-v167-liu-yu-migration',184),originalStart=current.events[0];if(originalStart.type!=='WorldCreated')throw new Error('expected opening event');
+    const legacyStart:GameEvent={...originalStart,payload:{...originalStart.payload,phase4ContentVersion:'phase4-scenario-167'}};
+    const oldState=applyEvent(null,legacyStart)!;const old:SaveFile={...current,events:[legacyStart],state:oldState};
+    const migrated=verifySave(toJson(old)),id='liu-yu-defeated-and-killed-193';
+    expect(migrated.events[0]).toEqual(legacyStart);expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+    expect(migrated.events[1]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    expect(replay(migrated.events)).toEqual(migrated.state);
+    const reimported=verifySave(toJson(migrated));
+    expect(reimported.events).toEqual(migrated.events);expect(replay(reimported.events)).toEqual(reimported.state);expect(reimported.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');expect(verifySave(toJson(reimported))).toEqual(reimported);
+  });
+
   it('A167 舊 v6 v88 存檔升至目前 scenario 時不回補新增史事且可重播',()=>{
     const current=makeSave('phase6-v88-to-v90');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
     const legacyStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-88'}};
