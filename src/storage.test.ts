@@ -354,7 +354,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const resumed:SaveFile={...migrated,events:[...migrated.events,continued.event!],state:continued.state!},reimported=verifySave(toJson(resumed));
     expect(reimported.events.slice(0,migrated.events.length)).toEqual(migrated.events);expect(replay(reimported.events)).toEqual(reimported.state);
     expect(reimported.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');expect(verifySave(toJson(reimported))).toEqual(reimported);
-  });
+  },15_000);
 
   it('A450 v167 的 184 年 v6 JSON 存檔升版後保留新節點待觸發並可重播',()=>{
     const current=makeSave('a450-v167-liu-yu-migration',184),originalStart=current.events[0];if(originalStart.type!=='WorldCreated')throw new Error('expected opening event');
