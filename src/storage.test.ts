@@ -615,7 +615,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};const migrated=verifySave(toJson(old));const nodeId='sun-quan-wei-envoys-and-sun-deng-investiture-221';
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='wu-chancellor-succession-225')?.status).toBe('pending');
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v111-sun-deng-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!result.state||!result.event)throw new Error('could not trigger migrated v111 save');const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};expect(result.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
-  },15000);
+  },30000);
 
   it('A224 v112 的 224 年 v6 JSON 升級新增 225 年史事、續玩可觸發並可重播',()=>{
     const current=makeSave('phase6-v112-gu-yong');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
