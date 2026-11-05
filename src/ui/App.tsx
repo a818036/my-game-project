@@ -7,6 +7,7 @@ import { ENGINEERING, HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES, shouldReofferE
 import { HAN_DIVISION_INDEX, HAN_DIVISION_SOURCE_URLS, HAN_INSPECTOR_COMMANDERY_TOTAL, HAN_INSPECTOR_DIVISION_COUNT } from '../phase4-geography';
 import { characterAgeLabel } from '../narration/status';
 import { shouldGenerateNarrative } from '../narration-policy';
+import { loadBattleScenarioModule } from '../battle-scenario-loader';
 import {computeBattleVisibility} from '../battle-geometry';
 import {isBattleScenarioRevisionCurrent} from '../battle-scenario-safety';
 import type {BattleScenarioId} from '../battle-scenario-examples';
@@ -225,7 +226,7 @@ export default function App() {
     if(!state||p4BattleLoading)return;
     const origin={worldlineId:state.worldlineId,revision:state.revision};setP4BattleLoading(true);setActivityMessage('正在載入戰場資料。');
     try{
-      const {createBattleScenario}=await import('../battle-scenario-examples');
+      const {createBattleScenario}=await loadBattleScenarioModule();
       const current=activeSaveRef.current;
       if(!current||!isBattleScenarioRevisionCurrent(origin,{worldlineId:current.worldlineId,revision:current.state.revision})){const message='載入戰役期間，世界線狀態已有變更；請重新確認後再開始。';setNotice(message);setActivityMessage(message);return;}
       const scenario=createBattleScenario(p4BattleScenario==='ford'?'river-ford':p4BattleScenario);

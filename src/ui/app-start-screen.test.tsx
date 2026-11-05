@@ -3,9 +3,11 @@ import {act,createElement} from 'react';
 import {createRoot} from 'react-dom/client';
 import axe from 'axe-core';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
-import {activateWorldline,commitWorldline,loadWorkspace} from '../storage';
+import {activateWorldline,commitWorldline,loadWorkspace,type SaveFile} from '../storage';
 import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
 import {fetchNarration} from '../narration/client';
+import {battleScenarioOptions,createBattleScenario} from '../battle-scenario-examples';
+import {loadBattleScenarioModule} from '../battle-scenario-loader';
 
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 
@@ -18,6 +20,7 @@ vi.mock('../narration/client',async(importOriginal)=>{
   const actual=await importOriginal<typeof import('../narration/client')>();
   return {...actual,fetchNarration:vi.fn()};
 });
+vi.mock('../battle-scenario-loader',()=>({loadBattleScenarioModule:vi.fn()}));
 vi.mock('./HistoricalGeographyRegisters',async()=>{
   const {createElement,useState}=await import('react');
   return {HistoricalGeographyRegisters:()=>{
@@ -72,6 +75,7 @@ describe('開局存檔載入提示',()=>{
 
   beforeEach(()=>{
     host=document.createElement('div');document.body.append(host);root=createRoot(host);
+    vi.mocked(loadBattleScenarioModule).mockReset().mockResolvedValue({battleScenarioOptions,createBattleScenario});
   });
   afterEach(async()=>{
     await act(async()=>root.unmount());
@@ -224,10 +228,14 @@ describe('開局存檔載入提示',()=>{
         vi.mocked(commitWorldline).mockResolvedValue(undefined);
         const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
         expect(startBattle).toBeDefined();
+        let finishScenarioLoad!:(module:Awaited<ReturnType<typeof loadBattleScenarioModule>>)=>void;
+        const pendingScenarioLoad=new Promise<Awaited<ReturnType<typeof loadBattleScenarioModule>>>(resolve=>{finishScenarioLoad=resolve;});
+        vi.mocked(loadBattleScenarioModule).mockReturnValueOnce(pendingScenarioLoad);
         await act(async()=>{startBattle!.click();await Promise.resolve();});
         expect(host.querySelector('.visually-hidden[role="status"]')?.textContent).toContain('正在載入戰場資料。');
         expect(startBattle?.disabled).toBe(true);
         expect(startBattle?.textContent).toContain('正在載入戰場資料…');
+        finishScenarioLoad({battleScenarioOptions,createBattleScenario});
         await act(async()=>{await new Promise(resolve=>setTimeout(resolve,300));});
         const battleText=host.textContent??'';
         expect(battleText).toContain('後陣觀察者在渡口對岸後陣：北岸木弩臺（示例）可見、牽繫木索（示例）可見');
@@ -236,6 +244,34 @@ describe('開局存檔載入提示',()=>{
       }
     }
   });
+
+  it('各戰役選項均由共用場景資料建立',async()=>{
+    const facts=createOpeningFacts(474,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a477-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}共用場景`,seed:474,facts});
+    if(!started.state||!started.event)throw new Error('建立戰役選項測試存檔失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(commitWorldline).mockResolvedValue(undefined);
+
+    for(const id of ['city-gate','mountain-retreat'] as const){
+      vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+      await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();});
+      await act(async()=>{[...host.querySelectorAll<HTMLElement>('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();});
+      const scene=createBattleScenario(id);
+      const scenarioLabel=[...host.querySelectorAll<HTMLLabelElement>('.phase4-panel label')].find(label=>label.textContent?.includes('戰場情境'));
+      const selector=scenarioLabel?.querySelector<HTMLSelectElement>('select');
+      expect(selector).not.toBeNull();
+      await act(async()=>{selector!.value=id;selector!.dispatchEvent(new Event('change',{bubbles:true}));});
+      const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+      expect(startBattle).toBeDefined();
+      await act(async()=>{startBattle!.click();await new Promise(resolve=>setTimeout(resolve,300));});
+      const battleText=host.textContent??'';
+      expect(battleText).toContain(scene.location);
+      for(const object of scene.scene.objects)expect(battleText).toContain(object.label);
+      for(const observer of scene.scene.observers)expect(battleText).toContain(`${observer.side}在${observer.location}：`);
+      await act(async()=>root.render(null));
+    }
+  },30000);
 
   it('A365 axe-core 檢查開局與遊戲五個資料分頁',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
