@@ -3,7 +3,7 @@ import { createOpeningFacts, dispatch, ENGINE_VERSION, SKILLS_VERSION, SOURCE_HA
 import { activateWorldline, assertSlotCompatible, commitWorldline, loadWorkspace, parseSave, toJson, verifySave, type SaveFile, type UnreadableSave, type WorkspaceSnapshot } from '../storage';
 import { kinshipTerm, STAT_NAMES, type AccountName, type AssetName, type Phase2Action, type RelationshipKind } from '../phase2';
 import { EXAMPLE_LANGUAGE, OFFICIAL_ABILITIES, sampleLightningContext, type AbilityCombinationId, type AbilityId, type HarmIntent, type IllusionDistribution, type InnateAction, type RealityDepth } from '../innate';
-import { ENGINEERING, HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES, shouldReofferEnding, type ControlLevel, type Phase4Action, type PolicyId, type WarUnit, type BattleSceneManifest } from '../phase4';
+import { ENGINEERING, HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES, shouldReofferEnding, type ControlLevel, type Phase4Action, type PolicyId } from '../phase4';
 import { HAN_DIVISION_INDEX, HAN_DIVISION_SOURCE_URLS, HAN_INSPECTOR_COMMANDERY_TOTAL, HAN_INSPECTOR_DIVISION_COUNT } from '../phase4-geography';
 import { characterAgeLabel } from '../narration/status';
 import { shouldGenerateNarrative } from '../narration-policy';
@@ -37,7 +37,7 @@ function storageDiagnostic(error: unknown) {
 function UnreadableSaves({issues,onExport}:{issues:UnreadableSave[];onExport:(issue:UnreadableSave)=>void}){
   return issues.length?<section className="save-recovery" role="alert" aria-label="無法驗證的存檔"><h2>有存檔未能通過驗證</h2><p>原始資料仍保留在瀏覽器中。你可以先下載備份，再開始新局或載入其他有效世界線。</p><ul>{issues.map(issue=><li key={issue.worldlineId}><b>世界線 {issue.worldlineId}・v{issue.version}</b><details><summary>查看原因</summary><code>{issue.reason}</code></details><button className="quiet" type="button" onClick={()=>onExport(issue)}>下載原始存檔備份</button></li>)}</ul></section>:null;
 }
-function exampleBattleScene():BattleSceneManifest{return{example:true,coordinateScale:'meters',objects:[{id:'crossbow-platform',label:'北岸木弩臺（示例）',location:'渡口北岸土坡',condition:'支架穩固，外側受力點靠近坡沿',position:{x:4,y:0},radius:0.7,integrity:60},{id:'tether-rope',label:'牽繫木索（示例）',location:'木弩臺至拒馬側樁之間',condition:'繃緊，連接弩臺外架與木樁',position:{x:6,y:0},radius:0.1,integrity:15},{id:'refuse-barrier',label:'拒馬（示例）',location:'守軍前沿',condition:'橫置，木索從側面牽固',position:{x:8,y:0},radius:0.8,blocksLineOfSight:true,integrity:30},{id:'blue-shield-rank',label:'守軍盾列（示例）',location:'拒馬後方',condition:'列陣防守',position:{x:10,y:0},radius:0.5,integrity:40},{id:'physics-ram',label:'撞木（碰撞示例）',location:'木門外側測試區',condition:'待推撞',position:{x:0,y:20,z:0},radius:0.5,rigidBody:{massKg:1,restitution:0,velocityMps:{x:0,y:0,z:0},failureEnergyJ:20}},{id:'physics-gate',label:'固定木門（碰撞示例）',location:'木門外側測試區',condition:'固定不動',position:{x:2,y:20,z:0},radius:0.5,rigidBody:{massKg:100,restitution:0,anchored:true,velocityMps:{x:0,y:0,z:0}}}],potentialChains:[{id:'platform-rope',fromObjectId:'crossbow-platform',toObjectId:'tether-rope',triggerCondition:'弩臺側架受擊斷裂',possibleEffect:'側架將力傳至牽索',affectedUnitIds:['blue-vanguard'],impactForce:18,maxDistance:3,affectedRadius:0,moraleImpact:0},{id:'rope-barrier',fromObjectId:'tether-rope',toObjectId:'refuse-barrier',triggerCondition:'牽索受拉斷裂',possibleEffect:'牽索將力傳至拒馬',affectedUnitIds:['blue-vanguard'],impactForce:35,maxDistance:3,affectedRadius:0,moraleImpact:0},{id:'barrier-shield-rank',fromObjectId:'refuse-barrier',toObjectId:'blue-shield-rank',triggerCondition:'拒馬向盾列方向翻倒',possibleEffect:'拒馬撞擊盾列前沿，短暫失序；傷亡數為本示例預置軍籍',affectedUnitIds:['blue-vanguard'],impactForce:24,maxDistance:3,affectedRadius:4,moraleImpact:8,casualties:[{unitId:'blue-vanguard',killed:1,wounded:2,routed:0}]}],observers:[{id:'north-front',side:'守軍前列',location:'拒馬後方',visibility:'可看見拒馬與本部盾列；近處情況較清楚',position:{x:0,y:0},sightRange:12},{id:'far-rear',side:'後陣觀察者',location:'渡口對岸後陣',visibility:'隔河可辨出北岸弩臺與牽索輪廓，無法確認拒馬及盾列細節',position:{x:0,y:8},sightRange:10}],narrativeContext:{tacticalObjectives:['守軍維持渡口通行受阻，來犯部隊試圖接近北岸。'],confirmedConsequences:['既有因果鏈結算前，沒有新增傷亡。'],aftermathLimits:['傷亡只能依預置軍籍；拒馬受損不代表渡口易手或全軍潰散。']}};}
+
 const DEDICATED_ABILITY_OPERATIONS = new Set<AbilityId>(['軒轅幻術・五感天幕','全幻術系強制執行通則','萬軍共夢','千軍異夢','惑感','入實','五感實相','五感盡失','神識威壓','妖術・伏地','萬軍伏地','全雷霆系強制敘事通則','軒轅天罰','地走雷','雷震','萬雷震軍','天雷禁域','天雷破城','軒轅天罰・雷海','百脈敕令','百脈敕令・封將','萬疫敕令','軒轅觀世','天醫敕生','歲月回春','軒轅傳音','軒轅傳音・天下共視','軒轅閃','軒轅藏界','軒轅極限收斂','萬解','霸者橫攔','霸者橫攔・摧關','霸者橫攔・撼陣','霸者橫攔・霸王擲','霸者橫攔・不動','霸骨天成','山河薪火','薪火不滅','群星入懷','萬民歸心','萬軍如臂']);
 const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
 const commandId = () => crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -223,16 +223,21 @@ export default function App() {
   }
   async function startBattleExample(){
     if(!state||p4BattleLoading)return;
-    if(p4BattleScenario==='ford'){
-      const units:WarUnit[]=[{id:'blue-vanguard',faction:'郡縣守備（示例）',commanderId:'captain-blue',commanderName:'守備校尉・示例',location:'汝南渡口（示例）',strength:4000,reserve:1000,supply:5,morale:70,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命',position:{x:12,y:0},sightRadius:8},{id:'red-vanguard',faction:'來犯部隊（示例）',commanderId:'captain-red',commanderName:'前軍校尉・示例',location:'汝南渡口（示例）',strength:5000,reserve:0,supply:4,morale:65,fatigue:0,terrain:'渡口',wounded:0,killed:0,routed:0,order:'待命',position:{x:18,y:0},sightRadius:8}];
-      phase4Action({type:'StartBattle',id:commandId(),location:'汝南渡口・前線（示例）',units,protagonistPresent:true,scene:exampleBattleScene()});return;
-    }
     const origin={worldlineId:state.worldlineId,revision:state.revision};setP4BattleLoading(true);
     try{
       const {createBattleScenario}=await import('../battle-scenario-examples');
       const current=activeSaveRef.current;
       if(!current||!isBattleScenarioRevisionCurrent(origin,{worldlineId:current.worldlineId,revision:current.state.revision})){setNotice('載入戰役期間，世界線狀態已有變更；請重新確認後再開始。');return;}
-      const scenario=createBattleScenario(p4BattleScenario),id=commandId();
+      const scenario=createBattleScenario(p4BattleScenario==='ford'?'river-ford':p4BattleScenario);
+      if(p4BattleScenario==='ford'){
+        scenario.units[0]={...scenario.units[0]!,location:'汝南渡口（示例）',reserve:1000,supply:5,morale:70,order:'待命'};
+        scenario.units[1]={...scenario.units[1]!,location:'汝南渡口（示例）',reserve:0,supply:4,morale:65,order:'待命'};
+        const casualtyChain=scenario.scene.potentialChains.find(chain=>chain.id==='barrier-shield-rank');
+        if(!casualtyChain)throw new Error('渡口示例缺少傷亡鏈資料');
+        casualtyChain.possibleEffect='拒馬撞擊盾列前沿，短暫失序；傷亡數為本示例預置軍籍';
+        casualtyChain.casualties=[{unitId:'blue-vanguard',killed:1,wounded:2,routed:0}];
+      }
+      const id=commandId();
       void run({version:ENGINE_VERSION,commandId:id,expectedRevision:current.state.revision,worldlineId:current.worldlineId,type:'Phase4Action',action:{type:'StartBattle',id,location:scenario.location,units:scenario.units,protagonistPresent:true,scene:scenario.scene}});
     }catch{setNotice('戰役示例資料載入失敗；世界線未變更，請稍後再試。');}
     finally{setP4BattleLoading(false);}
