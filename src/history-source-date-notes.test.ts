@@ -30,7 +30,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(176);
+    expect(withinCatalogYears).toHaveLength(177);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -53,6 +53,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'epidemic-185': ['春正月大疫'],
       'south-palace-fire-185': ['二月己酉', '火半月乃滅', '稅天下田畝十錢'],
       'hailstorm-fourth-month-185': ['夏四月庚戌', '大雨雹'],
+      'zhang-rang-eunuchs-enfeoffed-185': ['中平二年六月', '討張角功', '張讓等十二人', '列侯'],
       'changsha-ou-xing-revolt-187': ['中平四年冬十月'],
       'yizhou-ma-xiang-revolt-188': ['中平五年六月'],
       'emperor-returns-east-195': ['興平二年七月'],
@@ -131,7 +132,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(84);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(85);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -171,6 +172,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'epidemic-185',
       'south-palace-fire-185',
       'hailstorm-fourth-month-185',
+      'zhang-rang-eunuchs-enfeoffed-185',
       'partisan-amnesty-return-184',
       'liangzhou-meiyang-campaign-185',
       'palace-succession-189',
@@ -202,7 +204,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(84);
-    expect(uniqueNotedEvents.size).toBe(109);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(85);
+    expect(uniqueNotedEvents.size).toBe(110);
   });
 });
