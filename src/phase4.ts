@@ -450,7 +450,8 @@ export function createPhase4Model(year:number,month:number,persons:PersonRef[],c
  if(contentVersion!==PHASE4_LEGACY_CONTENT_VERSION){for(const node of model.nodes){const content=nodeContent(node.contentId);if(content.introducedIn&&year>=content.startYear)processHistoryNode(model,node);}}
  return model;
 }
-function nodeContent(id:string){return HISTORY_CONTENT.find(x=>x.id===id)!;}
+const HISTORY_CONTENT_BY_ID=new Map(HISTORY_CONTENT.map(content=>[content.id,content] as const));
+function nodeContent(id:string){return HISTORY_CONTENT_BY_ID.get(id)??HISTORY_CONTENT.find(content=>content.id===id)!;}
 function pushEvent(m:Phase4Model,type:string,detail:string,source?:string){m.eventLedger.push({id:`p4-${m.day}-${m.eventLedger.length+1}`,day:m.day,year:m.year,month:m.month,dayOfMonth:m.dayOfMonth,type,detail,...(source?{source}:{})});}
 function dateAdd(m:Phase4Model,days:number){for(let i=0;i<days;i++){m.day++;m.dayOfMonth++;if(m.dayOfMonth>30){m.dayOfMonth=1;m.month++;if(m.month>12){m.month=1;m.year++;processYear(m);}} if(m.day%30===0)processMonth(m); finishArrivals(m); processConvoys(m); settleDeaths(m); settleRecruitment(m);}}
 function processHistoryNode(m:Phase4Model,node:HistoryNode){const content=nodeContent(node.contentId);if(contentIsRetired(content,m.contentVersion)||node.status!=='pending'||m.year<content.startYear||m.year>content.endYear)return;
