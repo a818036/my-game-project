@@ -164,9 +164,16 @@ describe('主要淺色介面的文字對比', () => {
   it('Windows 強制色彩模式仍以系統色標示焦點、選取及按鈕狀態', () => {
     const rules = rulesForCondition('@media(forced-colors:active)');
     expect(rules.find((rule) => rule.selector === ':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus')?.declarations).toMatch(/outline-color:Highlight!important/);
-    expect(rules.find((rule) => rule.selector === '.intent.selected')?.declarations).toMatch(/border:2px solid Highlight/);
+    const selectedIntent = rules.find((rule) => rule.selector === '.intent.selected')?.declarations;
+    expect(selectedIntent).toMatch(/border:2px solid Highlight/);
+    expect(selectedIntent).toMatch(/box-shadow:none/);
+    expect(rules.find((rule) => rule.selector === '.feature-nav label.active')?.declarations).toMatch(/border-color:Highlight/);
+    expect(rules.find((rule) => rule.selector === '.feature-nav label:focus-within')?.declarations).toMatch(/outline-color:Highlight/);
+    expect(rules.find((rule) => rule.selector === '.skip-link')?.declarations).toMatch(/background:Canvas;color:CanvasText;border-color:Highlight/);
     expect(rules.find((rule) => rule.selector === '.primary,.quiet')?.declarations).toMatch(/background:ButtonFace;color:ButtonText/);
-    expect(rules.find((rule) => rule.selector === '.primary:disabled,.quiet:disabled,button:disabled')?.declarations).toMatch(/color:GrayText/);
+    const disabled = rules.find((rule) => rule.selector === '.primary:disabled,.quiet:disabled,button:disabled')?.declarations;
+    expect(disabled).toMatch(/border-color:GrayText/);
+    expect(disabled).toMatch(/color:GrayText/);
     expect(stylesheet).not.toMatch(/forced-color-adjust:\s*none/);
   });
 
