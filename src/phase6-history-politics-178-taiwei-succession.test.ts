@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {advancePhase4,createPhase4Model,HISTORY_CONTENT,PHASE4_CONTENT_VERSION,upgradePhase4Content,type PersonRef} from './phase4';
+import {advancePhase4,createPhase4Model,HISTORY_CONTENT,HISTORY_SOURCE_DATE_NOTES,PHASE4_CONTENT_VERSION,upgradePhase4Content,type PersonRef} from './phase4';
 import {answerKnownHistoricalEventQuestion} from './life';
 import {applyEvent,createOpeningFacts,dispatch,ENGINE_VERSION,replay,type GameEvent} from './engine';
 import {toJson,verifySave,type SaveFile} from './storage';
@@ -23,7 +23,7 @@ describe('A522 178 年太尉任免記事',()=>{
     expect(node?.source).toContain('三月太常常山張顥為太尉');
     expect(node?.source).toContain('九月張顥罷');
     expect(node?.source).toContain('十二月丁巳');
-    expect(node?.sourceDateNote).toContain('不換算模型日期');
+    expect(node?.sourceDateNote??HISTORY_SOURCE_DATE_NOTES[id]).toContain('不換算模型日期');
     const advanced=advancePhase4(createPhase4Model(177,1,persons,PHASE4_CONTENT_VERSION),360);
     expect(advanced.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
     const answer=answerKnownHistoricalEventQuestion('西元 178 年太尉有什麼變動？',oldV208Save().state);

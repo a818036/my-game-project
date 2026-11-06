@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advancePhase4, createPhase4Model, HISTORY_CONTENT, PHASE4_CONTENT_VERSION, upgradePhase4Content } from './phase4';
+import { advancePhase4, createPhase4Model, HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES, PHASE4_CONTENT_VERSION, upgradePhase4Content } from './phase4';
 
 const persons = [{ id: 'sample-person', name: '示例人物', alive: true, location: '郡府', office: '縣令' }];
 const eventId = 'sun-quan-inferred-birth-182';
@@ -549,7 +549,7 @@ describe('216–217 年孫權濡須與遣使', () => {
       expect(content).toMatchObject({ startYear: item.year, endYear: item.year, precision: 'year', introducedIn: 'phase4-scenario-102', sameYearMigrationIsLate: true });
       expect(content?.source).toContain('《三國志》卷四十七');
       expect(content?.source).toContain(item.fact);
-      expect(content?.sourceDateNote).toContain(item.evidence);
+      expect(content?.sourceDateNote??HISTORY_SOURCE_DATE_NOTES[item.id]).toContain(item.evidence);
     }
     expect(HISTORY_CONTENT.find((node) => node.id === campaigns[1].id)?.description).toContain('不代玩家作出外交選擇');
   });

@@ -1,7 +1,7 @@
 import type { GameEvent, GameState, PlannedActionDetail } from '../engine';
 import {currentAge} from '../life';
 import {computeBattleVisibility} from '../battle-geometry';
-import {HISTORY_CONTENT} from '../phase4';
+import {HISTORY_CONTENT,HISTORY_SOURCE_DATE_NOTES} from '../phase4';
 
 export interface NarrationKnowledgeRecord { turn:number; observation:string; facts:string[]; }
 export interface NarrationPayload {
@@ -33,7 +33,7 @@ export function buildNarrationPayload(state:GameState,event:GameEvent):Narration
     if(entry){
       let details=entry.detail;
       const historicalContent=entry.source?HISTORY_CONTENT.find(content=>content.source===entry.source):undefined;
-      if(historicalContent){details+=`；年表史料（不表示主角親見）：${historicalContent.source}；記載範圍：${historicalContent.description}${historicalContent.sourceDateNote?`；紀年註記：${historicalContent.sourceDateNote}`:''}`;}
+      if(historicalContent){const sourceDateNote=historicalContent.sourceDateNote??HISTORY_SOURCE_DATE_NOTES[historicalContent.id];details+=`；年表史料（不表示主角親見）：${historicalContent.source}；記載範圍：${historicalContent.description}${sourceDateNote?`；紀年註記：${sourceDateNote}`:''}`;}
       const battle=state.phase4?.battle;
       if(battle&&(event.payload.action.type==='BattleRound'||event.payload.action.type==='StartBattle'||event.payload.action.type==='ResolveBattleImpact'||event.payload.action.type==='ResolveBattleImpulse'||event.payload.action.type==='AdvanceBattlePhysics')){
         const unitLedger=battle.units.map(unit=>`${unit.commanderName}率${unit.faction}：所在${unit.location}；地形${unit.terrain}；命令${unit.order}；現役${unit.strength}、預備${unit.reserve}、陣亡累計${unit.killed}、受傷累計${unit.wounded}、撤退${unit.routed}；士氣${unit.morale}、疲勞${unit.fatigue}、補給${unit.supply}`).join('；');
