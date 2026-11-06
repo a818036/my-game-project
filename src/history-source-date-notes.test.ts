@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { HISTORY_CONTENT, HISTORY_SOURCE_DATE_NOTES } from './phase4';
 
 describe('原典日期註記與遊戲日期精度分離', () => {
-  it('A536／A538 核對 160–189 年東漢年號與公元年換算', () => {
-    const eraBaseYear: Record<string, number> = { 建寧: 167, 熹平: 171, 光和: 177, 中平: 183 };
+  it('A536／A538／A541 核對 160–195 年年號與公元年換算', () => {
+    const eraBaseYear: Record<string, number> = { 建寧: 167, 熹平: 171, 光和: 177, 中平: 183, 初平: 189, 興平: 193 };
     const eraNumber: Record<string, number> = { 元: 1, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6 };
     const mismatches = HISTORY_CONTENT
-      .filter((item) => item.startYear < 190 && !item.retired)
+      .filter((item) => item.startYear < 196 && !item.retired)
       .flatMap((item) => {
         const note = item.sourceDateNote ?? HISTORY_SOURCE_DATE_NOTES[item.id] ?? '';
-        const match = note.match(/(建寧|熹平|光和|中平)(元|[一二三四五六])年/);
+        const match = note.match(/(建寧|熹平|光和|中平|初平|興平)(元|[一二三四五六])年/);
         if (!match) return [];
         const expectedYear = eraBaseYear[match[1]] + eraNumber[match[2]];
         return item.startYear === expectedYear ? [] : [`${item.id}：來源為${match[0]}，索引列為 ${item.startYear} 年`];
