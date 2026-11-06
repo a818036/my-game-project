@@ -47,4 +47,19 @@ describe('A529 更正河內、河南記事年序',()=>{
       expect(late.eventLedger.some(item=>item.detail.includes('河內婦食夫'))).toBe(false);
     }
   });
+
+  it('180 年舊存檔已有錯年記事時保留舊帳，不重新結算',()=>{
+    const old=createPhase4Model(180,1,persons,'phase4-scenario-219');
+    const node=old.nodes.find(item=>item.contentId===id)!;
+    node.status='triggered';
+    node.resolvedYear=180;
+    old.eventLedger.push({id:'legacy-henei-wrong-year',day:12,year:180,month:1,dayOfMonth:13,type:'史實事件形成',detail:'舊版誤列於光和三年的河內、河南記事',source:'《後漢書》卷八舊版錯誤年序'});
+    const prefix=structuredClone(old.eventLedger),migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+
+    expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(migrated.nodes.find(item=>item.contentId===id)).toMatchObject({status:'resolved',resolvedYear:170});
+    expect(migrated.eventLedger.some(item=>item.id==='legacy-henei-wrong-year')).toBe(true);
+    expect(migrated.eventLedger.slice(prefix.length).filter(item=>item.type==='史實事件形成'&&item.detail.includes('河內、河南'))).toHaveLength(0);
+    expect(migrated.eventLedger.slice(prefix.length).filter(item=>item.type==='史實資料勘誤')).toHaveLength(1);
+  });
 });
