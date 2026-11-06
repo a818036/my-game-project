@@ -154,11 +154,12 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taiwei-succession-guanghe-1-178': ['三月太常常山張顥為太尉', '九月張顥罷', '十二月丁巳'],
       'taiwei-and-minister-succession-guanghe-2-179': ['三月條記司徒袁滂免', '乙丑', '段熲為太尉'],
       'scholar-nomination-edict-180': ['光和三年六月', '各一人', '悉除議郎'],
+      'hailstorm-chicken-egg-181': ['光和四年', '六月庚辰', '雨雹如雞子'],
       'wu-xiangyang-jiangxia-campaign-236': ['嘉禾五年', '攻襄陽'],
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(95);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -200,6 +201,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'solar-eclipse-180-march',
       'yulin-wuhuh-submit-180',
       'bajun-banshun-submit-182',
+      'hailstorm-chicken-egg-181',
       'chen-dan-yuan-wei-minister-of-masses-182',
       'yongle-palace-office-disaster-182',
       'winter-cold-eastern-commandries-183',
@@ -249,7 +251,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(95);
-    expect(uniqueNotedEvents.size).toBe(129);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
+    expect(uniqueNotedEvents.size).toBe(130);
   });
 });
