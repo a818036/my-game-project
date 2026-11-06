@@ -209,6 +209,13 @@ describe('主要淺色介面的文字對比', () => {
     expect(contrastRatio(lastRuleColor('.confirm-dialog p'), dialogBackground)).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('必要命名對話框標題、說明與標籤在紙色背景達 WCAG AA 對比', () => {
+    const dialogBackground = '#f5eedf';
+    for (const selector of ['.name-dialog h2', '.name-dialog p', '.name-dialog label']) {
+      expect(contrastRatio(lastRuleColor(selector), dialogBackground), selector).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it('ChatGPT 模型選擇欄使用高對比閱讀底色與易操作高度', () => {
     const select = lastRule('.chatgpt-connection select');
     const ink = stylesheet.match(/--ink:\s*(#[0-9a-fA-F]{6})/)![1];
