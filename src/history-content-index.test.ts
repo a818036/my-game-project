@@ -29,7 +29,7 @@ describe('A304 歷史內容來源索引', () => {
     const rows = new Map([...document.matchAll(/^\| `([^`]+)` \|([^\r\n]*)/gm)].map(([, id, rest]) => [id, rest]));
     const activeEvents = HISTORY_CONTENT.filter((item) => item.kind === 'event' && !item.retired);
 
-    expect(activeEvents).toHaveLength(243);
+    expect(activeEvents).toHaveLength(242);
     for (const event of activeEvents) {
       const row = rows.get(event.id);
       expect(row, `缺少事件索引列：${event.id}`).toBeDefined();
@@ -50,6 +50,31 @@ describe('A304 歷史內容來源索引', () => {
         }
       }
     }
+  });
+
+  it('A535 索引明列建寧二、三年勘誤並退役重複記事', () => {
+    const document = readFileSync(new URL('../docs/HISTORY_CONTENT.md', import.meta.url), 'utf8');
+    const rows = new Map([...document.matchAll(/^\| `([^`]+)` \|([^\r\n]*)/gm)].map(([, id, rest]) => [id, rest]));
+    const corrected169 = HISTORY_CONTENT.find((item) => item.id === 'danyang-shanyue-siege-chen-yin-180');
+    const corrected170 = [
+      'henei-henan-cannibalism-report-180',
+      'dong-chong-death-180',
+      'taiwei-sikong-succession-180',
+      'solar-eclipse-180-march',
+      'yulin-wuhuh-submit-180',
+    ];
+
+    expect(corrected169).toMatchObject({ startYear: 169, endYear: 169 });
+    expect(rows.get(corrected169!.id)).toContain('169 年級');
+    expect(rows.get(corrected169!.id)).toContain('建寧二年');
+    for (const id of corrected170) {
+      expect(HISTORY_CONTENT.find((item) => item.id === id)).toMatchObject({ startYear: 170, endYear: 170 });
+      expect(rows.get(id)).toContain('170 年級');
+      expect(rows.get(id)).toContain('建寧三年');
+    }
+    expect(HISTORY_CONTENT.find((item) => item.id === 'jinan-revolt-dongpingling-180')).toMatchObject({ retired: true });
+    expect(rows.get('jinan-revolt-dongpingling-180')).toContain('已退役');
+    expect(HISTORY_CONTENT.find((item) => item.id === 'scholar-nomination-edict-180')).toMatchObject({ startYear: 180 });
   });
 
   it('A379 確認 160–280 年每個年份都有現行史實節點', () => {
@@ -73,7 +98,7 @@ describe('A304 歷史內容來源索引', () => {
     const lateHistoricalNodes = activeEvents.filter((item) => item.startYear >= 183);
 
     expect(inferredEntries).toHaveLength(1);
-    expect(earlyBackgroundEntries).toHaveLength(52);
+    expect(earlyBackgroundEntries).toHaveLength(51);
     expect(lateHistoricalNodes).toHaveLength(190);
     expect(readme).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件／死亡節點`);
     expect(readme).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);

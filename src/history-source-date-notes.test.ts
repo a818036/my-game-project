@@ -179,7 +179,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taiwei-and-minister-succession-guanghe-2-179',
       'scholar-nomination-edict-180',
       'henei-henan-cannibalism-report-180',
-      'jinan-revolt-dongpingling-180',
       'dong-chong-death-180',
       'taiwei-sikong-succession-180',
       'solar-eclipse-180-march',
@@ -235,6 +234,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(95);
-    expect(uniqueNotedEvents.size).toBe(130);
+    expect(uniqueNotedEvents.size).toBe(129);
   });
 });

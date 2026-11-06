@@ -1,48 +1,62 @@
 import {describe,expect,it} from 'vitest';
-import {advancePhase4,createPhase4Model,HISTORY_CONTENT,PHASE4_CONTENT_VERSION,upgradePhase4Content,type PersonRef} from './phase4';
-import {answerKnownHistoricalEventQuestion} from './life';
+import {createPhase4Model,HISTORY_CONTENT,PHASE4_CONTENT_VERSION,upgradePhase4Content,type PersonRef} from './phase4';
 import {applyEvent,createOpeningFacts,dispatch,ENGINE_VERSION,replay,type GameEvent} from './engine';
 import {toJson,verifySave,type SaveFile} from './storage';
 
 const persons:PersonRef[]=[];
-const id='jinan-revolt-dongpingling-180';
-function oldV214Save(year=179):SaveFile{
-  const facts=createOpeningFacts(530,year,{regions:[],surnames:[]});
-  const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a530-v214-start',expectedRevision:0,type:'StartGame',name:'驗收玩家',seed:530,facts});
-  if(!started.event||started.event.type!=='WorldCreated')throw new Error('could not create v214 start event');
-  const event:GameEvent={...started.event,payload:{...started.event.payload,phase4ContentVersion:'phase4-scenario-214'}};
+const retiredId='jinan-revolt-dongpingling-180';
+const canonicalId='jinan-revolt-dongpingling-170';
+function oldV219Save(year=168):SaveFile{
+  const facts=createOpeningFacts(535,year,{regions:[],surnames:[]});
+  const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a530-v219-start',expectedRevision:0,type:'StartGame',name:'驗收玩家',seed:535,facts});
+  if(!started.event||started.event.type!=='WorldCreated')throw new Error('could not create v219 start event');
+  const event:GameEvent={...started.event,payload:{...started.event.payload,phase4ContentVersion:'phase4-scenario-219'}};
   const state=applyEvent(null,event);
-  if(!state)throw new Error('could not replay v214 start event');
+  if(!state)throw new Error('could not replay v219 start event');
   return{format:'shenzhou-save',version:6,worldlineId:state.worldlineId,events:[event],state};
 }
 
-describe('A530 補列 180 年濟南起事記事',()=>{
-  it('只保留原典記事與冬季註記，不推演起因及戰果',()=>{
-    const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:180,endYear:180,precision:'year',introducedIn:'phase4-scenario-215',sameYearMigrationIsLate:true});
-    expect(node?.source).toContain('冬，濟南賊起，攻東平陵');
-    expect(node?.description).toContain('不推演傷亡、城池控制或平定經過');
-    expect(node?.sourceDateNote).toContain('光和三年冬');
-    expect(advancePhase4(createPhase4Model(179,1,persons,PHASE4_CONTENT_VERSION),360).nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
-    expect(answerKnownHistoricalEventQuestion('西元180年濟南有什麼記載？',oldV214Save().state)?.answer).toContain('濟南賊起攻東平陵');
+describe('A530 更正濟南起事重複記事',()=>{
+  it('保留既有 170 年正確節點，將舊版錯誤的 180 年重複節點退役',()=>{
+    const duplicate=HISTORY_CONTENT.find(item=>item.id===retiredId);
+    const canonical=HISTORY_CONTENT.find(item=>item.id===canonicalId);
+    expect(duplicate).toMatchObject({retired:true,retiredIn:'phase4-scenario-220'});
+    expect(duplicate?.source).toContain('建寧三年（170）');
+    expect(canonical?.source).toContain('濟南賊起');
+    expect(duplicate?.sourceDateNote).toBeUndefined();
+    expect(createPhase4Model(170,1,persons,PHASE4_CONTENT_VERSION).nodes.some(item=>item.contentId===retiredId)).toBe(false);
   });
 
-  it('v214 v6 JSON 升級保留事件帳，179 年續玩觸發，180 年以上不回補',()=>{
-    const old=oldV214Save(),prefix=structuredClone(old.state.phase4?.eventLedger??[]),migrated=verifySave(toJson(old));
+  it('v219 舊 v6 存檔升版保留事件前綴，移除重複節點並可續玩至 170 年',()=>{
+    const old=oldV219Save(),prefix=structuredClone(old.state.phase4?.eventLedger??[]),migrated=verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(old.events[0]);
     expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
     expect(migrated.state.phase4?.eventLedger.slice(0,prefix.length)).toEqual(prefix);
-    expect(migrated.state.phase4?.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
-    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'a530-v214-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
-    if(!continued.state||!continued.event)throw new Error('could not continue v214 save');
-    expect(continued.state.phase4?.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
-    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
+    expect(migrated.state.phase4?.nodes.some(item=>item.contentId===retiredId)).toBe(false);
+    expect(migrated.state.phase4?.nodes.find(item=>item.contentId===canonicalId)?.status).toBe('pending');
+    const first=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'a530-v219-year169',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!first.state||!first.event)throw new Error('could not continue v219 save to 169');
+    const second=dispatch(first.state,{version:ENGINE_VERSION,commandId:'a530-v219-year170',expectedRevision:first.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!second.state||!second.event)throw new Error('could not continue v219 save to 170');
+    expect(second.state.phase4?.nodes.find(item=>item.contentId===canonicalId)?.status).toBe('triggered');
+    expect(second.state.phase4?.nodes.some(item=>item.contentId===retiredId)).toBe(false);
+    const saved:SaveFile={...migrated,events:[...migrated.events,first.event,second.event],state:second.state};
     expect(replay(saved.events)).toEqual(saved.state);
     expect(verifySave(toJson(saved))).toEqual(saved);
-    for(const year of [180,181]){
-      const late=upgradePhase4Content(createPhase4Model(year,1,persons,'phase4-scenario-214'),PHASE4_CONTENT_VERSION);
-      expect(late.nodes.find(item=>item.contentId===id)).toMatchObject({status:'resolved',resolvedYear:180});
-      expect(late.eventLedger.some(item=>item.detail.includes('濟南賊起攻東平陵'))).toBe(false);
-    }
+  });
+
+  it('舊存檔已有誤年事件時保留舊帳目並追加勘誤，不回溯重算 170 年',()=>{
+    const old=createPhase4Model(180,1,persons,'phase4-scenario-219');
+    const wrong=old.nodes.find(item=>item.contentId===retiredId)!;
+    const canonical=old.nodes.find(item=>item.contentId===canonicalId)!;
+    wrong.status='triggered'; wrong.resolvedYear=180;
+    canonical.status='triggered'; canonical.resolvedYear=170;
+    old.eventLedger.push({id:'legacy-jinan-wrong-year',day:0,year:180,month:1,dayOfMonth:1,type:'史實事件形成',detail:'舊版誤繫年的濟南賊起攻東平陵事件',source:'《後漢書》卷八舊版錯誤註記'});
+    const prefix=structuredClone(old.eventLedger),migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(migrated.nodes.some(item=>item.contentId===retiredId)).toBe(false);
+    expect(migrated.nodes.find(item=>item.contentId===canonicalId)).toMatchObject({status:'triggered',resolvedYear:170});
+    expect(migrated.eventLedger.filter(item=>item.type==='史實資料勘誤'&&item.detail.includes('建寧三年（170）'))).toHaveLength(1);
+    expect(migrated.eventLedger.some(item=>item.id==='legacy-jinan-wrong-year')).toBe(true);
   });
 });
