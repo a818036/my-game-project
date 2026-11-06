@@ -123,7 +123,7 @@ describe('即時人物對話',()=>{
       const payload=JSON.parse(String(init?.body));
       expect(payload.history).toHaveLength(8);
       expect(payload.history[0].text).toMatch(/^舊問1。問+…$/);
-      expect(payload.history[0].text).toHaveLength(240);
+      expect(payload.history[0].text).toHaveLength(241);
       expect(payload.history.every((turn:{text:string})=>turn.text.length<=240)).toBe(true);
       expect(JSON.stringify(payload)).not.toContain('父親的私下談話');
       expect(JSON.stringify(payload).length).toBeLessThanOrEqual(5600);
