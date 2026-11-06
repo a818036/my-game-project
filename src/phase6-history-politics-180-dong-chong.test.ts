@@ -18,7 +18,7 @@ function oldV215Save(year=169):SaveFile{
 describe('A531 更正董寵記事為建寧三年（170）',()=>{
   it('保留原典年級記事，不推測案由或死因',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedIn:'phase4-scenario-216',sameYearMigrationIsLate:true});
+    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedIn:'phase4-scenario-216',lateSameYear:true});
     expect(node?.source).toContain('九月記「執金吾董寵下獄死」');
     expect(node?.description).toContain('不推測案由、審理經過');
     expect(node?.sourceDateNote).toContain('建寧三年九月');

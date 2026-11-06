@@ -30,7 +30,7 @@ describe('A505 186 年日食記事',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('五月，壬辰晦，日有食之');
     expect(HISTORY_CONTENT.find(item=>item.id===id)?.source).toContain('不推測可見地域');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-192',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-192',lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 186 年發生了什麼事？',world())?.answer).toContain('日食');
     const old=upgradePhase4Content(createPhase4Model(185,1,persons,'phase4-scenario-191'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

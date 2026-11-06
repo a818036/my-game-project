@@ -25,7 +25,7 @@ function oldV207Save():SaveFile{
 describe('A521 178 年烏滸起事補列漢曆日期與來源概數',()=>{
   it('同一節點記錄春正月與「合數萬人」，不推成精確人口或兵力',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:178,endYear:178,precision:'year',introducedIn:'phase4-scenario-145',sameYearMigrationIsLate:true});
+    expect(node).toMatchObject({startYear:178,endYear:178,precision:'year',introducedIn:'phase4-scenario-145',lateSameYear:true});
     expect(node?.source).toContain('卷八十六〈南蠻西南夷列傳〉');
     expect(node?.source).toContain('合數萬人');
     expect(node?.description).toContain('不推定精確參與人數');

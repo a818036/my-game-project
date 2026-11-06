@@ -19,7 +19,7 @@ function oldV210Save():SaveFile{
 describe('A524 補全 179 年三公任免記事',()=>{
   it('一併記錄司徒、太尉與司空交接，並保留原史日期精度',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:179,endYear:179,precision:'year',introducedIn:'phase4-scenario-211',sameYearMigrationIsLate:true});
+    expect(node).toMatchObject({startYear:179,endYear:179,precision:'year',introducedIn:'phase4-scenario-211',lateSameYear:true});
     expect(node?.source).toContain('司徒袁滂免');
     expect(node?.source).toContain('乙丑');
     expect(node?.source).toContain('段熲為太尉');

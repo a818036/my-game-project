@@ -33,7 +33,7 @@ describe('A543 182 年太尉任免記事', () => {
     expect(event?.source).toContain('光和五年冬十月');
     expect(event?.source).toContain('太常楊賜為太尉');
     expect(event?.source).toContain('不推測免職原因');
-    expect(HISTORY_CONTENT.find(item => item.id === id)).toMatchObject({ startYear: 182, endYear: 182, precision: 'year', introducedIn: 'phase4-scenario-222', sameYearMigrationIsLate: true });
+    expect(HISTORY_CONTENT.find(item => item.id === id)).toMatchObject({ startYear: 182, endYear: 182, precision: 'year', introducedIn: 'phase4-scenario-222', lateSameYear: true });
     expect(answerKnownHistoricalEventQuestion('西元 182 年發生了什麼事？', world())?.answer).toContain('太尉許戫免職');
   });
 

@@ -332,11 +332,11 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const shu='liu-shan-succeeds-liu-bei-223';
     const caoNode=HISTORY_CONTENT.find(item=>item.id===cao);
     const shuNode=HISTORY_CONTENT.find(item=>item.id===shu);
-    expect(caoNode).toMatchObject({startYear:220,endYear:220,precision:'year',introducedIn:'phase4-scenario-138',sameYearMigrationIsLate:true});
+    expect(caoNode).toMatchObject({startYear:220,endYear:220,precision:'year',introducedIn:'phase4-scenario-138',lateSameYear:true});
     expect(caoNode?.source).toContain('《三國志》卷一〈魏書·武帝紀〉');
     expect(caoNode?.source).toContain('庚子太祖崩');
     expect(caoNode?.source).toContain('嗣位為丞相、魏王');
-    expect(shuNode).toMatchObject({startYear:223,endYear:223,precision:'year',introducedIn:'phase4-scenario-138',sameYearMigrationIsLate:true});
+    expect(shuNode).toMatchObject({startYear:223,endYear:223,precision:'year',introducedIn:'phase4-scenario-138',lateSameYear:true});
     expect(shuNode?.source).toContain('《三國志》卷三十三〈蜀書·後主傳〉');
     expect(shuNode?.source).toContain('建興元年五月後主即位');
     expect(shuNode?.description).toContain('不推演未載');

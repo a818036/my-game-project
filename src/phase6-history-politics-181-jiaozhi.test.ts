@@ -32,7 +32,7 @@ describe('A514 181 年朱儁平定交阯記事',()=>{
     expect(event?.source).toContain('降者數萬');
     expect(event?.source).toContain('旬月盡定');
     expect(event?.source).toContain('不推定具體戰鬥日期');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedIn:'phase4-scenario-201',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedIn:'phase4-scenario-201',lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 181 年交阯有哪些史實事件？',world())?.answer).toContain('朱儁平定交阯');
     const old=upgradePhase4Content(createPhase4Model(180,1,persons,'phase4-scenario-200'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

@@ -19,7 +19,7 @@ function oldV212Save(year=168):SaveFile{
 describe('A526 更正丹陽山越記事年序',()=>{
   it('依《後漢書》記錄圍攻與陳夤擊破，不增補戰事細節',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:169,endYear:169,precision:'year',introducedIn:'phase4-scenario-213',sameYearMigrationIsLate:true});
+    expect(node).toMatchObject({startYear:169,endYear:169,precision:'year',introducedIn:'phase4-scenario-213',lateSameYear:true});
     expect(node?.source).toContain('丹陽山越賊圍太守陳夤');
     expect(node?.source).toContain('夤擊破之');
     expect(node?.description).toContain('不推演兵力、戰術、傷亡');

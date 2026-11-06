@@ -31,7 +31,7 @@ describe('A501 187 年屠各胡起事',()=>{
     expect(event?.source).toContain('《資治通鑑》卷五十八');
     expect(event?.source).toContain('十二月');
     expect(event?.source).toContain('只按年級');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-188',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-188',lateSameYear:true});
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('十二月');
     const answer=answerKnownHistoricalEventQuestion('西元 187 年發生了什麼事？',world());
     expect(answer?.answer).toContain('屠各胡起事');

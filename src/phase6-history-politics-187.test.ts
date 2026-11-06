@@ -31,7 +31,7 @@ describe('A497 187 年滎陽賊起事與何苗討平',()=>{
     expect(event?.source).toContain('《後漢書》卷八');
     expect(event?.source).toContain('卷六十九〈何進列傳〉');
     expect(event?.source).toContain('封濟陽侯');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-184',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-184',lateSameYear:true});
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('來源未標記事月日');
     const answer=answerKnownHistoricalEventQuestion('西元 187 年發生了什麼事？',world());
     expect(answer?.answer).toContain('滎陽賊起事、何苗討平並受封');

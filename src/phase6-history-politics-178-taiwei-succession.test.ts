@@ -19,7 +19,7 @@ function oldV208Save():SaveFile{
 describe('A522 178 年太尉任免記事',()=>{
   it('按年記錄三次任免並保留漢曆日期精度',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:178,endYear:178,precision:'year',introducedIn:'phase4-scenario-209',sameYearMigrationIsLate:true});
+    expect(node).toMatchObject({startYear:178,endYear:178,precision:'year',introducedIn:'phase4-scenario-209',lateSameYear:true});
     expect(node?.source).toContain('三月太常常山張顥為太尉');
     expect(node?.source).toContain('九月張顥罷');
     expect(node?.source).toContain('十二月丁巳');

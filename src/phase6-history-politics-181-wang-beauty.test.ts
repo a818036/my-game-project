@@ -31,7 +31,7 @@ describe('A509 181 年王美人誕皇子協及宮廷記事',()=>{
     expect(event?.source).toContain('何皇后酖殺王美人');
     expect(event?.source).toContain('靈帝大怒');
     expect(event?.source).toContain('不推定月日');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedIn:'phase4-scenario-196',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedIn:'phase4-scenario-196',lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 181 年發生了什麼事？',world())?.answer).toContain('王美人');
     const old=upgradePhase4Content(createPhase4Model(180,1,persons,'phase4-scenario-195'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

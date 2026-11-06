@@ -30,7 +30,7 @@ describe('A502 187 年陳寔去世記事',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('前太丘長陳寔卒');
     expect(event?.source).toContain('三萬餘人');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-189',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-189',lateSameYear:true});
     const answer=answerKnownHistoricalEventQuestion('西元 187 年發生了什麼事？',world());
     expect(answer?.answer).toContain('陳寔去世');
     expect(answer?.answer).toContain('《資治通鑑》卷五十八');

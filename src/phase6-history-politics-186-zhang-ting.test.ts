@@ -30,7 +30,7 @@ describe('A506 186 年前太尉張廷記事',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('前太尉張廷為宦官所譖，下獄死');
     expect(event?.source).toContain('不與其他同音或異寫人物合併');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-193',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-193',lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 186 年發生了什麼事？',world())?.answer).toContain('張廷');
     const old=upgradePhase4Content(createPhase4Model(185,1,persons,'phase4-scenario-192'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

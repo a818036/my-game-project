@@ -30,7 +30,7 @@ describe('A493 185 年北宮伯玉等寇三輔',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('詔左車騎將軍皇甫嵩鎮長安以討之');
     expect(event?.source).toContain('未在此處記載此次部署的結果');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedIn:'phase4-scenario-180',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedIn:'phase4-scenario-180',lateSameYear:true});
     const answer=answerKnownHistoricalEventQuestion('西元 185 年發生了什麼事？',world());
     expect(answer?.answer).toContain('北宮伯玉等寇三輔');
     expect(answer?.answer).toContain('《資治通鑑》卷五十八');

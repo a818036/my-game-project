@@ -32,7 +32,7 @@ describe('A498 187 年韓遂誅殺邊章等並圍隴西',()=>{
     expect(event?.source).toContain('北宮伯玉、李文侯');
     expect(event?.source).toContain('十餘萬');
     expect(event?.source).toContain('未載圍城結果');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-185',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-185',lateSameYear:true});
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('未標明月份');
     const answer=answerKnownHistoricalEventQuestion('西元 187 年發生了什麼事？',world());
     expect(answer?.answer).toContain('韓遂殺邊章等、進圍隴西並與李相如連和');

@@ -593,7 +593,7 @@ describe('A444 補入 192 年青州黃巾與青州兵記事',()=>{
   const node=fresh.nodes.find(item=>item.contentId===id),event=fresh.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('青州黃巾入兗與受降編為青州兵'));
   expect(node?.status).toBe('triggered');expect(node?.resolvedYear).toBe(192);
   expect(event?.source).toContain('劉岱出擊身死');expect(event?.source).toContain('降卒三十餘萬');expect(event?.source).toContain('不視作現代精確統計');
-  expect(HISTORY_CONTENT.find(item=>item.id===id)?.sameYearMigrationIsLate).toBe(true);
+  expect(HISTORY_CONTENT.find(item=>item.id===id)?.lateSameYear).toBe(true);
  });
 
  it('v166 未到年份舊存檔可續玩，同年及晚年存檔不回補',()=>{

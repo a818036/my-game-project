@@ -30,7 +30,7 @@ describe('A491 185 年大疫記事',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('春正月大疫');
     expect(event?.source).toContain('不推演疫病模型');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedIn:'phase4-scenario-178',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedIn:'phase4-scenario-178',lateSameYear:true});
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('不換算為模型日期');
     const answer=answerKnownHistoricalEventQuestion('西元 185 年發生了什麼事？',world());
     expect(answer?.answer).toContain('春正月大疫');

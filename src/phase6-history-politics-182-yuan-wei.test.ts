@@ -31,7 +31,7 @@ describe('A518 182 年司徒任免記事',()=>{
     expect(event?.source).toContain('三月司徒陳耽免');
     expect(event?.source).toContain('夏四月以太常袁隗為司徒');
     expect(event?.source).toContain('不推測陳耽免職原因');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:182,endYear:182,precision:'year',introducedIn:'phase4-scenario-205',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:182,endYear:182,precision:'year',introducedIn:'phase4-scenario-205',lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 182 年發生了什麼事？',world())?.answer).toContain('陳耽免司徒');
     const old=upgradePhase4Content(createPhase4Model(181,1,persons,'phase4-scenario-204'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

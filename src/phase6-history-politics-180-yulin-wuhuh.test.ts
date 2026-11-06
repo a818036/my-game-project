@@ -18,7 +18,7 @@ function oldV218Save(year=169):SaveFile{
 describe('A534 更正鬱林烏滸記事為建寧三年（170）',()=>{
   it('只按來源的年級精度記錄，不推演人口或行政後果',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedIn:'phase4-scenario-219',sameYearMigrationIsLate:true});
+    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedIn:'phase4-scenario-219',lateSameYear:true});
     expect(node?.source).toContain('鬱林烏滸民相率內屬');
     expect(node?.source).toContain('未提供月份');
     expect(node?.description).toContain('不推演參與者人數、過程、地方控制');

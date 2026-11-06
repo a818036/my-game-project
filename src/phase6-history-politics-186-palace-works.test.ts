@@ -31,7 +31,7 @@ describe('A504 186 年南宮工程記事',()=>{
     expect(event?.source).toContain('四銅人與四口大鐘');
     expect(event?.source).toContain('翻車、渴烏');
     expect(event?.source).toContain('不宣稱工程完整程度');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-191',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-191',lateSameYear:true});
     const answer=answerKnownHistoricalEventQuestion('西元 186 年發生了什麼事？',world());
     expect(answer?.answer).toContain('靈帝命修玉堂');
     expect(answer?.answer).toContain('《資治通鑑》卷五十八');

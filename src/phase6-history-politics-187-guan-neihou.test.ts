@@ -30,7 +30,7 @@ describe('A503 187 年關內侯爵位售價記事',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('賣關內侯直五百萬錢');
     expect(event?.source).toContain('不推定買受人');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-190',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-190',lateSameYear:true});
     const answer=answerKnownHistoricalEventQuestion('西元 187 年發生了什麼事？',world());
     expect(answer?.answer).toContain('關內侯爵位以五百萬錢出售');
     expect(answer?.answer).toContain('《資治通鑑》卷五十八');

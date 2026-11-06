@@ -19,7 +19,7 @@ function oldV211Save(year=179):SaveFile{
 describe('A525 補列 180 年舉薦通經者詔令',()=>{
   it('依原文記錄經典與議郎任用，問答附來源且只採年級日期',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:180,endYear:180,precision:'year',introducedIn:'phase4-scenario-212',sameYearMigrationIsLate:true});
+    expect(node).toMatchObject({startYear:180,endYear:180,precision:'year',introducedIn:'phase4-scenario-212',lateSameYear:true});
     for(const phrase of ['公卿','《尚書》','《毛詩》','《左氏》','《穀梁春秋》','各一人','悉除議郎'])expect(node?.source).toContain(phrase);
     expect(node?.sourceDateNote).toContain('六月');
     expect(node?.sourceDateNote).toContain('不換算模型日期');

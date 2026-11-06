@@ -32,7 +32,7 @@ describe('A513 181 年呂強上疏記事',()=>{
     expect(event?.source).toContain('中尚方、中御府、西園');
     expect(event?.source).toContain('書奏不省');
     expect(event?.source).toContain('不補實施情形');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedIn:'phase4-scenario-200',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedIn:'phase4-scenario-200',lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 181 年有哪些史實事件？',world())?.answer).toContain('呂強上疏');
     const old=upgradePhase4Content(createPhase4Model(180,1,persons,'phase4-scenario-199'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

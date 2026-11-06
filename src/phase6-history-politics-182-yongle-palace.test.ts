@@ -30,7 +30,7 @@ describe('A519 182 年永樂宮署記事',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('五月庚申，永樂宮署災');
     expect(event?.source).toContain('不推定災害成因');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:182,endYear:182,precision:'year',introducedIn:'phase4-scenario-206',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:182,endYear:182,precision:'year',introducedIn:'phase4-scenario-206',lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 182 年發生了什麼事？',world())?.answer).toContain('永樂宮署受災');
     const old=upgradePhase4Content(createPhase4Model(181,1,persons,'phase4-scenario-205'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

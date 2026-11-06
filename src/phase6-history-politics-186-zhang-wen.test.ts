@@ -30,7 +30,7 @@ describe('A507 186 年徵張溫還京師記事',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('徵張溫還京師');
     expect(event?.source).toContain('不補寫未載結果');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-194',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-194',lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 186 年發生了什麼事？',world())?.answer).toContain('徵張溫還京師');
     const old=upgradePhase4Content(createPhase4Model(185,1,persons,'phase4-scenario-193'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

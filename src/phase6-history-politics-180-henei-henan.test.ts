@@ -19,7 +19,7 @@ function oldV213Save(year=169):SaveFile{
 describe('A529 更正河內、河南記事年序',()=>{
   it('保留史書原文與年級日期，不補記事原因或外推至玩家生活',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedIn:'phase4-scenario-214',sameYearMigrationIsLate:true});
+    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedIn:'phase4-scenario-214',lateSameYear:true});
     expect(node?.source).toContain('河內人婦食夫，河南人夫食婦');
     expect(node?.source).toContain('不將其推定為饑荒、疫病');
     expect(node?.description).toContain('不套用到玩家人物');

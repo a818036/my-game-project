@@ -30,7 +30,7 @@ describe('A495 185 年張讓等中常侍受封列侯',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('封中常侍張讓等十二人為列侯');
     expect(event?.source).toContain('不由「等十二人」推列未載姓名');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedIn:'phase4-scenario-182',sameYearMigrationIsLate:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedIn:'phase4-scenario-182',lateSameYear:true});
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('中平二年六月');
     const answer=answerKnownHistoricalEventQuestion('西元 185 年發生了什麼事？',world());
     expect(answer?.answer).toContain('張讓等十二名中常侍因討張角功受封列侯');

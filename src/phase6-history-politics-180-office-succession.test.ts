@@ -18,7 +18,7 @@ function oldV216Save(year=169):SaveFile{
 describe('A532 更正太尉、司空任免為建寧三年（170）',()=>{
   it('合記原典任免，保留月份而不推演任期與官制效果',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedIn:'phase4-scenario-217',sameYearMigrationIsLate:true});
+    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedIn:'phase4-scenario-217',lateSameYear:true});
     expect(node?.source).toContain('郭禧罷、聞人襲繼任');
     expect(node?.source).toContain('劉囂罷，八月橋玄任司空');
     expect(node?.description).toContain('不推演任免原因、實際任期');
