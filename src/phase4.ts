@@ -357,7 +357,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'gao-gan-defeat-206': '原史紀年：建安十一年（206）。原文「圍壺關三月」記圍城持續三個月，不是漢曆三月；不推定月內日期。',
   'sun-quan-builds-shitou-jianye-ruxu-212': '原史紀年：建安十七年（212），承前文「明年」。原文未載月份，不推定築城或作塢的月日。',
   'xun-yu-dies-212': '原史紀年：建安十七年（212）。《三國志》記荀彧疾留壽春、以憂薨；相關裴注材料另有死因敘述，來源均未載月份或確切日期。',
-  'sun-quan-campaigns-against-shiyang-226': '原史紀年：黃初五年秋七月（226）。保留漢曆月份，遊戲仍按公元年級觸發，不換算為模型日期。',
+  'sun-quan-campaigns-against-shiyang-226': '原史紀年：黃武五年秋七月（226）。依《三國志》卷四十七〈吳主傳〉記載，孫權聞魏文帝崩後征江夏、圍石陽，不克而還；漢曆月份不換算為模型日期。',
   'wu-xiangyang-jiangxia-campaign-236': '原史紀年：嘉禾五年（236）。卷五十八以年繫記事，未提供此役的月份或月內日期。',
   'taoxi-campaign-247': '原史紀年：正始八年（247）。《資治通鑑》按年記載洮西戰事，未據此補造月份或日期。',
 };

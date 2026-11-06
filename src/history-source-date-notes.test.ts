@@ -18,6 +18,47 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     expect(mismatches).toEqual([]);
   });
 
+  it('A542 依教育部年號表核對 196–280 年漢魏蜀吳來源年號註記', () => {
+    const eraFirstYear: Record<string, number> = {
+      建安: 196, 延康: 220, 黃初: 220, 太和: 227, 青龍: 233, 景初: 237,
+      正始: 240, 嘉平: 249, 正元: 254, 甘露: 256, 景元: 260, 咸熙: 264,
+      章武: 221, 建興: 223, 延熙: 238, 景耀: 258, 炎興: 263,
+      黃武: 222, 黃龍: 229, 嘉禾: 232, 赤烏: 238, 太元: 251, 神鳳: 252,
+      五鳳: 254, 太平: 256, 永安: 258, 元興: 264, 寶鼎: 266, 建衡: 269,
+      鳳凰: 272, 天冊: 275, 天璽: 276, 天紀: 277, 太康: 280,
+    };
+    const chineseDigit: Record<string, number> = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+    const parseYearNumber = (value: string) => {
+      if (value === '元') return 1;
+      if (!value.includes('十')) return chineseDigit[value] ?? Number.NaN;
+      const [tens, units = ''] = value.split('十');
+      return (tens ? chineseDigit[tens] : 1) * 10 + (units ? chineseDigit[units] : 0);
+    };
+    const eraPattern = new RegExp(`(${Object.keys(eraFirstYear).join('|')})(元|[一二三四五六七八九十]+)年`, 'g');
+    const mismatches = HISTORY_CONTENT
+      .filter((item) => item.startYear >= 196 && item.startYear <= 280 && !item.retired)
+      .flatMap((item) => {
+        const note = item.sourceDateNote ?? HISTORY_SOURCE_DATE_NOTES[item.id] ?? '';
+        const context = `${item.title} ${note}`;
+        const matches = [...note.matchAll(eraPattern)];
+        const candidateYears = matches.map((match) => {
+          const era = match[1];
+          // 蜀、吳皆用建興；魏、吳皆用甘露，依記事人物判別政權年號。
+          const firstYear = era === '建興' && /孫亮|諸葛恪/.test(context)
+            ? 252
+            : era === '甘露' && /孫休|孫皓/.test(context)
+              ? 265
+              : eraFirstYear[era];
+          return { label: match[0], year: firstYear + parseYearNumber(match[2]) - 1 };
+        });
+        if (matches.length === 0 || candidateYears.some(({ year }) => year >= item.startYear && year <= item.endYear)) return [];
+        return [`${item.id}：來源年號候選 ${candidateYears.map(({ label, year }) => `${label}（${year} 年）`).join('、')}，索引列為 ${item.startYear}–${item.endYear} 年`];
+      });
+
+    expect(mismatches).toEqual([]);
+    expect(HISTORY_SOURCE_DATE_NOTES['sun-quan-campaigns-against-shiyang-226']).toContain('黃武五年');
+  });
+
   it('A187 孫權生平索引只主張可證的 71 個年級，不補造每日行程', () => {
     const birth = HISTORY_CONTENT.find((item) => item.id === 'sun-quan-inferred-birth-182');
     const death = HISTORY_CONTENT.find((item) => item.id === 'sun-quan-dies-sun-liang-succeeds-252');
@@ -171,7 +212,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       }
     }
     expect(HISTORY_SOURCE_DATE_NOTES['gao-gan-defeat-206']).toContain('不是漢曆三月');
-    expect(HISTORY_SOURCE_DATE_NOTES['sun-quan-campaigns-against-shiyang-226']).toContain('黃初五年秋七月');
+    expect(HISTORY_SOURCE_DATE_NOTES['sun-quan-campaigns-against-shiyang-226']).toContain('黃武五年秋七月');
   });
 
   it('年級遊戲精度與帶原史月份的顯示註記並存，不推算時辰', () => {

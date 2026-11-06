@@ -727,3 +727,5 @@ A247 v131→v132 遷移案例完整執行略超原 15 秒上限；將測試上�
 A539/A540 驗收：GitHub Actions run [42159225069](https://github.com/a818036/my-game-project/actions/runs/42159225069) 通過 109 個測試檔／724 項、型別、正式建置、容量預算與正式預覽；首頁入口 486,614／500,000 bytes，初始靜態相依 749,245／750,000 bytes。A247 長局遷移測試上限改為 30 秒，單項 12.50 秒通過。史料來源網址檢查 105／106；Harvard CHGIS V6 發生 fetch ECONNRESET，網頁讀取可用但 HTTP 狀態未確認。
 
 A541 擴大年號與公元年索引回歸至 160–195 年，納入初平、興平來源註記；日期註記定向測試六項及型別檢查通過，GitHub Actions run [42160339539](https://github.com/a818036/my-game-project/actions/runs/42160339539) 全綠。重新檢查 106 個不同史料網址，HTTP 2xx 全過且無重試。此項只新增驗證，不更動遊戲內容或存檔格式。
+
+A542 依教育部《重編國語辭典》[中國歷代年號表（第 1 頁）](https://dict.revised.moe.edu.tw/appendix.jsp?ID=3&la=1&page=1&powerMode=0)及[第 2 頁](https://dict.revised.moe.edu.tw/appendix.jsp?ID=3&la=1&page=2&powerMode=0)擴大索引校對至 280 年，納入漢、魏、蜀、吳同名年號辨識。回歸發現 226 年孫權征石陽註記誤將「黃武五年」寫成「黃初五年」；依[《三國志》卷四十七原文](https://zh.wikisource.org/zh-hant/%E4%B8%89%E5%9C%8B%E5%BF%97/%E5%8D%B747)更正註記，不改年級事件或存檔。定向日期註記測試 7 項通過，完整 PR CI 待確認。
