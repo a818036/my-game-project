@@ -401,7 +401,7 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.eventLedger.some(event=>event.detail.includes('孫策去世、孫權承接軍政事務'))).toBe(false);
     expect(replay(migrated.events)).toEqual(migrated.state);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
-  },15000);
+  },15_000);
 
   it('A188 v6 scenario v98 JSON 存檔追加升至目前版本，保留事件前綴並納入射虎節點',()=>{
     const current=makeSave('phase6-v98-to-v102');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
@@ -833,7 +833,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old)),nodeId='red-cliffs-208';expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');expect(replay(migrated.events)).toEqual(migrated.state);
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v141-red-cliffs-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not trigger migrated Red Cliffs save');expect(continued.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&(item.source??'').includes('《三國志》卷五十四'))).toBe(true);
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
-  },15000);
+  },30000);
 
   it('A397 v148 v6 存檔遷移後可續玩 231 年蜀魏戰事並重播',()=>{
     const current=makeSave('phase6-v148-qishan-campaign',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');

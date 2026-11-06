@@ -230,6 +230,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
   it('A225 核實集中與節點內原史日期註記總數', () => {
     const inlineNotes = HISTORY_CONTENT.filter((item) => item.sourceDateNote).map((item) => item.id);
     expect(inlineNotes).toEqual([
+      'qiang-incursion-sanfu-161',
       'ling-emperor-accession-court-purge-168',
       'han-campaign-against-xianbei-defeated-177',
       'jiaozhi-wuhuh-man-uprising-178',
@@ -286,6 +287,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(130);
+    expect(uniqueNotedEvents.size).toBe(131);
   });
 });
