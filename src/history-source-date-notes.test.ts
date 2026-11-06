@@ -182,6 +182,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'jinan-revolt-dongpingling-180',
       'dong-chong-death-180',
       'taiwei-sikong-succession-180',
+      'solar-eclipse-180-march',
       'bajun-banshun-submit-182',
       'chen-dan-yuan-wei-minister-of-masses-182',
       'yongle-palace-office-disaster-182',
@@ -233,6 +234,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(95);
-    expect(uniqueNotedEvents.size).toBe(128);
+    expect(uniqueNotedEvents.size).toBe(129);
   });
 });
