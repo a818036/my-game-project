@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {buildNarrationPayload,validateNarrationResult} from './client';
 import {createOpeningFacts,dispatch,ENGINE_VERSION,type GameState} from '../engine';
-import {HISTORY_CONTENT} from '../phase4';
+import {HISTORY_CONTENT,HISTORY_SOURCE_DATE_NOTES} from '../phase4';
 import {createBattleScenario} from '../battle-scenario-examples';
 
 function state(){const facts=createOpeningFacts(81,184,{regions:[],surnames:[]});return dispatch(null,{version:ENGINE_VERSION,commandId:'narration-start',expectedRevision:0,type:'StartGame',name:`${facts.surname}文和`,seed:81,facts}).state!;}
@@ -123,6 +123,15 @@ describe('第五階段・敘事資訊分層與回應驗證',()=>{
     expect(details).toContain('不表示主角親見');
     expect(details).toContain('原文不載月內日期');
     expect(details).not.toContain('主角目睹');
+  });
+  it('集中保存的日期註記仍會送入歷史敘事 payload',()=>{
+    const current=state(),id='taiwei-succession-guanghe-1-178',content=HISTORY_CONTENT.find(item=>item.id===id)!;
+    expect(content.sourceDateNote).toBeUndefined();
+    const withHistory={...current,phase4:{...current.phase4!,eventLedger:[{id:'history-178',day:360,year:178,month:1,dayOfMonth:1,type:'史實事件形成',detail:'太尉任免記事',source:content.source}]}} as GameState;
+    const event={version:ENGINE_VERSION as typeof ENGINE_VERSION,eventId:'history-178',commandId:'history-178-command',commandHash:'h',revision:2,type:'Phase4Changed' as const,payload:{action:{type:'AdvanceDays' as const,days:360}}};
+    const details=buildNarrationPayload(withHistory,event).settledEvents[0].details;
+    expect(details).toContain(HISTORY_SOURCE_DATE_NOTES[id]);
+    expect(details).toContain('不表示主角親見');
   });
   it('A435 189 年皇位更替旁白取得原典時序且不誤作主角親歷',()=>{
     const current=state(),content=HISTORY_CONTENT.find(item=>item.id==='palace-succession-189')!;
