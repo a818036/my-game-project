@@ -2,6 +2,7 @@
 import { act, createElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import axe from 'axe-core';
 import { NameDialog } from './NameDialog';
 
 describe('必要命名對話框焦點管理', () => {
@@ -63,5 +64,16 @@ describe('必要命名對話框焦點管理', () => {
     trigger.focus();
     trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
     expect(document.activeElement).toBe(document.body.querySelector('[role="dialog"] input'));
+  });
+
+  it('A552 命名對話框符合 axe-core 啟用的無障礙規則', async () => {
+    render();
+    const dialog = document.body.querySelector<HTMLElement>('[role="dialog"]')!;
+    const results = await axe.run(dialog, { rules: { 'color-contrast': { enabled: false } } });
+    expect(results.violations.map(({ id, help, nodes }) => ({
+      id,
+      help,
+      targets: nodes.flatMap((node) => node.target.map(String)),
+    }))).toEqual([]);
   });
 });
