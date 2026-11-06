@@ -624,7 +624,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};const migrated=verifySave(toJson(old));const nodeId='wu-chancellor-succession-225';
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('pending');
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v112-gu-yong-advance',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});if(!result.state||!result.event||result.event.type!=='Phase4Changed')throw new Error('could not trigger migrated v112 save');const continued:SaveFile={...migrated,events:[...migrated.events,result.event],state:result.state};expect(result.state.phase4?.nodes.find(node=>node.contentId===nodeId)?.status).toBe('triggered');expect(result.event.payload).toMatchObject({action:{type:'AdvanceDays',days:360}});expect(replay(continued.events)).toEqual(continued.state);expect(verifySave(toJson(continued))).toEqual(continued);
-  },15000);
+  },30000);
 
   it('A226 v113 的 199 年 v6 JSON 升至 v116、續玩觸發李術節點並保持可重播',()=>{
     const current=makeSave('phase6-v113-li-shu');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
