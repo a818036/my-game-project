@@ -3,6 +3,7 @@ import {describe,expect,it} from 'vitest';
 import {act,createElement} from 'react';
 import {createRoot} from 'react-dom/client';
 import {renderToStaticMarkup} from 'react-dom/server';
+import axe from 'axe-core';
 import {ActivityAnnouncer,LoadingScreen,StatusAlert} from './ActivityAnnouncer';
 
 describe('異步操作螢幕閱讀器狀態',()=>{
@@ -43,5 +44,21 @@ describe('異步操作螢幕閱讀器狀態',()=>{
     expect(error).toContain('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');
     expect(error).toContain('重新讀取存檔');
     expect(renderToStaticMarkup(createElement(StatusAlert,{message:''}))).toBe('');
+  });
+
+  it('A616 載入、背景進度與存檔錯誤狀態通過 axe 啟用規則',async()=>{
+    const host=document.createElement('div');document.body.append(host);const root=createRoot(host);
+    const states=[
+      createElement(LoadingScreen),
+      createElement(ActivityAnnouncer,{message:'正在保存並結算操作。'}),
+      createElement(StatusAlert,{message:'無法讀取瀏覽器存檔。',detail:'IndexedDB unavailable',onRetry:()=>undefined}),
+    ];
+    try{
+      for(const state of states){
+        await act(async()=>root.render(state));
+        const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+        expect(results.violations.map(item=>({id:item.id,targets:item.nodes.map(node=>node.target)}))).toEqual([]);
+      }
+    }finally{await act(async()=>root.unmount());host.remove();}
   });
 });
