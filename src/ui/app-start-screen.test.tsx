@@ -155,6 +155,27 @@ describe('開局存檔載入提示',()=>{
     expect(host.querySelector('[role="alert"]')).toBeNull();
   });
 
+  it('A637 瀏覽器封鎖 localStorage 時仍可開局並調整目前分頁字級',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    const getItem=vi.spyOn(Storage.prototype,'getItem').mockImplementation(()=>{throw new DOMException('Blocked by storage policy.','SecurityError');});
+    const setItem=vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{throw new DOMException('Blocked by storage policy.','SecurityError');});
+    try{
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+      expect(host.querySelector('#start-content')).not.toBeNull();
+      expect(document.documentElement.style.getPropertyValue('--reader-size')).toBe('18px');
+      const sizeControl=host.querySelector<HTMLInputElement>('.reader-control input[type="range"]');
+      expect(sizeControl).not.toBeNull();
+      const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+      await act(async()=>{setValue.call(sizeControl,'23');sizeControl!.dispatchEvent(new Event('input',{bubbles:true}));sizeControl!.dispatchEvent(new Event('change',{bubbles:true}));});
+      expect(document.documentElement.style.getPropertyValue('--reader-size')).toBe('23px');
+      expect(host.querySelector('[role="alert"]')).toBeNull();
+      expect(getItem).toHaveBeenCalledWith('shenzhou-font-size');
+      expect(setItem).toHaveBeenCalledWith('shenzhou-font-size','23');
+    }finally{
+      getItem.mockRestore();setItem.mockRestore();
+    }
+  });
+
   it('開局畫面有單一主要地標、頁面標題及具可讀標籤的表單控制項',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});

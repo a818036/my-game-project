@@ -29,6 +29,15 @@ const WORKSPACE_READ_ERROR = '無法讀取瀏覽器存檔；請確認 IndexedDB 
 const WORKSPACE_RETRY_ERROR = '仍無法讀取瀏覽器存檔；請確認 IndexedDB 可用，再試一次。';
 const WORLDLINE_SWITCHED_NOTICE = '已切換世界線；舊存檔仍保留。';
 const WORLDLINE_SWITCH_FAILED_NOTICE = '切換失敗；所有存檔均保留。';
+function readReaderFontSize() {
+  try {
+    const saved = localStorage.getItem('shenzhou-font-size');
+    if (!saved || !Number.isFinite(Number(saved))) return 18;
+    return Math.max(16, Math.min(24, Number(saved)));
+  } catch {
+    return 18;
+  }
+}
 function storageDiagnostic(error: unknown) {
   const name = error && typeof error==='object'&&'name' in error ? String(error.name) : '未知錯誤';
   const rawMessage = error && typeof error==='object'&&'message' in error ? String(error.message) : String(error);
@@ -89,7 +98,7 @@ export default function App() {
   const [narrative,setNarrative]=useState<NarrationResult|null>(null);
   const [narrationPending,setNarrationPending]=useState(false);
   const [narrationError,setNarrationError]=useState('');
-  const [fontSize, setFontSize] = useState(() => Number(localStorage.getItem('shenzhou-font-size')) || 18);
+  const [fontSize, setFontSize] = useState(readReaderFontSize);
   const [activePanel, setActivePanel] = useState<'人物'|'家產'|'天生技'|'軍政'|'記事'>('人物');
   const [abilityMode, setAbilityMode] = useState('幻術');
   const [abilityTarget, setAbilityTarget] = useState('example-clerk');
@@ -166,7 +175,10 @@ export default function App() {
     }
   }, [state?.worldlineId, newTimeline]);
 
-  useEffect(() => { document.documentElement.style.setProperty('--reader-size', `${fontSize}px`); localStorage.setItem('shenzhou-font-size', String(fontSize)); }, [fontSize]);
+  useEffect(() => {
+    document.documentElement.style.setProperty('--reader-size', `${fontSize}px`);
+    try { localStorage.setItem('shenzhou-font-size', String(fontSize)); } catch { /* 字級仍可在目前分頁調整。 */ }
+  }, [fontSize]);
 
   useEffect(() => { loadWorkspace().then(setWorkspace).catch((error) => {setNotice(WORKSPACE_READ_ERROR);setStorageErrorDetail(storageDiagnostic(error));}).finally(() => setReady(true)); }, []);
   const retryWorkspaceLoad=async()=>{
