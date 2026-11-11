@@ -253,6 +253,15 @@ describe('主要淺色介面的文字對比', () => {
     expect(focus).toMatch(/outline-color:Highlight!important/);
   });
 
+  it('一般鍵盤焦點框對淺色介面達到 3:1 非文字對比', () => {
+    const focus = ruleMatching('button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible', /outline:\s*3px solid #[0-9a-fA-F]{6}/);
+    const color = focus.match(/outline:\s*3px solid (#[0-9a-fA-F]{6})/)?.[1];
+    expect(color).toBeDefined();
+    for (const background of ['#f5eedf', '#fffaf0', '#eee3cf']) {
+      expect(contrastRatio(color!, background), background).toBeGreaterThanOrEqual(3);
+    }
+  });
+
   it('強制色彩模式保留選取、分頁、跳轉及按鈕的系統色辨識', () => {
     const rules = rulesForCondition('@media(forced-colors:active)');
     const declaration = (selector: string) => rules.find((rule) => rule.selector === selector)?.declarations ?? '';
