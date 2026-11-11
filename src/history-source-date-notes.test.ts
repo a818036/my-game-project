@@ -236,6 +236,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'qiang-incursions-167',
       'duan-jiong-defeats-xianling-fengyishan-168',
       'court-offices-reorganized-spring-168',
+      'wang-chang-liu-chong-succession-168',
       'e168',
       'capital-rainwater-168',
       'duan-jiong-defeats-xianling-jingyang-168',
@@ -296,6 +297,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(140);
+    expect(uniqueNotedEvents.size).toBe(141);
   });
 });
