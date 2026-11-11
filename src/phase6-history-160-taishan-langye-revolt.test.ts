@@ -425,4 +425,42 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('武陵蠻叛寇江陵'))).toBe(false);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A654 補列蜀郡屬國夷叛並保留三月來源註記', () => {
+    const shuId = 'shu-dependent-country-revolt-163';
+    const previous = createPhase4Model(162, 1, [], 'phase4-scenario-276');
+    const oldLedger = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, oldLedger.length)).toEqual(oldLedger);
+    expect(upgraded.nodes.find((node) => node.contentId === shuId)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === shuId)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('蜀郡屬國夷叛'));
+    expect(event?.source).toContain('延熹六年三月');
+    expect(HISTORY_CONTENT.find((item) => item.id === shuId)).toMatchObject({
+      startYear: 163,
+      endYear: 163,
+      precision: 'year',
+      introducedRevision: 277,
+      sourceDateNote: '延熹六年三月；遊戲只按 163 年級觸發，不換算漢曆月份為模型日期。',
+    });
+
+    for (const year of [163, 164]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-276'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === shuId)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+      expect(late.eventLedger.some((item) => item.detail.includes('蜀郡屬國夷叛'))).toBe(false);
+    }
+
+    const old = oldSave(162, 663, 'phase4-scenario-276');
+    const oldPrefix = structuredClone(old.events);
+    const migrated = verifySave(toJson(old));
+    expect(migrated.events.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === shuId)?.status).toBe('pending');
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    const lateSave = verifySave(toJson(oldSave(163, 664, 'phase4-scenario-276')));
+    expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === shuId)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+    expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('蜀郡屬國夷叛'))).toBe(false);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
