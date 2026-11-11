@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-259';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-260';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -14,7 +14,7 @@ const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:257},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:258},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -99,8 +99,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'solar-eclipse-180-march',kind:EVENT_KIND,title:'建寧三年三月晦日日食',startYear:170,endYear:170,precision:YEAR_PRECISION,source:HH8+'建寧三年記「三月丙寅晦，日有食之」。本節點只記載原文天象與曆日，不推測可見範圍、成因、政治徵兆或對人物與地方的影響。',carrier:'漢廷紀錄中的天象記事（史料記載）',description:'記錄建寧三年三月晦日的日食記事；不推定觀測地、天文參數、災害或政治後果，也不改動遊戲人物與世界狀態。',sourceDateNote:'原史紀年：《後漢書》卷八記建寧三年三月丙寅晦日食。保留漢曆三月晦日及干支註記；遊戲只按公元 170 年級觸發，不換算模型日期。',introducedRevision:218 },
   { id:'yulin-wuhuh-submit-180',kind:EVENT_KIND,title:'鬱林烏滸民相率內屬',startYear:170,endYear:170,precision:YEAR_PRECISION,source:HH8+'建寧三年條記「鬱林烏滸民相率內屬」。原文未提供月份、人口數、具體地點或後續，不以此推定疆界、人口統計或行政制度改變。',carrier:'鬱林烏滸民與漢廷（史料記載）',description:'保留史書所記鬱林烏滸民相率內屬；來源未提供細節，不推演參與者人數、過程、地方控制或後續行政效果。',sourceDateNote:'《後漢書》卷八僅將「鬱林烏滸民相率內屬」繫於建寧三年（170），未標月份；遊戲不補漢曆月日或換算模型日期。',introducedRevision:219 },
   { id:'imperial-classicists-appointed-181',kind:EVENT_KIND,title:'詔舉通經者並授議郎',startYear:181,endYear:181,precision:YEAR_PRECISION,source:HH8+'光和四年六月條記「詔公卿舉能通尚書、毛詩、左氏、穀梁春秋各一人，悉除議郎」。本節點按年級精度呈現；原文未提供姓名，不推定受薦者名單、實際任職經過或制度成效。',carrier:'漢廷與受薦通經者（史料記載）',description:'記錄朝廷詔令公卿薦舉通曉所列經典者並授議郎；不把薦舉令推演為全面教育改革或未載人物的任官履歷。',introducedRevision:157 },
-  { id:'earthquake-sea-overflow-clear-river-181',kind:EVENT_KIND,title:'地震、海水溢與河水清記事',startYear:181,endYear:181,precision:YEAR_PRECISION,source:HH8+'光和四年二月癸卯記「地震，海水溢，河水清」。原文未指河流、地域或因果。',carrier:'光和四年記載（史料）',description:'記錄地震、海水溢與河水清；不推定地點、因果、損害或祥異。',sourceDateNote:'光和四年二月癸卯；遊戲按 181 年級觸發，不換算模型日期。',introducedRevision:258 },
-  { id:'hedong-earth-split-hail-mountain-water-181',kind:EVENT_KIND,title:'河東地裂、雨雹與山水暴出',startYear:181,endYear:181,precision:YEAR_PRECISION,source:HH8+'光和四年五月記「河東地裂，雨雹，山水暴出」。不補具體地點、成因或損害。',carrier:'河東地方災異記事（史料記載）',description:'按原文並列三項記事；不推定成因、災害範圍或後果。',sourceDateNote:'光和四年五月；遊戲僅按 181 年級觸發，不換算模型日期。',introducedRevision:259 },
+  { id:'earthquake-sea-overflow-clear-river-181',kind:EVENT_KIND,title:'地震、海水溢與河水清記事',startYear:181,endYear:181,precision:YEAR_PRECISION,source:HH8+'光和四年二月癸卯記「地震，海水溢，河水清」。',carrier:'東漢記事（史料）',description:'記錄三項現象；不推定地點、河流或因果。',sourceDateNote:'二月癸卯；按 181 年級觸發。',introducedRevision:258 },
+  { id:'hedong-earth-split-hail-mountain-water-181',kind:EVENT_KIND,title:'河東地裂、雨雹與山水暴出',startYear:181,endYear:181,precision:YEAR_PRECISION,source:HH8+'光和四年五月記「河東地裂，雨雹，山水暴出」。',carrier:'東漢災異記事（史料）',description:'記錄三項現象；不推定成因或損害。',sourceDateNote:'五月；按 181 年級觸發。',introducedRevision:259 },
+  { id:'great-epidemic-medical-relief-181',kind:EVENT_KIND,title:'大疫，遣中謁者巡行致醫藥',startYear:181,endYear:181,precision:YEAR_PRECISION,source:HH8+'光和四年條記「大疫，使中謁者巡行致醫藥」。',carrier:'漢廷救疫記事（史料）',description:'記大疫及巡行致醫藥；不補病名、疫區或成效。',sourceDateNote:'原文未標月份；按 181 年級觸發。',introducedRevision:260 },
   { id:'bajun-banshun-submit-182',kind:EVENT_KIND,title:'板楯蠻向巴郡太守曹謙降服',startYear:182,endYear:182,precision:YEAR_PRECISION,source:HH8+'光和五年秋七月條記「巴郡板楯蠻詣太守曹謙降」。《後漢書》卷八十六〈南蠻西南夷列傳〉另敘靈帝遣曹謙宣詔赦之、板楯即皆降服；該傳將復叛繫於光和三年，校記指出本紀及《華陽國志》作光和二年。保留兩傳敘事與繫年，不把列傳繫年改作本節點降服年份。',carrier:'巴郡板楯蠻與巴郡太守曹謙（史料記載）',description:'本節點按本紀光和五年所記降服記事呈現；列傳補有程包陳述更賦、徭役等背景及曹謙宣詔赦降的敘事，但其復叛繫年與本紀不同。來源沒有為列傳中的宣詔降服另標日期，因此不把 180 年當作降服年，也不補推與 179 年討伐未克之間的經過。',sourceDateNote:'《後漢書》卷八將曹謙受降記事繫於光和五年秋七月；卷八十六的敘事前記板楯復叛於光和三年，校記指出《孝靈帝紀》及《華陽國志》作光和二年。列傳未另標宣詔降服的年份；遊戲依本紀將本事件定為 182 年級，不換算漢曆月日。',introducedRevision:158 },
   { id:'taiwei-xu-yang-succession-182',kind:EVENT_KIND,title:'太尉許戫免職，太常楊賜繼任',startYear:182,endYear:182,precision:YEAR_PRECISION,source:HH8+'光和五年冬十月記「太尉許戫罷，太常楊賜為太尉」。按年級呈現；不推測免職原因、交接日或任期。',carrier:'許戫與楊賜（史書任免記事）',description:'記錄原文所載太尉更替；不推演免職原因、任期或其他官制效果。',introducedRevision:222 },
   { id:'xianbei-raids-you-bing-181',kind:EVENT_KIND,title:'鮮卑寇幽、并二州',startYear:181,endYear:181,precision:YEAR_PRECISION,source:HH8+'光和四年條記「鮮卑寇幽并二州」。本節點按年級精度呈現，不推演各地戰線、傷亡或疆界變化。',carrier:'鮮卑與幽、并二州地方（史料記載）',description:'記錄鮮卑侵擾幽、并二州；不擴寫成未見於該條的戰役、兵力或地方控制結果。',introducedRevision:146 },

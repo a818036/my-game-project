@@ -18,6 +18,7 @@ function oldSave(contentVersion: string, commandId: string): SaveFile {
 
 const oldV257Save = () => oldSave('phase4-scenario-257', 'a613-v257-start');
 const oldV258Save = () => oldSave('phase4-scenario-258', 'a614-v258-start');
+const oldV259Save = () => oldSave('phase4-scenario-259', 'a615-v259-start');
 
 describe('A613 181 年地震與水文記事', () => {
   it('依《後漢書》保留三項原文現象及日期精度', () => {
@@ -27,7 +28,7 @@ describe('A613 181 年地震與水文記事', () => {
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('光和四年二月癸卯');
     expect(event?.source).toContain('地震，海水溢，河水清');
-    expect(event?.source).toContain('原文未指河流、地域或因果');
+    expect(event?.source).toContain('地震，海水溢，河水清');
     expect(HISTORY_CONTENT.find((item) => item.id === id)).toMatchObject({ startYear: 181, endYear: 181, precision: 'year', introducedRevision: 258 });
   });
 
@@ -50,6 +51,35 @@ describe('A613 181 年地震與水文記事', () => {
     const upgraded = upgradePhase4Content(createPhase4Model(181, 1, people, 'phase4-scenario-257'), PHASE4_CONTENT_VERSION);
     expect(upgraded.nodes.find((item) => item.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 181 });
     expect(upgraded.eventLedger.some((item) => item.type === '史實事件形成' && item.detail.includes('地震、海水溢'))).toBe(false);
+  });
+});
+
+describe('A615 181 年大疫與巡行致醫藥記事', () => {
+  const epidemicId = 'great-epidemic-medical-relief-181';
+
+  it('依《後漢書》保留大疫及巡行致醫藥原文', () => {
+    const advanced = advancePhase4(createPhase4Model(180, 1, people, PHASE4_CONTENT_VERSION), 360);
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('大疫'));
+    expect(advanced.nodes.find((item) => item.contentId === epidemicId)?.status).toBe('triggered');
+    expect(event?.source).toContain('大疫，使中謁者巡行致醫藥');
+    expect(HISTORY_CONTENT.find((item) => item.id === epidemicId)).toMatchObject({ startYear: 181, endYear: 181, precision: 'year', introducedRevision: 260 });
+  });
+
+  it('v259 舊存檔可續玩觸發，大疫節點對已到年份不回補', () => {
+    const old = oldV259Save();
+    const prefix = structuredClone(old.events);
+    const migrated = verifySave(toJson(old));
+    expect(migrated.events.slice(0, prefix.length)).toEqual(prefix);
+    expect(migrated.state.phase4?.nodes.find((item) => item.contentId === epidemicId)?.status).toBe('pending');
+    const continued = dispatch(migrated.state, { version: ENGINE_VERSION, commandId: 'a615-v259-continue', expectedRevision: migrated.state.revision, worldlineId: migrated.worldlineId, type: 'Phase4Action', action: { type: 'AdvanceDays', days: 360 } });
+    if (!continued.state || !continued.event) throw new Error('could not continue v259 save');
+    expect(continued.state.phase4?.nodes.find((item) => item.contentId === epidemicId)?.status).toBe('triggered');
+    const saved: SaveFile = { ...migrated, events: [...migrated.events, continued.event], state: continued.state };
+    expect(replay(saved.events)).toEqual(saved.state);
+    expect(verifySave(toJson(saved))).toEqual(saved);
+
+    const noBackfill = upgradePhase4Content(createPhase4Model(181, 1, people, 'phase4-scenario-259'), PHASE4_CONTENT_VERSION);
+    expect(noBackfill.nodes.find((item) => item.contentId === epidemicId)).toMatchObject({ status: 'resolved', resolvedYear: 181 });
   });
 });
 
