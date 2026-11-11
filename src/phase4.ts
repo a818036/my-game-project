@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-256';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-257';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -14,7 +14,7 @@ const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:254},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:255},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -81,6 +81,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'xianbei-raids-three-frontiers-176',kind:EVENT_KIND,title:'鮮卑寇漢廷三邊',startYear:176,endYear:176,precision:YEAR_PRECISION,source:'《資治通鑑》卷五十七熹平五年夏四月條記鮮卑寇三邊，注指東、西、北邊；未述侵擾結果。',carrier:'鮮卑與漢廷三邊（史載）',description:'記錄鮮卑寇三邊，不補具體郡縣、戰事、傷亡或控制變化；與 177 年三路出塞分開。',sourceDateNote:'《資治通鑑》卷五十七熹平五年夏四月條載鮮卑寇三邊，注指東、西、北邊；僅按 176 年級呈現。',introducedRevision:249 },
   { id:'epidemic-party-ban-relief-179',kind:EVENT_KIND,title:'大疫致醫藥，黨人小功以下禁錮解除',startYear:179,endYear:179,precision:YEAR_PRECISION,source:HH8+'光和二年條記春季大疫、使者巡行致醫藥；四月大赦並記「諸黨人禁錮小功以下皆除之」。本節點不把有限解除擴寫為全面解禁。',carrier:'漢廷、疫病影響者與部分黨人親屬（史料記載）',description:'記錄疫病救療及特定範圍禁錮解除；不推估感染與死亡人數，也不宣稱所有黨人及親屬均獲解禁。',introducedRevision:146 },
   { id:'wind-hail-and-memorial-edict-179',kind:EVENT_KIND,title:'夏四月大風雨雹，詔公卿上封事',startYear:179,endYear:179,precision:YEAR_PRECISION,source:HH8+'光和二年夏四月癸巳記「大風雨雹」，並詔公卿以下各上封事。只記原文，不推演災損、成因或上書內容。',carrier:'漢廷（史料記載）',description:'記錄夏四月大風雨雹及詔公卿上封事；原文未說明受災地點、損失、成因與上書內容，均不補推。',sourceDateNote:'《後漢書》卷八光和二年夏四月癸巳記大風雨雹，並詔公卿以下各上封事。保留漢曆原註；遊戲只按 179 年級觸發，不換算月日或推演天候後果。',introducedRevision:256 },
+  { id:'duan-jiong-defeats-dongqiang-shehuosai-179',kind:EVENT_KIND,title:'段熲於射虎塞外谷大破東羌',startYear:179,endYear:179,precision:YEAR_PRECISION,source:HH8+'光和二年秋七月記破羌將軍段熲於射虎塞外谷大破先零羌，並稱「東羌悉平」。只記原文，不推估兵力、傷亡、戰線或其後各部狀態。',carrier:'段熲、先零羌與東羌（史料記載）',description:'記錄秋七月段熲於射虎塞外谷大破先零羌及原文所稱東羌悉平；不推估傷亡、兵力、戰場邊界，也不把記載推廣為此後無羌人活動。',sourceDateNote:'《後漢書》卷八光和二年秋七月記段熲大破先零羌於射虎塞外谷，原文稱東羌悉平。保留史料月份，遊戲只按 179 年級觸發，不換算模型日期。',introducedRevision:257 },
+  { id:'guo-xi-succeeds-liu-chong-taiwei-179',kind:EVENT_KIND,title:'郭禧繼任太尉',startYear:179,endYear:179,precision:YEAR_PRECISION,source:HH8+'光和二年十一月記太尉劉寵免、太僕郭禧為太尉；不推定免職原因、任期或官制效果。',carrier:'劉寵、郭禧與漢廷（史料記載）',description:'記錄十一月劉寵免太尉、郭禧繼任；不推定免職原因、實際任期或其他人事變更。',sourceDateNote:'《後漢書》卷八光和二年十一月記劉寵免太尉、郭禧繼任。保留史料月份，遊戲只按 179 年級觸發，不換算模型日期。',introducedRevision:257 },
+  { id:'xianbei-raids-bingzhou-179',kind:EVENT_KIND,title:'鮮卑寇并州',startYear:179,endYear:179,precision:YEAR_PRECISION,source:HH8+'光和二年條另記「鮮卑寇并州」，未標具體月份或戰事結果；不推估傷亡、行軍路線或控制變化。',carrier:'鮮卑與并州地方（史料記載）',description:'記錄光和二年鮮卑侵擾并州；原文未標月份或戰事結果，不補推其規模、傷亡、路線與控制變化。',sourceDateNote:'《後漢書》卷八於光和二年十一月記事後另記鮮卑寇并州，該句未標具體月份；保留未繫月的來源粒度，遊戲只按 179 年級觸發。',introducedRevision:257 },
   { id:'taiwei-and-minister-succession-guanghe-2-179',kind:EVENT_KIND,title:'179 年三公更替：劉郃、段熲、張濟相繼任職',startYear:179,endYear:179,precision:YEAR_PRECISION,source:HH8+'光和二年三月條記司徒袁滂免、大鴻臚劉郃為司徒；同條乙丑日記太尉橋玄罷、太中大夫段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空。本內容包採年級精度，只記原文任免，不推定任命原因、任期或其他官制效果。',carrier:'袁滂、劉郃、橋玄、段熲、袁逢、張濟與漢廷（史料記載）',description:'記錄 179 年司徒袁滂免、劉郃繼任，太尉橋玄免、段熲繼任，以及司空袁逢免、張濟繼任；不推定任免原因、實際任期或更廣泛官制效果，也不轉成玩家人事變更。',sourceDateNote:'原史紀年：《後漢書》卷八記光和二年三月袁滂免、劉郃為司徒；乙丑日橋玄罷、段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空，但未另標該項日月。保留已標示的漢曆月份與干支，不換算模型日期或推定月內間隔；遊戲只按 179 年級觸發。',introducedRevision:211 },
   { id:'jiangxia-danyang-revolts-179',kind:EVENT_KIND,title:'舊版誤繫年重複索引：江夏起事與丹陽圍守（建寧二年，169 年）',startYear:179,endYear:179,precision:YEAR_PRECISION,source:HH8+'建寧二年九月分別記江夏蠻叛、州郡討平及丹陽山越賊圍太守陳夤、陳夤擊破之。舊版誤繫光和二年（179 年），已將兩地記事拆分為各自的 169 年節點；此索引保留舊 ID 供遷移辨識，v238 起退役。',carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年九月兩則記事誤繫於光和二年。現由 `jiangxia-uprising-169` 與 `danyang-shanyue-siege-chen-yin-180` 分別記錄；遷移保留既有事件帳，只移除過時待發節點，不回補已過年次。',introducedRevision:152,retired:true,retiredIn:'phase4-scenario-238' },
   { id:'bajun-banshun-revolt-179',kind:EVENT_KIND,title:'巴郡板楯起事，州郡討之未克',startYear:179,endYear:179,precision:YEAR_PRECISION,source:HH8+'光和二年冬十月條記「巴郡板楯蠻叛」，遣御史中丞蕭瑗督益州刺史討之，「不剋」。《後漢書》卷八十六〈南蠻西南夷列傳〉將板楯復叛繫於光和三年，並有校記指出本紀及《華陽國志》繫於二年；該傳另載討伐及曹謙宣詔赦降的敘述。保留原典繫年差異，不推定兩處記載為同一連續戰事。採年級精度，不推定起事規模、軍隊編制或傷亡。',carrier:'巴郡板楯（史書原稱）與益州州郡軍',description:'分別呈現本紀的光和二年起事、討伐未克記事，以及列傳光和三年復叛敘事；列傳本身註明與本紀及《華陽國志》繫年不同。另依本紀獨立記錄 182 年曹謙受降，不據此補推兩次記載間的戰事或控制狀態。',introducedRevision:153 },
