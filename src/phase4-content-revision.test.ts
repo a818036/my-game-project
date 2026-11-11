@@ -3,11 +3,11 @@ import { advancePhase4, createPhase4Model, HISTORY_CONTENT, PHASE4_CONTENT_VERSI
 
 describe('歷史內容的精簡修訂標記', () => {
   it('保留最新內容的版本門檻，並拒絕不支援的版本字串', () => {
-    const newest = HISTORY_CONTENT.filter((item) => item.introducedRevision === 240);
+    const newest = HISTORY_CONTENT.filter((item) => item.introducedRevision === 241);
     expect(newest.length).toBeGreaterThan(0);
 
     const v237 = createPhase4Model(168, 1, [], 'phase4-scenario-237');
-    const prior = createPhase4Model(168, 1, [], 'phase4-scenario-239');
+    const prior = createPhase4Model(168, 1, [], 'phase4-scenario-240');
     const v238 = createPhase4Model(168, 1, [], 'phase4-scenario-238');
     const current = createPhase4Model(168, 1, [], PHASE4_CONTENT_VERSION);
     const unknown = createPhase4Model(168, 1, [], 'phase4-scenario-unknown');

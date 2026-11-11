@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-240';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-241';
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
 const HH7='《後漢書》卷七〈孝桓帝紀〉';
@@ -11,7 +11,7 @@ const SG47='《三國志》卷四十七〈吳主傳〉';
 const SG48='《三國志》卷四十八〈吳書·三嗣主傳〉';
 const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:238},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:239},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -49,6 +49,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'jiangxia-uprising-169',kind:'event',title:'江夏蠻叛，州郡討平',startYear:169,endYear:169,precision:'year',source:HH8+'建寧二年九月記「江夏蠻叛，州郡討平之」；'+HH86+'亦繫於建寧二年。只保留原文所述起事與討平，不推演規模、傷亡或行政後果。',carrier:'江夏地方起事者與州郡官府（史料記載）',description:'記錄建寧二年江夏起事及州郡討平；不將史料族群稱謂擴寫成現代身分，不補戰事、傷亡、參與人數或後續控制。',sourceDateNote:'《後漢書》卷八繫於建寧二年九月；遊戲只按 169 年級呈現，不將漢曆月份換算為模型日期。',introducedRevision:237,lateSameYear:true },
   { id:'taiwei-sikong-appointments-169',kind:'event',title:'169年三公任免',startYear:169,endYear:169,precision:'year',source:HH8+'建寧二年五月太尉聞人襲罷、司空許栩免；六月劉寵為太尉、許訓為司徒、劉囂為司空。',carrier:'朝廷',description:'只記任免，不改玩家官職。',sourceDateNote:'五月、六月；只按年級呈現。',introducedRevision:239,lateSameYear:true },
   { id:'bingzhou-raid-169',kind:'event',title:'鮮卑寇并州',startYear:169,endYear:169,precision:'year',source:HH8+'建寧二年條記「鮮卑寇并州」。',carrier:'鮮卑',description:'只記侵擾，不推演未載後果。',introducedRevision:240,lateSameYear:true },
+  { id:'epidemic-lingdi-171',kind:'event',title:'建寧四年春三月大疫',startYear:171,endYear:171,precision:'year',source:HH8+'建寧四年三月記「大疫，使中謁者巡行致醫藥」。只記疫病記事與朝廷遣員巡行致醫藥，不推演傳播、受治人數、傷亡或救療成效。',carrier:'漢廷（史料記載）',description:'記錄建寧四年三月大疫及中謁者巡行致醫藥；不推演疫病傳播、受治人數、病況、傷亡或救療成效。',sourceDateNote:'《後漢書》卷八記建寧四年三月大疫。保留漢曆三月註記；遊戲只按 171 年級觸發，不換算模型日期。',introducedRevision:241,lateSameYear:true },
   { id:'taixue-classics-stone-inscription-175',kind:'event',title:'太學校正五經文字並刻石',startYear:175,endYear:175,precision:'year',source:HH8+'熹平四年條記詔令諸儒校正五經文字，刻石立於太學門外。本內容包只採公元年級精度，不補工程工期、參與者名單或石經保存狀況。',carrier:'漢廷、受詔諸儒與太學（史料記載）',description:'記錄朝廷校正經典文字及太學刻石；不據此推演普及程度、教育政策成效或後世版本傳承。',introducedRevision:145,lateSameYear:true },
   { id:'han-campaign-against-xianbei-defeated-177',kind:'event',title:'漢軍三路出塞征鮮卑失利',startYear:177,endYear:177,precision:'year',source:HH8+'熹平六年條記朝廷於秋八月分三路伐鮮卑：田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並記「晏等大敗」。《資治通鑑》卷五十七補述夏育先請出兵、朝廷議論中蔡邕反對，靈帝未從其議；各路將萬騎、出塞二千餘里，檀石槐命三部大人迎戰，漢軍大敗，三將各帶數十騎退還並下獄，後贖為庶人。《資治通鑑》另以「死者什七八」記載傷亡比例；《後漢書》本紀未列傷亡數。本內容包保留兩書詳略，不換算成精確傷亡總數或遊戲兵力。',carrier:'漢廷出塞諸軍、南匈奴與鮮卑（史料記載）',description:'呈現熹平六年夏育請求出塞、朝廷議論、蔡邕反對、靈帝仍決定出兵及秋八月三路行軍戰敗的史料次序。《後漢書》記田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並稱「晏等大敗」；《資治通鑑》補記各路將萬騎、出塞二千餘里、檀石槐部三部迎戰、漢軍死者「什七八」、三將帶數十騎退還及後續處置。比例只作原書引述，不計算精確人數；不把史載部署寫成玩家部隊狀態、完整戰線或新增具名傷亡名冊。',sourceDateNote:'原史日期：《後漢書》卷八記熹平六年秋八月三路出兵；《資治通鑑》卷五十七另記夏四月鮮卑寇三邊、秋七月夏育請兵與朝議、八月出征。遊戲只按 177 年級呈現，不把漢曆日期換算為模型時間。',introducedRevision:145,lateSameYear:true },
   { id:'jiaozhi-wuhuh-man-uprising-178',kind:'event',title:'合浦、交阯烏滸民起事並攻沒郡縣',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年春正月條記合浦、交阯烏滸蠻起事、招引九真與日南民眾攻沒郡縣；卷八十六〈南蠻西南夷列傳〉補記「合數萬人」。人數保留史料概數，不換算為精確人口或遊戲兵力。本內容包採年級精度，不推演未載的戰況與平定結果。',carrier:'合浦、交阯烏滸民及九真、日南地方民眾（史料記載）',description:'記錄嶺南地方起事、招引九真與日南民眾及郡縣失守；卷八十六所記「合數萬人」僅保留為史料概數，不推定精確參與人數、起事原因、各郡控制持續時間或未載的平定結果。',sourceDateNote:'《後漢書》卷八記光和元年春正月合浦、交阯烏滸蠻叛、招引九真與日南民眾攻沒郡縣；卷八十六記合數萬人。春正月與概數均為史料記載；遊戲只按 178 年級觸發，不換算為模型日期或精確兵力。',introducedRevision:145,lateSameYear:true },
