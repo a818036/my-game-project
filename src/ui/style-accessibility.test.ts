@@ -262,6 +262,14 @@ describe('主要淺色介面的文字對比', () => {
     }
   });
 
+  it('暗色命名視窗的焦點框對比達到 3:1', () => {
+    const declarations = cssRules.filter((rule) => rule.selector === '.name-dialog input:focus-visible' && rule.conditions.length === 0).at(-1)?.declarations ?? '';
+    expect(declarations).toMatch(/outline:3px solid #d3b168!important/);
+    expect(contrastRatio('#d3b168', '#1b2724')).toBeGreaterThanOrEqual(3);
+    const forcedColors = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector.includes('.name-dialog input:focus-visible'))?.declarations;
+    expect(forcedColors).toMatch(/outline-color:Highlight!important/);
+  });
+
   it('強制色彩模式保留選取、分頁、跳轉及按鈕的系統色辨識', () => {
     const rules = rulesForCondition('@media(forced-colors:active)');
     const declaration = (selector: string) => rules.find((rule) => rule.selector === selector)?.declarations ?? '';
