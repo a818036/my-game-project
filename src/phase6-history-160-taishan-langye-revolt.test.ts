@@ -879,7 +879,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const old = createPhase4Model(164, 1, [], 'phase4-scenario-289');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-293');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-294');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     for (const id of ids) expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(HISTORY_CONTENT.find((item) => item.id === ids[0])).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 290 });
@@ -914,7 +914,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-293');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-294');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 291 });
@@ -955,7 +955,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-293');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-294');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 293 });
@@ -974,6 +974,42 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     }
 
     const legacy = oldSave(164, 690, 'phase4-scenario-292');
+    const legacyEvents = structuredClone(legacy.events);
+    const migrated = verifySave(toJson(legacy));
+    expect(migrated.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
+
+  it('A671 補列 165 年三公更迭與竇氏立后記事', () => {
+    const id = 'court-succession-and-empress-dou-165';
+    const old = createPhase4Model(164, 1, [], 'phase4-scenario-293');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    const content = HISTORY_CONTENT.find((item) => item.id === id);
+
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-294');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 294 });
+    expect(content?.source).toContain('五月丙戌，太尉楊秉薨');
+    expect(content?.source).toContain('秋七月，太中大夫陳蕃爲太尉');
+    expect(content?.source).toContain('冬十月，司空周景免，太常劉茂爲司空');
+    expect(content?.source).toContain('辛巳，立貴人竇氏爲皇后');
+    expect(content?.sourceDateNote).toContain('不換算漢曆日期');
+    expect(content?.description).toContain('不推測任免原因');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    expect(advanced.eventLedger.some((event) => event.detail.includes(content!.title))).toBe(true);
+
+    for (const year of [165, 166]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-293'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 165 });
+      expect(late.eventLedger.some((event) => event.detail.includes(content!.title))).toBe(false);
+    }
+
+    const legacy = oldSave(164, 691, 'phase4-scenario-293');
     const legacyEvents = structuredClone(legacy.events);
     const migrated = verifySave(toJson(legacy));
     expect(migrated.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
