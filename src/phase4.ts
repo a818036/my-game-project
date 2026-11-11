@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-253';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-254';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -12,7 +12,7 @@ const SG47='《三國志》卷四十七〈吳主傳〉';
 const SG48='《三國志》卷四十八〈吳書·三嗣主傳〉';
 const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:251},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:252},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -59,6 +59,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'southern-palace-pingcheng-gate-arsenal-wall-collapse-177',kind:'event',title:'南宮平城門及武庫東垣屋自壞',startYear:177,endYear:177,precision:'year',source:HH8+'熹平六年二月記南宮平城門及武庫東垣屋自壞；原文未載成因或損害範圍。',carrier:'南宮與武庫（史料記載）',description:'記錄南宮平城門及武庫東垣屋自壞；不推定成因、傷亡、修復或後續影響。',sourceDateNote:'《後漢書》卷八熹平六年二月條記南宮平城門及武庫東垣屋自壞；保留漢曆月份，只按 177 年級觸發。',introducedRevision:251 },
   { id:'xidi-sale-178',kind:'event',title:'西邸售官',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年記初開西邸賣官，原文列公千萬、卿五百萬。',carrier:'漢廷',description:'只記來源所載，不推算購買力、任官結果或玩家經濟效果。',introducedRevision:252 },
   { id:'xianbei-raids-jiuquan-178',kind:'event',title:'鮮卑寇酒泉',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年記「是歲，鮮卑寇酒泉」；原條未詳月份、戰事或結果。',carrier:'鮮卑與酒泉地方（史料記載）',description:'只記來源所載侵擾，不推演戰事、傷亡或控制變化。',introducedRevision:253 },
+  { id:'capital-horse-human-anomaly-178',kind:'event',title:'《後漢書》記京師馬生人異象',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年「是歲」記「京師馬生人」；只記史書所載異象，不據《易傳》推斷因果、預言或世界狀態。',carrier:'京師（史書異象記事）',description:'只登錄《後漢書》的異象記述；不把字面內容當作可驗證的生物事實，不推演因果、災禍或人物遭遇。',introducedRevision:254 },
   { id:'jiaozhi-wuhuh-man-uprising-178',kind:'event',title:'合浦、交阯烏滸民起事並攻沒郡縣',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年春正月條記合浦、交阯烏滸蠻起事、招引九真與日南民眾攻沒郡縣；卷八十六〈南蠻西南夷列傳〉補記「合數萬人」。人數保留史料概數，不換算為精確人口或遊戲兵力。本內容包採年級精度，不推演未載的戰況與平定結果。',carrier:'合浦、交阯烏滸民及九真、日南地方民眾（史料記載）',description:'記錄嶺南地方起事、招引九真與日南民眾及郡縣失守；卷八十六所記「合數萬人」僅保留為史料概數，不推定精確參與人數、起事原因、各郡控制持續時間或未載的平定結果。',sourceDateNote:'《後漢書》卷八記光和元年春正月合浦、交阯烏滸蠻叛、招引九真與日南民眾攻沒郡縣；卷八十六記合數萬人。春正月與概數均為史料記載；遊戲只按 178 年級觸發，不換算為模型日期或精確兵力。',introducedRevision:145 },
   { id:'taiwei-succession-guanghe-1-178',kind:'event',title:'張顥任太尉，陳球、橋玄先後繼任',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年條記三月太常常山張顥為太尉；九月張顥罷、太常陳球繼任；十一月陳球免，十二月丁巳光祿大夫橋玄為太尉。本內容包採年級精度，只記原文明載的任免，不推定任期、原因或其他官制效果。',carrier:'張顥、陳球、橋玄與漢廷（史料記載）',description:'記錄張顥任太尉後於九月罷任、由陳球繼任；十一月陳球免職、十二月橋玄接任。不把史實任命轉成玩家人事變更，也不推定任免原因、實際任期或其他官制效果。',introducedRevision:209 },
   { id:'hongdu-mencourt-founded-178',kind:'event',title:'光和元年置鴻都門學生',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年條記「始置鴻都門學生」；卷六十下〈蔡邕列傳〉補述鴻都門學及其學生被薦舉任官的記載。本節點採年級精度，不將不同傳記外推成完整學制、選才標準或實際任官名單。',carrier:'漢廷與鴻都門學生（史料記載）',description:'記錄靈帝朝設置鴻都門學生的史料記事；不自動授予玩家官職、人才、能力或政治效果，也不推定未載的就學者個人經歷。',introducedRevision:151 },
