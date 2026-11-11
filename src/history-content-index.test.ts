@@ -89,9 +89,10 @@ describe('A304 歷史內容來源索引', () => {
     expect(missingYears).toEqual([]);
   });
 
-  it('A388 README 與來源索引使用相同的現行史實項目數', () => {
+  it('A388 README、來源索引與驗收摘要使用相同的現行史實項目數', () => {
     const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
     const historyDocument = readFileSync(new URL('../docs/HISTORY_CONTENT.md', import.meta.url), 'utf8');
+    const acceptanceDocument = readFileSync(new URL('../docs/ACCEPTANCE.md', import.meta.url), 'utf8');
     const activeEvents = HISTORY_CONTENT.filter((item) => item.kind === 'event' && !item.retired);
     const inferredEntries = activeEvents.filter((item) => item.id === 'sun-quan-inferred-birth-182');
     const earlyBackgroundEntries = activeEvents.filter((item) => item.startYear < 183 && !inferredEntries.includes(item));
@@ -106,5 +107,8 @@ describe('A304 歷史內容來源索引', () => {
     expect(historyDocument).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件／死亡節點`);
     expect(historyDocument).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);
     expect(historyDocument).toContain(`${activeEvents.length} 個現行史實索引項目`);
+    expect(acceptanceDocument).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件／死亡節點`);
+    expect(acceptanceDocument).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);
+    expect(acceptanceDocument).toContain(`現行索引共 ${activeEvents.length} 項`);
   });
 });
