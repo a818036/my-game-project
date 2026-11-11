@@ -756,4 +756,47 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     for (const entry of entries) expect(migrated.state.phase4?.nodes.find((node) => node.contentId === entry.id)?.status).toBe('pending');
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A664 補列 164 年王侯去世、天象與天候記事', () => {
+    const entries = [
+      { id: 'pei-prince-rong-dies-164', title: '沛王榮去世', source: '春正月庚寅', note: '春正月庚寅' },
+      { id: 'meteor-falls-hu-164', title: '隕石落於鄠', source: '三月癸亥', note: '三月癸亥' },
+      { id: 'liang-prince-cheng-dies-164', title: '梁王成去世', source: '夏四月丙寅', note: '夏四月丙寅' },
+      { id: 'capital-hail-164', title: '京師雨雹', source: '五月己丑', note: '五月己丑' },
+      { id: 'zhao-prince-qian-dies-164', title: '趙王乾去世', source: '秋七月辛卯', note: '秋七月辛卯' },
+      { id: 'dead-dragon-reported-ye-wang-mountain-164', title: '野王山上有死龍之報', source: '野王山上有死龍', note: '未為「野王山上有死龍」另標月日' },
+    ];
+    const old = createPhase4Model(163, 1, [], 'phase4-scenario-286');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+
+    for (const entry of entries) {
+      expect(upgraded.nodes.find((node) => node.contentId === entry.id)?.status).toBe('pending');
+      const node = HISTORY_CONTENT.find((item) => item.id === entry.id);
+      expect(node).toMatchObject({ startYear: 164, endYear: 164, precision: 'year', introducedRevision: 287 });
+      expect(node?.sourceDateNote).toContain(entry.note);
+    }
+
+    const advanced = advancePhase4(upgraded, 360);
+    for (const entry of entries) {
+      expect(advanced.nodes.find((node) => node.contentId === entry.id)?.status).toBe('triggered');
+      expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes(entry.title))?.source).toContain(entry.source);
+    }
+
+    for (const year of [164, 165]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-286'), PHASE4_CONTENT_VERSION);
+      for (const entry of entries) {
+        expect(late.nodes.find((node) => node.contentId === entry.id)).toMatchObject({ status: 'resolved', resolvedYear: 164 });
+        expect(late.eventLedger.some((item) => item.detail.includes(entry.title))).toBe(false);
+      }
+    }
+
+    const legacy = oldSave(163, 680, 'phase4-scenario-286');
+    const legacyEvents = structuredClone(legacy.events);
+    const migrated = verifySave(toJson(legacy));
+    expect(migrated.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
+    for (const entry of entries) expect(migrated.state.phase4?.nodes.find((node) => node.contentId === entry.id)?.status).toBe('pending');
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
