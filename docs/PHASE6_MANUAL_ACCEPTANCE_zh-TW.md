@@ -83,6 +83,7 @@
 | 史料來源網址連線快照 | 2026-10-31／Windows、`npm run check:history-links` | 通過：新增早期東漢來源後，87 個不同網址全數 HTTP 2xx，0 次重試。只代表本輪連線狀態，不代表人工校勘、授權審查或外站未來可用 | A380；非 CI 檢查 |
 | 史料來源索引最新連線快照 | 2026-11-02／Windows、`npm run check:history-links` | 通過：96 個不同來源網址全部 HTTP 2xx、0 次重試。前一輪的單一 ECONNRESET 未能重現；結果只代表本次網路狀態，不代替史料校勘、授權審查或外站未來可用 | A442；非 CI 檢查 |
 | 修正史料連結檢查遭限流的請求方式 | 2026-11-03／Windows、Node v24.20.0、`npm run check:history-links` | 通過：在檢查器加入明確唯讀用途 User-Agent 並遵循 `Retry-After` 後，96 個不同來源網址皆 HTTP 2xx、0 次重試。首次無 User-Agent 的批次執行有 64 個 429；以相同網路、明確 User-Agent 探測後可回應 2xx，證明前次是檢查器請求被限流，不能解讀成連結失效。此為當次網路快照，不代表史料校勘或未來可用性 | A449；外站唯讀連線檢查 |
+| 史料來源索引連線快照 | 2026-11-11／Windows、`npm run check:history-links` | 通過：113 個不同來源網址全數 HTTP 2xx、0 次重試。僅記錄本次外站連線狀況，不代表史料校勘、內容授權或網址未來可用 | A598；非 CI 檢查 |
 | 跳至主要內容鍵盤焦點 | 2026-10-31／隔離 Chromium、localhost:5198 | 通過：以 Enter 啟用「跳至主要內容」連結後，焦點落在 `#main-content`，該節點可程式聚焦且 URL 錨點同步改為 `#main-content`。使用合成世界線；僅驗實際瀏覽器焦點，未驗 NVDA／Firefox 語音 | A364；隔離 IndexedDB |
 | axe-core 選定畫面掃描 | 2026-10-31／Vitest jsdom、axe-core | 通過：實際開局畫面與遊戲人物、家產、天生技、軍政、記事分頁，逐一展開收合內容掃描；當次啟用規則未回報違規。色彩對比規則因 jsdom 不可靠而停用；不代表全站／真實瀏覽器稽核或 NVDA／Firefox 語音驗收 | A365；DOM 整合測試 |
 
