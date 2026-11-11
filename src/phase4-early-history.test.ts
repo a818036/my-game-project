@@ -80,12 +80,12 @@ describe('168 年四、五月太尉與司空任免', () => {
 });
 
 describe('168 年八月司空任免', () => {
-  it('A564 記王暢免、劉寵繼任；v234 遷移保留前綴且同年不回補', () => {
+  it('A564 補全秋冬三公任免；v234／v235 遷移保留前綴且同年不回補', () => {
     const id = 'wang-chang-liu-chong-succession-168';
     const fresh = advancePhase4(createPhase4Model(167, 1, persons, PHASE4_CONTENT_VERSION), 360);
     expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
-    const event = fresh.eventLedger.find((item) => item.detail.includes('司空王暢免，劉寵繼任'));
-    expect(event?.source).toBe('《後漢書》卷八〈孝靈帝紀〉八月，司空王暢免，宗正劉寵為司空。');
+    const event = fresh.eventLedger.find((item) => item.detail.includes('三公官職秋冬交替'));
+    expect(event?.source).toBe('《後漢書》卷八〈孝靈帝紀〉八月司空王暢免，宗正劉寵為司空；十一月太尉劉矩免，太僕沛國聞人襲為太尉。');
     const old = createPhase4Model(167, 1, persons, 'phase4-scenario-234');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
@@ -94,7 +94,13 @@ describe('168 年八月司空任免', () => {
     expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
     const late = upgradePhase4Content(createPhase4Model(168, 1, persons, 'phase4-scenario-234'), PHASE4_CONTENT_VERSION);
     expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 168 });
-    expect(late.eventLedger.some((item) => item.detail.includes('司空王暢免，劉寵繼任'))).toBe(false);
+    expect(late.eventLedger.some((item) => item.detail.includes('三公官職秋冬交替'))).toBe(false);
+    const priorSource = createPhase4Model(167, 1, persons, 'phase4-scenario-235');
+    const priorPrefix = structuredClone(priorSource.eventLedger);
+    const prior = upgradePhase4Content(priorSource, PHASE4_CONTENT_VERSION);
+    expect(prior.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(prior.eventLedger.slice(0, priorPrefix.length)).toEqual(priorPrefix);
+    expect(advancePhase4(prior, 360).eventLedger.some((item) => item.source?.includes('聞人襲為太尉'))).toBe(true);
   });
 });
 
