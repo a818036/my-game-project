@@ -102,6 +102,16 @@ describe('168 年八月司空任免', () => {
     expect(prior.eventLedger.slice(0, priorPrefix.length)).toEqual(priorPrefix);
     expect(advancePhase4(prior, 360).eventLedger.some((item) => item.source?.includes('聞人襲為太尉'))).toBe(true);
   });
+
+  it('A567 史實年表會呈現八月與十一月任免，查詢不改變世界狀態', () => {
+    const state = world();
+    state.world.year = 168;
+    const before = structuredClone(state);
+    const answer = answerKnownHistoricalEventQuestion('西元 168 年有哪些史實事件？', state);
+    expect(answer?.answer).toContain('三公官職秋冬交替');
+    expect(answer?.answer).toContain('十一月太尉劉矩免，太僕沛國聞人襲為太尉');
+    expect(state).toEqual(before);
+  });
 });
 
 describe('168 年段熲再破先零羌記事', () => {
