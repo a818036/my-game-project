@@ -274,6 +274,10 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'great-epidemic-medical-relief-181',
       'bajun-banshun-submit-182',
       'chen-dan-yuan-wei-minister-of-masses-182',
+      'comet-at-taiwei-182',
+      'unresolved-prisoners-textile-ransom-182',
+      'atingdao-four-hundred-chi-tower-182',
+      'ling-emperor-tour-guangcheng-taixue-182',
       'yongle-palace-office-disaster-182',
       'winter-cold-eastern-commandries-183',
       'yellow-turban-184',
@@ -318,6 +322,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(162);
+    expect(uniqueNotedEvents.size).toBe(166);
   });
 });
