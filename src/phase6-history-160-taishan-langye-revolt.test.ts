@@ -189,4 +189,43 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(migrated.state.phase4?.nodes.find((node) => node.contentId === jiuzhenId)?.status).toBe('pending');
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('v270 跨年加入 161 年三公任免，保留原文日期精度及舊事件帳', () => {
+    const successionId = 'three-minister-succession-161';
+    const previous = createPhase4Model(160, 1, [], 'phase4-scenario-270');
+    const oldLedger = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, oldLedger.length)).toEqual(oldLedger);
+    expect(upgraded.nodes.find((node) => node.contentId === successionId)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === successionId)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('三公任免與任職交替'));
+    for (const name of ['盛允', '種暠', '黃瓊', '劉矩', '虞放']) expect(event?.source).toContain(name);
+    expect(event?.source).toContain('夏四月');
+    expect(event?.source).toContain('未提供各項免職原因');
+    expect(HISTORY_CONTENT.find((item) => item.id === successionId)).toMatchObject({
+      startYear: 161,
+      endYear: 161,
+      precision: 'year',
+      introducedRevision: 271,
+    });
+
+    for (const year of [161, 162]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-270'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === successionId)).toMatchObject({ status: 'resolved', resolvedYear: 161 });
+      expect(late.eventLedger.some((item) => item.detail.includes('三公任免與任職交替'))).toBe(false);
+    }
+
+    const previousSave = oldSave(160, 651, 'phase4-scenario-270');
+    const oldPrefix = structuredClone(previousSave.events);
+    const migrated = verifySave(toJson(previousSave));
+    expect(migrated.events.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === successionId)?.status).toBe('pending');
+    const lateSave = verifySave(toJson(oldSave(161, 652, 'phase4-scenario-270')));
+    expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === successionId)).toMatchObject({ status: 'resolved', resolvedYear: 161 });
+    expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('三公任免與任職交替'))).toBe(false);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });

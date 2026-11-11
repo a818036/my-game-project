@@ -236,6 +236,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'court-succession-yin-song-160',
       'qiang-incursion-sanfu-161',
       'jiuzhen-revolt-wei-lang-161',
+      'three-minister-succession-161',
       'xianbei-invades-liaodong-dependency-163',
       'ling-emperor-accession-court-purge-168',
       'qiang-incursions-167',
@@ -332,6 +333,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(176);
+    expect(uniqueNotedEvents.size).toBe(177);
   });
 });
