@@ -250,6 +250,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'jiaozhi-wuhuh-man-uprising-178',
       'zong-ju-dies-yang-ci-sikong-173',
       'li-xian-dismissed-duan-jiong-appointed-173',
+      'xianbei-raid-beidi-bingzhou-174',
       'taiwei-and-minister-succession-guanghe-2-179',
       'scholar-nomination-edict-180',
       'henei-henan-cannibalism-report-180',
@@ -303,6 +304,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(147);
+    expect(uniqueNotedEvents.size).toBe(148);
   });
 });

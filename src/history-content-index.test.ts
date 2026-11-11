@@ -29,7 +29,7 @@ describe('A304 歷史內容來源索引', () => {
     const rows = new Map([...document.matchAll(/^\| `([^`]+)` \|([^\r\n]*)/gm)].map(([, id, rest]) => [id, rest]));
     const activeEvents = HISTORY_CONTENT.filter((item) => item.kind === 'event' && !item.retired);
 
-    expect(activeEvents).toHaveLength(263);
+    expect(activeEvents).toHaveLength(264);
     for (const event of activeEvents) {
       const row = rows.get(event.id);
       expect(row, `缺少事件索引列：${event.id}`).toBeDefined();
@@ -98,7 +98,7 @@ describe('A304 歷史內容來源索引', () => {
     const lateHistoricalNodes = activeEvents.filter((item) => item.startYear >= 183);
 
     expect(inferredEntries).toHaveLength(1);
-    expect(earlyBackgroundEntries).toHaveLength(72);
+    expect(earlyBackgroundEntries).toHaveLength(73);
     expect(lateHistoricalNodes).toHaveLength(190);
     expect(readme).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件／死亡節點`);
     expect(readme).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);
