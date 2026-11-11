@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-250';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-251';
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
 const HH7='《後漢書》卷七〈孝桓帝紀〉';
@@ -11,7 +11,7 @@ const SG47='《三國志》卷四十七〈吳主傳〉';
 const SG48='《三國志》卷四十八〈吳書·三嗣主傳〉';
 const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:248},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:249},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -55,6 +55,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'lu-zhi-jiujiang-revolt-175',kind:'event',title:'九江起事，盧植任太守後以疾去官',startYear:175,endYear:175,precision:'year',source:'《後漢書》卷六十四〈吳延史盧趙列傳〉盧植傳記熹平四年九江蠻反，四府以植才兼文武，拜九江太守，蠻寇賓服，植以疾去官；原傳未述起事群體細節或戰事過程。',carrier:'盧植、九江地方起事者與郡府（史料記載）',description:'記錄史料所述九江蠻反、盧植任太守後蠻寇賓服，以及盧植因病去官；不推演族群身分、兵力、傷亡、任期或玩家官職變動。',sourceDateNote:'《後漢書》卷六十四〈吳延史盧趙列傳〉盧植傳繫於熹平四年，未另標月份；遊戲只按 175 年級觸發，不推算月日或回合。',introducedRevision:247,lateSameYear:true },
   { id:'han-campaign-against-xianbei-defeated-177',kind:'event',title:'漢軍三路出塞征鮮卑失利',startYear:177,endYear:177,precision:'year',source:HH8+'熹平六年條記朝廷於秋八月分三路伐鮮卑：田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並記「晏等大敗」。《資治通鑑》卷五十七補述夏育先請出兵、朝廷議論中蔡邕反對，靈帝未從其議；各路將萬騎、出塞二千餘里，檀石槐命三部大人迎戰，漢軍大敗，三將各帶數十騎退還並下獄，後贖為庶人。《資治通鑑》另以「死者什七八」記載傷亡比例；《後漢書》本紀未列傷亡數。本內容包保留兩書詳略，不換算成精確傷亡總數或遊戲兵力。',carrier:'漢廷出塞諸軍、南匈奴與鮮卑（史料記載）',description:'呈現熹平六年夏育請求出塞、朝廷議論、蔡邕反對、靈帝仍決定出兵及秋八月三路行軍戰敗的史料次序。《後漢書》記田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並稱「晏等大敗」；《資治通鑑》補記各路將萬騎、出塞二千餘里、檀石槐部三部迎戰、漢軍死者「什七八」、三將帶數十騎退還及後續處置。比例只作原書引述，不計算精確人數；不把史載部署寫成玩家部隊狀態、完整戰線或新增具名傷亡名冊。',sourceDateNote:'《後漢書》卷八記熹平六年秋八月三路出兵；《資治通鑑》卷五十七記同年秋七月夏育請兵與朝議、八月出征。遊戲只按 177 年級呈現，不把漢曆日期換算為模型時間。',introducedRevision:145,lateSameYear:true },
   { id:'xianbei-raids-liaoxi-177',kind:'event',title:'鮮卑寇遼西',startYear:177,endYear:177,precision:'year',source:HH8+'熹平六年條記鮮卑寇遼西，未述結果或損失。',carrier:'鮮卑與遼西（史載）',description:'只記鮮卑寇遼西；不補戰事、傷亡或控制變化，不推演與三路出塞的關係。',sourceDateNote:'《後漢書》卷八熹平六年條此句未標月份；遊戲只按 177 年級觸發。',introducedRevision:250,lateSameYear:true },
+  { id:'southern-palace-pingcheng-gate-arsenal-wall-collapse-177',kind:'event',title:'南宮平城門及武庫東垣屋自壞',startYear:177,endYear:177,precision:'year',source:HH8+'熹平六年二月記南宮平城門及武庫東垣屋自壞；原文未載成因或損害範圍。',carrier:'南宮與武庫（史料記載）',description:'記錄南宮平城門及武庫東垣屋自壞；不推定成因、傷亡、修復或後續影響。',sourceDateNote:'《後漢書》卷八熹平六年二月條記南宮平城門及武庫東垣屋自壞；保留漢曆月份，只按 177 年級觸發。',introducedRevision:251,lateSameYear:true },
   { id:'jiaozhi-wuhuh-man-uprising-178',kind:'event',title:'合浦、交阯烏滸民起事並攻沒郡縣',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年春正月條記合浦、交阯烏滸蠻起事、招引九真與日南民眾攻沒郡縣；卷八十六〈南蠻西南夷列傳〉補記「合數萬人」。人數保留史料概數，不換算為精確人口或遊戲兵力。本內容包採年級精度，不推演未載的戰況與平定結果。',carrier:'合浦、交阯烏滸民及九真、日南地方民眾（史料記載）',description:'記錄嶺南地方起事、招引九真與日南民眾及郡縣失守；卷八十六所記「合數萬人」僅保留為史料概數，不推定精確參與人數、起事原因、各郡控制持續時間或未載的平定結果。',sourceDateNote:'《後漢書》卷八記光和元年春正月合浦、交阯烏滸蠻叛、招引九真與日南民眾攻沒郡縣；卷八十六記合數萬人。春正月與概數均為史料記載；遊戲只按 178 年級觸發，不換算為模型日期或精確兵力。',introducedRevision:145,lateSameYear:true },
   { id:'taiwei-succession-guanghe-1-178',kind:'event',title:'張顥任太尉，陳球、橋玄先後繼任',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年條記三月太常常山張顥為太尉；九月張顥罷、太常陳球繼任；十一月陳球免，十二月丁巳光祿大夫橋玄為太尉。本內容包採年級精度，只記原文明載的任免，不推定任期、原因或其他官制效果。',carrier:'張顥、陳球、橋玄與漢廷（史料記載）',description:'記錄張顥任太尉後於九月罷任、由陳球繼任；十一月陳球免職、十二月橋玄接任。不把史實任命轉成玩家人事變更，也不推定任免原因、實際任期或其他官制效果。',introducedRevision:209,lateSameYear:true },
   { id:'hongdu-mencourt-founded-178',kind:'event',title:'光和元年置鴻都門學生',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年條記「始置鴻都門學生」；卷六十下〈蔡邕列傳〉補述鴻都門學及其學生被薦舉任官的記載。本節點採年級精度，不將不同傳記外推成完整學制、選才標準或實際任官名單。',carrier:'漢廷與鴻都門學生（史料記載）',description:'記錄靈帝朝設置鴻都門學生的史料記事；不自動授予玩家官職、人才、能力或政治效果，也不推定未載的就學者個人經歷。',introducedRevision:151,lateSameYear:true },
