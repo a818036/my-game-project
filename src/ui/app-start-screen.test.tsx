@@ -537,6 +537,20 @@ describe('開局存檔載入提示',()=>{
     expect(host.querySelector('input[maxlength="16"]')).not.toBeNull();
   });
 
+  it('A617 無法驗證的存檔提示與備份操作通過 axe-core 啟用規則',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({...emptyWorkspace,unreadableSaves:[{worldlineId:'broken-world',version:6,reason:'存檔狀態與事件重播結果不一致',raw:{format:'shenzhou-save',version:6,worldlineId:'broken-world',events:[],state:{worldlineId:'broken-world'}} as never}]});
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const recovery=host.querySelector<HTMLElement>('.save-recovery');
+    expect(recovery?.getAttribute('role')).toBe('alert');
+    expect(recovery?.querySelector('h2')?.textContent).toBe('有存檔未能通過驗證');
+    expect(recovery?.querySelector('details code')?.textContent).toBe('存檔狀態與事件重播結果不一致');
+    expect(recovery?.querySelector('button')?.textContent).toBe('下載原始存檔備份');
+
+    const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+    expect(results.violations.map(({id,help,nodes})=>({id,help,targets:nodes.flatMap(node=>node.target.map(String))})),JSON.stringify(results.violations,null,2)).toEqual([]);
+  });
+
   it('開局保存期間在開局畫面播報狀態，保存後更新同一節點',async()=>{
     let finishSave!:()=>void;
     const saveResult=new Promise<void>(resolve=>{finishSave=resolve;});
