@@ -3,14 +3,14 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-232';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-233';
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH7='《後漢書》卷七〈孝桓帝紀〉';
 const SG47='《三國志》卷四十七〈吳主傳〉';
 const SG48='《三國志》卷四十八〈吳書·三嗣主傳〉';
 const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:230},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:231},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -37,6 +37,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'huan-emperor-death-party-ban-lifted-167',kind:'event',title:'悉除黨錮，桓帝崩',startYear:167,endYear:167,precision:'year',source:'《後漢書》卷七〈孝桓帝紀〉永康元年六月條記「悉除黨錮」，十二月記桓帝崩於德陽前殿、年三十六。本節點採公元年級精度，原典月份只作來源日期，不推定模型中的月內事件先後。',causes:['huan-emperor-death-party-ban-lifted-167'],carrier:'漢廷、受黨錮者與桓帝劉志（史料記載）',description:'記錄黨錮全面解除與桓帝去世的同年記事；不補寫解除令影響細節、死亡日或朝廷交接過程。',introducedIn:'phase4-scenario-147',lateSameYear:true },
   { id:'qiang-incursions-167',kind:'event',title:'永康元年先零、當煎羌侵擾與官軍討擊',startYear:167,endYear:167,precision:'year',source:HH7+'永康元年條：春正月先零羌寇三輔，張奐破之；當煎羌寇武威，段熲追擊於鸞鳥大破。夏四月先零羌再寇三輔，冬十月張奐擊破之。「西羌悉平」不解作全年無後續；記事不合併為單一戰事。',causes:['qiang-incursions-167'],carrier:'先零羌、當煎羌、張奐與段熲（史料記載）',description:'記羌事；不推演戰果。',sourceDateNote:'原典記春正月、夏四月、冬十月；遊戲只按 167 年級呈現，不換算模型月份。',introducedIn:'phase4-scenario-227',lateSameYear:true },
   { id:'e168',kind:'event',title:'日食詔',startYear:168,endYear:168,precision:'year',source:HH8+'五月丁未朔日食，詔求封事、舉士，徵故刺史及清高二千石詣公車。',causes:['e168'],carrier:'漢廷',description:'求言。',sourceDateNote:'五月丁未朔'+YEAR_TRIGGER,introducedIn:'phase4-scenario-228',lateSameYear:true },
+  { id:'duan-jiong-defeats-xianling-fengyishan-168',kind:'event',title:'段熲大破先零羌於逢義山',startYear:168,endYear:168,precision:'year',source:HH8+'段熲大破先零羌於逢義山。',causes:['duan-jiong-defeats-xianling-fengyishan-168'],carrier:'段熲',description:'記大破。',sourceDateNote:'二月'+YEAR_TRIGGER,introducedIn:'phase4-scenario-233',lateSameYear:true },
   { id:'capital-rainwater-168',kind:'event',title:'京師雨水',startYear:168,endYear:168,precision:'year',source:HH8+'六月京師雨水。',causes:['capital-rainwater-168'],carrier:'京師',description:'史載雨水。',sourceDateNote:'六月'+YEAR_TRIGGER,introducedIn:'phase4-scenario-230',lateSameYear:true },
   { id:'duan-jiong-defeats-xianling-jingyang-168',kind:'event',title:'段熲再破先零羌',startYear:168,endYear:168,precision:'year',source:HH8+'秋七月破羌將軍段熲復破先零羌於涇陽。',causes:['duan-jiong-defeats-xianling-jingyang-168'],carrier:'段熲',description:'再破。',sourceDateNote:'秋七月'+YEAR_TRIGGER,introducedIn:'phase4-scenario-229',lateSameYear:true },
   { id:'eclipse-ransom-168',kind:'event',title:'冬十月日食與繫囚贖罪令',startYear:168,endYear:168,precision:'year',source:HH8+'冬十月甲辰晦日食，令天下繫囚罪未決入縑贖，各有差。',causes:['eclipse-ransom-168'],carrier:'漢廷',description:'日食與贖令。',sourceDateNote:'冬十月甲辰晦'+YEAR_TRIGGER,introducedIn:'phase4-scenario-232',lateSameYear:true },
