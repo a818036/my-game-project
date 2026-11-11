@@ -31,7 +31,7 @@ describe('A496 186 年趙忠任車騎將軍與傅爕拒絕私賞',()=>{
     expect(event?.source).toContain('以中常侍趙忠為車騎將軍');
     expect(event?.source).toContain('有功不論命也');
     expect(event?.source).toContain('不推演賞爵實際授予');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-183',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedRevision:183,lateSameYear:true});
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('中平三年春二月');
     const answer=answerKnownHistoricalEventQuestion('西元 186 年發生了什麼事？',world());
     expect(answer?.answer).toContain('趙忠任車騎將軍，傅爕拒絕私下封賞');

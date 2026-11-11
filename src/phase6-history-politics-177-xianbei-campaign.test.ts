@@ -25,7 +25,7 @@ function oldV206Save():SaveFile{
 describe('A520 177 年漢軍征鮮卑記事補列朝議與戰後記載',()=>{
   it('同一史事節點保留兩書詳略、日期精度與傷亡界線',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:177,endYear:177,precision:'year',introducedIn:'phase4-scenario-145',lateSameYear:true});
+    expect(node).toMatchObject({startYear:177,endYear:177,precision:'year',introducedRevision:145,lateSameYear:true});
     expect(node?.source).toContain('《後漢書》卷八');
     expect(node?.source).toContain('《資治通鑑》卷五十七');
     expect(node?.source).toContain('田晏出雲中、臧旻與南單于出雁門、夏育出高柳');

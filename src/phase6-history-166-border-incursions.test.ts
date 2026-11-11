@@ -33,7 +33,7 @@ describe('A554 166 年緣邊九郡受侵與張奐出擊', () => {
     expect(ledger?.source).toContain('六月南匈奴及烏桓、鮮卑寇緣邊九郡');
     expect(ledger?.source).toContain('十二月南匈奴、烏桓率眾詣張奐降');
     expect(ledger?.source).toContain('不推定三族聯盟、鮮卑降服');
-    expect(HISTORY_CONTENT.find(item => item.id === eventId)).toMatchObject({ startYear: 166, endYear: 166, precision: 'year', introducedIn: 'phase4-scenario-226', lateSameYear: true });
+    expect(HISTORY_CONTENT.find(item => item.id === eventId)).toMatchObject({ startYear: 166, endYear: 166, precision: 'year', introducedRevision:226, lateSameYear: true });
     const answer = answerKnownHistoricalEventQuestion('西元166年邊郡發生什麼事？', questionWorld());
     expect(answer?.answer).toContain('緣邊九郡遭侵');
     expect(answer?.answer).toContain('《後漢書》卷七〈孝桓帝紀〉');

@@ -31,7 +31,7 @@ describe('A512 181 年後宮列肆記事',()=>{
     expect(event?.source).toContain('采女販賣而相互盜竊爭鬥');
     expect(event?.source).toContain('著商賈服從之飲宴為樂');
     expect(event?.source).toContain('不推演市場規模');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedIn:'phase4-scenario-199',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedRevision:199,lateSameYear:true});
     const answer=answerKnownHistoricalEventQuestion('西元 181 年發生了什麼事？',world())?.answer??'';
     expect(answer).toContain('後宮設列肆');
     const old=upgradePhase4Content(createPhase4Model(180,1,persons,'phase4-scenario-198'),PHASE4_CONTENT_VERSION);

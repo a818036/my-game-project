@@ -30,7 +30,7 @@ describe('A490 185 年張牛角等黑山部眾起事',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('十餘輩並起');
     expect(event?.source).toContain('不把「十餘輩」換算成確切隊伍數');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedIn:'phase4-scenario-177',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedRevision:177,lateSameYear:true});
     const answer=answerKnownHistoricalEventQuestion('西元 185 年發生了什麼事？',world());
     expect(answer?.answer).toContain('張牛角');
     expect(answer?.answer).toContain('《後漢書》卷八');

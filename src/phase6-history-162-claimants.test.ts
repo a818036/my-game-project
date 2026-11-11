@@ -32,7 +32,7 @@ describe('A548 162 年陳景、管伯記事', () => {
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('冬十月');
     expect(event?.source).toContain('不推定彼此協作');
-    expect(HISTORY_CONTENT.find(item => item.id === id)).toMatchObject({ startYear: 162, endYear: 162, precision: 'year', introducedIn: 'phase4-scenario-224', lateSameYear: true });
+    expect(HISTORY_CONTENT.find(item => item.id === id)).toMatchObject({ startYear: 162, endYear: 162, precision: 'year', introducedRevision:224, lateSameYear: true });
     expect(answerKnownHistoricalEventQuestion('西元 162 年陳景與管伯發生什麼事？', world())?.answer).toContain('管伯');
   });
 

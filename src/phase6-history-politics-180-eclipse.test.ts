@@ -18,7 +18,7 @@ function oldV217Save(year=169):SaveFile{
 describe('A533 更正日食記事為建寧三年（170）',()=>{
   it('保留三月晦日與干支，不推測觀測或政治後果',()=>{
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedIn:'phase4-scenario-218',lateSameYear:true});
+    expect(node).toMatchObject({startYear:170,endYear:170,precision:'year',introducedRevision:218,lateSameYear:true});
     expect(node?.source).toContain('三月丙寅晦，日有食之');
     expect(node?.description).toContain('不推定觀測地');
     expect(node?.sourceDateNote).toContain('三月丙寅晦');

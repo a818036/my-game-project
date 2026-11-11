@@ -32,7 +32,7 @@ describe('A499 187 年涼州刺史耿鄙討韓遂及傅爕死節',()=>{
     expect(event?.source).toContain('程球');
     expect(event?.source).toContain('傅爕拒絕投賊並戰死');
     expect(event?.source).toContain('馬騰亦擁兵反');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-186',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedRevision:186,lateSameYear:true});
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('未標記事月日');
     const answer=answerKnownHistoricalEventQuestion('西元 187 年發生了什麼事？',world());
     expect(answer?.answer).toContain('耿鄙討韓遂失敗、傅爕守漢陽戰死與馬騰合遂');

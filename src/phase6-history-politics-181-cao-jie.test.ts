@@ -31,7 +31,7 @@ describe('A516 181 年大長秋職務接替記事',()=>{
     expect(event?.source).toContain('大長秋華容侯曹節卒');
     expect(event?.source).toContain('中常侍趙忠代領大長秋');
     expect(event?.source).toContain('不推定月份、日期');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedIn:'phase4-scenario-203',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedRevision:203,lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 181 年發生了什麼事？',world())?.answer).toContain('曹節去世，趙忠代領大長秋');
     const old=upgradePhase4Content(createPhase4Model(180,1,persons,'phase4-scenario-202'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

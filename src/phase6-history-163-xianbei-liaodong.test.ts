@@ -32,7 +32,7 @@ describe('A549 163 年鮮卑侵擾遼東屬國', () => {
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('延熹六年條記五月');
     expect(event?.source).toContain('不推演具體地點');
-    expect(HISTORY_CONTENT.find(item => item.id === id)).toMatchObject({ startYear: 163, endYear: 163, precision: 'year', introducedIn: 'phase4-scenario-225', lateSameYear: true });
+    expect(HISTORY_CONTENT.find(item => item.id === id)).toMatchObject({ startYear: 163, endYear: 163, precision: 'year', introducedRevision:225, lateSameYear: true });
     expect(HISTORY_CONTENT.find(item => item.id === id)?.sourceDateNote).toContain('保留漢曆月份註記');
     expect(answerKnownHistoricalEventQuestion('西元 163 年鮮卑發生什麼事？', world())?.answer).toContain('遼東屬國');
   });

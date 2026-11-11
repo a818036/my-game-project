@@ -7,7 +7,7 @@ const eventId = 'sun-quan-inferred-birth-182';
 describe('孫權推定出生年資料', () => {
   it('只保留享年推回的公元年，不虛構月日或日常細節', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === eventId);
-    expect(content).toMatchObject({ startYear: 182, endYear: 182, precision: 'year', introducedIn: 'phase4-scenario-89' });
+    expect(content).toMatchObject({ startYear: 182, endYear: 182, precision: 'year', introducedRevision:89 });
     expect(content?.source).toContain('《三國志》卷四十八');
     expect(content?.source).toContain('年七十一');
     expect(content?.source).toContain('未載出生月日');
@@ -42,7 +42,7 @@ describe('200 年孫策去世與孫權承接事務', () => {
 
   it('依《三國志》保留年級精度與承接事務記錄，不補月日或私生活', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === successionId);
-    expect(content).toMatchObject({ startYear: 200, endYear: 200, precision: 'year', introducedIn: 'phase4-scenario-91' });
+    expect(content).toMatchObject({ startYear: 200, endYear: 200, precision: 'year', introducedRevision:91 });
     expect(content?.source).toContain('《三國志》卷四十七');
     expect(content?.source).toContain('策薨，以事授權');
     expect(content?.source).toContain('未提供月日');
@@ -72,7 +72,7 @@ describe('208 年孫權決議抗曹', () => {
 
   it('依《三國志》記錄孫權與周瑜、魯肅同意拒曹並遣軍合劉，不補私下獨白', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === decisionId);
-    expect(content).toMatchObject({ startYear: 208, endYear: 208, precision: 'year', introducedIn: 'phase4-scenario-92', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 208, endYear: 208, precision: 'year', introducedRevision:92, lateSameYear: true });
     expect(content?.source).toContain('《三國志》卷四十七');
     expect(content?.source).toContain('多數議者勸孫權迎降');
     expect(content?.source).toContain('意與權同');
@@ -107,7 +107,7 @@ describe('221 年孫權受魏封吳王', () => {
 
   it('依《三國志》與裴注記錄冊封及群臣議論，不推演外交動機', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === titleId);
-    expect(content).toMatchObject({ startYear: 221, endYear: 221, precision: 'year', introducedIn: 'phase4-scenario-93', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 221, endYear: 221, precision: 'year', introducedRevision:93, lateSameYear: true });
     expect(content?.source).toContain('《三國志》卷四十七');
     expect(content?.source).toContain('自公安都鄂、改名武昌');
     expect(content?.source).toContain('十一月魏文帝策命孫權為吳王');
@@ -152,7 +152,7 @@ describe('223 年孫權遣使弔劉備', () => {
 
   it('依《吳書》裴注記錄孫權遣馮熙赴蜀弔喪', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === condolenceId);
-    expect(content).toMatchObject({ startYear: 223, endYear: 223, precision: 'year', introducedIn: 'phase4-scenario-94', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 223, endYear: 223, precision: 'year', introducedRevision:94, lateSameYear: true });
     expect(content?.source).toContain('《吳書》');
     expect(content?.source).toContain('孫權遣立信都尉馮熙聘蜀弔喪');
     expect(content?.description).toContain('不推演使團路線');
@@ -179,7 +179,7 @@ describe('224 年吳蜀互遣使重結盟好', () => {
 
   it('依《三國志》卷四十七記錄張溫、鄧芝往來，不虛構盟約條文', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === allianceId);
-    expect(content).toMatchObject({ startYear: 224, endYear: 224, precision: 'year', introducedIn: 'phase4-scenario-95', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 224, endYear: 224, precision: 'year', introducedRevision:95, lateSameYear: true });
     expect(content?.source).toContain('張溫聘蜀');
     expect(content?.source).toContain('蜀遣鄧芝來聘');
     expect(content?.source).toContain('重結盟好');
@@ -207,7 +207,7 @@ describe('226 年孫權征江夏石陽', () => {
 
   it('記錄圍石陽未克而還，不推演兵力與戰損', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === campaignId);
-    expect(content).toMatchObject({ startYear: 226, endYear: 226, precision: 'year', introducedIn: 'phase4-scenario-96', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 226, endYear: 226, precision: 'year', introducedRevision:96, lateSameYear: true });
     expect(content?.source).toContain('卷四十七');
     expect(content?.source).toContain('征江夏、圍石陽，不克而還');
     expect(content?.description).toContain('不推演兵力、傷亡');
@@ -234,7 +234,7 @@ describe('228 年孫權命陸遜破曹休於石亭', () => {
 
   it('記錄周魴誘敵及陸遜擊破曹休，不添加未載的兵力與戰損', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === shitingId);
-    expect(content).toMatchObject({ startYear: 228, endYear: 228, precision: 'year', introducedIn: 'phase4-scenario-97', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 228, endYear: 228, precision: 'year', introducedRevision:97, lateSameYear: true });
     expect(content?.source).toContain('周魴偽叛誘曹休');
     expect(content?.source).toContain('孫權至皖口');
     expect(content?.source).toContain('陸遜督諸將大破曹休於石亭');
@@ -262,7 +262,7 @@ describe('234 年孫權進向合肥新城', () => {
 
   it('依《三國志》按年級記錄進軍、分遣及魏廷東征，不臆造戰果', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === campaignId);
-    expect(content).toMatchObject({ startYear: 234, endYear: 234, precision: 'year', introducedIn: 'phase4-scenario-98', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 234, endYear: 234, precision: 'year', introducedRevision:98, lateSameYear: true });
     expect(content?.source).toContain('《三國志》卷三');
     expect(content?.source).toContain('陸議、孫韶');
     expect(content?.source).toContain('秋七月魏明帝親東征');
@@ -295,7 +295,7 @@ describe('183 年光和六年大旱與冬寒記錄', () => {
 
   it('按原典只記年級寒候，不推演每天氣候或生活細節', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === coldId);
-    expect(content).toMatchObject({ startYear: 183, endYear: 183, precision: 'year', introducedIn: 'phase4-scenario-90' });
+    expect(content).toMatchObject({ startYear: 183, endYear: 183, precision: 'year', introducedRevision:90 });
     expect(content?.source).toContain('卷一〇五〈五行志〉');
     expect(content?.source).toContain('北海、東萊、琅邪');
     expect(content?.source).toContain('冰厚尺餘');
@@ -327,7 +327,7 @@ describe('218 年孫權於庱亭射虎', () => {
 
   it('依《三國志》記錄年級事件與十月來源註記，不擴寫日常', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === huntId);
-    expect(content).toMatchObject({ startYear: 218, endYear: 218, precision: 'year', introducedIn: 'phase4-scenario-99', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 218, endYear: 218, precision: 'year', introducedRevision:99, lateSameYear: true });
     expect(content?.source).toContain('《三國志》卷四十七');
     expect(content?.source).toContain('建安二十三年十月');
     expect(content?.source).toContain('孫權投以雙戟');
@@ -366,7 +366,7 @@ describe('203、207 年孫權征黃祖', () => {
   it('依《三國志》保留兩次不同年份的西征記載與原文限制', () => {
     for (const campaign of campaigns) {
       const content = HISTORY_CONTENT.find((node) => node.id === campaign.id);
-      expect(content).toMatchObject({ startYear: campaign.year, endYear: campaign.year, precision: 'year', introducedIn: 'phase4-scenario-100' });
+      expect(content).toMatchObject({ startYear: campaign.year, endYear: campaign.year, precision: 'year', introducedRevision:100 });
       expect(content?.source).toContain('《三國志》卷四十七');
       expect(content?.source).toContain(campaign.year === 203 ? '破其舟軍而未克城' : '虜其人民而還');
     }
@@ -404,7 +404,7 @@ describe('209 年孫權任命周瑜並受劉備表奏', () => {
 
   it('依卷四十七記錄年級官職任命，不補任命日或政治交易', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === id);
-    expect(content).toMatchObject({ startYear: 209, endYear: 209, precision: 'year', introducedIn: 'phase4-scenario-103', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 209, endYear: 209, precision: 'year', introducedRevision:103, lateSameYear: true });
     expect(content?.source).toContain('《三國志》卷四十七');
     expect(content?.source).toContain('以周瑜為南郡太守');
     expect(content?.source).toContain('行車騎將軍、領徐州牧');
@@ -431,7 +431,7 @@ describe('209 年孫權任命周瑜並受劉備表奏', () => {
 describe('孫權早年可考年級節點（202、211、212）', () => {
   it('卷四十七支持建安七年孫權之母吳氏去世，正確換算為 202 年', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === 'sun-quan-mother-dies-202');
-    expect(content).toMatchObject({ startYear: 202, endYear: 202, precision: 'year', introducedIn: 'phase4-scenario-106', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 202, endYear: 202, precision: 'year', introducedRevision:106, lateSameYear: true });
     expect(content?.source).toContain('建安七年，權母吳氏薨');
     expect(content?.source).toContain('建安四年為公元 199 年');
     expect(content?.source).toContain('建安七年為公元 202 年');
@@ -442,9 +442,9 @@ describe('孫權早年可考年級節點（202、211、212）', () => {
   it('卷四十七支持徙治秣陵及翌年築城改名備濡須，保留年級精度', () => {
     const move = HISTORY_CONTENT.find((node) => node.id === 'sun-quan-moves-governance-to-muling-211');
     const works = HISTORY_CONTENT.find((node) => node.id === 'sun-quan-builds-shitou-jianye-ruxu-212');
-    expect(move).toMatchObject({ startYear: 211, endYear: 211, precision: 'year', introducedIn: 'phase4-scenario-104', lateSameYear: true });
+    expect(move).toMatchObject({ startYear: 211, endYear: 211, precision: 'year', introducedRevision:104, lateSameYear: true });
     expect(move?.source).toContain('建安十六年「權徙治秣陵」');
-    expect(works).toMatchObject({ startYear: 212, endYear: 212, precision: 'year', introducedIn: 'phase4-scenario-104', lateSameYear: true });
+    expect(works).toMatchObject({ startYear: 212, endYear: 212, precision: 'year', introducedRevision:104, lateSameYear: true });
     expect(works?.source).toContain('明年，城石頭，改秣陵為建業');
     expect(works?.source).toContain('作濡須塢');
     expect(works?.description).toContain('不推演工程規模');
@@ -508,7 +508,7 @@ describe('214 年孫權合肥撤軍遭襲', () => {
 
   it('保留合肥未克、撤軍遭襲及越津橋記載，不擴寫交戰細節', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === id);
-    expect(content).toMatchObject({ startYear: 214, endYear: 214, precision: 'year', introducedIn: 'phase4-scenario-101', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 214, endYear: 214, precision: 'year', introducedRevision:101, lateSameYear: true });
     expect(content?.source).toContain('《三國志》卷四十七');
     expect(content?.source).toContain('卷十七〈魏書·張遼傳〉');
     expect(content?.source).toContain('繫年有異');
@@ -546,7 +546,7 @@ describe('216–217 年孫權濡須與遣使', () => {
   it('保留濡須攻守與外交先後的原典內容、年級精度及季節註記', () => {
     for (const item of campaigns) {
       const content = HISTORY_CONTENT.find((node) => node.id === item.id);
-      expect(content).toMatchObject({ startYear: item.year, endYear: item.year, precision: 'year', introducedIn: 'phase4-scenario-102', lateSameYear: true });
+      expect(content).toMatchObject({ startYear: item.year, endYear: item.year, precision: 'year', introducedRevision:102, lateSameYear: true });
       expect(content?.source).toContain('《三國志》卷四十七');
       expect(content?.source).toContain(item.fact);
       expect(content?.sourceDateNote??HISTORY_SOURCE_DATE_NOTES[item.id]).toContain(item.evidence);
@@ -588,7 +588,7 @@ describe('246 年朱然征柤中史料校勘', () => {
 
   it('在既有柤中節點並列兩史記載、保留年級精度與來源日期', () => {
     const content = HISTORY_CONTENT.find((node) => node.id === id);
-    expect(content).toMatchObject({ startYear: 246, endYear: 246, precision: 'year', introducedIn: 'phase4-scenario-40', sourceDateNote: expect.stringContaining('春二月') });
+    expect(content).toMatchObject({ startYear: 246, endYear: 246, precision: 'year', introducedRevision:40, sourceDateNote: expect.stringContaining('春二月') });
     expect(content?.source).toContain('《三國志》卷四十七');
     expect(content?.source).toContain('斬獲千餘');
     expect(content?.source).toContain('《資治通鑑》卷七十五');

@@ -32,7 +32,7 @@ describe('A508 186 年張延、張溫太尉更替記事',()=>{
     expect(event?.source).toContain('就長安拜張溫為太尉');
     expect(event?.source).toContain('三公在外始於溫');
     expect(event?.source).toContain('不推測張延後續');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedIn:'phase4-scenario-195',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:186,endYear:186,precision:'year',introducedRevision:195,lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 186 年發生了什麼事？',world())?.answer).toContain('張溫');
     const old=upgradePhase4Content(createPhase4Model(185,1,persons,'phase4-scenario-194'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

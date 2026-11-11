@@ -24,7 +24,7 @@ describe('A539 181 年六月雨雹記事', () => {
     expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
     expect(event?.source).toContain('六月庚辰，雨雹如雞子');
     expect(event?.source).not.toContain('損害數');
-    expect(HISTORY_CONTENT.find((node) => node.id === id)).toMatchObject({ startYear: 181, endYear: 181, precision: 'year', introducedIn: 'phase4-scenario-221' });
+    expect(HISTORY_CONTENT.find((node) => node.id === id)).toMatchObject({ startYear: 181, endYear: 181, precision: 'year', introducedRevision:221 });
   });
 
   it('v220 舊存檔保留事件帳前綴；未到年份可觸發，同年存檔不回補', () => {

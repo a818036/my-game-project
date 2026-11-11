@@ -33,7 +33,7 @@ describe('A511 181 年鮮卑首領更替記事',()=>{
     expect(event?.source).toContain('魁頭');
     expect(event?.source).toContain('步度根');
     expect(event?.source).toContain('不補各次繼位年月');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedIn:'phase4-scenario-198',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:181,endYear:181,precision:'year',introducedRevision:198,lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 181 年發生了什麼事？',world())?.answer).toContain('檀石槐');
     const old=upgradePhase4Content(createPhase4Model(180,1,persons,'phase4-scenario-197'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

@@ -30,7 +30,7 @@ describe('A492 185 年鮮卑侵寇幽、并二州',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('鮮卑寇幽幷二州');
     expect(event?.source).toContain('不推定進軍路線、交戰、傷亡、占領');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedIn:'phase4-scenario-179',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedRevision:179,lateSameYear:true});
     const answer=answerKnownHistoricalEventQuestion('西元 185 年發生了什麼事？',world());
     expect(answer?.answer).toContain('鮮卑侵寇幽、并二州');
     expect(answer?.answer).toContain('《後漢書》卷八');

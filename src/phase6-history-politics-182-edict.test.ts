@@ -32,7 +32,7 @@ describe('A517 182 年舉劾爭議與陳耽上言',()=>{
     expect(event?.source).toContain('司徒陳耽上言');
     expect(event?.source).toContain('悉拜議郎');
     expect(event?.source).toContain('不將指控作為獨立裁定');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:182,endYear:182,precision:'year',introducedIn:'phase4-scenario-204',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:182,endYear:182,precision:'year',introducedRevision:204,lateSameYear:true});
     expect(answerKnownHistoricalEventQuestion('西元 182 年發生了什麼事？',world())?.answer).toContain('陳耽進諫');
     const old=upgradePhase4Content(createPhase4Model(181,1,persons,'phase4-scenario-203'),PHASE4_CONTENT_VERSION);
     expect(old.nodes.find(item=>item.contentId===id)?.status).toBe('pending');

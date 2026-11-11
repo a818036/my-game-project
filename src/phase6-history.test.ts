@@ -285,7 +285,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
   it('A244 records Sun Quan falling ill after the southern-suburb sacrifice in 251, preserving month precision and migration history',()=>{
     const id='sun-quan-falls-ill-after-southern-suburb-sacrifice-251';
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:251,endYear:251,precision:'year',introducedIn:'phase4-scenario-129'});
+    expect(node).toMatchObject({startYear:251,endYear:251,precision:'year',introducedRevision:129});
     expect(node?.source).toContain('太元元年冬十一月');
     expect(node?.source).toContain('權祭南郊還，寢疾');
     expect(node?.description).toContain('不推論祭祀與疾病的因果');
@@ -307,7 +307,7 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
   it('A245 preserves the 214/215 dating difference for the Lukou and Xiang River events; v129 migration never backfills',()=>{
     const id='sun-quan-lukou-jingzhou-partition-dating-215';
     const node=HISTORY_CONTENT.find(item=>item.id===id);
-    expect(node).toMatchObject({startYear:215,endYear:215,precision:'year',introducedIn:'phase4-scenario-130'});
+    expect(node).toMatchObject({startYear:215,endYear:215,precision:'year',introducedRevision:130});
     expect(node?.source).toContain('《資治通鑑》卷六十七');
     expect(node?.source).toContain('建安二十年（215）');
     expect(node?.source).toContain('《三國志》卷四十七');
@@ -332,11 +332,11 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     const shu='liu-shan-succeeds-liu-bei-223';
     const caoNode=HISTORY_CONTENT.find(item=>item.id===cao);
     const shuNode=HISTORY_CONTENT.find(item=>item.id===shu);
-    expect(caoNode).toMatchObject({startYear:220,endYear:220,precision:'year',introducedIn:'phase4-scenario-138',lateSameYear:true});
+    expect(caoNode).toMatchObject({startYear:220,endYear:220,precision:'year',introducedRevision:138,lateSameYear:true});
     expect(caoNode?.source).toContain('《三國志》卷一〈魏書·武帝紀〉');
     expect(caoNode?.source).toContain('庚子太祖崩');
     expect(caoNode?.source).toContain('嗣位為丞相、魏王');
-    expect(shuNode).toMatchObject({startYear:223,endYear:223,precision:'year',introducedIn:'phase4-scenario-138',lateSameYear:true});
+    expect(shuNode).toMatchObject({startYear:223,endYear:223,precision:'year',introducedRevision:138,lateSameYear:true});
     expect(shuNode?.source).toContain('《三國志》卷三十三〈蜀書·後主傳〉');
     expect(shuNode?.source).toContain('建興元年五月後主即位');
     expect(shuNode?.description).toContain('不推演未載');

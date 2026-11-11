@@ -38,7 +38,7 @@ describe('A556 167 年羌事原典記事', () => {
     expect(entry?.source).toContain('夏四月先零羌再寇三輔');
     expect(entry?.source).toContain('冬十月張奐擊破之');
     expect(entry?.source).toContain('「西羌悉平」不解作全年無後續');
-    expect(content).toMatchObject({ startYear: 167, endYear: 167, precision: 'year', introducedIn: 'phase4-scenario-227', lateSameYear: true });
+    expect(content).toMatchObject({ startYear: 167, endYear: 167, precision: 'year', introducedRevision:227, lateSameYear: true });
     expect(content?.sourceDateNote).toContain('不換算模型月份');
 
     const state = questionWorld();

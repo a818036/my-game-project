@@ -32,7 +32,7 @@ describe('A500 187 年張純聯合張舉與烏桓起兵',()=>{
     expect(event?.source).toContain('烏桓大人丘力居');
     expect(event?.source).toContain('公綦稠、右北平太守劉政及遼東太守陽終');
     expect(event?.source).toContain('張舉稱天子，張純稱彌天將軍');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedIn:'phase4-scenario-187',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:187,endYear:187,precision:'year',introducedRevision:187,lateSameYear:true});
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('未標記事月日');
     const answer=answerKnownHistoricalEventQuestion('西元 187 年發生了什麼事？',world());
     expect(answer?.answer).toContain('張純聯合張舉與烏桓起兵');

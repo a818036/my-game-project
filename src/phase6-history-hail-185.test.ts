@@ -30,7 +30,7 @@ describe('A494 185 年夏四月大雨雹',()=>{
     expect(node?.status).toBe('triggered');
     expect(event?.source).toContain('夏，四月，庚戌，大雨雹');
     expect(event?.source).toContain('不推測影響地域、規模、損失');
-    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedIn:'phase4-scenario-181',lateSameYear:true});
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:185,endYear:185,precision:'year',introducedRevision:181,lateSameYear:true});
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('夏四月庚戌');
     const answer=answerKnownHistoricalEventQuestion('西元 185 年發生了什麼事？',world());
     expect(answer?.answer).toContain('中平二年夏四月大雨雹');
