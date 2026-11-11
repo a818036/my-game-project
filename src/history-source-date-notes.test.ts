@@ -241,6 +241,10 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'shu-dependent-country-revolt-163',
       'feng-gun-dismissed-163',
       'pingling-mausoleum-chamber-fire-163',
+      'zhong-hao-dies-163',
+      'general-amnesty-163',
+      'xu-xu-appointed-situ-163',
+      'kangling-east-office-fire-163',
       'liu-chong-dismissed-163',
       'zhou-jing-appointed-sikong-163',
       'emperor-hunts-guangcheng-visits-hangu-shanglin-163',
@@ -339,6 +343,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(183);
+    expect(uniqueNotedEvents.size).toBe(187);
   });
 });

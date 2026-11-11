@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-285';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-286';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:284},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:285},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -52,6 +52,10 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'nanhai-bandits-raid-163',kind:EVENT_KIND,title:'南海賊寇郡界',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年條：「南海賊寇郡界」。',carrier:'南海地方與入寇者',description:'只記郡界遭寇，不推測規模或後續。',introducedRevision:280 },
   { id:'feng-gun-dismissed-163',kind:EVENT_KIND,title:'車騎將軍馮緄免職',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年八月，車騎將軍馮緄免。',carrier:'馮緄與漢廷',description:'只記任免，不推測原因或後續職務。',sourceDateNote:'延熹六年八月；遊戲按 163 年級觸發，不換算漢曆月份。',introducedRevision:281 },
   { id:'pingling-mausoleum-chamber-fire-163',kind:EVENT_KIND,title:'平陵園寢失火',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年秋七月甲申，平陵園寢火。',carrier:'平陵園寢',description:'只記原文所載火災，不推測原因、損失或後續處置。',sourceDateNote:'延熹六年秋七月甲申；遊戲按 163 年級觸發，不換算漢曆日期。',introducedRevision:285 },
+  { id:'zhong-hao-dies-163',kind:EVENT_KIND,title:'司徒種暠去世',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年春二月戊午，司徒种暠薨。',carrier:'司徒種暠與漢廷（史料記載）',description:'只記原文所載去世，不推測死因、年齡或繼任安排。',sourceDateNote:'延熹六年春二月戊午；遊戲按 163 年級觸發，不換算漢曆日期。',introducedRevision:286 },
+  { id:'general-amnesty-163',kind:EVENT_KIND,title:'戊戌大赦天下',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年三月戊戌，大赦天下。',carrier:'漢廷與受赦者（史料記載）',description:'只記原文所載大赦，不推定適用對象、個別案件結果或執行情況。',sourceDateNote:'延熹六年三月戊戌；遊戲按 163 年級觸發，不換算漢曆日期。',introducedRevision:286 },
+  { id:'xu-xu-appointed-situ-163',kind:EVENT_KIND,title:'許栩任司徒',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年條記「衛尉潁川許栩為司徒」；原文未為此任命另標月日。',carrier:'許栩與漢廷（史料記載）',description:'只記原文所載任命，不推測任期、原因或後續官職。',sourceDateNote:'延熹六年條未為此任命另標月日；遊戲僅按 163 年級觸發。',introducedRevision:286 },
+  { id:'kangling-east-office-fire-163',kind:EVENT_KIND,title:'康陵東署失火',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年夏四月辛亥，康陵東署火。',carrier:'康陵東署（史料記載）',description:'只記原文所載火災，不推測原因、損失或後續處置。',sourceDateNote:'延熹六年夏四月辛亥；遊戲按 163 年級觸發，不換算漢曆日期。',introducedRevision:286 },
   { id:'liu-chong-dismissed-163',kind:EVENT_KIND,title:'司空劉寵免職',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年十一月，司空劉寵免。',carrier:'劉寵與漢廷',description:'只記免職，不推測原因或後續職務。',sourceDateNote:'延熹六年十一月；遊戲按 163 年級觸發，不換算漢曆月份。',introducedRevision:282 },
   { id:'zhou-jing-appointed-sikong-163',kind:EVENT_KIND,title:'周景任司空',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年十二月，衛尉周景為司空。',carrier:'周景與漢廷',description:'只記原文任命，不推測其後任期或其他官職變化。',sourceDateNote:'延熹六年十二月；遊戲按 163 年級觸發，不換算漢曆月份。',introducedRevision:283 },
   { id:'emperor-hunts-guangcheng-visits-hangu-shanglin-163',kind:EVENT_KIND,title:'桓帝校獵廣成並巡幸函谷關、上林苑',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年冬十月丙辰，校獵廣成，遂幸函谷關、上林苑。',carrier:'桓帝與隨行朝廷',description:'只記原文所載校獵及巡幸，不補行程細節或實際活動。',sourceDateNote:'延熹六年冬十月丙辰；遊戲按 163 年級觸發，不換算漢曆日期。',introducedRevision:284 },
