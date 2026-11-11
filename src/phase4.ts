@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-279';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-280';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:278},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:279},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -46,9 +46,10 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'changping-nandun-claimants-162',kind:EVENT_KIND,title:'陳景、管伯分別圖舉兵而伏誅',...sameYear(162),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹五年條記冬十月，長平陳景自號「黃帝子」並署置官屬，南頓管伯亦稱「真人」，二人「並圖舉兵，悉伏誅」。本節點只記原典同年並列的兩起事件，不推定彼此協作、參與者規模或執行方式。',carrier:'長平陳景、南頓管伯與漢廷（史料記載）',description:'記錄長平陳景與南頓管伯各自自立名號、圖謀舉兵並被誅；依原文並列概述，不建立人物狀態，不推演地方戰事、官府部署或玩家世界控制變化。',introducedRevision:224 },
   { id:'wuling-revolt-suppressed-163',kind:EVENT_KIND,title:'武陵地方再起，太守陳奉擊破並降之',...sameYear(163),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹六年條記武陵蠻復叛，太守陳奉與戰，大破降之。本節點按年級精度記載，不補交戰過程或傷亡數。',carrier:'武陵地方起事者與太守陳奉（史料記載）',description:'記錄武陵地方再起及來源所載大破、降服；不將降服擴寫為全面同化、長期治理或未載人物命運。',introducedRevision:147 },
   { id:'xianbei-invades-liaodong-dependency-163',kind:EVENT_KIND,title:'鮮卑侵擾遼東屬國',...sameYear(163),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹六年條記五月鮮卑寇遼東屬國。本節點只記來源明載的侵擾，不推演具體地點、兵力、戰鬥、傷亡或後續控制。',carrier:'鮮卑與遼東屬國地方（史料記載）',description:'記錄史書所載鮮卑於五月侵擾遼東屬國；不推演戰事規模、受害者、反擊、傷亡或地方控制變化。',sourceDateNote:'《後漢書》卷七繫於延熹六年，記五月鮮卑寇遼東屬國；保留漢曆月份註記，只按 163 年級觸發，不換算為模型日期。',introducedRevision:225 },
-  { id:'shu-dependent-country-revolt-163',kind:EVENT_KIND,title:'蜀郡屬國夷叛',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年三月記蜀郡屬國夷叛；原文未載起事規模、傷亡、討伐或後續治理。',carrier:'蜀郡屬國地方起事者（史料記載）',description:'記錄蜀郡屬國夷叛的原典記事；不推定參與群體、規模、戰事、傷亡或後續治理。',sourceDateNote:'延熹六年三月；遊戲只按 163 年級觸發，不換算漢曆月份為模型日期。',introducedRevision:277 },
-  { id:'guiyang-bandits-li-yan-163',kind:EVENT_KIND,title:'桂陽盜賊李研等寇郡界',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年條記桂陽盜賊李研等寇郡界；本節點只記原文所載侵擾，不補月份、討伐結果或地方後續。',carrier:'桂陽盜賊李研等與郡界地方（史料記載）',description:'記錄桂陽盜賊李研等侵擾郡界；原典未在此句交代後續，本內容不推測討伐、傷亡或控制變化。',introducedRevision:278 },
-  { id:'sun-qiang-defeats-dian-na-qiang-163',kind:EVENT_KIND,title:'孫羌討滇那羌並擊破',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年條記隴西太守孫羌討滇那羌，破之；本節點不補月份、戰況或傷亡。',carrier:'隴西太守孫羌與滇那羌（史料記載）',description:'記錄原文所述隴西太守孫羌討伐滇那羌並擊破；不推演兵力、戰鬥經過、傷亡或後續治理。',introducedRevision:279 },
+  { id:'shu-dependent-country-revolt-163',kind:EVENT_KIND,title:'蜀郡屬國夷叛',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年三月記「蜀郡屬國夷叛」；不補未載細節。',carrier:'蜀郡屬國地方',description:'記原典所載起事；未載細節不補推。',sourceDateNote:'延熹六年三月；遊戲只按 163 年級觸發，不換算漢曆月份為模型日期。',introducedRevision:277 },
+  { id:'guiyang-bandits-li-yan-163',kind:EVENT_KIND,title:'桂陽盜賊李研等寇郡界',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年條：「桂陽盜賊李研等寇郡界」。',carrier:'李研等與桂陽地方',description:'只記侵擾郡界，不推測未載後續。',introducedRevision:278 },
+  { id:'sun-qiang-defeats-dian-na-qiang-163',kind:EVENT_KIND,title:'孫羌討滇那羌並擊破',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年條：「隴西太守孫羌討滇那羌，破之」。',carrier:'孫羌與滇那羌',description:'只記原文所載討伐及擊破，不補月份、戰況或傷亡。',introducedRevision:279 },
+  { id:'nanhai-bandits-raid-163',kind:EVENT_KIND,title:'南海賊寇郡界',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年條：「南海賊寇郡界」。',carrier:'南海地方與入寇者',description:'只記郡界遭寇，不推測規模或後續。',introducedRevision:280 },
   { id:'jingzhou-rebels-suppressed-164',kind:EVENT_KIND,title:'荊州刺史度尚討平零陵、桂陽盜賊及蠻夷',...sameYear(164),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹七年條記荊州刺史度尚擊零陵、桂陽盜賊及蠻夷，大破平之。本節點採年級精度，不增補兵力、傷亡或戰後行政結果。',carrier:'荊州刺史度尚與零陵、桂陽地方起事者（史料記載）',description:'記錄度尚討平零陵、桂陽地方起事的來源概述；不推定參與群體細節、戰場或持續治理狀態。',introducedRevision:147 },
   { id:'hu-lan-zhu-gai-revolt-165',kind:EVENT_KIND,title:'胡蘭、朱蓋等起事，度尚等討破',...sameYear(165),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹八年條記桂陽胡蘭、朱蓋等復反，攻沒郡縣、轉寇零陵；其後遣中郎將度尚、長沙太守抗徐等擊之，大破並斬胡蘭、朱蓋。本節點採年級精度，不補兵力、傷亡或月內日期。',carrier:'胡蘭、朱蓋、度尚與抗徐（史料記載）',description:'記錄地方起事、侵擾及來源明載的討破結果；不推演完整戰役、額外傷亡或各郡控制變化。',introducedRevision:147 },
   { id:'partisan-frictions-emerge-166',kind:EVENT_KIND,title:'桓帝朝廷朋黨議論漸起',...sameYear(166),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十五延熹九年條記桓帝即位前受學於甘陵周福，後擢周福為尚書；同郡河南尹房植亦有名於朝，兩家賓客互相譏揣、各樹朋徒，由是甘陵分南北部，「黨人之議自此始矣」。《後漢書》卷六十七〈黨錮列傳〉亦以延熹九年為黨事起始。本內容包只採公元年級精度，不將士人概括為單一陣營。',carrier:'桓帝朝廷、甘陵周氏與房植相關士人（史料記載）',description:'記錄史料所述朝廷與地方士人交往、競逐逐漸形成朋黨議論；不推演未載人物立場、地方普遍民意、具體名單或此後黨錮的完整因果。',introducedRevision:144 },

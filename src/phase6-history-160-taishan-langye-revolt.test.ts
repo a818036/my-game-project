@@ -539,4 +539,41 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('孫羌討滇那羌並擊破'))).toBe(false);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A657 補列南海賊寇郡界記事，不推定規模與後續', () => {
+    const id = 'nanhai-bandits-raid-163';
+    const previous = createPhase4Model(162, 1, [], 'phase4-scenario-279');
+    const prefix = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('南海賊寇郡界'));
+    expect(event?.source).toContain('《後漢書》卷七');
+    expect(HISTORY_CONTENT.find((item) => item.id === id)).toMatchObject({
+      startYear: 163,
+      endYear: 163,
+      precision: 'year',
+      introducedRevision: 280,
+    });
+
+    for (const year of [163, 164]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-279'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+      expect(late.eventLedger.some((item) => item.detail.includes('南海賊寇郡界'))).toBe(false);
+    }
+
+    const old = oldSave(162, 669, 'phase4-scenario-279');
+    const oldEvents = structuredClone(old.events);
+    const migrated = verifySave(toJson(old));
+    expect(migrated.events.slice(0, oldEvents.length)).toEqual(oldEvents);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    const lateSave = verifySave(toJson(oldSave(163, 670, 'phase4-scenario-279')));
+    expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+    expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('南海賊寇郡界'))).toBe(false);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
