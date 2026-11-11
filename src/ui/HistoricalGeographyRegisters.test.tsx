@@ -3,6 +3,7 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
+import axe from 'axe-core';
 import { HAN_DIVISION_SOURCE_URLS } from '../phase4-geography';
 import { HistoricalGeographyRegisters } from './HistoricalGeographyRegisters';
 
@@ -69,6 +70,41 @@ describe('史料郡縣名錄的可存取標記', () => {
         search.dispatchEvent(new Event('input', { bubbles: true }));
       });
       expect(host.querySelectorAll('details.county-index-details')).toHaveLength(105);
+    } finally {
+      await act(async () => root.unmount());
+      host.remove();
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('搜尋結果與無結果狀態通過 axe-core 啟用規則', async () => {
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+    const host = document.createElement('div');
+    document.body.append(host);
+    const root = createRoot(host);
+    try {
+      await act(async () => root.render(createElement(HistoricalGeographyRegisters)));
+      const scan = async () => {
+        const result = await axe.run(host, { rules: { 'color-contrast': { enabled: false } } });
+        expect(result.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.flatMap((node) => node.target.map(String)) }))).toEqual([]);
+      };
+      await scan();
+
+      const search = host.querySelector<HTMLInputElement>('#county-register-search')!;
+      const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!;
+      await act(async () => {
+        setValue.call(search, '潁陰');
+        search.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      expect(host.querySelector('[role="status"]')?.textContent).toContain('找到 1 個名目');
+      await scan();
+
+      await act(async () => {
+        setValue.call(search, '沒有這個地名');
+        search.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      expect(host.querySelector('[role="status"]')?.textContent).toContain('沒有符合');
+      await scan();
     } finally {
       await act(async () => root.unmount());
       host.remove();
