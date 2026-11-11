@@ -838,4 +838,33 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     for (const entry of entries) expect(migrated.state.phase4?.nodes.find((node) => node.contentId === entry.id)?.status).toBe('pending');
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A666 補列 164 年段熲擊破當煎羌記事', () => {
+    const id = 'duan-jiong-defeats-dangjian-qiang-164';
+    const old = createPhase4Model(163, 1, [], 'phase4-scenario-288');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    const node = HISTORY_CONTENT.find((item) => item.id === id);
+    expect(node).toMatchObject({ startYear: 164, endYear: 164, precision: 'year', introducedRevision: 289 });
+    expect(node?.sourceDateNote).toContain('未為此討擊另標月日');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((item) => item.contentId === id)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('段熲擊破當煎羌'))?.source).toContain('擊當煎羌，破之');
+
+    for (const year of [164, 165]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-288'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((item) => item.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 164 });
+      expect(late.eventLedger.some((item) => item.detail.includes('段熲擊破當煎羌'))).toBe(false);
+    }
+
+    const legacy = oldSave(163, 682, 'phase4-scenario-288');
+    const legacyEvents = structuredClone(legacy.events);
+    const migrated = verifySave(toJson(legacy));
+    expect(migrated.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
+    expect(migrated.state.phase4?.nodes.find((item) => item.contentId === id)?.status).toBe('pending');
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
