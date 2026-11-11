@@ -1112,7 +1112,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v254 fixture');
     const old:SaveFile={...current,events:[oldStart],state:oldState},migrated=verifySave(toJson(old)),id='attendant-temple-hen-transforms-178';
     expect(migrated.events.slice(0,old.events.length)).toEqual(old.events);
-    expect(migrated.events.some(event=>event.type==='Phase4ContentUpdated'&&event.payload.contentVersion==='phase4-scenario-255')).toBe(true);
+    expect(migrated.events.some(event=>event.type==='Phase4ContentUpdated'&&event.payload.contentVersion===PHASE4_CONTENT_VERSION)).toBe(true);
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v254-hen-anomaly-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
     if(!continued.state||!continued.event)throw new Error('could not continue v254 fixture');

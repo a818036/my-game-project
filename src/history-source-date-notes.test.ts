@@ -258,6 +258,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'tang-zhen-dismissed-xu-xun-sikong-174',
       'drought-locust-seven-provinces-176',
       'xianbei-raids-three-frontiers-176',
+      'wind-hail-and-memorial-edict-179',
       'taiwei-and-minister-succession-guanghe-2-179',
       'scholar-nomination-edict-180',
       'henei-henan-cannibalism-report-180',
@@ -311,6 +312,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(155);
+    expect(uniqueNotedEvents.size).toBe(156);
   });
 });
