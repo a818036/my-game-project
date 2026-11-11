@@ -40,6 +40,9 @@ describe('A628 184 年夏四月三公任免',()=>{
   });
 
   it('A629 v263 存檔遷移保留前綴並觸發安平、甘陵響應記事',()=>{
+    const node=HISTORY_CONTENT.find(item=>item.id==='anping-ganling-respond-yellow-turbans-184');
+    expect(node?.source).toContain('「安平、甘陵人各執其王以應之」；注文指安平王續、甘陵王忠');
+    expect(node?.source).not.toContain('各執其王續、忠以應黃巾');
     const old=versionedSave(183,'phase4-scenario-263'),prefix=structuredClone(old.state.phase4?.eventLedger??[]),migrated=verifySave(toJson(old));
     expect(migrated.state.phase4?.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId==='anping-ganling-respond-yellow-turbans-184')?.status).toBe('pending');
