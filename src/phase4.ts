@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-283';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-284';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:282},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:283},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -53,6 +53,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'feng-gun-dismissed-163',kind:EVENT_KIND,title:'車騎將軍馮緄免職',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年八月，車騎將軍馮緄免。',carrier:'馮緄與漢廷',description:'只記任免，不推測原因或後續職務。',sourceDateNote:'延熹六年八月；遊戲按 163 年級觸發，不換算漢曆月份。',introducedRevision:281 },
   { id:'liu-chong-dismissed-163',kind:EVENT_KIND,title:'司空劉寵免職',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年十一月，司空劉寵免。',carrier:'劉寵與漢廷',description:'只記免職，不推測原因或後續職務。',sourceDateNote:'延熹六年十一月；遊戲按 163 年級觸發，不換算漢曆月份。',introducedRevision:282 },
   { id:'zhou-jing-appointed-sikong-163',kind:EVENT_KIND,title:'周景任司空',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年十二月，衛尉周景為司空。',carrier:'周景與漢廷',description:'只記原文任命，不推測其後任期或其他官職變化。',sourceDateNote:'延熹六年十二月；遊戲按 163 年級觸發，不換算漢曆月份。',introducedRevision:283 },
+  { id:'emperor-hunts-guangcheng-visits-hangu-shanglin-163',kind:EVENT_KIND,title:'桓帝校獵廣成並巡幸函谷關、上林苑',...sameYear(163),precision:YEAR_PRECISION,source:HH7+'延熹六年冬十月丙辰，校獵廣成，遂幸函谷關、上林苑。',carrier:'桓帝與隨行朝廷',description:'只記原文所載校獵及巡幸，不補行程細節或實際活動。',sourceDateNote:'延熹六年冬十月丙辰；遊戲按 163 年級觸發，不換算漢曆日期。',introducedRevision:284 },
   { id:'jingzhou-rebels-suppressed-164',kind:EVENT_KIND,title:'荊州刺史度尚討平零陵、桂陽盜賊及蠻夷',...sameYear(164),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹七年條記荊州刺史度尚擊零陵、桂陽盜賊及蠻夷，大破平之。本節點採年級精度，不增補兵力、傷亡或戰後行政結果。',carrier:'荊州刺史度尚與零陵、桂陽地方起事者（史料記載）',description:'記錄度尚討平零陵、桂陽地方起事的來源概述；不推定參與群體細節、戰場或持續治理狀態。',introducedRevision:147 },
   { id:'hu-lan-zhu-gai-revolt-165',kind:EVENT_KIND,title:'胡蘭、朱蓋等起事，度尚等討破',...sameYear(165),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹八年條記桂陽胡蘭、朱蓋等復反，攻沒郡縣、轉寇零陵；其後遣中郎將度尚、長沙太守抗徐等擊之，大破並斬胡蘭、朱蓋。本節點採年級精度，不補兵力、傷亡或月內日期。',carrier:'胡蘭、朱蓋、度尚與抗徐（史料記載）',description:'記錄地方起事、侵擾及來源明載的討破結果；不推演完整戰役、額外傷亡或各郡控制變化。',introducedRevision:147 },
   { id:'partisan-frictions-emerge-166',kind:EVENT_KIND,title:'桓帝朝廷朋黨議論漸起',...sameYear(166),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十五延熹九年條記桓帝即位前受學於甘陵周福，後擢周福為尚書；同郡河南尹房植亦有名於朝，兩家賓客互相譏揣、各樹朋徒，由是甘陵分南北部，「黨人之議自此始矣」。《後漢書》卷六十七〈黨錮列傳〉亦以延熹九年為黨事起始。本內容包只採公元年級精度，不將士人概括為單一陣營。',carrier:'桓帝朝廷、甘陵周氏與房植相關士人（史料記載）',description:'記錄史料所述朝廷與地方士人交往、競逐逐漸形成朋黨議論；不推演未載人物立場、地方普遍民意、具體名單或此後黨錮的完整因果。',introducedRevision:144 },

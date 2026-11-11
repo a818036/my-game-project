@@ -653,4 +653,35 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     for (const id of ids) expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A661 補列 163 年十月桓帝校獵與巡幸記事', () => {
+    const id = 'emperor-hunts-guangcheng-visits-hangu-shanglin-163';
+    const old = createPhase4Model(162, 1, [], 'phase4-scenario-283');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    const node = HISTORY_CONTENT.find((item) => item.id === id);
+    expect(node).toMatchObject({ startYear: 163, endYear: 163, precision: 'year', introducedRevision: 284 });
+    expect(node?.sourceDateNote).toContain('冬十月丙辰');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((item) => item.contentId === id)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('桓帝校獵'))?.source).toContain('延熹六年冬十月丙辰');
+
+    for (const year of [163, 164]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-283'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((item) => item.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+      expect(late.eventLedger.some((item) => item.detail.includes('桓帝校獵'))).toBe(false);
+    }
+
+    const oldSaveData = oldSave(162, 675, 'phase4-scenario-283');
+    const oldEvents = structuredClone(oldSaveData.events);
+    const migrated = verifySave(toJson(oldSaveData));
+    expect(migrated.events.slice(0, oldEvents.length)).toEqual(oldEvents);
+    expect(migrated.state.phase4?.nodes.find((item) => item.contentId === id)?.status).toBe('pending');
+    const lateSave = verifySave(toJson(oldSave(163, 676, 'phase4-scenario-283')));
+    expect(lateSave.state.phase4?.nodes.find((item) => item.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
