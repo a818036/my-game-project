@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { advancePhase4, createPhase4Model, HISTORY_CONTENT, PHASE4_CONTENT_VERSION } from './phase4';
-import { applyEvent, createOpeningFacts, dispatch, ENGINE_VERSION, replay, type GameEvent } from './engine';
+import { answerKnownHistoricalEventQuestion } from './life';
+import { applyEvent, createOpeningFacts, dispatch, ENGINE_VERSION, replay, type GameEvent, type GameState } from './engine';
 import { toJson, verifySave, type SaveFile } from './storage';
 
 const ids = [
@@ -8,6 +9,21 @@ const ids = [
   'guo-xi-succeeds-liu-chong-taiwei-179',
   'xianbei-raids-bingzhou-179',
 ] as const;
+
+function questionWorld(): GameState {
+  const seed = 607;
+  const started = dispatch(null, {
+    version: ENGINE_VERSION,
+    commandId: 'a605-question-world',
+    expectedRevision: 0,
+    type: 'StartGame',
+    name: '史料驗收',
+    seed,
+    facts: createOpeningFacts(seed, 179, { regions: [], surnames: [] }),
+  });
+  if (!started.state) throw new Error('無法建立 A605 年表問答世界線');
+  return started.state;
+}
 
 function versionedSave(year: number, seed: number): SaveFile {
   const facts = createOpeningFacts(seed, year, { regions: [], surnames: [] });
@@ -43,6 +59,16 @@ describe('A605 補列 179 年射虎塞外谷戰事、太尉任免與鮮卑寇并
 
     const advanced = advancePhase4(createPhase4Model(178, 1, [], PHASE4_CONTENT_VERSION), 360);
     for (const id of ids) expect(advanced.nodes.find((item) => item.contentId === id)?.status).toBe('triggered');
+  });
+
+  it('179 年史料問答列出新增事件且不變更世界狀態', () => {
+    const state = questionWorld();
+    const before = structuredClone(state);
+    const answer = answerKnownHistoricalEventQuestion('西元 179 年有哪些史料記載？', state);
+    expect(answer?.answer).toContain('射虎塞外谷');
+    expect(answer?.answer).toContain('郭禧繼任太尉');
+    expect(answer?.answer).toContain('鮮卑寇并州');
+    expect(state).toEqual(before);
   });
 
   it('v256 舊 v6 存檔遷移保留事件前綴、可續玩重播且不回補', () => {
