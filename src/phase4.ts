@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-297';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-298';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -84,6 +84,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'capital-earthquake-165',kind:EVENT_KIND,title:'京師地震',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年九月丁未，京師地震。',carrier:'京師（史料所記地點）',description:'只記原典所載地震，不推測震度、損害、傷亡或政治含義。',sourceDateNote:'延熹八年九月丁未；遊戲僅按 165 年級觸發，不換算漢曆日期。',introducedRevision:297 },
   { id:'partisan-frictions-emerge-166',kind:EVENT_KIND,title:'桓帝朝廷朋黨議論漸起',...sameYear(166),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十五延熹九年條記桓帝即位前受學於甘陵周福，後擢周福為尚書；同郡河南尹房植亦有名於朝，兩家賓客互相譏揣、各樹朋徒，由是甘陵分南北部，「黨人之議自此始矣」。《後漢書》卷六十七〈黨錮列傳〉亦以延熹九年為黨事起始。本內容包只採公元年級精度，不將士人概括為單一陣營。',carrier:'桓帝朝廷、甘陵周氏與房植相關士人（史料記載）',description:'記錄史料所述朝廷與地方士人交往、競逐逐漸形成朋黨議論；不推演未載人物立場、地方普遍民意、具體名單或此後黨錮的完整因果。',introducedRevision:144 },
   { id:'border-incursions-166',kind:EVENT_KIND,title:'緣邊九郡遭侵，張奐奉命出擊',...sameYear(166),precision:YEAR_PRECISION,source:HH7+'延熹九年記六月南匈奴及烏桓、鮮卑寇緣邊九郡；七月遣使匈奴中郎將張奐擊之；十二月南匈奴、烏桓率眾詣張奐降。依原文分列族群與先後，不推定三族聯盟、鮮卑降服、傷亡或邊郡控制。',carrier:'南匈奴、烏桓、鮮卑與張奐（史料記載）',description:'記錄六月三族侵邊、七月張奐出擊及十二月南匈奴、烏桓率眾歸降；不推演完整戰役結果或未載邊郡控制。',introducedRevision:226 },
+  { id:'daqin-envoy-166',kind:EVENT_KIND,title:'大秦國王遣使奉獻',...sameYear(166),precision:YEAR_PRECISION,source:HH7+'延熹九年條記「大秦國王遣使奉獻」。原文未載使者姓名、往返路線或後續交涉。',carrier:'大秦國使者與漢廷（史料記載）',description:'只記原典所載遣使奉獻，不推定使者身分、路線、外交承諾、交易內容或後續影響。',introducedRevision:298 },
   { id:'ling-emperor-accession-court-purge-168',kind:EVENT_KIND,title:'靈帝即位與竇武、陳蕃遭誅',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'記建寧元年靈帝即位，並於同年九月記中常侍曹節矯詔誅太傅陳蕃、大將軍竇武等人；本內容包採公元年級精度，原典所載九月只作來源日期，不換算成模型月份。',carrier:'漢廷、竇武、陳蕃與曹節（史料記載）',description:'記錄靈帝即位及同年朝廷權力衝突造成的清洗；不以此概括所有士人，不補寫未記載的逐日政變過程、個人對話或未列人物命運。',sourceDateNote:'《後漢書》記九月丁亥誅竇武、陳蕃等；遊戲只按公元年觸發，不將漢曆月日映射到原型日期。',introducedRevision:144 },
   { id:'huan-emperor-death-party-ban-lifted-167',kind:EVENT_KIND,title:'悉除黨錮，桓帝崩',...sameYear(167),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉永康元年六月條記「悉除黨錮」，十二月記桓帝崩於德陽前殿、年三十六。本節點採公元年級精度，原典月份只作來源日期，不推定模型中的月內事件先後。',carrier:'漢廷、受黨錮者與桓帝劉志（史料記載）',description:'記錄黨錮全面解除與桓帝去世的同年記事；不補寫解除令影響細節、死亡日或朝廷交接過程。',introducedRevision:147 },
   { id:'qiang-incursions-167',kind:EVENT_KIND,title:'永康元年先零、當煎羌侵擾與官軍討擊',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條：春正月先零羌寇三輔，張奐破之；當煎羌寇武威，段熲追擊於鸞鳥大破。夏四月先零羌再寇三輔，冬十月張奐擊破之。「西羌悉平」不解作全年無後續；記事不合併為單一戰事。',carrier:'先零羌、當煎羌、張奐與段熲（史料記載）',description:'記羌事；不推演戰果。',sourceDateNote:'原典記春正月、夏四月、冬十月；遊戲只按 167 年級呈現，不換算模型月份。',introducedRevision:227 },
