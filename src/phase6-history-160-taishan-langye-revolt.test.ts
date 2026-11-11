@@ -799,4 +799,43 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     for (const entry of entries) expect(migrated.state.phase4?.nodes.find((node) => node.contentId === entry.id)?.status).toBe('pending');
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A665 補列 164 年南巡與還宮記事', () => {
+    const entries = [
+      { id: 'emperor-southern-tour-164', title: '桓帝南巡章陵、雲夢與新野', source: '冬十月壬寅，南巡狩', note: '冬十月壬寅' },
+      { id: 'emperor-returns-palace-164', title: '桓帝還宮', source: '十二月辛丑，車駕還宮', note: '十二月辛丑' },
+    ];
+    const old = createPhase4Model(163, 1, [], 'phase4-scenario-287');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+
+    for (const entry of entries) {
+      expect(upgraded.nodes.find((node) => node.contentId === entry.id)?.status).toBe('pending');
+      const node = HISTORY_CONTENT.find((item) => item.id === entry.id);
+      expect(node).toMatchObject({ startYear: 164, endYear: 164, precision: 'year', introducedRevision: 288 });
+      expect(node?.sourceDateNote).toContain(entry.note);
+    }
+
+    const advanced = advancePhase4(upgraded, 360);
+    for (const entry of entries) {
+      expect(advanced.nodes.find((node) => node.contentId === entry.id)?.status).toBe('triggered');
+      expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes(entry.title))?.source).toContain(entry.source);
+    }
+
+    for (const year of [164, 165]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-287'), PHASE4_CONTENT_VERSION);
+      for (const entry of entries) {
+        expect(late.nodes.find((node) => node.contentId === entry.id)).toMatchObject({ status: 'resolved', resolvedYear: 164 });
+        expect(late.eventLedger.some((item) => item.detail.includes(entry.title))).toBe(false);
+      }
+    }
+
+    const legacy = oldSave(163, 681, 'phase4-scenario-287');
+    const legacyEvents = structuredClone(legacy.events);
+    const migrated = verifySave(toJson(legacy));
+    expect(migrated.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
+    for (const entry of entries) expect(migrated.state.phase4?.nodes.find((node) => node.contentId === entry.id)?.status).toBe('pending');
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });

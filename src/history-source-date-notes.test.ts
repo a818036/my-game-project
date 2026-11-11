@@ -254,6 +254,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'capital-hail-164',
       'zhao-prince-qian-dies-164',
       'dead-dragon-reported-ye-wang-mountain-164',
+      'emperor-southern-tour-164',
+      'emperor-returns-palace-164',
       'ling-emperor-accession-court-purge-168',
       'qiang-incursions-167',
       'duan-jiong-defeats-xianling-fengyishan-168',
@@ -349,6 +351,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(193);
+    expect(uniqueNotedEvents.size).toBe(195);
   });
 });

@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-287';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-288';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:286},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:287},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -66,6 +66,8 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'capital-hail-164',kind:EVENT_KIND,title:'京師雨雹',...sameYear(164),precision:YEAR_PRECISION,source:HH7+'延熹七年五月己丑，京師雨雹。',carrier:'京師天候記事（史料記載）',description:'只記京師雨雹，不推測規模、持續時間、災損或人物後果。',sourceDateNote:'延熹七年五月己丑；遊戲按 164 年級觸發，不換算漢曆日期。',introducedRevision:287 },
   { id:'zhao-prince-qian-dies-164',kind:EVENT_KIND,title:'趙王乾去世',...sameYear(164),precision:YEAR_PRECISION,source:HH7+'延熹七年秋七月辛卯，趙王乾薨。',carrier:'趙王乾與漢廷（史料記載）',description:'只記原文所載去世，不推測死因、年齡或繼承安排。',sourceDateNote:'延熹七年秋七月辛卯；遊戲按 164 年級觸發，不換算漢曆日期。',introducedRevision:287 },
   { id:'dead-dragon-reported-ye-wang-mountain-164',kind:EVENT_KIND,title:'野王山上有死龍之報',...sameYear(164),precision:YEAR_PRECISION,source:HH7+'延熹七年條記「野王山上有死龍」。原文未繫月日；本節點只記史書報告，不作物種或天象解讀。',carrier:'野王山記事（史料記載）',description:'只記原文所載山上有死龍之報；不推測實際物種、成因、日期或政治含義。',sourceDateNote:'延熹七年條未為「野王山上有死龍」另標月日；遊戲僅按 164 年級觸發。',introducedRevision:287 },
+  { id:'emperor-southern-tour-164',kind:EVENT_KIND,title:'桓帝南巡章陵、雲夢與新野',...sameYear(164),precision:YEAR_PRECISION,source:HH7+'延熹七年冬十月壬寅，南巡狩；庚申幸章陵，祠舊宅，遂有事于園廟，賜守令以下各有差。戊辰幸雲夢，臨漢水；還，幸新野，祠湖陽、新野公主、魯哀王、壽張敬侯廟。',carrier:'桓帝與隨行朝廷（史料記載）',description:'只記原文列出的南巡、到訪、祭祀與賜予；不補逐日路線、儀式細節或政治效果。',sourceDateNote:'延熹七年冬十月壬寅南巡，庚申幸章陵，戊辰幸雲夢並至新野；遊戲僅按 164 年級觸發，不換算漢曆日期。',introducedRevision:288 },
+  { id:'emperor-returns-palace-164',kind:EVENT_KIND,title:'桓帝還宮',...sameYear(164),precision:YEAR_PRECISION,source:HH7+'延熹七年十二月辛丑，車駕還宮。',carrier:'桓帝與隨行朝廷（史料記載）',description:'只記原文所載還宮，不補行程、日期換算或南巡後續安排。',sourceDateNote:'延熹七年十二月辛丑；遊戲僅按 164 年級觸發，不換算漢曆日期。',introducedRevision:288 },
   { id:'hu-lan-zhu-gai-revolt-165',kind:EVENT_KIND,title:'胡蘭、朱蓋等起事，度尚等討破',...sameYear(165),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹八年條記桂陽胡蘭、朱蓋等復反，攻沒郡縣、轉寇零陵；其後遣中郎將度尚、長沙太守抗徐等擊之，大破並斬胡蘭、朱蓋。本節點採年級精度，不補兵力、傷亡或月內日期。',carrier:'胡蘭、朱蓋、度尚與抗徐（史料記載）',description:'記錄地方起事、侵擾及來源明載的討破結果；不推演完整戰役、額外傷亡或各郡控制變化。',introducedRevision:147 },
   { id:'partisan-frictions-emerge-166',kind:EVENT_KIND,title:'桓帝朝廷朋黨議論漸起',...sameYear(166),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十五延熹九年條記桓帝即位前受學於甘陵周福，後擢周福為尚書；同郡河南尹房植亦有名於朝，兩家賓客互相譏揣、各樹朋徒，由是甘陵分南北部，「黨人之議自此始矣」。《後漢書》卷六十七〈黨錮列傳〉亦以延熹九年為黨事起始。本內容包只採公元年級精度，不將士人概括為單一陣營。',carrier:'桓帝朝廷、甘陵周氏與房植相關士人（史料記載）',description:'記錄史料所述朝廷與地方士人交往、競逐逐漸形成朋黨議論；不推演未載人物立場、地方普遍民意、具體名單或此後黨錮的完整因果。',introducedRevision:144 },
   { id:'border-incursions-166',kind:EVENT_KIND,title:'緣邊九郡遭侵，張奐奉命出擊',...sameYear(166),precision:YEAR_PRECISION,source:HH7+'延熹九年記六月南匈奴及烏桓、鮮卑寇緣邊九郡；七月遣使匈奴中郎將張奐擊之；十二月南匈奴、烏桓率眾詣張奐降。依原文分列族群與先後，不推定三族聯盟、鮮卑降服、傷亡或邊郡控制。',carrier:'南匈奴、烏桓、鮮卑與張奐（史料記載）',description:'記錄六月三族侵邊、七月張奐出擊及十二月南匈奴、烏桓率眾歸降；不推演完整戰役結果或未載邊郡控制。',introducedRevision:226 },
