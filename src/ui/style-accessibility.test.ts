@@ -262,10 +262,14 @@ describe('主要淺色介面的文字對比', () => {
     }
   });
 
-  it('暗色命名視窗的焦點框對比達到 3:1', () => {
+  it('命名視窗的焦點框依實際淺色底達到 3:1', () => {
     const declarations = cssRules.filter((rule) => rule.selector === '.name-dialog input:focus-visible' && rule.conditions.length === 0).at(-1)?.declarations ?? '';
-    expect(declarations).toMatch(/outline:3px solid #d3b168!important/);
-    expect(contrastRatio('#d3b168', '#1b2724')).toBeGreaterThanOrEqual(3);
+    const modalRule = cssRules.filter((rule) => rule.conditions.length === 0 && rule.selector.split(',').map((selector) => selector.trim()).includes('.name-dialog')).at(-1)?.declarations ?? '';
+    const focusColor = declarations.match(/outline:\s*3px solid (#[0-9a-fA-F]{6})!important/)?.[1];
+    const modalBackground = modalRule.match(/background:\s*(#[0-9a-fA-F]{6})/)?.[1];
+    expect(focusColor).toBeDefined();
+    expect(modalBackground).toBeDefined();
+    expect(contrastRatio(focusColor!, modalBackground!)).toBeGreaterThanOrEqual(3);
     const forcedColors = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector.includes('.name-dialog input:focus-visible'))?.declarations;
     expect(forcedColors).toMatch(/outline-color:Highlight!important/);
   });
