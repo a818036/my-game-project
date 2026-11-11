@@ -296,6 +296,16 @@ describe('主要淺色介面的文字對比', () => {
     expect(forcedColors).toMatch(/outline-color:Highlight!important/);
   });
 
+  it('行動計畫程式焦點落點在紙色底可見且支援強制色彩', () => {
+    const focus = ruleMatching('.plan-review h3:focus', /outline:\s*3px solid var\(--seal\)/);
+    const seal = stylesheet.match(/--seal:\s*(#[0-9a-fA-F]{6})/)?.[1];
+    expect(seal).toBeDefined();
+    expect(contrastRatio(seal!, '#f0dfd2')).toBeGreaterThanOrEqual(3);
+    expect(focus).toMatch(/outline-offset:\s*3px/);
+    const forcedColors = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector.includes('.plan-review h3:focus'))?.declarations;
+    expect(forcedColors).toMatch(/outline-color:Highlight!important/);
+  });
+
   it('強制色彩模式保留選取、分頁、跳轉及按鈕的系統色辨識', () => {
     const rules = rulesForCondition('@media(forced-colors:active)');
     const declaration = (selector: string) => rules.find((rule) => rule.selector === selector)?.declarations ?? '';
