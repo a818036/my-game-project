@@ -24,12 +24,18 @@ function chineseNumber(value: string) {
 }
 
 describe('A304 歷史內容來源索引', () => {
+  it('A593 修訂 91 起以版本預設值保存同年不回溯旗標', () => {
+    const source = readFileSync(new URL('./phase4.ts', import.meta.url), 'utf8');
+    expect(source).not.toMatch(/introducedRevision:\d+,lateSameYear:true/);
+    expect(HISTORY_CONTENT.filter((item) => (item.introducedRevision ?? 0) >= 91).every((item) => item.lateSameYear === true)).toBe(true);
+  });
+
   it('每個現行事件都有索引列，史實事件列出可點擊原典來源', () => {
     const document = readFileSync(new URL('../docs/HISTORY_CONTENT.md', import.meta.url), 'utf8');
     const rows = new Map([...document.matchAll(/^\| `([^`]+)` \|([^\r\n]*)/gm)].map(([, id, rest]) => [id, rest]));
     const activeEvents = HISTORY_CONTENT.filter((item) => item.kind === 'event' && !item.retired);
 
-    expect(activeEvents).toHaveLength(271);
+    expect(activeEvents).toHaveLength(272);
     for (const event of activeEvents) {
       const row = rows.get(event.id);
       expect(row, `缺少事件索引列：${event.id}`).toBeDefined();
@@ -99,7 +105,7 @@ describe('A304 歷史內容來源索引', () => {
     const lateHistoricalNodes = activeEvents.filter((item) => item.startYear >= 183);
 
     expect(inferredEntries).toHaveLength(1);
-    expect(earlyBackgroundEntries).toHaveLength(80);
+    expect(earlyBackgroundEntries).toHaveLength(81);
     expect(lateHistoricalNodes).toHaveLength(190);
     expect(readme).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件／死亡節點`);
     expect(readme).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);
