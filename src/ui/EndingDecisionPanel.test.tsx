@@ -2,6 +2,7 @@
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import axe from 'axe-core';
 import { EndingDecisionPanel } from './EndingDecisionPanel';
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -54,5 +55,25 @@ describe('統一後結局決策介面', () => {
     expect(host.textContent).not.toContain('進入大結局選擇');
     await act(async () => host.querySelector('button')!.click());
     expect(cb.onRecordUnification).toHaveBeenCalledOnce();
+  });
+
+  it('A623 結局待決、繼續與結局選項畫面通過 axe-core 啟用規則', async () => {
+    const cb = callbacks();
+    await act(async () => {
+      root.render(createElement(EndingDecisionPanel, {
+        unified: true, ending: 'pending', busy: false, endingDraft: '歸隱故里', ...cb,
+      }));
+      await import('./EndingChoice');
+    });
+
+    expect(host.textContent).toContain('天下已統一，善後與人生仍繼續。');
+    expect(host.textContent).toContain('選擇繼續人生');
+    expect(host.textContent).toContain('確認選擇結局');
+    const results = await axe.run(host, { rules: { 'color-contrast': { enabled: false } } });
+    expect(results.violations.map(({ id, impact, nodes }) => ({
+      id,
+      impact,
+      targets: nodes.flatMap(node => node.target.map(String)),
+    }))).toEqual([]);
   });
 });
