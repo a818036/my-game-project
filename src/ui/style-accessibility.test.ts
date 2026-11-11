@@ -274,6 +274,17 @@ describe('主要淺色介面的文字對比', () => {
     expect(forcedColors).toMatch(/outline-color:Highlight!important/);
   });
 
+  it('行動卡片的焦點框在一般與強制色彩模式均清晰', () => {
+    const focus = cssRules.filter((rule) => rule.selector === '.intent:focus-within' && rule.conditions.length === 0).at(-1)?.declarations ?? '';
+    const color = focus.match(/outline:\s*3px solid (#[0-9a-fA-F]{6})/)?.[1];
+    expect(color).toBeDefined();
+    for (const background of ['#efe5d1', '#e9dcc1']) {
+      expect(contrastRatio(color!, background), background).toBeGreaterThanOrEqual(3);
+    }
+    const forcedColors = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector.includes('.intent:focus-within'))?.declarations;
+    expect(forcedColors).toMatch(/outline-color:Highlight!important/);
+  });
+
   it('強制色彩模式保留選取、分頁、跳轉及按鈕的系統色辨識', () => {
     const rules = rulesForCondition('@media(forced-colors:active)');
     const declaration = (selector: string) => rules.find((rule) => rule.selector === selector)?.declarations ?? '';
