@@ -8,7 +8,7 @@ describe('A572 建寧二年三公任免記事', () => {
     const node = HISTORY_CONTENT.find((item) => item.id === id);
     expect(node).toMatchObject({ startYear: 169, endYear: 169, precision: 'year', introducedRevision: 239, lateSameYear: true });
     expect(node?.source).toContain('五月太尉聞人襲罷、司空許栩免；六月劉寵為太尉、許訓為司徒、劉囂為司空');
-    expect(node?.description).toContain('不推論原因、任期');
+    expect(node?.description).toContain('只記任免');
     expect(advancePhase4(createPhase4Model(168, 1, [], PHASE4_CONTENT_VERSION), 360).nodes.find((item) => item.contentId === id)?.status).toBe('triggered');
   });
 
