@@ -392,6 +392,31 @@ describe('開局存檔載入提示',()=>{
     expect(startBattle?.disabled).toBe(false);
   });
 
+  it('A588 開局欄位有可及名稱，出生變更會重新要求確認',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    expect(hasControlName(name,host)).toBe(true);
+    expect(host.querySelector('button.primary.wide')).toBeNull();
+
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'鍵盤驗收');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    const confirmation=host.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+    const startButton=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='確認出生並開始')!;
+    expect(hasControlName(confirmation,host)).toBe(true);
+    expect(startButton.disabled).toBe(true);
+    expect(startButton.disabled).toBe(true);
+    await act(async()=>{confirmation.click();});
+    expect(startButton.disabled).toBe(false);
+
+    const birthYear=host.querySelector<HTMLSelectElement>('select')!;
+    await act(async()=>{birthYear.value='183';birthYear.dispatchEvent(new Event('change',{bubbles:true}));});
+    expect(confirmation.checked).toBe(false);
+    expect(startButton.disabled).toBe(true);
+    expect(commitWorldline).not.toHaveBeenCalled();
+  });
+
   it('A365 axe-core 檢查開局與遊戲五個資料分頁',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
