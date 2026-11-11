@@ -36,13 +36,16 @@ describe('A373 other-person historical timeline queries',()=>{
     expect(state.turn).toBe(0);
   });
 
-  it('A630 answers an 184 history query with the Anping and Ganling source and no state change',()=>{
+  it('A630 answers an 184 history query with the Anping, Guangyang, and Ganling sources and no state change',()=>{
     const facts=createOpeningFacts(630,184,{regions:[],surnames:[]});
     const state=dispatch(null,{version:ENGINE_VERSION,commandId:'a630-history-start',expectedRevision:0,type:'StartGame',name:'測試玩家',seed:630,facts}).state!;
     const before=structuredClone(state);
     const result=localInteraction('西元 184 年有哪些史實事件？',state);
     expect(result.answer).toContain('安平、甘陵人執王響應黃巾');
     expect(result.answer).toContain('「安平、甘陵人各執其王以應之」；注文指安平王續、甘陵王忠');
+    expect(result.answer).toContain('廣陽黃巾殺幽州刺史郭勳及太守劉衞');
+    expect(result.answer).toContain('原文未繫月份');
+    expect(result.answer).toContain('《後漢書》卷八');
     expect(result.choiceIds).toEqual([]);
     expect(state).toEqual(before);
     expect(state.world.year).toBe(184);
