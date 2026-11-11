@@ -307,4 +307,43 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('鳥吾羌'))).toBe(false);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('v273 跨年加入艾縣賊侵擾記事，不補月份或傷亡', () => {
+    const aiCountyId = 'ai-county-burns-changsha-and-raids-yiyang-162';
+    const previous = createPhase4Model(161, 1, [], 'phase4-scenario-273');
+    const oldLedger = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, oldLedger.length)).toEqual(oldLedger);
+    expect(upgraded.nodes.find((node) => node.contentId === aiCountyId)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === aiCountyId)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('艾縣賊'));
+    expect(event?.source).toContain('焚燒長沙郡縣');
+    expect(event?.source).toContain('寇益陽，殺令');
+    expect(HISTORY_CONTENT.find((item) => item.id === aiCountyId)).toMatchObject({
+      startYear: 162,
+      endYear: 162,
+      precision: 'year',
+      introducedRevision: 274,
+    });
+    expect(HISTORY_CONTENT.find((item) => item.id === aiCountyId)?.sourceDateNote).toBeUndefined();
+
+    for (const year of [162, 163]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-273'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === aiCountyId)).toMatchObject({ status: 'resolved', resolvedYear: 162 });
+      expect(late.eventLedger.some((item) => item.detail.includes('艾縣賊焚燒長沙'))).toBe(false);
+    }
+
+    const previousSave = oldSave(161, 657, 'phase4-scenario-273');
+    const oldPrefix = structuredClone(previousSave.events);
+    const migrated = verifySave(toJson(previousSave));
+    expect(migrated.events.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === aiCountyId)?.status).toBe('pending');
+    const lateSave = verifySave(toJson(oldSave(162, 658, 'phase4-scenario-273')));
+    expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === aiCountyId)).toMatchObject({ status: 'resolved', resolvedYear: 162 });
+    expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('艾縣賊焚燒長沙'))).toBe(false);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });

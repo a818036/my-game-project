@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-273';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-274';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:271},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:272},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -40,6 +40,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'qianwei-dependent-people-revolt-161',kind:EVENT_KIND,title:'犍為屬國夷寇百姓，山昱擊破',...sameYear(161),precision:YEAR_PRECISION,source:HH7+'延熹四年條記犍為屬國夷寇鈔百姓，益州刺史山昱擊破之。原文未載月份、參戰規模、傷亡或後續治理。',carrier:'犍為屬國夷與益州刺史山昱（史料記載）',description:'記錄犍為屬國夷寇掠百姓及益州刺史山昱擊破的原典記事；不補群體名稱、參戰規模、傷亡、戰事經過或後續治理。',introducedRevision:272 },
   { id:'changsha-cangwu-revolt-162',kind:EVENT_KIND,title:'長沙、零陵地方起事攻桂陽等地',...sameYear(162),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹五年條記長沙賊起、寇桂陽與蒼梧；又記長沙、零陵賊起，攻桂陽、蒼梧、南海、交阯，遣御史中丞盛脩督州郡討之而未克。本節點保留原史記載，不推定起事者為同一組織。',carrier:'長沙、零陵地方起事者及被波及郡縣（史料記載）',description:'記錄史書所載南方郡縣起事與討伐未克；不把不同條目合併為同一支軍隊，不推演傷亡、疆界或後續結果。',introducedRevision:147 },
   { id:'wuzhong-qiang-hanyang-longxi-jincheng-162',kind:EVENT_KIND,title:'鳥吾羌侵擾漢陽、隴西與金城，郡兵討破',...sameYear(162),precision:YEAR_PRECISION,source:HH7+'延熹五年條記鳥吾羌寇漢陽、隴西、金城，諸郡兵討破之。原文未載具體交戰地點、參戰規模、傷亡或戰後治理。',carrier:'鳥吾羌與漢陽、隴西、金城郡兵（史料記載）',description:'記錄鳥吾羌侵擾漢陽、隴西、金城及原文所載諸郡兵討破；不補戰事經過、兵力、傷亡、確切交戰地或後續治理。',introducedRevision:273 },
+  { id:'ai-county-burns-changsha-and-raids-yiyang-162',kind:EVENT_KIND,title:'艾縣賊焚燒長沙郡縣、侵擾益陽並殺縣令',...sameYear(162),precision:YEAR_PRECISION,source:HH7+'延熹五年條記艾縣賊焚燒長沙郡縣，寇益陽，殺令。原文未載月份、參與規模、傷亡或後續治理。',carrier:'艾縣賊與長沙郡縣、益陽縣令（史料記載）',description:'記錄艾縣賊焚燒長沙郡縣、侵擾益陽並殺縣令；不推演具體受害者、參戰兵力、傷亡數、交戰過程或地方控制變化。',introducedRevision:274 },
   { id:'changping-nandun-claimants-162',kind:EVENT_KIND,title:'陳景、管伯分別圖舉兵而伏誅',...sameYear(162),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹五年條記冬十月，長平陳景自號「黃帝子」並署置官屬，南頓管伯亦稱「真人」，二人「並圖舉兵，悉伏誅」。本節點只記原典同年並列的兩起事件，不推定彼此協作、參與者規模或執行方式。',carrier:'長平陳景、南頓管伯與漢廷（史料記載）',description:'記錄長平陳景與南頓管伯各自自立名號、圖謀舉兵並被誅；依原文並列概述，不建立人物狀態，不推演地方戰事、官府部署或玩家世界控制變化。',introducedRevision:224 },
   { id:'wuling-revolt-suppressed-163',kind:EVENT_KIND,title:'武陵地方再起，太守陳奉擊破並降之',...sameYear(163),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹六年條記武陵蠻復叛，太守陳奉與戰，大破降之。本節點按年級精度記載，不補交戰過程或傷亡數。',carrier:'武陵地方起事者與太守陳奉（史料記載）',description:'記錄武陵地方再起及來源所載大破、降服；不將降服擴寫為全面同化、長期治理或未載人物命運。',introducedRevision:147 },
   { id:'xianbei-invades-liaodong-dependency-163',kind:EVENT_KIND,title:'鮮卑侵擾遼東屬國',...sameYear(163),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹六年條記五月鮮卑寇遼東屬國。本節點只記來源明載的侵擾，不推演具體地點、兵力、戰鬥、傷亡或後續控制。',carrier:'鮮卑與遼東屬國地方（史料記載）',description:'記錄史書所載鮮卑於五月侵擾遼東屬國；不推演戰事規模、受害者、反擊、傷亡或地方控制變化。',sourceDateNote:'《後漢書》卷七繫於延熹六年，記五月鮮卑寇遼東屬國；保留漢曆月份註記，只按 163 年級觸發，不換算為模型日期。',introducedRevision:225 },
