@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-245';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-246';
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
 const HH7='《後漢書》卷七〈孝桓帝紀〉';
@@ -11,7 +11,7 @@ const SG47='《三國志》卷四十七〈吳主傳〉';
 const SG48='《三國志》卷四十八〈吳書·三嗣主傳〉';
 const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:243},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:244},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -64,6 +64,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'li-xian-dismissed-duan-jiong-appointed-173',kind:'event',title:'太尉李咸免，段熲任太尉',startYear:173,endYear:173,precision:'year',source:HH8+'熹平二年三月記「太尉李咸免」，夏五月記「以司隷校尉段熲為太尉」。',carrier:'太尉李咸、司隷校尉段熲與漢廷（史料記載）',description:'記錄李咸免太尉及段熲任太尉；不改動玩家官職，不推測免職原因、任期或其他官制效果。',sourceDateNote:'《後漢書》卷八熹平二年三月記太尉李咸免，夏五月記以司隷校尉段熲為太尉。保留漢曆原註，不換算為模型日期或推斷日數間隔；遊戲只按 173 年級觸發。',introducedRevision:244,lateSameYear:true },
   { id:'xusheng-revolt-suppressed-174',kind:'event',title:'臧旻、陳夤於會稽破許生並斬之',startYear:174,endYear:174,precision:'year',source:HH8+'熹平三年十一月條記楊州刺史臧旻率丹陽太守陳夤大破許生於會稽並斬之。本節點採年級精度，不補戰鬥日程或未載的傷亡數。',carrier:'臧旻、陳夤與許生（史料記載）',description:'記錄對 172 年會稽起事的後續處置，依來源記載許生被斬；不補寫兵力、戰場細節或其他人物命運。',introducedRevision:146,lateSameYear:true },
   { id:'xianbei-raid-beidi-bingzhou-174',kind:'event',title:'鮮卑寇北地、并州，夏育追擊破敵',startYear:174,endYear:174,precision:'year',source:HH8+'熹平三年十二月條記「鮮卑寇北地，北地太守夏育追擊破之」，又記「鮮卑又寇并州」。原文未載第二次侵擾的結果。',carrier:'鮮卑、北地太守夏育與并州地方（史料記載）',description:'記錄十二月鮮卑侵擾北地及夏育追擊破敵，並分開保留同條「又寇并州」的記事；不把北地戰果延伸至并州，不推演傷亡或控制變化。',sourceDateNote:'《後漢書》卷八熹平三年十二月條先記鮮卑寇北地、北地太守夏育追擊破之，又記鮮卑寇并州但未載結果。保留漢曆十二月原註與兩則記事差異；遊戲只按 174 年級觸發，不換算模型日期。',introducedRevision:245,lateSameYear:true },
+  { id:'tang-zhen-dismissed-xu-xun-sikong-174',kind:'event',title:'司空唐珍罷，許訓為司空',startYear:174,endYear:174,precision:'year',source:HH8+'熹平三年條記「司空唐珍罷，永樂少府許訓為司空」。',carrier:'司空唐珍、永樂少府許訓與漢廷（史料記載）',description:'記錄唐珍免司空、許訓任司空；不改動玩家官職，不推測免職原因、任期或其他官制效果。',sourceDateNote:'《後漢書》卷八熹平三年條記司空唐珍罷、永樂少府許訓為司空；原典未對此句另標月份，保留年級精度，不推算月日，遊戲只按 174 年級觸發。',introducedRevision:246,lateSameYear:true },
   { id:'yizhou-revolt-quelled-176',kind:'event',title:'益州郡夷叛，太守李顒討平',startYear:176,endYear:176,precision:'year',source:HH8+'熹平五年條記「益州郡夷叛，太守李顒討平之」。本節點採年級精度，不把史料概述擴寫成完整族群、兵力或戰役名冊。',carrier:'益州郡地方起事者與太守李顒（史料記載）',description:'記錄益州郡地方起事及太守李顒討平的史書概述；不推演族群身分、戰役過程或傷亡。',introducedRevision:146,lateSameYear:true },
   { id:'cao-luan-executed-party-purge-176',kind:'event',title:'曹鸞訟黨人被誅，黨人門生故吏等禁錮',startYear:176,endYear:176,precision:'year',source:HH8+'熹平五年閏月條記永昌太守曹鸞「坐訟黨人，棄市」，並記詔黨人門生故吏父兄子弟在位者皆免官禁錮。本節點按年級精度呈現。',carrier:'曹鸞、遭黨錮者及其門生故吏親屬（史料記載）',description:'記錄曹鸞因申理黨人而被處死，以及詔令擴及相關在位者；不將處置外推至未被來源列明的全部親族或個別人物。',introducedRevision:146,lateSameYear:true },
   { id:'epidemic-party-ban-relief-179',kind:'event',title:'大疫致醫藥，黨人小功以下禁錮解除',startYear:179,endYear:179,precision:'year',source:HH8+'光和二年條記春季大疫、使者巡行致醫藥；四月大赦並記「諸黨人禁錮小功以下皆除之」。本節點不把有限解除擴寫為全面解禁。',carrier:'漢廷、疫病影響者與部分黨人親屬（史料記載）',description:'記錄疫病救療及特定範圍禁錮解除；不推估感染與死亡人數，也不宣稱所有黨人及親屬均獲解禁。',introducedRevision:146,lateSameYear:true },
