@@ -435,6 +435,24 @@ describe('開局存檔載入提示',()=>{
     expect(document.activeElement).toBe(main);
   });
 
+  it('A590 開局保存失敗時保留焦點於出生確認按鈕',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    vi.mocked(commitWorldline).mockRejectedValueOnce(new Error('synthetic storage failure'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'保存失敗驗收');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    const startButton=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='確認出生並開始')!;
+    startButton.focus();
+    await act(async()=>{startButton.click();await new Promise(resolve=>setTimeout(resolve,0));});
+
+    expect(document.activeElement).toBe(startButton);
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain('未保存任何變更');
+    expect(host.querySelector('#main-content')).toBeNull();
+  });
+
   it('A365 axe-core 檢查開局與遊戲五個資料分頁',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
