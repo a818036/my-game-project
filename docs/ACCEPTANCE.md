@@ -1065,3 +1065,7 @@ v254 舊 v6 JSON 存檔升版保留既有事件帳前綴，177 年續玩可觸�
 ## A602｜降低歷史內容重複字串的初始包體
 
 歷史節點資料將重複的 `kind: event` 與 `precision: year` 值改為共用常數；匯出後的節點型別與欄位值保持不變。建置後首頁入口 486,803／500,000 bytes，延後載入戰役 chunk 8,692／10,000 bytes，首頁初始 JavaScript 靜態相依由前一版 749,021 降至 745,977／750,000 bytes，減少 3,044 bytes。完整測試 132 個檔案／797 項、`npm run build`、`npm run check:bundle`、`npm run check:preview` 及 `git diff --check` 全通過；初始靜態相依檢查不代表裝置載入時間或網路效能。
+
+## A603｜修正開局欄位鍵盤焦點外框
+
+CSS cascade 審查發現開局姓名、出生年等文字欄位的基礎規則設有 `outline:none`，通用 `:focus-visible` 規則因選擇器權重較低而無法覆蓋。現在為開局文字欄與選單增加明確 3px 焦點框，並在 `forced-colors:active` 中使用系統 `Highlight` 色。樣式回歸測試鎖定一般與強制色彩兩種規則；Chromium 隔離頁以鍵盤聚焦姓名欄，畫面可見焦點框，未建立世界線或寫入存檔。測試不代表 Windows 實際強制色彩、NVDA／Firefox 語音或實體裝置已驗收。

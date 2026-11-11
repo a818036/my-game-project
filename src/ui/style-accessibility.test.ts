@@ -163,7 +163,7 @@ describe('主要淺色介面的文字對比', () => {
 
   it('Windows 強制色彩模式仍以系統色標示焦點、選取及按鈕狀態', () => {
     const rules = rulesForCondition('@media(forced-colors:active)');
-    expect(rules.find((rule) => rule.selector === ':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus')?.declarations).toMatch(/outline-color:Highlight!important/);
+    expect(rules.find((rule) => rule.selector.startsWith(':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus'))?.declarations).toMatch(/outline-color:Highlight!important/);
     const selectedIntent = rules.find((rule) => rule.selector === '.intent.selected')?.declarations;
     expect(selectedIntent).toMatch(/border:2px solid Highlight/);
     expect(selectedIntent).toMatch(/box-shadow:none/);
@@ -191,6 +191,14 @@ describe('主要淺色介面的文字對比', () => {
     expect(targetFocus).toMatch(/outline:\s*3px solid var\(--seal\)/);
     expect(targetFocus).not.toMatch(/outline:\s*none/);
     expect(ruleMatching('.skip-link:focus', /outline:\s*3px solid/)).toMatch(/outline:\s*3px solid/);
+  });
+
+  it('開局姓名及出生欄位覆寫基礎 outline:none，鍵盤聚焦時仍有清晰外框', () => {
+    const textField = ruleMatching('.start-card input:not([type=checkbox]):focus-visible,.start-card select:focus-visible', /outline:\s*3px solid #a33b2d/);
+    expect(textField).toMatch(/outline-offset:\s*2px/);
+    const baseRule = lastRule('.start-card input:not([type=checkbox]),.start-card select');
+    expect(baseRule).toMatch(/outline:\s*none/);
+    expect(textField).not.toMatch(/outline:\s*none/);
   });
 
   it('跳轉連結、存檔救援及行動衝突文字在各自底色達 WCAG AA 對比', () => {
@@ -228,7 +236,7 @@ describe('主要淺色介面的文字對比', () => {
   });
 
   it('強制色彩模式將程式焦點落點改用系統高亮色', () => {
-    const focus = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector === ':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus')?.declarations;
+    const focus = rulesForCondition('@media(forced-colors:active)').find((rule) => rule.selector.startsWith(':focus-visible,#ending-result:focus,#main-content:focus,#start-content:focus'))?.declarations;
     expect(focus).toMatch(/outline-color:Highlight!important/);
   });
 
@@ -247,6 +255,8 @@ describe('主要淺色介面的文字對比', () => {
     expect(declaration('.primary,.quiet')).toMatch(/color:ButtonText/);
     expect(declaration('.primary:disabled,.quiet:disabled,button:disabled')).toMatch(/border-color:GrayText/);
     expect(declaration('.primary:disabled,.quiet:disabled,button:disabled')).toMatch(/color:GrayText/);
+    const startFieldFocus = rules.find((rule) => rule.selector.includes('.start-card input:not([type=checkbox]):focus-visible') && rule.selector.includes('.start-card select:focus-visible'))?.declarations;
+    expect(startFieldFocus).toMatch(/outline-color:Highlight!important/);
   });
 
   it('對話紀錄長字串允許斷行並維持一般正文尺寸',()=>{
