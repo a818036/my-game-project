@@ -385,4 +385,44 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('零陵蠻起事侵擾長沙'))).toBe(false);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A653 記錄武陵蠻寇江陵及馮緄討平，保留年級精度', () => {
+    const wulingId = 'wuling-revolt-raids-jiangling-feng-gun-162';
+    const previous = createPhase4Model(161, 1, [], 'phase4-scenario-275');
+    const oldLedger = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, oldLedger.length)).toEqual(oldLedger);
+    expect(upgraded.nodes.find((node) => node.contentId === wulingId)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === wulingId)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('武陵蠻叛寇江陵'));
+    expect(event?.source).toContain('冬十月');
+    expect(event?.source).toContain('南郡太守李肅因敗退棄市');
+    expect(event?.source).toContain('十一月馮緄於武陵大破叛蠻');
+    expect(HISTORY_CONTENT.find((item) => item.id === wulingId)).toMatchObject({
+      startYear: 162,
+      endYear: 162,
+      precision: 'year',
+      introducedRevision: 276,
+    });
+    expect(HISTORY_CONTENT.find((item) => item.id === wulingId)?.sourceDateNote).toBeUndefined();
+
+    for (const year of [162, 163]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-275'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === wulingId)).toMatchObject({ status: 'resolved', resolvedYear: 162 });
+      expect(late.eventLedger.some((item) => item.detail.includes('武陵蠻叛寇江陵'))).toBe(false);
+    }
+
+    const old = oldSave(161, 661, 'phase4-scenario-275');
+    const oldPrefix = structuredClone(old.events);
+    const migrated = verifySave(toJson(old));
+    expect(migrated.events.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === wulingId)?.status).toBe('pending');
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    const lateSave = verifySave(toJson(oldSave(162, 662, 'phase4-scenario-275')));
+    expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === wulingId)).toMatchObject({ status: 'resolved', resolvedYear: 162 });
+    expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('武陵蠻叛寇江陵'))).toBe(false);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
