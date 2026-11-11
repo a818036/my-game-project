@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-298';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-299';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:296},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:297},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -87,6 +87,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'daqin-envoy-166',kind:EVENT_KIND,title:'大秦國王遣使奉獻',...sameYear(166),precision:YEAR_PRECISION,source:HH7+'延熹九年條記「大秦國王遣使奉獻」。原文未載使者姓名、往返路線或後續交涉。',carrier:'大秦國使者與漢廷（史料記載）',description:'只記原典所載遣使奉獻，不推定使者身分、路線、外交承諾、交易內容或後續影響。',introducedRevision:298 },
   { id:'ling-emperor-accession-court-purge-168',kind:EVENT_KIND,title:'靈帝即位與竇武、陳蕃遭誅',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'記建寧元年靈帝即位，並於同年九月記中常侍曹節矯詔誅太傅陳蕃、大將軍竇武等人；本內容包採公元年級精度，原典所載九月只作來源日期，不換算成模型月份。',carrier:'漢廷、竇武、陳蕃與曹節（史料記載）',description:'記錄靈帝即位及同年朝廷權力衝突造成的清洗；不以此概括所有士人，不補寫未記載的逐日政變過程、個人對話或未列人物命運。',sourceDateNote:'《後漢書》記九月丁亥誅竇武、陳蕃等；遊戲只按公元年觸發，不將漢曆月日映射到原型日期。',introducedRevision:144 },
   { id:'huan-emperor-death-party-ban-lifted-167',kind:EVENT_KIND,title:'悉除黨錮，桓帝崩',...sameYear(167),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉永康元年六月條記「悉除黨錮」，十二月記桓帝崩於德陽前殿、年三十六。本節點採公元年級精度，原典月份只作來源日期，不推定模型中的月內事件先後。',carrier:'漢廷、受黨錮者與桓帝劉志（史料記載）',description:'記錄黨錮全面解除與桓帝去世的同年記事；不補寫解除令影響細節、死亡日或朝廷交接過程。',introducedRevision:147 },
+  { id:'six-provinces-flood-bohai-sea-overflow-167',kind:EVENT_KIND,title:'六州大水、勃海海溢與賑濟',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年秋八月記事記「六州大水，勃海海溢」，其後記詔州郡賑濟溺死者家屬與亡失穀食者。原文列有錢、穀數額，本原型不將其換算為玩家帳目或人口變化。',carrier:'六州、勃海與受災者（史料記載）',description:'記錄原典所載多地水災及朝廷救濟；不推定六州具體名單、受災範圍、總傷亡或其他損失，也不將記載的賑濟數額套用至玩家世界線。',sourceDateNote:'《後漢書》置於永康元年秋八月記事段；遊戲僅按 167 年級觸發，不映射漢曆月份。',introducedRevision:299 },
   { id:'qiang-incursions-167',kind:EVENT_KIND,title:'永康元年先零、當煎羌侵擾與官軍討擊',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條：春正月先零羌寇三輔，張奐破之；當煎羌寇武威，段熲追擊於鸞鳥大破。夏四月先零羌再寇三輔，冬十月張奐擊破之。「西羌悉平」不解作全年無後續；記事不合併為單一戰事。',carrier:'先零羌、當煎羌、張奐與段熲（史料記載）',description:'記羌事；不推演戰果。',sourceDateNote:'原典記春正月、夏四月、冬十月；遊戲只按 167 年級呈現，不換算模型月份。',introducedRevision:227 },
   { id:'duan-jiong-defeats-xianling-fengyishan-168',kind:EVENT_KIND,title:'段熲大破先零羌於逢義山',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'段熲大破先零羌於逢義山。',carrier:'段熲',description:'記大破。',sourceDateNote:'二月'+YEAR_TRIGGER,introducedRevision:233 },
   { id:'court-offices-reorganized-spring-168',kind:EVENT_KIND,title:'太尉與司空任免交替',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'夏四月太尉周景薨，司空宣酆免；長樂衛尉王暢為司空。五月太中大夫劉矩為太尉。',carrier:'周景、宣酆、王暢、劉矩與漢廷',description:'記職位更替。',sourceDateNote:'夏四月戊辰、五月'+YEAR_TRIGGER,introducedRevision:234 },
