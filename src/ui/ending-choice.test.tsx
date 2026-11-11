@@ -3,6 +3,7 @@ import {act,createElement} from 'react';
 import {createRoot} from 'react-dom/client';
 import {describe,expect,it,vi} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
+import axe from 'axe-core';
 import {EndingChoice,EndingResult} from './EndingChoice';
 
 describe('EndingChoice',()=>{
@@ -44,6 +45,18 @@ describe('EndingChoice',()=>{
       expect(result?.textContent).toBe('玩家選擇結局：歸隱故里');
       expect(result?.getAttribute('tabindex')).toBe('-1');
       expect(document.activeElement).toBe(result);
+    }finally{await act(async()=>root.unmount());host.remove();}
+  });
+
+  it('結局輸入與已選結果符合 axe-core 啟用的規則',async()=>{
+    const host=document.createElement('main');document.body.append(host);const root=createRoot(host);
+    try{
+      await act(async()=>root.render(createElement('div',null,
+        createElement(EndingChoice,{value:'歸隱故里',onChange:vi.fn(),onChoose:vi.fn()}),
+        createElement(EndingResult,{ending:'歸隱故里'}),
+      )));
+      const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+      expect(results.violations.map(item=>({id:item.id,targets:item.nodes.map(node=>node.target)}))).toEqual([]);
     }finally{await act(async()=>root.unmount());host.remove();}
   });
 });
