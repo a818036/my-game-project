@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-292';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-293';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:291},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:292},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -75,6 +75,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'anling-mausoleum-fire-165',kind:EVENT_KIND,title:'安陵園寢失火',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年夏四月甲寅，安陵園寢火。',carrier:'安陵園寢記事（史料記載）',description:'只記原典所載火災，不推測原因、損失或後續處置。',sourceDateNote:'延熹八年夏四月甲寅；遊戲僅按 165 年級觸發，不換算漢曆日期。',introducedRevision:290 },
   { id:'duan-jiong-defeats-dangjian-qiang-165',kind:EVENT_KIND,title:'段熲於湟中大破當煎羌',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年六月記段熲擊當煎羌於湟中，大破之；原文未載兵力與傷亡。',carrier:'護羌校尉段熲與當煎羌（史料記載）',description:'只記原文所載六月討擊及大破結果，不補兵力、傷亡、戰術或後續。',sourceDateNote:'延熹八年六月；遊戲僅按 165 年級觸發，不換算漢曆日期。',introducedRevision:290 },
   { id:'first-land-tax-per-mu-165',kind:EVENT_KIND,title:'初令郡國按畝徵收稅錢',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年八月戊辰，初令郡國有田者畒斂稅錢；原注文曰「畒十錢也」。',carrier:'漢廷與郡國有田者（史料記載）',description:'紀文記首次下令按田畝徵收稅錢，原注文明載每畝十錢；不推算實際收取總額、收入用途或後續財政效果。',sourceDateNote:'延熹八年八月戊辰；遊戲僅按 165 年級觸發，不換算漢曆日期。',introducedRevision:291 },
+  { id:'bohai-gai-deng-revolt-165',kind:EVENT_KIND,title:'勃海蓋登等稱太上皇帝，後伏誅',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年條記勃海妖賊蓋登等稱「太上皇帝」，並記「皆伏誅」；原文未另繫月日。',carrier:'蓋登等與漢廷（史料記載）',description:'只記原文所載稱號及伏誅結果；不補查獲、審理、處刑方式、參與者名單或相關動機。',introducedRevision:293 },
   { id:'hu-lan-zhu-gai-revolt-165',kind:EVENT_KIND,title:'胡蘭、朱蓋等起事，度尚等討破',...sameYear(165),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹八年條記桂陽胡蘭、朱蓋等復反，攻沒郡縣、轉寇零陵；其後遣中郎將度尚、長沙太守抗徐等擊之，大破並斬胡蘭、朱蓋。本節點採年級精度，不補兵力、傷亡或月內日期。',carrier:'胡蘭、朱蓋、度尚與抗徐（史料記載）',description:'記錄地方起事、侵擾及來源明載的討破結果；不推演完整戰役、額外傷亡或各郡控制變化。',introducedRevision:147 },
   { id:'partisan-frictions-emerge-166',kind:EVENT_KIND,title:'桓帝朝廷朋黨議論漸起',...sameYear(166),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十五延熹九年條記桓帝即位前受學於甘陵周福，後擢周福為尚書；同郡河南尹房植亦有名於朝，兩家賓客互相譏揣、各樹朋徒，由是甘陵分南北部，「黨人之議自此始矣」。《後漢書》卷六十七〈黨錮列傳〉亦以延熹九年為黨事起始。本內容包只採公元年級精度，不將士人概括為單一陣營。',carrier:'桓帝朝廷、甘陵周氏與房植相關士人（史料記載）',description:'記錄史料所述朝廷與地方士人交往、競逐逐漸形成朋黨議論；不推演未載人物立場、地方普遍民意、具體名單或此後黨錮的完整因果。',introducedRevision:144 },
   { id:'border-incursions-166',kind:EVENT_KIND,title:'緣邊九郡遭侵，張奐奉命出擊',...sameYear(166),precision:YEAR_PRECISION,source:HH7+'延熹九年記六月南匈奴及烏桓、鮮卑寇緣邊九郡；七月遣使匈奴中郎將張奐擊之；十二月南匈奴、烏桓率眾詣張奐降。依原文分列族群與先後，不推定三族聯盟、鮮卑降服、傷亡或邊郡控制。',carrier:'南匈奴、烏桓、鮮卑與張奐（史料記載）',description:'記錄六月三族侵邊、七月張奐出擊及十二月南匈奴、烏桓率眾歸降；不推演完整戰役結果或未載邊郡控制。',introducedRevision:226 },
