@@ -240,6 +240,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'xianbei-invades-liaodong-dependency-163',
       'shu-dependent-country-revolt-163',
       'feng-gun-dismissed-163',
+      'liu-chong-dismissed-163',
+      'zhou-jing-appointed-sikong-163',
       'ling-emperor-accession-court-purge-168',
       'qiang-incursions-167',
       'duan-jiong-defeats-xianling-fengyishan-168',
@@ -335,6 +337,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(179);
+    expect(uniqueNotedEvents.size).toBe(181);
   });
 });

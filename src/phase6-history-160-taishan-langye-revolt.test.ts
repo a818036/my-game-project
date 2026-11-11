@@ -614,4 +614,43 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('車騎將軍馮緄免職'))).toBe(false);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A659–A660 補列 163 年十一、十二月三公任免記事', () => {
+    const ids = ['liu-chong-dismissed-163', 'zhou-jing-appointed-sikong-163'];
+    const prior = createPhase4Model(162, 1, [], 'phase4-scenario-281');
+    const oldPrefix = structuredClone(prior.eventLedger);
+    const upgraded = upgradePhase4Content(prior, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    for (const [index, id] of ids.entries()) {
+      expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+      const node = HISTORY_CONTENT.find((item) => item.id === id);
+      expect(node).toMatchObject({ startYear: 163, endYear: 163, precision: 'year', introducedRevision: 282 + index });
+      expect(node?.sourceDateNote).toContain(index === 0 ? '十一月' : '十二月');
+    }
+
+    const advanced = advancePhase4(upgraded, 360);
+    for (const [index, id] of ids.entries()) {
+      const node = advanced.nodes.find((item) => item.contentId === id);
+      expect(node?.status).toBe('triggered');
+      const label = index === 0 ? '司空劉寵免職' : '周景任司空';
+      expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes(label))?.source).toContain(index === 0 ? '延熹六年十一月' : '延熹六年十二月');
+    }
+
+    for (const year of [163, 164]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-281'), PHASE4_CONTENT_VERSION);
+      for (const id of ids) {
+        expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+        expect(late.eventLedger.some((item) => item.detail.includes(id === ids[0] ? '司空劉寵免職' : '周景任司空'))).toBe(false);
+      }
+    }
+
+    const old = oldSave(162, 673, 'phase4-scenario-281');
+    const oldEvents = structuredClone(old.events);
+    const migrated = verifySave(toJson(old));
+    expect(migrated.events.slice(0, oldEvents.length)).toEqual(oldEvents);
+    for (const id of ids) expect(migrated.state.phase4?.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    const lateSave = verifySave(toJson(oldSave(163, 674, 'phase4-scenario-281')));
+    for (const id of ids) expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
