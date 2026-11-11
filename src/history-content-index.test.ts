@@ -32,11 +32,18 @@ describe('A304 歷史內容來源索引', () => {
 
   it('每個現行事件都有索引列，史實事件列出可點擊原典來源', () => {
     const document = readFileSync(new URL('../docs/HISTORY_CONTENT.md', import.meta.url), 'utf8');
-    const rows = new Map([...document.matchAll(/^\| `([^`]+)` \|([^\r\n]*)/gm)].map(([, id, rest]) => [id, rest]));
-    const activeEvents = HISTORY_CONTENT.filter((item) => item.kind === 'event' && !item.retired);
+    const indexRows = [...document.matchAll(/^\| `([^`]+)` \|([^\r\n]*)/gm)];
+    const rowCounts = new Map<string, number>();
+    for (const [, id] of indexRows) rowCounts.set(id, (rowCounts.get(id) ?? 0) + 1);
+    const rows = new Map(indexRows.map(([, id, rest]) => [id, rest]));
+    const indexableContent = HISTORY_CONTENT.filter((item) => item.kind === 'event' || item.kind === 'death');
+    const activeEvents = indexableContent.filter((item) => item.kind === 'event' && !item.retired);
 
     expect(activeEvents).toHaveLength(290);
+    expect(rowCounts.size, '歷史索引不得重複列出同一事件 ID').toBe(indexRows.length);
+    expect([...rowCounts.keys()].sort(), '歷史索引項目須與來源事件及死亡節點完全對應').toEqual(indexableContent.map((item) => item.id).sort());
     for (const event of activeEvents) {
+      expect(rowCounts.get(event.id), `事件索引列必須恰好一筆：${event.id}`).toBe(1);
       const row = rows.get(event.id);
       expect(row, `缺少事件索引列：${event.id}`).toBeDefined();
       if (!event.source.includes('非史實')) {
