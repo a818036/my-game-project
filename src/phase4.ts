@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-237';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-238';
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
 const HH7='《後漢書》卷七〈孝桓帝紀〉';
@@ -11,7 +11,7 @@ const SG47='《三國志》卷四十七〈吳主傳〉';
 const SG48='《三國志》卷四十八〈吳書·三嗣主傳〉';
 const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:235},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:236},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -46,7 +46,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'eclipse-ransom-168',kind:'event',title:'冬十月日食與繫囚贖罪令',startYear:168,endYear:168,precision:'year',source:HH8+'冬十月甲辰晦日食，令天下繫囚罪未決入縑贖，各有差。',causes:['eclipse-ransom-168'],carrier:'漢廷',description:'日食與贖令。',sourceDateNote:'冬十月甲辰晦'+YEAR_TRIGGER,introducedRevision:232,lateSameYear:true },
   { id:'xianbei-huimo-raid-you-bing-168',kind:'event',title:'鮮卑、濊貊寇幽并二州',startYear:168,endYear:168,precision:'year',source:HH8+'十二月鮮卑及濊貊寇幽并二州。',causes:['xianbei-huimo-raid-you-bing-168'],carrier:'鮮卑、濊貊（史料記載）',description:'記侵擾。',sourceDateNote:'十二月'+YEAR_TRIGGER,introducedRevision:231,lateSameYear:true },
   { id:'partisan-purge-expands-169',kind:'event',title:'黨錮擴大，士人與親屬遭禁錮',startYear:169,endYear:169,precision:'year',source:HH8+'建寧二年條記侯覽唆使有司奏虞放、杜密、李膺等為鉤黨，下獄，死者百餘人、妻子徙邊，並令州郡大舉鉤黨；史文記當時豪傑及儒學行義者皆被列為黨人。本內容包採年級精度，不把概數改寫為精確死亡名冊。',causes:['partisan-purge-expands-169'],carrier:'漢廷、遭列鉤黨者及其家屬（史料記載）',description:'記錄建寧二年黨錮措施擴大及史料所述懲處；不推定各地執行細節、受害者完整名單、個別人物的玩家狀態或百餘人的精確統計。',introducedRevision:145,lateSameYear:true },
-  { id:'jiangxia-uprising-169',kind:'event',title:'江夏蠻叛，州郡討平',startYear:169,endYear:169,precision:'year',source:HH86+'記靈帝建寧二年「江夏蠻叛，州郡討平之」。只保留原文所述起事與討平，不推演規模、傷亡或行政後果。',causes:['jiangxia-uprising-169'],carrier:'江夏地方起事者與州郡官府（史料記載）',description:'記錄建寧二年江夏起事及州郡討平；不將史料族群稱謂擴寫成現代身分，不補戰事、傷亡、參與人數或後續控制。',introducedRevision:237,lateSameYear:true },
+  { id:'jiangxia-uprising-169',kind:'event',title:'江夏蠻叛，州郡討平',startYear:169,endYear:169,precision:'year',source:HH8+'建寧二年九月記「江夏蠻叛，州郡討平之」；'+HH86+'亦繫於建寧二年。只保留原文所述起事與討平，不推演規模、傷亡或行政後果。',causes:['jiangxia-uprising-169'],carrier:'江夏地方起事者與州郡官府（史料記載）',description:'記錄建寧二年江夏起事及州郡討平；不將史料族群稱謂擴寫成現代身分，不補戰事、傷亡、參與人數或後續控制。',sourceDateNote:'《後漢書》卷八繫於建寧二年九月；遊戲只按 169 年級呈現，不將漢曆月份換算為模型日期。',introducedRevision:237,lateSameYear:true },
   { id:'taixue-classics-stone-inscription-175',kind:'event',title:'太學校正五經文字並刻石',startYear:175,endYear:175,precision:'year',source:HH8+'熹平四年條記詔令諸儒校正五經文字，刻石立於太學門外。本內容包只採公元年級精度，不補工程工期、參與者名單或石經保存狀況。',causes:['taixue-classics-stone-inscription-175'],carrier:'漢廷、受詔諸儒與太學（史料記載）',description:'記錄朝廷校正經典文字及太學刻石；不據此推演普及程度、教育政策成效或後世版本傳承。',introducedRevision:145,lateSameYear:true },
   { id:'han-campaign-against-xianbei-defeated-177',kind:'event',title:'漢軍三路出塞征鮮卑失利',startYear:177,endYear:177,precision:'year',source:HH8+'熹平六年條記朝廷於秋八月分三路伐鮮卑：田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並記「晏等大敗」。《資治通鑑》卷五十七補述夏育先請出兵、朝廷議論中蔡邕反對，靈帝未從其議；各路將萬騎、出塞二千餘里，檀石槐命三部大人迎戰，漢軍大敗，三將各帶數十騎退還並下獄，後贖為庶人。《資治通鑑》另以「死者什七八」記載傷亡比例；《後漢書》本紀未列傷亡數。本內容包保留兩書詳略，不換算成精確傷亡總數或遊戲兵力。',causes:['han-campaign-against-xianbei-defeated-177'],carrier:'漢廷出塞諸軍、南匈奴與鮮卑（史料記載）',description:'呈現熹平六年夏育請求出塞、朝廷議論、蔡邕反對、靈帝仍決定出兵及秋八月三路行軍戰敗的史料次序。《後漢書》記田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並稱「晏等大敗」；《資治通鑑》補記各路將萬騎、出塞二千餘里、檀石槐部三部迎戰、漢軍死者「什七八」、三將帶數十騎退還及後續處置。比例只作原書引述，不計算精確人數；不把史載部署寫成玩家部隊狀態、完整戰線或新增具名傷亡名冊。',sourceDateNote:'原史日期：《後漢書》卷八記熹平六年秋八月三路出兵；《資治通鑑》卷五十七另記夏四月鮮卑寇三邊、秋七月夏育請兵與朝議、八月出征。遊戲只按 177 年級呈現，不把漢曆日期換算為模型時間。',introducedRevision:145,lateSameYear:true },
   { id:'jiaozhi-wuhuh-man-uprising-178',kind:'event',title:'合浦、交阯烏滸民起事並攻沒郡縣',startYear:178,endYear:178,precision:'year',source:HH8+'光和元年春正月條記合浦、交阯烏滸蠻起事、招引九真與日南民眾攻沒郡縣；卷八十六〈南蠻西南夷列傳〉補記「合數萬人」。人數保留史料概數，不換算為精確人口或遊戲兵力。本內容包採年級精度，不推演未載的戰況與平定結果。',causes:['jiaozhi-wuhuh-man-uprising-178'],carrier:'合浦、交阯烏滸民及九真、日南地方民眾（史料記載）',description:'記錄嶺南地方起事、招引九真與日南民眾及郡縣失守；卷八十六所記「合數萬人」僅保留為史料概數，不推定精確參與人數、起事原因、各郡控制持續時間或未載的平定結果。',sourceDateNote:'《後漢書》卷八記光和元年春正月合浦、交阯烏滸蠻叛、招引九真與日南民眾攻沒郡縣；卷八十六記合數萬人。春正月與概數均為史料記載；遊戲只按 178 年級觸發，不換算為模型日期或精確兵力。',introducedRevision:145,lateSameYear:true },
@@ -61,7 +61,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'cao-luan-executed-party-purge-176',kind:'event',title:'曹鸞訟黨人被誅，黨人門生故吏等禁錮',startYear:176,endYear:176,precision:'year',source:HH8+'熹平五年閏月條記永昌太守曹鸞「坐訟黨人，棄市」，並記詔黨人門生故吏父兄子弟在位者皆免官禁錮。本節點按年級精度呈現。',causes:['cao-luan-executed-party-purge-176'],carrier:'曹鸞、遭黨錮者及其門生故吏親屬（史料記載）',description:'記錄曹鸞因申理黨人而被處死，以及詔令擴及相關在位者；不將處置外推至未被來源列明的全部親族或個別人物。',introducedRevision:146,lateSameYear:true },
   { id:'epidemic-party-ban-relief-179',kind:'event',title:'大疫致醫藥，黨人小功以下禁錮解除',startYear:179,endYear:179,precision:'year',source:HH8+'光和二年條記春季大疫、使者巡行致醫藥；四月大赦並記「諸黨人禁錮小功以下皆除之」。本節點不把有限解除擴寫為全面解禁。',causes:['epidemic-party-ban-relief-179'],carrier:'漢廷、疫病影響者與部分黨人親屬（史料記載）',description:'記錄疫病救療及特定範圍禁錮解除；不推估感染與死亡人數，也不宣稱所有黨人及親屬均獲解禁。',introducedRevision:146,lateSameYear:true },
   { id:'taiwei-and-minister-succession-guanghe-2-179',kind:'event',title:'179 年三公更替：劉郃、段熲、張濟相繼任職',startYear:179,endYear:179,precision:'year',source:HH8+'光和二年三月條記司徒袁滂免、大鴻臚劉郃為司徒；同條乙丑日記太尉橋玄罷、太中大夫段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空。本內容包採年級精度，只記原文任免，不推定任命原因、任期或其他官制效果。',causes:['taiwei-and-minister-succession-guanghe-2-179'],carrier:'袁滂、劉郃、橋玄、段熲、袁逢、張濟與漢廷（史料記載）',description:'記錄 179 年司徒袁滂免、劉郃繼任，太尉橋玄免、段熲繼任，以及司空袁逢免、張濟繼任；不推定任免原因、實際任期或更廣泛官制效果，也不轉成玩家人事變更。',sourceDateNote:'原史紀年：《後漢書》卷八記光和二年三月袁滂免、劉郃為司徒；乙丑日橋玄罷、段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空，但未另標該項日月。保留已標示的漢曆月份與干支，不換算模型日期或推定月內間隔；遊戲只按 179 年級觸發。',introducedRevision:211,lateSameYear:true },
-  { id:'jiangxia-danyang-revolts-179',kind:'event',title:'江夏起事與丹陽圍守事件',startYear:179,endYear:179,precision:'year',source:HH8+'光和二年九月記「江夏蠻叛，州郡討平之」，並記丹陽山越賊圍太守陳夤、陳夤擊破之。本節點只並列同年記事，不把兩地事件視為同一原因；不推估規模、傷亡或持續控制。',causes:['jiangxia-danyang-revolts-179'],carrier:'江夏州郡與丹陽太守陳夤（史料記載）',description:'記錄江夏地方起事及丹陽太守陳夤擊破圍城者；不推演兵力、傷亡、族群細節或後續疆界控制。',introducedRevision:152,lateSameYear:true },
+  { id:'jiangxia-danyang-revolts-179',kind:'event',title:'舊版誤繫年重複索引：江夏起事與丹陽圍守（建寧二年，169 年）',startYear:179,endYear:179,precision:'year',source:HH8+'建寧二年九月分別記江夏蠻叛、州郡討平及丹陽山越賊圍太守陳夤、陳夤擊破之。舊版誤繫光和二年（179 年），已將兩地記事拆分為各自的 169 年節點；此索引保留舊 ID 供遷移辨識，v238 起退役。',causes:['jiangxia-danyang-revolts-179'],carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年九月兩則記事誤繫於光和二年。現由 `jiangxia-uprising-169` 與 `danyang-shanyue-siege-chen-yin-180` 分別記錄；遷移保留既有事件帳，只移除過時待發節點，不回補已過年次。',introducedRevision:152,lateSameYear:true,retired:true,retiredIn:'phase4-scenario-238' },
   { id:'bajun-banshun-revolt-179',kind:'event',title:'巴郡板楯起事，州郡討之未克',startYear:179,endYear:179,precision:'year',source:HH8+'光和二年冬十月條記「巴郡板楯蠻叛」，遣御史中丞蕭瑗督益州刺史討之，「不剋」。《後漢書》卷八十六〈南蠻西南夷列傳〉將板楯復叛繫於光和三年，並有校記指出本紀及《華陽國志》繫於二年；該傳另載討伐及曹謙宣詔赦降的敘述。保留原典繫年差異，不推定兩處記載為同一連續戰事。採年級精度，不推定起事規模、軍隊編制或傷亡。',causes:['bajun-banshun-revolt-179'],carrier:'巴郡板楯（史書原稱）與益州州郡軍',description:'分別呈現本紀的光和二年起事、討伐未克記事，以及列傳光和三年復叛敘事；列傳本身註明與本紀及《華陽國志》繫年不同。另依本紀獨立記錄 182 年曹謙受降，不據此補推兩次記載間的戰事或控制狀態。',introducedRevision:153,lateSameYear:true },
   { id:'song-empress-deposed-178',kind:'event',title:'靈帝收宋皇后璽綬，宋氏以憂而死',startYear:178,endYear:178,precision:'year',source:'《後漢書》卷十下〈皇后紀下〉記宋氏建寧三年入掖庭為貴人、次年立后；光和元年「策收璽綬」，其後「后自致暴室，以憂死」，並記其在位八年、父兄被誅。來源未給廢后與死亡的月日，本節點只採年級精度；不將史書敘述改寫成已證實的冤案因果。',causes:['song-empress-deposed-178'],carrier:'漢靈帝、宋皇后及其父兄（史書記載）',description:'記錄宋皇后被收璽綬、其後死於暴室及父兄被誅的來源敘述；不補宮中操作細節、月日或其他涉事者未載的個別責任。',introducedRevision:154,lateSameYear:true },
   { id:'jiangxia-local-uprising-180',kind:'event',title:'江夏、廬江起事擴大，陸康討平',startYear:180,endYear:180,precision:'year',source:HH8+'光和三年夏四月記「江夏蠻叛」；卷八十六〈南蠻西南夷列傳〉記江夏起事與廬江賊黃穰相連，稱十餘萬人、攻沒四縣、寇患累年，後由廬江太守陸康討破，餘眾降散。本節點按年級精度並列本紀與列傳記載，不把「十餘萬」改寫為精確統計，也不補四縣名稱或逐年戰事。',causes:['jiangxia-local-uprising-180'],carrier:'江夏起事者、廬江賊黃穰及廬江太守陸康（史書記載）',description:'記錄江夏起事與黃穰相連、攻沒四縣及陸康討破的列傳敘述；保留原文概數，不推定各方兵力、傷亡、四縣名稱或年內日序。',introducedRevision:146,lateSameYear:true },
@@ -504,6 +504,18 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
   }
   if(corrected&&!model.eventLedger.some(item=>item.type==='史實資料勘誤'&&item.detail.includes('建寧三年（170）'))){
    pushEvent(model,'史實資料勘誤','年序核對發現：河內、河南記事、董寵記事、太尉與司空任免、三月日食及鬱林烏滸民記事屬建寧三年（170），丹陽山越記事屬建寧二年（169）。舊版濟南賊起攻東平陵節點亦誤繫於 180 年且與既有 170 年節點重複，現已移除重複節點。既有事件帳保持不變；已過年次不回溯結算。','《後漢書》卷八〈孝靈帝紀〉建寧二年、建寧三年條');
+  }
+ }
+ const jiangxiaDanyangCorrectionVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-238');
+ if(targetIndex>=jiangxiaDanyangCorrectionVersionIndex&&currentIndex<jiangxiaDanyangCorrectionVersionIndex){
+  const oldNode=model.nodes.find(node=>node.contentId==='jiangxia-danyang-revolts-179');
+  if(oldNode){
+   model.nodes=model.nodes.filter(node=>node!==oldNode);
+   model.causes=model.causes.filter(cause=>cause!=='jiangxia-danyang-revolts-179');
+  }
+  const incorrectEventWasRecorded=oldNode?.status==='triggered'||model.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('江夏起事與丹陽圍守事件'));
+  if(incorrectEventWasRecorded&&!model.eventLedger.some(item=>item.type==='史實資料勘誤'&&item.detail.includes('江夏與丹陽記事'))){
+   pushEvent(model,'史實資料勘誤','年序複核：舊版把《後漢書》卷八建寧二年九月的江夏與丹陽兩則記事誤繫於光和二年（179）。現由 169 年江夏、丹陽兩個獨立節點記錄；保留既有事件帳並附加此勘誤，不回補已過年次。','《後漢書》卷八〈孝靈帝紀〉建寧二年九月；卷八十六〈南蠻西南夷列傳〉建寧二年');
   }
  }
  const sourceCorrectionVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-106');

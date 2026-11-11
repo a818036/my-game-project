@@ -48,4 +48,19 @@ describe('A570 建寧二年江夏起事記事', () => {
       expect(late.eventLedger.some((item) => item.detail.includes('江夏起事及州郡討平'))).toBe(false);
     }
   });
+
+  it('A571 將舊版 179 年合併節點退役，保留原事件帳並拆回 169 年', () => {
+    const legacy = createPhase4Model(178, 1, persons, 'phase4-scenario-152');
+    const afterYear = advancePhase4(legacy, 360);
+    expect(afterYear.nodes.find((item) => item.contentId === 'jiangxia-danyang-revolts-179')?.status).toBe('triggered');
+    const ledgerPrefix = structuredClone(afterYear.eventLedger);
+
+    const migrated = upgradePhase4Content(afterYear, PHASE4_CONTENT_VERSION);
+    expect(migrated.nodes.some((item) => item.contentId === 'jiangxia-danyang-revolts-179')).toBe(false);
+    expect(migrated.causes).not.toContain('jiangxia-danyang-revolts-179');
+    expect(migrated.nodes.find((item) => item.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 169 });
+    expect(migrated.eventLedger.slice(0, ledgerPrefix.length)).toEqual(ledgerPrefix);
+    expect(migrated.eventLedger.filter((item) => item.type === '史實資料勘誤' && item.detail.includes('江夏與丹陽'))).toHaveLength(1);
+    expect(upgradePhase4Content(migrated, PHASE4_CONTENT_VERSION)).toEqual(migrated);
+  });
 });
