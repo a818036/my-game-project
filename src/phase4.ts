@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-242';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-243';
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
 const HH7='《後漢書》卷七〈孝桓帝紀〉';
@@ -11,7 +11,7 @@ const SG47='《三國志》卷四十七〈吳主傳〉';
 const SG48='《三國志》卷四十八〈吳書·三嗣主傳〉';
 const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:240},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:241},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -60,6 +60,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'ling-emperor-majority-pardon-171',kind:'event',title:'靈帝加元服，大赦而黨人不赦',startYear:171,endYear:171,precision:'year',source:HH8+'建寧四年正月條記帝加元服、大赦天下，「唯黨人不赦」。本節點按年級精度呈現，不將漢曆月日映射為模型日期。',carrier:'漢廷與仍受黨錮者（史料記載）',description:'記錄靈帝加元服及大赦範圍的明文例外；不將一般大赦說成黨錮全面解除。',introducedRevision:146,lateSameYear:true },
   { id:'xusheng-yue-king-revolt-172',kind:'event',title:'會稽許生自稱越王並寇郡縣',startYear:172,endYear:172,precision:'year',source:HH8+'熹平元年十一月條記會稽人許生自稱「越王」、寇郡縣，並記朝廷遣楊州刺史臧旻、丹陽太守陳夤討破之。本節點採年級精度，不補月日換算或戰鬥細節。',carrier:'許生及會稽郡縣（史料記載）',description:'記錄許生自稱越王並在會稽郡縣起事；其後平定另以 174 年節點記錄，不在本節點預先結算。',introducedRevision:146,lateSameYear:true },
   { id:'epidemic-east-commandery-flood-173',kind:'event',title:'大疫與北海、東萊海水溢',startYear:173,endYear:173,precision:'year',source:HH8+'熹平二年條記春季大疫、使者巡行致醫藥；六月記北海地震、東萊與北海海水溢。本節點保留年級精度，不推估疫病傳播、死亡數或洪水損失。',carrier:'漢廷及北海、東萊地方（史料記載）',description:'記錄史書所載疫病救療、地震與海水溢出；不推演疫病範圍、傷亡或地方災損。',introducedRevision:146,lateSameYear:true },
+  { id:'zong-ju-dies-yang-ci-sikong-173',kind:'event',title:'司空宗俱薨，楊賜為司空',startYear:173,endYear:173,precision:'year',source:HH8+'熹平二年條記「丁丑，司空宗俱薨」，後記二月大赦及「以光祿勳楊賜為司空」。',carrier:'司空宗俱、光祿勳楊賜與漢廷（史料記載）',description:'記錄司空宗俱去世及楊賜任司空；不改動玩家官職，不推演任命原因、任期或其他官制效果。',sourceDateNote:'《後漢書》卷八熹平二年條依序記春正月記事、丁丑司空宗俱薨，後記二月大赦及楊賜為司空。保留史文次序與干支，不換算為模型日期；遊戲只按 173 年級觸發。',introducedRevision:243,lateSameYear:true },
   { id:'xusheng-revolt-suppressed-174',kind:'event',title:'臧旻、陳夤於會稽破許生並斬之',startYear:174,endYear:174,precision:'year',source:HH8+'熹平三年十一月條記楊州刺史臧旻率丹陽太守陳夤大破許生於會稽並斬之。本節點採年級精度，不補戰鬥日程或未載的傷亡數。',carrier:'臧旻、陳夤與許生（史料記載）',description:'記錄對 172 年會稽起事的後續處置，依來源記載許生被斬；不補寫兵力、戰場細節或其他人物命運。',introducedRevision:146,lateSameYear:true },
   { id:'yizhou-revolt-quelled-176',kind:'event',title:'益州郡夷叛，太守李顒討平',startYear:176,endYear:176,precision:'year',source:HH8+'熹平五年條記「益州郡夷叛，太守李顒討平之」。本節點採年級精度，不把史料概述擴寫成完整族群、兵力或戰役名冊。',carrier:'益州郡地方起事者與太守李顒（史料記載）',description:'記錄益州郡地方起事及太守李顒討平的史書概述；不推演族群身分、戰役過程或傷亡。',introducedRevision:146,lateSameYear:true },
   { id:'cao-luan-executed-party-purge-176',kind:'event',title:'曹鸞訟黨人被誅，黨人門生故吏等禁錮',startYear:176,endYear:176,precision:'year',source:HH8+'熹平五年閏月條記永昌太守曹鸞「坐訟黨人，棄市」，並記詔黨人門生故吏父兄子弟在位者皆免官禁錮。本節點按年級精度呈現。',carrier:'曹鸞、遭黨錮者及其門生故吏親屬（史料記載）',description:'記錄曹鸞因申理黨人而被處死，以及詔令擴及相關在位者；不將處置外推至未被來源列明的全部親族或個別人物。',introducedRevision:146,lateSameYear:true },
