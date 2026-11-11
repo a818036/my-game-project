@@ -644,4 +644,38 @@ describe('開局存檔載入提示',()=>{
     expect(host.querySelector('.ai-narrative .notice')?.textContent).toBe('敘事服務暫時不可用');
     expect(host.querySelector('.ai-narrative .notice')?.hasAttribute('role')).toBe(false);
   });
+
+  it('A633 首次敘事生成期間可取消敘事且不撤銷已保存行動',async()=>{
+    const facts=createOpeningFacts(633,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a633-start',expectedRevision:0,type:'StartGame',name:'取消敘事驗收',seed:633,facts});
+    if(!started.event||!started.state)throw new Error('建立取消敘事測試世界線失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    vi.mocked(commitWorldline).mockResolvedValue(undefined);
+    let abortSignal:AbortSignal|undefined;
+    vi.mocked(fetchNarration).mockImplementationOnce((_payload,signal)=>{
+      abortSignal=signal;
+      return new Promise((_resolve,reject)=>signal?.addEventListener('abort',()=>reject(new DOMException('已取消','AbortError')),{once:true}));
+    });
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+    await act(async()=>host.querySelector<HTMLButtonElement>('.plan-review button.primary')!.click());
+
+    const cancel=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='取消敘事（行動已保存）');
+    expect(cancel).toBeDefined();
+    expect(abortSignal?.aborted).toBe(false);
+    const scan=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+    expect(scan.violations).toEqual([]);
+    await act(async()=>cancel!.click());
+    await act(async()=>{await new Promise(resolve=>setTimeout(resolve,0));});
+
+    expect(abortSignal?.aborted).toBe(true);
+    expect([...host.querySelectorAll<HTMLButtonElement>('button')].some(button=>button.textContent==='取消敘事（行動已保存）')).toBe(false);
+    expect(host.querySelectorAll('[role="status"]')[0]?.textContent).toBe('敘事取消；行動已保存。');
+    expect(host.textContent).toContain('第 1 回合');
+    expect(commitWorldline).toHaveBeenCalledTimes(1);
+    expect(fetchNarration).toHaveBeenCalledOnce();
+    expect(host.querySelector('[role="alert"]')).toBeNull();
+  });
 });
