@@ -228,4 +228,44 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('三公任免與任職交替'))).toBe(false);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('v271 跨年加入犍為屬國記事，來源未繫月份時不補日期', () => {
+    const qianweiId = 'qianwei-dependent-people-revolt-161';
+    const previous = createPhase4Model(160, 1, [], 'phase4-scenario-271');
+    const oldLedger = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, oldLedger.length)).toEqual(oldLedger);
+    expect(upgraded.nodes.find((node) => node.contentId === qianweiId)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === qianweiId)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('犍為屬國夷'));
+    expect(event?.source).toContain('寇鈔百姓');
+    expect(event?.source).toContain('山昱擊破');
+    expect(event?.source).toContain('原文未載月份');
+    expect(HISTORY_CONTENT.find((item) => item.id === qianweiId)).toMatchObject({
+      startYear: 161,
+      endYear: 161,
+      precision: 'year',
+      introducedRevision: 272,
+    });
+    expect(HISTORY_CONTENT.find((item) => item.id === qianweiId)?.sourceDateNote).toBeUndefined();
+
+    for (const year of [161, 162]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-271'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === qianweiId)).toMatchObject({ status: 'resolved', resolvedYear: 161 });
+      expect(late.eventLedger.some((item) => item.detail.includes('犍為屬國夷寇百姓'))).toBe(false);
+    }
+
+    const previousSave = oldSave(160, 653, 'phase4-scenario-271');
+    const oldPrefix = structuredClone(previousSave.events);
+    const migrated = verifySave(toJson(previousSave));
+    expect(migrated.events.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === qianweiId)?.status).toBe('pending');
+    const lateSave = verifySave(toJson(oldSave(161, 654, 'phase4-scenario-271')));
+    expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === qianweiId)).toMatchObject({ status: 'resolved', resolvedYear: 161 });
+    expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('犍為屬國夷寇百姓'))).toBe(false);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
