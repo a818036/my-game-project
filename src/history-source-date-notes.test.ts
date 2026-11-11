@@ -234,8 +234,9 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'xianbei-invades-liaodong-dependency-163',
       'ling-emperor-accession-court-purge-168',
       'qiang-incursions-167',
-      'e168',
       'duan-jiong-defeats-xianling-fengyishan-168',
+      'court-offices-reorganized-spring-168',
+      'e168',
       'capital-rainwater-168',
       'duan-jiong-defeats-xianling-jingyang-168',
       'eclipse-ransom-168',
@@ -295,6 +296,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(139);
+    expect(uniqueNotedEvents.size).toBe(140);
   });
 });
