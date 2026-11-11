@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-247';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-248';
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
 const HH7='《後漢書》卷七〈孝桓帝紀〉';
@@ -11,7 +11,7 @@ const SG47='《三國志》卷四十七〈吳主傳〉';
 const SG48='《三國志》卷四十八〈吳書·三嗣主傳〉';
 const ZT58='原史紀年：《資治通鑑》卷五十八中平四年條';
 const YEAR_TRIGGER='；遊戲僅年級觸發。';
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:245},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:246},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -68,6 +68,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = [
   { id:'tang-zhen-dismissed-xu-xun-sikong-174',kind:'event',title:'司空唐珍罷，許訓為司空',startYear:174,endYear:174,precision:'year',source:HH8+'熹平三年條記「司空唐珍罷，永樂少府許訓為司空」。',carrier:'司空唐珍、永樂少府許訓與漢廷（史料記載）',description:'記錄唐珍免司空、許訓任司空；不改動玩家官職，不推測免職原因、任期或其他官制效果。',sourceDateNote:'《後漢書》卷八熹平三年條記司空唐珍罷、永樂少府許訓為司空；原典未對此句另標月份，保留年級精度，不推算月日，遊戲只按 174 年級觸發。',introducedRevision:246,lateSameYear:true },
   { id:'yizhou-revolt-quelled-176',kind:'event',title:'益州郡夷叛，太守李顒討平',startYear:176,endYear:176,precision:'year',source:HH8+'熹平五年條記「益州郡夷叛，太守李顒討平之」。本節點採年級精度，不把史料概述擴寫成完整族群、兵力或戰役名冊。',carrier:'益州郡地方起事者與太守李顒（史料記載）',description:'記錄益州郡地方起事及太守李顒討平的史書概述；不推演族群身分、戰役過程或傷亡。',introducedRevision:146,lateSameYear:true },
   { id:'cao-luan-executed-party-purge-176',kind:'event',title:'曹鸞訟黨人被誅，黨人門生故吏等禁錮',startYear:176,endYear:176,precision:'year',source:HH8+'熹平五年閏月條記永昌太守曹鸞「坐訟黨人，棄市」，並記詔黨人門生故吏父兄子弟在位者皆免官禁錮。本節點按年級精度呈現。',carrier:'曹鸞、遭黨錮者及其門生故吏親屬（史料記載）',description:'記錄曹鸞因申理黨人而被處死，以及詔令擴及相關在位者；不將處置外推至未被來源列明的全部親族或個別人物。',introducedRevision:146,lateSameYear:true },
+  { id:'drought-locust-seven-provinces-176',kind:'event',title:'大旱與七州蝗災',startYear:176,endYear:176,precision:'year',source:HH8+'熹平五年夏四月條記「大旱，七州蝗」。原文未列七州名稱或災情後果。',carrier:'漢廷與受災州郡（史料記載）',description:'記錄史書所載大旱與七州蝗災；不推定七州範圍、作物損失、饑荒、人口遷徙或其他後果。',sourceDateNote:'《後漢書》卷八〈孝靈帝紀〉熹平五年夏四月記大旱、七州蝗；保留漢曆原註，遊戲只按 176 年級觸發，不推算月日或災害持續時間。',introducedRevision:248,lateSameYear:true },
   { id:'epidemic-party-ban-relief-179',kind:'event',title:'大疫致醫藥，黨人小功以下禁錮解除',startYear:179,endYear:179,precision:'year',source:HH8+'光和二年條記春季大疫、使者巡行致醫藥；四月大赦並記「諸黨人禁錮小功以下皆除之」。本節點不把有限解除擴寫為全面解禁。',carrier:'漢廷、疫病影響者與部分黨人親屬（史料記載）',description:'記錄疫病救療及特定範圍禁錮解除；不推估感染與死亡人數，也不宣稱所有黨人及親屬均獲解禁。',introducedRevision:146,lateSameYear:true },
   { id:'taiwei-and-minister-succession-guanghe-2-179',kind:'event',title:'179 年三公更替：劉郃、段熲、張濟相繼任職',startYear:179,endYear:179,precision:'year',source:HH8+'光和二年三月條記司徒袁滂免、大鴻臚劉郃為司徒；同條乙丑日記太尉橋玄罷、太中大夫段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空。本內容包採年級精度，只記原文任免，不推定任命原因、任期或其他官制效果。',carrier:'袁滂、劉郃、橋玄、段熲、袁逢、張濟與漢廷（史料記載）',description:'記錄 179 年司徒袁滂免、劉郃繼任，太尉橋玄免、段熲繼任，以及司空袁逢免、張濟繼任；不推定任免原因、實際任期或更廣泛官制效果，也不轉成玩家人事變更。',sourceDateNote:'原史紀年：《後漢書》卷八記光和二年三月袁滂免、劉郃為司徒；乙丑日橋玄罷、段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空，但未另標該項日月。保留已標示的漢曆月份與干支，不換算模型日期或推定月內間隔；遊戲只按 179 年級觸發。',introducedRevision:211,lateSameYear:true },
   { id:'jiangxia-danyang-revolts-179',kind:'event',title:'舊版誤繫年重複索引：江夏起事與丹陽圍守（建寧二年，169 年）',startYear:179,endYear:179,precision:'year',source:HH8+'建寧二年九月分別記江夏蠻叛、州郡討平及丹陽山越賊圍太守陳夤、陳夤擊破之。舊版誤繫光和二年（179 年），已將兩地記事拆分為各自的 169 年節點；此索引保留舊 ID 供遷移辨識，v238 起退役。',carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年九月兩則記事誤繫於光和二年。現由 `jiangxia-uprising-169` 與 `danyang-shanyue-siege-chen-yin-180` 分別記錄；遷移保留既有事件帳，只移除過時待發節點，不回補已過年次。',introducedRevision:152,lateSameYear:true,retired:true,retiredIn:'phase4-scenario-238' },
