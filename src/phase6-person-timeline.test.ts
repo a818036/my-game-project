@@ -36,6 +36,19 @@ describe('A373 other-person historical timeline queries',()=>{
     expect(state.turn).toBe(0);
   });
 
+  it('A630 answers an 184 history query with the Anping and Ganling source and no state change',()=>{
+    const facts=createOpeningFacts(630,184,{regions:[],surnames:[]});
+    const state=dispatch(null,{version:ENGINE_VERSION,commandId:'a630-history-start',expectedRevision:0,type:'StartGame',name:'測試玩家',seed:630,facts}).state!;
+    const before=structuredClone(state);
+    const result=localInteraction('西元 184 年有哪些史實事件？',state);
+    expect(result.answer).toContain('安平、甘陵人執王響應黃巾');
+    expect(result.answer).toContain('「安平、甘陵人各執其王以應之」；注文指安平王續、甘陵王忠');
+    expect(result.choiceIds).toEqual([]);
+    expect(state).toEqual(before);
+    expect(state.world.year).toBe(184);
+    expect(state.turn).toBe(0);
+  });
+
   it('A383 distinguishes the 20-item display limit from missing years through the player input path',async()=>{
     const person='曹操';
     const records=HISTORY_CONTENT.filter(item=>!item.retired&&item.kind==='event'&&item.source.startsWith('《')&&`${item.title} ${item.description} ${item.carrier}`.includes(person)).sort((a,b)=>a.startYear-b.startYear||a.id.localeCompare(b.id));
