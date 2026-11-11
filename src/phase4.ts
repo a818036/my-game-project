@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-296';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-297';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:295},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:296},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -79,6 +79,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'court-succession-and-empress-dou-165',kind:EVENT_KIND,title:'楊秉去世、三公更迭與竇氏立后',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年五月丙戌，太尉楊秉薨；秋七月，太中大夫陳蕃爲太尉；冬十月，司空周景免，太常劉茂爲司空；辛巳，立貴人竇氏爲皇后。',carrier:'楊秉、陳蕃、周景、劉茂、竇氏與漢廷（史料記載）',description:'只記原文明載的去世、官職更替與立后；不推測任免原因、任期、政策效果或人物關係。',sourceDateNote:'原典分別繫五月丙戌、秋七月、冬十月及其後所列辛巳；遊戲僅按 165 年級觸發，不換算漢曆日期。',introducedRevision:294 },
   { id:'goushi-ground-split-165',kind:EVENT_KIND,title:'緱氏地裂',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年記事記五月楊秉薨後「丙辰，緱氏地裂」；只保留史書原載地名與地裂記錄。',carrier:'緱氏（史料所記地點）',description:'記錄原文明載的地裂，不推測成因、範圍、損害、傷亡或政治徵兆。',sourceDateNote:'原典將丙辰記事列於五月記事之後，未重標月份；遊戲只按 165 年級觸發，不換算干支日期或模型日期。',introducedRevision:295 },
   { id:'hu-lan-zhu-gai-revolt-165',kind:EVENT_KIND,title:'胡蘭、朱蓋等起事，度尚等討破',...sameYear(165),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹八年條記桂陽胡蘭、朱蓋等復反，攻沒郡縣、轉寇零陵，零陵太守陳球拒之；遣中郎將度尚、長沙太守抗徐等擊蘭、蓋，大破斬之。原文續記蒼梧太守張叙為賊所執、桂陽太守任胤背敵畏懦，二人皆棄市。本節點採年級精度，不補兵力、傷亡或月內日期。',carrier:'胡蘭、朱蓋、陳球、度尚、抗徐、張叙與任胤（史料記載）',description:'記錄地方起事、侵擾、零陵太守拒守、討破結果與原文明載兩位郡守的遭遇；不推演完整戰役、額外傷亡、案情或各郡控制變化。',introducedRevision:147 },
+  { id:'taishan-commandant-office-abolished-165',kind:EVENT_KIND,title:'罷太山都尉官',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年五月壬申，罷太山都尉官。',carrier:'漢廷與太山都尉官（史料記載）',description:'只記原典所載官署裁撤，不推定在任官員、裁撤原因、職務承接或行政效果。',sourceDateNote:'延熹八年五月壬申；遊戲僅按 165 年級觸發，不換算漢曆日期。',introducedRevision:297 },
+  { id:'southern-palace-intercalary-fire-165',kind:EVENT_KIND,title:'閏月南宮長秋等處失火',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年閏月甲午，南宮長秋和歡殿、後鉤楯、掖庭、朔平署火。',carrier:'南宮長秋和歡殿、後鉤楯、掖庭與朔平署（史料所記地點）',description:'只記原文列出的宮署火災，不推測起火原因、損害、傷亡或後續處置。',sourceDateNote:'延熹八年閏月甲午；遊戲僅按 165 年級觸發，不將閏月換算為模型日期。',introducedRevision:297 },
+  { id:'capital-earthquake-165',kind:EVENT_KIND,title:'京師地震',...sameYear(165),precision:YEAR_PRECISION,source:HH7+'延熹八年九月丁未，京師地震。',carrier:'京師（史料所記地點）',description:'只記原典所載地震，不推測震度、損害、傷亡或政治含義。',sourceDateNote:'延熹八年九月丁未；遊戲僅按 165 年級觸發，不換算漢曆日期。',introducedRevision:297 },
   { id:'partisan-frictions-emerge-166',kind:EVENT_KIND,title:'桓帝朝廷朋黨議論漸起',...sameYear(166),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十五延熹九年條記桓帝即位前受學於甘陵周福，後擢周福為尚書；同郡河南尹房植亦有名於朝，兩家賓客互相譏揣、各樹朋徒，由是甘陵分南北部，「黨人之議自此始矣」。《後漢書》卷六十七〈黨錮列傳〉亦以延熹九年為黨事起始。本內容包只採公元年級精度，不將士人概括為單一陣營。',carrier:'桓帝朝廷、甘陵周氏與房植相關士人（史料記載）',description:'記錄史料所述朝廷與地方士人交往、競逐逐漸形成朋黨議論；不推演未載人物立場、地方普遍民意、具體名單或此後黨錮的完整因果。',introducedRevision:144 },
   { id:'border-incursions-166',kind:EVENT_KIND,title:'緣邊九郡遭侵，張奐奉命出擊',...sameYear(166),precision:YEAR_PRECISION,source:HH7+'延熹九年記六月南匈奴及烏桓、鮮卑寇緣邊九郡；七月遣使匈奴中郎將張奐擊之；十二月南匈奴、烏桓率眾詣張奐降。依原文分列族群與先後，不推定三族聯盟、鮮卑降服、傷亡或邊郡控制。',carrier:'南匈奴、烏桓、鮮卑與張奐（史料記載）',description:'記錄六月三族侵邊、七月張奐出擊及十二月南匈奴、烏桓率眾歸降；不推演完整戰役結果或未載邊郡控制。',introducedRevision:226 },
   { id:'ling-emperor-accession-court-purge-168',kind:EVENT_KIND,title:'靈帝即位與竇武、陳蕃遭誅',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'記建寧元年靈帝即位，並於同年九月記中常侍曹節矯詔誅太傅陳蕃、大將軍竇武等人；本內容包採公元年級精度，原典所載九月只作來源日期，不換算成模型月份。',carrier:'漢廷、竇武、陳蕃與曹節（史料記載）',description:'記錄靈帝即位及同年朝廷權力衝突造成的清洗；不以此概括所有士人，不補寫未記載的逐日政變過程、個人對話或未列人物命運。',sourceDateNote:'《後漢書》記九月丁亥誅竇武、陳蕃等；遊戲只按公元年觸發，不將漢曆月日映射到原型日期。',introducedRevision:144 },

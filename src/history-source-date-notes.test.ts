@@ -262,6 +262,9 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'first-land-tax-per-mu-165',
       'court-succession-and-empress-dou-165',
       'goushi-ground-split-165',
+      'taishan-commandant-office-abolished-165',
+      'southern-palace-intercalary-fire-165',
+      'capital-earthquake-165',
       'ling-emperor-accession-court-purge-168',
       'qiang-incursions-167',
       'duan-jiong-defeats-xianling-fengyishan-168',
@@ -357,6 +360,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(201);
+    expect(uniqueNotedEvents.size).toBe(204);
   });
 });

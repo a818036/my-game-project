@@ -879,7 +879,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const old = createPhase4Model(164, 1, [], 'phase4-scenario-289');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-297');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     for (const id of ids) expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(HISTORY_CONTENT.find((item) => item.id === ids[0])).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 290 });
@@ -914,7 +914,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-297');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 291 });
@@ -955,7 +955,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-297');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 293 });
@@ -988,7 +988,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-297');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 294 });
@@ -1024,7 +1024,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-297');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 295 });
@@ -1054,7 +1054,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const id = 'hu-lan-zhu-gai-revolt-165';
     const content = HISTORY_CONTENT.find((item) => item.id === id);
     const oldVersion = 'phase4-scenario-295';
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-297');
     expect(content?.source).toContain('零陵太守陳球拒之');
     expect(content?.source).toContain('蒼梧太守張叙為賊所執');
     expect(content?.source).toContain('桂陽太守任胤背敵畏懦，二人皆棄市');
@@ -1077,4 +1077,45 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(migratedSave.state.phase4?.nodes.find((node) => node.contentId === id)?.evidence).toContainEqual(expect.stringContaining(sourceMarker));
     expect(verifySave(toJson(migratedSave))).toEqual(migratedSave);
   });
+  it('A674 補列 165 年官署裁撤、南宮閏月火災與京師地震', () => {
+    const ids = [
+      'taishan-commandant-office-abolished-165',
+      'southern-palace-intercalary-fire-165',
+      'capital-earthquake-165',
+    ];
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-297');
+    const entries = ids.map((id) => HISTORY_CONTENT.find((item) => item.id === id));
+    expect(entries.map((item) => item?.introducedRevision)).toEqual([297, 297, 297]);
+    expect(entries[0]?.sourceDateNote).toContain('五月壬申');
+    expect(entries[1]?.sourceDateNote).toContain('閏月甲午');
+    expect(entries[2]?.sourceDateNote).toContain('九月丁未');
+    expect(entries[1]?.description).toContain('不推測起火原因、損害、傷亡');
+    expect(entries[2]?.description).toContain('不推測震度、損害、傷亡');
+
+    const oldVersion = 'phase4-scenario-296';
+    const old = createPhase4Model(164, 1, [], oldVersion);
+    const oldPrefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    for (const id of ids) expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    const advanced = advancePhase4(upgraded, 360);
+    for (const id of ids) expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    for (const entry of entries) expect(advanced.eventLedger.some((event) => event.detail.includes(entry!.title))).toBe(true);
+
+    for (const year of [165, 166]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], oldVersion), PHASE4_CONTENT_VERSION);
+      for (const entry of entries) {
+        expect(late.nodes.find((node) => node.contentId === entry!.id)).toMatchObject({ status: 'resolved', resolvedYear: 165 });
+        expect(late.eventLedger.some((event) => event.detail.includes(entry!.title))).toBe(false);
+      }
+    }
+
+    const legacy = oldSave(164, 694, oldVersion);
+    const legacyEvents = structuredClone(legacy.events);
+    const migratedSave = verifySave(toJson(legacy));
+    expect(migratedSave.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
+    for (const id of ids) expect(migratedSave.state.phase4?.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(verifySave(toJson(migratedSave))).toEqual(migratedSave);
+  });
+
 });
