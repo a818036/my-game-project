@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(196);
+    expect(withinCatalogYears).toHaveLength(197);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -279,6 +279,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'atingdao-four-hundred-chi-tower-182',
       'ling-emperor-tour-guangcheng-taixue-182',
       'yongle-palace-office-disaster-182',
+      'chen-cang-183',
       'rinan-envoy-tributes-183',
       'changling-county-restored-183',
       'winter-cold-eastern-commandries-183',
@@ -326,6 +327,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(170);
+    expect(uniqueNotedEvents.size).toBe(171);
   });
 });

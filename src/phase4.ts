@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-265';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-266';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:263},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:264},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -124,6 +124,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'ling-emperor-tour-guangcheng-taixue-182',kind:EVENT_KIND,title:'靈帝巡幸廣成苑，歲末幸太學',...sameYear(182),precision:YEAR_PRECISION,source:HH8+'光和五年冬十月太尉更替後記「校獵上林苑，歷函谷關，遂巡狩於廣成苑」，又記十二月還而幸太學。本節點保留原文次序與年月，不推定逐日行程、各地停留時間、同行者或行程後果。',carrier:'漢靈帝與隨行人員（史料記事）',description:'記錄靈帝校獵上林苑、經函谷關巡至廣成苑，十二月返回後幸太學的史書敘事；不擴寫行程細節、停留日數或政治效果。',sourceDateNote:'《後漢書》卷八光和五年條記冬十月後校獵、巡幸廣成苑，十二月還而幸太學。保留漢曆先後與月份，不換算為遊戲日程。',introducedRevision:261 },
   { id:'yongle-palace-office-disaster-182',kind:EVENT_KIND,title:'永樂宮署受災',...sameYear(182),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十八光和五年條記「五月庚申，永樂宮署災」。本節點按 182 年級精度記錄原文，不推定災害成因、受損範圍、人員傷亡、修復經過或後續影響。',carrier:'永樂宮署（史書記事）',description:'記錄永樂宮署受災的原典記事；來源未在此處交代原因與損害，本節點不補寫火勢、傷亡、修繕或宮廷後果。',sourceDateNote:'原史紀年：《資治通鑑》卷五十八光和五年五月庚申記永樂宮署災。保留漢曆月份與干支作來源註記，只按 182 年級觸發，不換算成遊戲日期。',introducedRevision:206 },
   { id:'sun-quan-inferred-birth-182',kind:EVENT_KIND,title:'孫權推定出生年（約 182 年）',...sameYear(182),precision:YEAR_PRECISION,source:'《三國志》卷四十八記孫權於 252 年去世時年七十一；依傳統虛歲回推，出生年約為 182 年。原典未載出生月日，此為年級推定，不據此生成日常或身體細節。',causes:['sun-quan-inferred-birth'],carrier:'孫權（年級推定）',description:'依原典所載享年推定出生公元年，明確標為年級推定，僅作年表索引；不宣稱精確出生日期或原典直載的出生年。',introducedRevision:89 },
+  { id:'chen-cang-183',kind:EVENT_KIND,title:'陳倉大破王國',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'光和六年春二月：「皇甫嵩大破王國於陳倉」。',carrier:'皇甫嵩與王國',description:'不推演戰事細節或傷亡。',sourceDateNote:'春二月',introducedRevision:266 },
   { id:'rinan-envoy-tributes-183',kind:EVENT_KIND,title:'日南徼外國重譯入貢',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'光和六年正月：日南徼外國重譯貢獻，未載國名、貢物。',carrier:'日南來使',description:'不推定國名、貢物與外交結果。',sourceDateNote:'光和六年正月。',introducedRevision:262 },
   { id:'changling-county-restored-183',kind:EVENT_KIND,title:'復置長陵縣，比照豐、沛',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'光和六年二月：復長陵縣，比豐、沛。',carrier:'漢廷',description:'不推定縣界、行政細節與效果。',sourceDateNote:'光和六年二月。',introducedRevision:262 },
   { id:'garden-office-established-183',kind:EVENT_KIND,title:'始置圃囿署，以宦者為令',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'光和六年：始置圃囿署，以宦者為令。',carrier:'漢廷',description:'原文未載月份與職掌。',introducedRevision:262 },

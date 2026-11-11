@@ -359,3 +359,33 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
   });
 
 });
+
+describe('A641 補列 183 年陳倉戰事',()=>{
+  const id='chen-cang-183';
+
+  it('保留《後漢書》卷八原文與年級精度，未推演未載戰果',()=>{
+    const node=HISTORY_CONTENT.find(item=>item.id===id);
+    expect(node).toMatchObject({startYear:183,endYear:183,precision:'year',introducedRevision:266});
+    expect(node?.source).toContain('光和六年春二月');
+    expect(node?.source).toContain('皇甫嵩大破王國於陳倉');
+    expect(node?.sourceDateNote).toBe('春二月');
+    expect(node?.description).toContain('不推演戰事細節或傷亡');
+  });
+
+  it('v265 世界線升版後保留舊帳並只在跨年至 183 年觸發',()=>{
+    const old=createPhase4Model(182,1,[],'phase4-scenario-265');
+    const prefix=structuredClone(old.eventLedger);
+    const migrated=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(migrated.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(migrated.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
+    const continued=advancePhase4(migrated,360);
+    expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
+    const event=continued.eventLedger.find(item=>item.detail.includes('陳倉大破王國'));
+    expect(event?.source).toContain('皇甫嵩大破王國於陳倉');
+    expect(event?.source).toContain('春二月');
+
+    const sameYear=upgradePhase4Content(createPhase4Model(183,1,[],'phase4-scenario-265'),PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find(item=>item.contentId===id)).toMatchObject({status:'resolved',resolvedYear:183});
+    expect(sameYear.eventLedger.some(item=>item.detail.includes('陳倉大破王國'))).toBe(false);
+  });
+});
