@@ -176,6 +176,27 @@ describe('開局存檔載入提示',()=>{
     }
   });
 
+  it('A638 localStorage 封鎖不會阻止既有世界線載入',async()=>{
+    const facts=createOpeningFacts(638,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a638-start',expectedRevision:0,type:'StartGame',name:'封鎖儲存續玩測試',seed:638,facts});
+    if(!started.state||!started.event)throw new Error('建立既有世界線測試存檔失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    const getItem=vi.spyOn(Storage.prototype,'getItem').mockImplementation(()=>{throw new DOMException('Blocked by storage policy.','SecurityError');});
+    const setItem=vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{throw new DOMException('Blocked by storage policy.','SecurityError');});
+    try{
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+      expect(host.querySelector('#main-content')).not.toBeNull();
+      expect(host.textContent).toContain('封鎖儲存續玩測試');
+      expect(host.querySelector<HTMLInputElement>('.reader-control.compact input[type="range"]')?.value).toBe('18');
+      expect(host.querySelector('[role="alert"]')).toBeNull();
+      expect(getItem).toHaveBeenCalledWith('shenzhou-font-size');
+      expect(setItem).toHaveBeenCalledWith('shenzhou-font-size','18');
+    }finally{
+      getItem.mockRestore();setItem.mockRestore();
+    }
+  });
+
   it('開局畫面有單一主要地標、頁面標題及具可讀標籤的表單控制項',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
