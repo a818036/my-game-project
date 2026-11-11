@@ -268,4 +268,43 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('犍為屬國夷寇百姓'))).toBe(false);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('v272 跨年加入鳥吾羌侵擾三郡記事，不臆補交戰細節', () => {
+    const wuzhongId = 'wuzhong-qiang-hanyang-longxi-jincheng-162';
+    const previous = createPhase4Model(161, 1, [], 'phase4-scenario-272');
+    const oldLedger = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, oldLedger.length)).toEqual(oldLedger);
+    expect(upgraded.nodes.find((node) => node.contentId === wuzhongId)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === wuzhongId)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('鳥吾羌'));
+    expect(event?.source).toContain('漢陽、隴西、金城');
+    expect(event?.source).toContain('諸郡兵討破');
+    expect(HISTORY_CONTENT.find((item) => item.id === wuzhongId)).toMatchObject({
+      startYear: 162,
+      endYear: 162,
+      precision: 'year',
+      introducedRevision: 273,
+    });
+    expect(HISTORY_CONTENT.find((item) => item.id === wuzhongId)?.sourceDateNote).toBeUndefined();
+
+    for (const year of [162, 163]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-272'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === wuzhongId)).toMatchObject({ status: 'resolved', resolvedYear: 162 });
+      expect(late.eventLedger.some((item) => item.detail.includes('鳥吾羌'))).toBe(false);
+    }
+
+    const previousSave = oldSave(161, 655, 'phase4-scenario-272');
+    const oldPrefix = structuredClone(previousSave.events);
+    const migrated = verifySave(toJson(previousSave));
+    expect(migrated.events.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === wuzhongId)?.status).toBe('pending');
+    const lateSave = verifySave(toJson(oldSave(162, 656, 'phase4-scenario-272')));
+    expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === wuzhongId)).toMatchObject({ status: 'resolved', resolvedYear: 162 });
+    expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('鳥吾羌'))).toBe(false);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
