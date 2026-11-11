@@ -231,6 +231,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     const inlineNotes = HISTORY_CONTENT.filter((item) => item.sourceDateNote).map((item) => item.id);
     expect(inlineNotes).toEqual([
       'taishan-langye-revolt-lao-bing-160',
+      'taishan-revolt-shusun-wuji-160',
       'qiang-incursion-sanfu-161',
       'xianbei-invades-liaodong-dependency-163',
       'ling-emperor-accession-court-purge-168',
@@ -328,6 +329,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(172);
+    expect(uniqueNotedEvents.size).toBe(173);
   });
 });

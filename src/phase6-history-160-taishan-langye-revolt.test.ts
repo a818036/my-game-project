@@ -6,11 +6,11 @@ import { toJson, verifySave, type SaveFile } from './storage';
 
 const id = 'taishan-langye-revolt-lao-bing-160';
 
-function oldV266Save(year: number, seed: number): SaveFile {
+function oldSave(year: number, seed: number, contentVersion = 'phase4-scenario-266'): SaveFile {
   const facts = createOpeningFacts(seed, year, { regions: [], surnames: [] });
   const started = dispatch(null, {
     version: ENGINE_VERSION,
-    commandId: `a644-v266-start-${seed}`,
+    commandId: `a644-old-start-${seed}`,
     expectedRevision: 0,
     type: 'StartGame',
     name: '史料驗收',
@@ -18,7 +18,7 @@ function oldV266Save(year: number, seed: number): SaveFile {
     facts,
   });
   if (!started.event || started.event.type !== 'WorldCreated') throw new Error('無法建立 A644 v266 舊存檔');
-  const event: GameEvent = { ...started.event, payload: { ...started.event.payload, phase4ContentVersion: 'phase4-scenario-266' } };
+  const event: GameEvent = { ...started.event, payload: { ...started.event.payload, phase4ContentVersion: contentVersion } };
   const state = applyEvent(null, event);
   if (!state) throw new Error('無法重播 A644 v266 舊存檔');
   return { format: 'shenzhou-save', version: 6, worldlineId: state.worldlineId, events: [event], state };
@@ -72,7 +72,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
   });
 
   it('v266 v6 JSON 升級保留舊事件帳且不回補已過記事', () => {
-    const old = oldV266Save(160, 645);
+    const old = oldSave(160, 645);
     const prefix = structuredClone(old.state.phase4?.eventLedger ?? []);
     const migrated = verifySave(toJson(old));
     expect(migrated.events[0]).toEqual(old.events[0]);
@@ -94,5 +94,27 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const saved: SaveFile = { ...migrated, events: [...migrated.events, continued.event], state: continued.state };
     expect(replay(saved.events)).toEqual(saved.state);
     expect(verifySave(toJson(saved))).toEqual(saved);
+  });
+
+  it('續接 v267 時可觸發 160 年泰山賊記事，舊年份不補發', () => {
+    const id = 'taishan-revolt-shusun-wuji-160';
+    const old = createPhase4Model(159, 1, [], 'phase4-scenario-267');
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    const advanced = advancePhase4(upgraded, 360);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('叔孫無忌'))?.source).toContain('十二月');
+
+    const sameYear = upgradePhase4Content(createPhase4Model(160, 1, [], 'phase4-scenario-267'), PHASE4_CONTENT_VERSION);
+    const late = upgradePhase4Content(createPhase4Model(161, 1, [], 'phase4-scenario-267'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 160 });
+    expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 160 });
+    expect(sameYear.eventLedger.some((item) => item.detail.includes('叔孫無忌'))).toBe(false);
+    expect(late.eventLedger.some((item) => item.detail.includes('叔孫無忌'))).toBe(false);
+
+    const saved = verifySave(toJson(oldSave(160, 646, 'phase4-scenario-267')));
+    expect(saved.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(saved.state.phase4?.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 160 });
+    expect(saved.state.phase4?.eventLedger.some((item) => item.detail.includes('叔孫無忌'))).toBe(false);
   });
 });
