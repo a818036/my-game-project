@@ -2,6 +2,7 @@
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import axe from 'axe-core';
 import { EndingReofferNotice } from './EndingReofferNotice';
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -45,5 +46,17 @@ describe('重大節點後的大結局入口提示', () => {
     expect(host.querySelector('[role="status"]')).toBe(status);
     expect(status?.textContent).toContain('重大節點累積完成');
     expect(host.querySelector('button')?.disabled).toBe(true);
+  });
+
+  it('A624 結局重新考慮提示通過 axe-core 啟用規則', async () => {
+    await act(async () => root.render(createElement(EndingReofferNotice, { due: true, busy: false, onPromptEnding: vi.fn() })));
+    expect(host.querySelector('[role="status"]')?.textContent).toContain('重大節點累積完成');
+    expect(host.querySelector('article h2')?.textContent).toContain('重新考慮大結局');
+    const results = await axe.run(host, { rules: { 'color-contrast': { enabled: false } } });
+    expect(results.violations.map(({ id, impact, nodes }) => ({
+      id,
+      impact,
+      targets: nodes.flatMap(node => node.target.map(String)),
+    }))).toEqual([]);
   });
 });
