@@ -1,0 +1,98 @@
+import { describe, expect, it } from 'vitest';
+import { advancePhase4, createPhase4Model, HISTORY_CONTENT, PHASE4_CONTENT_VERSION, upgradePhase4Content } from './phase4';
+import { answerKnownHistoricalEventQuestion } from './life';
+import { applyEvent, createOpeningFacts, dispatch, ENGINE_VERSION, replay, type GameEvent, type GameState } from './engine';
+import { toJson, verifySave, type SaveFile } from './storage';
+
+const id = 'taishan-langye-revolt-lao-bing-160';
+
+function oldV266Save(year: number, seed: number): SaveFile {
+  const facts = createOpeningFacts(seed, year, { regions: [], surnames: [] });
+  const started = dispatch(null, {
+    version: ENGINE_VERSION,
+    commandId: `a644-v266-start-${seed}`,
+    expectedRevision: 0,
+    type: 'StartGame',
+    name: '史料驗收',
+    seed,
+    facts,
+  });
+  if (!started.event || started.event.type !== 'WorldCreated') throw new Error('無法建立 A644 v266 舊存檔');
+  const event: GameEvent = { ...started.event, payload: { ...started.event.payload, phase4ContentVersion: 'phase4-scenario-266' } };
+  const state = applyEvent(null, event);
+  if (!state) throw new Error('無法重播 A644 v266 舊存檔');
+  return { format: 'shenzhou-save', version: 6, worldlineId: state.worldlineId, events: [event], state };
+}
+
+function questionWorld(): GameState {
+  const facts = createOpeningFacts(644, 160, { regions: [], surnames: [] });
+  const started = dispatch(null, {
+    version: ENGINE_VERSION,
+    commandId: 'a644-question-world',
+    expectedRevision: 0,
+    type: 'StartGame',
+    name: '史料驗收',
+    seed: 644,
+    facts,
+  });
+  if (!started.state) throw new Error('無法建立 A644 問答世界線');
+  return started.state;
+}
+
+describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
+  it('按年記錄復叛與朝廷討伐命令，不推定結果或補出未具名者姓名', () => {
+    const previous = createPhase4Model(159, 1, [], 'phase4-scenario-266');
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    const advanced = advancePhase4(upgraded, 360);
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('勞丙'));
+    expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    expect(event?.source).toContain('延熹三年九月');
+    expect(event?.source).toContain('趙某');
+    expect(event?.source).toContain('不補姓名');
+    expect(HISTORY_CONTENT.find((item) => item.id === id)).toMatchObject({
+      startYear: 160,
+      endYear: 160,
+      precision: 'year',
+      introducedRevision: 267,
+    });
+
+    const state = questionWorld();
+    const before = structuredClone(state);
+    const answer = answerKnownHistoricalEventQuestion('西元 160 年發生了哪些史實事件？', state)?.answer;
+    expect(answer).toContain('勞丙');
+    expect(answer).toContain('御史中丞趙某');
+    expect(state).toEqual(before);
+
+    for (const year of [160, 161]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-266'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 160 });
+      expect(late.eventLedger.some((item) => item.type === '史實事件形成' && item.detail.includes('勞丙'))).toBe(false);
+    }
+  });
+
+  it('v266 v6 JSON 升級保留舊事件帳且不回補已過記事', () => {
+    const old = oldV266Save(160, 645);
+    const prefix = structuredClone(old.state.phase4?.eventLedger ?? []);
+    const migrated = verifySave(toJson(old));
+    expect(migrated.events[0]).toEqual(old.events[0]);
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(migrated.state.phase4?.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 160 });
+
+    const continued = dispatch(migrated.state, {
+      version: ENGINE_VERSION,
+      commandId: 'a644-v266-continue',
+      expectedRevision: migrated.state.revision,
+      worldlineId: migrated.worldlineId,
+      type: 'Phase4Action',
+      action: { type: 'AdvanceDays', days: 1 },
+    });
+    if (!continued.state || !continued.event) throw new Error('A644 v266 存檔續玩失敗');
+    expect(continued.state.phase4?.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 160 });
+    expect(continued.state.phase4?.eventLedger.some((item) => item.type === '史實事件形成' && item.detail.includes('勞丙'))).toBe(false);
+    const saved: SaveFile = { ...migrated, events: [...migrated.events, continued.event], state: continued.state };
+    expect(replay(saved.events)).toEqual(saved.state);
+    expect(verifySave(toJson(saved))).toEqual(saved);
+  });
+});
