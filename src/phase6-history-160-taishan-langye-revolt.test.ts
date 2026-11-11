@@ -117,4 +117,37 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(saved.state.phase4?.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 160 });
     expect(saved.state.phase4?.eventLedger.some((item) => item.detail.includes('叔孫無忌'))).toBe(false);
   });
+
+  it('v268 跨年加入三筆東漢事件，並為同年／晚年舊存檔保留不回補', () => {
+    const ids = ['nanman-submits-rinan-160', 'lejie-qiang-attack-yunjie-160', 'court-succession-yin-song-160'];
+    const before = createPhase4Model(159, 1, [], 'phase4-scenario-268');
+    const prefix = structuredClone(before.eventLedger);
+    const upgraded = upgradePhase4Content(before, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    const advanced = advancePhase4(upgraded, 360);
+    for (const id of ids) {
+      expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    }
+    expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('日南蠻賊'))?.source).toContain('冬十一月');
+    expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('勒姐羌'))?.source).toContain('允街');
+    expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('尹頌'))?.source).toContain('韓縯');
+
+    for (const year of [160, 161]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-268'), PHASE4_CONTENT_VERSION);
+      for (const id of ids) {
+        expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 160 });
+        expect(late.eventLedger.some((item) => item.type === '史實事件形成' && item.detail.includes(HISTORY_CONTENT.find((entry) => entry.id === id)!.title))).toBe(false);
+      }
+    }
+
+    const oldSaveData = oldSave(160, 647, 'phase4-scenario-268');
+    const oldPrefix = structuredClone(oldSaveData.events);
+    const migrated = verifySave(toJson(oldSaveData));
+    expect(migrated.events.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    for (const id of ids) {
+      expect(migrated.state.phase4?.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 160 });
+    }
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });

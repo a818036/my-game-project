@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-268';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-269';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:266},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:267},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -30,6 +30,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'changsha-wuling-revolts-160',kind:EVENT_KIND,title:'長沙、武陵地方起事及荊州討平',...sameYear(160),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹三年條記長沙蠻叛、寇益陽；又記武陵蠻寇江陵，馮緄討之後降散，荊州刺史度尚討長沙蠻並平定。本節點按年級精度呈現，不推演規模或傷亡。',carrier:'長沙、武陵地方起事者及荊州官軍（史料記載）',description:'記錄長沙與武陵地方起事及史書所載討平結果；不推定群體身分、參與人數、戰場細節或地方控制持續時間。',introducedRevision:147 },
   { id:'taishan-langye-revolt-lao-bing-160',kind:EVENT_KIND,title:'泰山、琅邪賊勞丙等復叛',...sameYear(160),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹三年九月記「太山、琅邪賊勞丙等復叛，寇掠百姓，遣御史中丞趙某持節督州郡討之」。原文未具名「趙某」，也未在本條交代討伐結果；不補姓名、戰況、傷亡或平定時間。',carrier:'勞丙等、御史中丞趙某（原文未具名）與州郡（史料記載）',description:'記錄泰山、琅邪賊勞丙等復叛並侵擾百姓，朝廷命御史中丞趙某督州郡討伐。原文未載「趙某」姓名與討伐結果；不推定是否平定、戰線、規模或傷亡。',sourceDateNote:'延熹三年九月；遊戲按公元 160 年級觸發，不換算為模型月份。',introducedRevision:267 },
   { id:'taishan-revolt-shusun-wuji-160',kind:EVENT_KIND,title:'泰山賊叔孫無忌攻殺都尉侯章',...sameYear(160),precision:YEAR_PRECISION,source:HH7+'延熹三年條記太山賊叔孫無忌攻殺都尉侯章；十二月遣中郎將宗資討破之。原文未載戰況與傷亡。',carrier:'叔孫無忌、都尉侯章與中郎將宗資（史料記載）',description:'記錄叔孫無忌攻殺都尉侯章，朝廷於十二月遣宗資討破。原文未述戰況、傷亡或後續控制，不補推。',sourceDateNote:'延熹三年十二月；遊戲只按 160 年級觸發，不換算漢曆月份。',introducedRevision:268 },
+  { id:'nanman-submits-rinan-160',kind:EVENT_KIND,title:'日南蠻賊率眾詣郡降',...sameYear(160),precision:YEAR_PRECISION,source:HH7+'延熹三年冬十一月記日南蠻賊率眾詣郡降。原文未載群體名、歸降過程或後續安置。',carrier:'日南蠻賊、郡府（史料記載）',description:'記錄史書所載日南群體率眾赴郡歸降；不補群體名稱、原因、交涉過程或郡府後續處置。',sourceDateNote:'延熹三年冬十一月；遊戲按 160 年級觸發，不換算模型月份。',introducedRevision:269 },
+  { id:'lejie-qiang-attack-yunjie-160',kind:EVENT_KIND,title:'勒姐羌圍允街，段熲擊破',...sameYear(160),precision:YEAR_PRECISION,source:HH7+'延熹三年條記勒姐羌圍允街，段熲擊破之；原文未載月份、兵力與傷亡。',carrier:'勒姐羌與段熲（史料記載）',description:'記錄勒姐羌圍允街及段熲擊破之事；不推測圍城日期、兵力、傷亡或後續控制。',introducedRevision:269 },
+  { id:'court-succession-yin-song-160',kind:EVENT_KIND,title:'司徒尹頌去世及司徒、司空更替',...sameYear(160),precision:YEAR_PRECISION,source:HH7+'延熹三年冬十一月記司徒尹頌薨；其後司空韓縯為司徒、太常北海孫朗為司空。原文未載任命詔日與理由。',carrier:'尹頌、韓縯、孫朗（史料記載）',description:'記錄司徒尹頌去世、司空韓縯任司徒及太常孫朗任司空；不推測任命原因、交接日或任期。',sourceDateNote:'延熹三年冬十一月；遊戲按 160 年級觸發，不換算模型月份。',introducedRevision:269 },
   { id:'epidemic-and-disasters-161',kind:EVENT_KIND,title:'京師大疫與多地災異',...sameYear(161),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹四年條記正月大疫、宮殿與武庫火災，並記京兆、扶風、涼州地震及山體穨裂。本節點採年級精度，不把天災異象當作因果證據，不推估疫病傳播或傷亡。',carrier:'漢廷與京師、京兆、扶風、涼州地方（史料記載）',description:'記錄史書所載疫病、火災與地震；不推演災害因果、疫病範圍、死亡數或損失。',introducedRevision:147 },
   { id:'qiang-incursion-sanfu-161',kind:EVENT_KIND,title:'羌人侵擾三輔與並涼二州，皇甫規擊破',...sameYear(161),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹四年條記零吾羌與先零諸種叛而寇三輔；同年後文記先零、沈氐羌與諸種羌寇並、涼二州，十一月中郎將皇甫規擊破之。僅保留同年記事與原文所述結果，不推定兩條間的行軍路線、戰事連續性或傷亡。',carrier:'羌人諸種、皇甫規與並涼地方（史料記載）',description:'記錄羌人侵擾三輔及並、涼二州，並列皇甫規擊破的史書記事；不補戰場細節、兵力、傷亡或地方控制變化。',sourceDateNote:'《後漢書》卷七繫於延熹四年，並記十一月皇甫規擊破羌人；遊戲只按 161 年級觸發，不換算漢曆月份為模型日期。',introducedRevision:223 },
   { id:'changsha-cangwu-revolt-162',kind:EVENT_KIND,title:'長沙、零陵地方起事攻桂陽等地',...sameYear(162),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹五年條記長沙賊起、寇桂陽與蒼梧；又記長沙、零陵賊起，攻桂陽、蒼梧、南海、交阯，遣御史中丞盛脩督州郡討之而未克。本節點保留原史記載，不推定起事者為同一組織。',carrier:'長沙、零陵地方起事者及被波及郡縣（史料記載）',description:'記錄史書所載南方郡縣起事與討伐未克；不把不同條目合併為同一支軍隊，不推演傷亡、疆界或後續結果。',introducedRevision:147 },
