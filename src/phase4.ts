@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-262';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-263';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:260},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:261},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -130,6 +130,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'winter-cold-eastern-commandries-183',kind:EVENT_KIND,title:'光和六年旱災、河溢、山岸崩與冬寒',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'記光和六年夏大旱、秋金城河水溢與五原山岸崩，並記「大有年」；卷一〇五〈五行志〉另記同年冬大寒，北海、東萊、琅邪井中冰厚尺餘。本節點只並列原典年級與季節記載，不推斷災害成因、相互因果、受災範圍、農損或人口後果。',carrier:'漢廷與來源列明的金城、五原、北海、東萊及琅邪地方（史料記載）',description:'並列光和六年夏旱、秋季金城河溢與五原山岸崩、該年「大有年」及冬季北海等地井冰記事；不推定夏旱影響區域、農損或疾病，也不推演其他災異間因果、各地災情關聯、實際收成數字、受災人口或每日天候。',sourceDateNote:'《後漢書》卷八記光和六年夏大旱、秋金城河水溢與五原山岸崩，並稱是歲「大有年」；卷一〇五記同年冬北海、東萊、琅邪井冰厚尺餘。只保留原典的季節與年級，不換算為遊戲日曆或推論各記事的因果。',introducedRevision:90 },
   { id:'yellow-turban-184',kind:EVENT_KIND,title:'黃巾起事',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'記中平元年二月張角起事；三月戊申以河南尹何進為大將軍、屯都亭並置八關都尉；三月壬子詔出馬弩、舉薦知戰陣者，遣盧植討張角、皇甫嵩與朱儁討潁川黃巾。卷七十一〈皇甫嵩朱儁列傳〉詳述奉詔討賊，並記嵩、儁合軍四萬餘人。保留年級觸發與原典年月，不把部署寫成逐日戰報或完整戰場模擬。',causes:['yellow-turban-uprising'],carrier:'張角與黃巾軍、漢廷奉命出征官軍（史料記載）',description:'記錄中平元年張角起事及漢廷同年三月的軍事部署：何進屯都亭、設八關都尉，並命官員出馬弩、薦舉知戰陣者；盧植、皇甫嵩與朱儁分路奉命出征。卷七十一記嵩、儁合軍四萬餘人。各路兵力與戰果不合併為同一軍隊，也不補逐日行軍或完整戰場。',sourceDateNote:'原史記載：《後漢書》卷八記中平元年二月張角起事，三月戊申任何進為大將軍、三月壬子下徵馬弩與出兵諸詔；卷七十一記皇甫嵩與朱儁合軍四萬餘。均為漢曆年月，不換算成原型 30 日制的月份或日期。',introducedRevision:2 },
   { id:'huangjin-campaign-outcome-184',kind:EVENT_KIND,title:'廣宗、下曲陽戰事與張角兄弟敗亡',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年冬十月記皇甫嵩與黃巾戰於廣宗、獲張角弟梁，張角先死而遭戮屍；十一月記嵩破黃巾於下曲陽、斬張角弟寶。卷七十一〈皇甫嵩朱儁列傳〉補廣宗交戰、斬梁，以及嵩與鉅鹿太守郭典攻下曲陽。本節點只採公元年級觸發並保留原史月序，不補日序、地點座標或其他戰線的因果。',carrier:'漢廷討伐軍與黃巾軍（史料記載）',description:'記錄十月廣宗戰事中張角之弟張梁被斬、張角病死後遭戮屍，以及十一月皇甫嵩與郭典攻下曲陽、張角之弟張寶被斬。只保留原典所載月序與結果；不補逐日日程、精確兵力、平民命運，不合併各路戰事，也不表示其他黃巾軍活動同年立即全部停止。',sourceDateNote:'《後漢書》卷八、卷七十一記中平元年冬十月廣宗、十一月下曲陽記事；漢曆月份只保留原文次序，不轉為遊戲月日。',introducedRevision:172 },
+  { id:'court-appointments-april-184',kind:EVENT_KIND,title:'三公任免',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'夏四月楊賜免、鄧盛為太尉，張濟免、張溫為司空。',carrier:'朝廷',description:'不推測原因、任期。',sourceDateNote:'夏四月',introducedRevision:263 },
   { id:'zhu-jun-captures-wancheng-184',kind:EVENT_KIND,title:'朱儁攻取宛城、孫夏敗亡',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記「癸巳，朱儁拔宛城，斬黃巾別帥孫夏」；卷七十一〈皇甫嵩朱儁列傳〉記朱儁先前曾被波才擊敗，後奉詔討南陽，並記孫夏為黃巾別帥。本節點保留史書所載行動與結果；原典未在癸巳前明列月份，不推定月日、完整戰役或其他黃巾軍後續。',causes:['zhu-jun-wancheng-campaign-184'],carrier:'朱儁與南陽黃巾軍（史料記載）',description:'記錄朱儁攻取宛城、斬黃巾別帥孫夏。只按公元年級觸發，不把原文「癸巳」換算為未明載的月日，不推演完整戰役、額外傷亡或其他黃巾勢力的結局。',introducedRevision:173 },
   { id:'changshe-battle-184',kind:EVENT_KIND,title:'長社戰局轉折，漢軍擊破波才',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年五月記皇甫嵩、朱儁再與波才等戰於長社並大破之；卷七十一〈皇甫嵩朱儁列傳〉記波才圍長社，皇甫嵩乘風縱火，曹操率兵抵達後與嵩、朱儁合軍擊破波才。本節點按年級觸發，不補逐日日序、各軍額外傷亡或汝南、陳國及南陽其他戰事的結果。',carrier:'皇甫嵩、朱儁、曹操所部官軍與波才軍（史料記載）',description:'記錄波才圍長社、皇甫嵩採火攻，以及曹操抵達後與嵩、朱儁合兵擊破波才。與宛城、廣宗、下曲陽及其他戰線分開；不推演原典外的傷亡、逐日戰報或戰後控制。',sourceDateNote:'《後漢書》卷八明載中平元年五月。這是漢曆月份註記；遊戲仍按公元年級觸發，不換算為原型月份或日序。',introducedRevision:174 },
   { id:'qin-jie-kills-zhang-mancheng-184',kind:EVENT_KIND,title:'秦頡擊斬張曼成',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年六月記「南陽太守秦頡擊張曼成，斬之」。本節點採公元年級精度，只保留原文六月作史料註記，不推演後續南陽戰事、兵力、傷亡數或各部黃巾軍的結局。',carrier:'南陽太守秦頡與黃巾首領張曼成（史料記載）',description:'記錄秦頡擊殺張曼成；不延伸為整個南陽或其他地區黃巾勢力均已平定，也不補戰場細節。遊戲只按 184 年觸發。',sourceDateNote:'《後漢書》卷八記中平元年六月。此為漢曆月份註記；遊戲仍按公元年級觸發，不換算為模型月日。',introducedRevision:175 },
