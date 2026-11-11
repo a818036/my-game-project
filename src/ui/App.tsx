@@ -133,6 +133,8 @@ export default function App() {
   const [rejuvenationConsent, setRejuvenationConsent] = useState(false);
   const busyRef = useRef(false);
   const grievanceDraftRef = useRef(grievanceDraft); grievanceDraftRef.current = grievanceDraft;
+  const mainContentRef = useRef<HTMLElement>(null);
+  const focusMainAfterStart = useRef(false);
   const endingDecisionHeadingRef = useRef<HTMLHeadingElement>(null);
   const focusEndingDecisionAfterPrompt = useRef(false);
   const narrationAbort=useRef<AbortController|null>(null);
@@ -156,6 +158,13 @@ export default function App() {
       endingDecisionHeadingRef.current?.focus();
     }
   }, [phase4?.ending]);
+
+  useEffect(() => {
+    if (focusMainAfterStart.current && state && !newTimeline) {
+      focusMainAfterStart.current = false;
+      mainContentRef.current?.focus();
+    }
+  }, [state?.worldlineId, newTimeline]);
 
   useEffect(() => { document.documentElement.style.setProperty('--reader-size', `${fontSize}px`); localStorage.setItem('shenzhou-font-size', String(fontSize)); }, [fontSize]);
 
@@ -269,9 +278,11 @@ export default function App() {
     const request = state?.phase2?.pendingNames[0]; if (!request || !nameDraft.trim()) return;
     phaseAction({ type: 'ChooseName', requestId: request.id, personId: commandId(), name: nameDraft.trim() }); setNameDraft('');
   }
-  function start() {
+  async function start() {
     if (!name.trim() || !confirmed || busy) return;
-    void run({ version: ENGINE_VERSION, commandId: commandId(), expectedRevision: 0, type: 'StartGame', name: `${preview.surname}${name.trim()}`, seed, facts: preview });
+    focusMainAfterStart.current = true;
+    const saved = await run({ version: ENGINE_VERSION, commandId: commandId(), expectedRevision: 0, type: 'StartGame', name: `${preview.surname}${name.trim()}`, seed, facts: preview });
+    if (!saved) focusMainAfterStart.current = false;
   }
   async function switchTimeline(id: string) {
     try { await activateWorldline(id); setWorkspace((old) => ({ ...old, profile: { ...old.profile, activeWorldlineId: id } })); setNewTimeline(false); setNotice(WORLDLINE_SWITCHED_NOTICE); }
@@ -334,7 +345,7 @@ export default function App() {
     </div></header>
     <section className="hero"><div><p className="eyebrow">{turnInterval(c.birthYear, state.turn, w.year, w.month, state.phase4?.dayOfMonth ?? 1, state.phase4?.day, state.actions.at(-1)?.elapsedDays ?? 90)}　｜　第 {state.turn} 回合</p><p className="location-line">所在・{phase2?.scene.location ?? c.home}</p><h1>{c.name}<small>　{characterAgeLabel(state)}・出生於 {c.home}</small></h1><p>{c.background}（示例）・{c.health}</p></div></section>
     <ActivityAnnouncer message={activityMessage}/><ActivityAnnouncer message={notice}/><ActivityAnnouncer message={narrationError}/><UnreadableSaves issues={workspace.unreadableSaves??[]} onExport={exportUnreadableSave}/>
-    <div className="layout"><section id="main-content" className="main-column" tabIndex={-1} aria-label="故事與行動" aria-busy={busy||narrationPending}>
+    <div className="layout"><section ref={mainContentRef} id="main-content" className="main-column" tabIndex={-1} aria-label="故事與行動" aria-busy={busy||narrationPending}>
       {phase2 && <article className="panel scene-panel story-panel"><div className="section-kicker">眼前</div><p className="scene-place"><b>{phase2.scene.location}</b><span>第 {phase2.scene.turn} 回合・在場 {phase2.scene.presentIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</span></p><p className="scene-arrivals">新到：{phase2.scene.enteredIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}；離去：{phase2.scene.leftIds.map((id) => phase2.persons.find((person) => person.id === id)?.name ?? id).join('、') || '無'}</p>
         {phase2.scene.speeches.map((speech, index) => <p className="speech" key={`${speech.speakerId}-${index}`}><b>{speech.label}：</b>「{speech.text}」</p>)}
         {narrative&&<section className="ai-narrative" aria-live="off"><div className="section-kicker">本回合敘事・{narrationPending?'生成中':narrationError?'範本回退':narrative.source==='mock'?'本機 mock':narrative.source==='chatgpt'?'ChatGPT 訂閱生成':narrative.source==='openai'?'供應者生成':'範本'}</div>{narrative.paragraphs.map((paragraph,index)=><p className="narrative-paragraph" key={`p-${index}`}>{paragraph}</p>)}{(()=>{const spoken=new Set(phase2.scene.speeches.map(item=>item.speakerId));return narrative.dialogue.map((line,index)=>{const speaker=phase2.persons.find(person=>person.id===line.speakerId);if(!speaker||!phase2.scene.presentIds.includes(speaker.id))return null;const age=Math.max(0,(state?.world.year??speaker.birthYear)-speaker.birthYear);const prior=spoken.has(speaker.id);spoken.add(speaker.id);return <p className="speech" key={`d-${index}`}><b>{prior?speaker.name:`${speaker.name}（${age}歲，${speaker.office||'白身'}）`}：</b>「{line.text}」</p>;});})()}{narrative.suggestions.length>0&&<p className="narrative-suggestions">可考慮：{narrative.suggestions.join('；')}</p>}{narrationError&&<p className="notice">{narrationError}</p>}<div className="button-row">{narrationPending&&<button className="quiet" onClick={()=>narrationAbort.current?.abort()}>取消敘事生成</button>}{!narrationPending&&narrationError&&<button className="quiet" onClick={()=>{if(narrationPayload.current)void generateNarrative(narrationPayload.current);}}>重試敘事（不重跑行動）</button>}</div></section>}</article>}

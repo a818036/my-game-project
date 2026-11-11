@@ -417,6 +417,24 @@ describe('開局存檔載入提示',()=>{
     expect(commitWorldline).not.toHaveBeenCalled();
   });
 
+  it('A589 成功開局後將鍵盤焦點移至故事與行動',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    vi.mocked(commitWorldline).mockResolvedValueOnce(undefined);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'焦點驗收');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    const startButton=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='確認出生並開始')!;
+    await act(async()=>{startButton.click();await new Promise(resolve=>setTimeout(resolve,0));});
+
+    const main=host.querySelector<HTMLElement>('#main-content');
+    expect(main).not.toBeNull();
+    expect(main?.getAttribute('aria-label')).toBe('故事與行動');
+    expect(document.activeElement).toBe(main);
+  });
+
   it('A365 axe-core 檢查開局與遊戲五個資料分頁',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
