@@ -257,6 +257,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'emperor-southern-tour-164',
       'emperor-returns-palace-164',
       'duan-jiong-defeats-dangjian-qiang-164',
+      'anling-mausoleum-fire-165',
+      'duan-jiong-defeats-dangjian-qiang-165',
       'ling-emperor-accession-court-purge-168',
       'qiang-incursions-167',
       'duan-jiong-defeats-xianling-fengyishan-168',
@@ -352,6 +354,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(196);
+    expect(uniqueNotedEvents.size).toBe(198);
   });
 });

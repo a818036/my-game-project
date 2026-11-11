@@ -867,4 +867,43 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(migrated.state.phase4?.nodes.find((item) => item.contentId === id)?.status).toBe('pending');
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A667 補列 165 年王爵處分、廢后、羌事與陵寢火災', () => {
+    const ids = [
+      'bohai-king-kui-demoted-165',
+      'empress-deng-deposed-165',
+      'duan-jiong-defeats-qiang-165',
+      'anling-mausoleum-fire-165',
+      'duan-jiong-defeats-dangjian-qiang-165',
+    ];
+    const old = createPhase4Model(164, 1, [], 'phase4-scenario-289');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-290');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    for (const id of ids) expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(HISTORY_CONTENT.find((item) => item.id === ids[0])).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 290 });
+    expect(HISTORY_CONTENT.find((item) => item.id === ids[1])?.source).toContain('鄧萬世、虎賁中郎將鄧會下獄死');
+    expect(HISTORY_CONTENT.find((item) => item.id === ids[2])?.source).toContain('擊䍐姐羌，破之');
+    expect(HISTORY_CONTENT.find((item) => item.id === ids[3])?.sourceDateNote).toContain('夏四月甲寅');
+    expect(HISTORY_CONTENT.find((item) => item.id === ids[4])?.sourceDateNote).toContain('六月');
+
+    const advanced = advancePhase4(upgraded, 360);
+    for (const id of ids) expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+
+    for (const year of [165, 166]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-289'), PHASE4_CONTENT_VERSION);
+      for (const id of ids) {
+        expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 165 });
+        expect(late.eventLedger.some((item) => item.detail.includes(HISTORY_CONTENT.find((entry) => entry.id === id)!.title))).toBe(false);
+      }
+    }
+
+    const legacy = oldSave(164, 690, 'phase4-scenario-289');
+    const legacyEvents = structuredClone(legacy.events);
+    const migrated = verifySave(toJson(legacy));
+    expect(migrated.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
+    for (const id of ids) expect(migrated.state.phase4?.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
