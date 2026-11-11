@@ -9,7 +9,7 @@ describe('A583 補列 176 年鮮卑寇三邊記事', () => {
     expect(node).toMatchObject({ startYear: 176, endYear: 176, precision: 'year', introducedRevision: 249, lateSameYear: true });
     expect(node?.source).toContain('鮮卑寇三邊');
     expect(node?.source).toContain('東、西、北邊');
-    expect(node?.description).toContain('不與 177 年三路出塞戰事合併');
+    expect(node?.description).toContain('與 177 年三路出塞分開');
     expect(node?.sourceDateNote).toContain('夏四月');
     expect(advancePhase4(createPhase4Model(175, 1, [], PHASE4_CONTENT_VERSION), 360).nodes.find((item) => item.contentId === id)?.status).toBe('triggered');
   });

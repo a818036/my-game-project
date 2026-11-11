@@ -248,6 +248,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'hu-guang-dies-172',
       'lu-zhi-jiujiang-revolt-175',
       'han-campaign-against-xianbei-defeated-177',
+      'xianbei-raids-liaoxi-177',
       'jiaozhi-wuhuh-man-uprising-178',
       'zong-ju-dies-yang-ci-sikong-173',
       'li-xian-dismissed-duan-jiong-appointed-173',
@@ -308,6 +309,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(152);
+    expect(uniqueNotedEvents.size).toBe(153);
   });
 });
