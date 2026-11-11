@@ -235,6 +235,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'ling-emperor-accession-court-purge-168',
       'qiang-incursions-167',
       'e168',
+      'duan-jiong-defeats-xianling-jingyang-168',
       'han-campaign-against-xianbei-defeated-177',
       'jiaozhi-wuhuh-man-uprising-178',
       'taiwei-and-minister-succession-guanghe-2-179',
@@ -290,6 +291,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(134);
+    expect(uniqueNotedEvents.size).toBe(135);
   });
 });
