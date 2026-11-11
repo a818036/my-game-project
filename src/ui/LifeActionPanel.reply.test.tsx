@@ -181,4 +181,24 @@ describe('LifeActionPanel 詢問回覆播報',()=>{
     const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
     expect(results.violations.map(({id,help,nodes})=>({id,help,targets:nodes.flatMap(node=>node.target.map(String))}))).toEqual([]);
   });
+
+  it('A601 行動計畫確認聚焦標題，返回調整後還原檢視按鈕焦點',async()=>{
+    const onRun=vi.fn(async()=>true);
+    await act(async()=>root.render(createElement('main',{id:'main-content'},createElement(LifeActionPanel,{state,busy:false,onRun}))));
+    const renderedCheckbox=host.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+    renderedCheckbox.focus();
+    await act(async()=>renderedCheckbox.click());
+    const reviewButton=host.querySelector<HTMLButtonElement>('button.primary.wide')!;
+    expect(reviewButton.textContent).toContain('檢視勾選計畫');
+    reviewButton.focus();
+    await act(async()=>reviewButton.click());
+    const heading=host.querySelector<HTMLElement>('#plan-review-title')!;
+    expect(document.activeElement).toBe(heading);
+    expect(onRun).not.toHaveBeenCalled();
+    const returnButton=host.querySelector<HTMLButtonElement>('.plan-review button.quiet')!;
+    await act(async()=>returnButton.click());
+    expect(document.activeElement).toBe(host.querySelector('button.primary.wide'));
+    expect(onRun).not.toHaveBeenCalled();
+    expect(state.turn).toBe(0);
+  });
 });
