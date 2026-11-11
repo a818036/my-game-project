@@ -237,6 +237,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'e168',
       'capital-rainwater-168',
       'duan-jiong-defeats-xianling-jingyang-168',
+      'eclipse-ransom-168',
       'xianbei-huimo-raid-you-bing-168',
       'han-campaign-against-xianbei-defeated-177',
       'jiaozhi-wuhuh-man-uprising-178',
@@ -293,6 +294,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(137);
+    expect(uniqueNotedEvents.size).toBe(138);
   });
 });
