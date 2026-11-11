@@ -684,4 +684,35 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.nodes.find((item) => item.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A662 補列 163 年七月平陵園寢失火記事', () => {
+    const id = 'pingling-mausoleum-chamber-fire-163';
+    const old = createPhase4Model(162, 1, [], 'phase4-scenario-284');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    const node = HISTORY_CONTENT.find((item) => item.id === id);
+    expect(node).toMatchObject({ startYear: 163, endYear: 163, precision: 'year', introducedRevision: 285 });
+    expect(node?.sourceDateNote).toContain('秋七月甲申');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((item) => item.contentId === id)?.status).toBe('triggered');
+    expect(advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('平陵園寢失火'))?.source).toContain('延熹六年秋七月甲申');
+
+    for (const year of [163, 164]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-284'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((item) => item.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+      expect(late.eventLedger.some((item) => item.detail.includes('平陵園寢失火'))).toBe(false);
+    }
+
+    const legacy = oldSave(162, 677, 'phase4-scenario-284');
+    const legacyEvents = structuredClone(legacy.events);
+    const migrated = verifySave(toJson(legacy));
+    expect(migrated.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
+    expect(migrated.state.phase4?.nodes.find((item) => item.contentId === id)?.status).toBe('pending');
+    const lateSave = verifySave(toJson(oldSave(163, 678, 'phase4-scenario-284')));
+    expect(lateSave.state.phase4?.nodes.find((item) => item.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
