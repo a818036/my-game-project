@@ -181,7 +181,7 @@ describe('160–167 年桓帝朝廷與地方史事', () => {
     expect(events).toHaveLength(ids.length);
     expect(events.find((item) => item.detail.includes('長沙、武陵'))?.source).toContain('馮緄');
     expect(events.find((item) => item.detail.includes('京師大疫'))?.source).toContain('大疫');
-    expect(events.find((item) => item.detail.includes('胡蘭、朱蓋'))?.source).toContain('大破並斬胡蘭、朱蓋');
+    expect(events.find((item) => item.detail.includes('胡蘭、朱蓋'))?.source).toContain('擊蘭、蓋，大破斬之');
     expect(events.find((item) => item.detail.includes('悉除黨錮'))?.source).toContain('帝崩於德陽前殿');
 
     const old = createPhase4Model(159, 1, persons, 'phase4-scenario-146');

@@ -879,7 +879,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const old = createPhase4Model(164, 1, [], 'phase4-scenario-289');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-295');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     for (const id of ids) expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(HISTORY_CONTENT.find((item) => item.id === ids[0])).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 290 });
@@ -914,7 +914,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-295');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 291 });
@@ -955,7 +955,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-295');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 293 });
@@ -988,7 +988,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-295');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 294 });
@@ -1024,7 +1024,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-295');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 295 });
@@ -1048,5 +1048,33 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(migrated.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
     expect(migrated.state.phase4?.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
+
+  it('A673 補齊既有 165 年胡蘭、朱蓋記事的官員後續，升版不重複結算', () => {
+    const id = 'hu-lan-zhu-gai-revolt-165';
+    const content = HISTORY_CONTENT.find((item) => item.id === id);
+    const oldVersion = 'phase4-scenario-295';
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-296');
+    expect(content?.source).toContain('零陵太守陳球拒之');
+    expect(content?.source).toContain('蒼梧太守張叙為賊所執');
+    expect(content?.source).toContain('桂陽太守任胤背敵畏懦，二人皆棄市');
+
+    const previouslyPlayed = advancePhase4(createPhase4Model(164, 1, [], oldVersion), 360);
+    const oldEventPrefix = structuredClone(previouslyPlayed.eventLedger);
+    expect(previouslyPlayed.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    const migratedPlayed = upgradePhase4Content(previouslyPlayed, PHASE4_CONTENT_VERSION);
+    const sourceMarker = '延熹八年桂陽、蒼梧記事來源補充';
+    expect(migratedPlayed.eventLedger.slice(0, oldEventPrefix.length)).toEqual(oldEventPrefix);
+    expect(migratedPlayed.nodes.find((node) => node.contentId === id)?.evidence).toContainEqual(expect.stringContaining(sourceMarker));
+    expect(migratedPlayed.eventLedger.filter((event) => event.type === '史實來源補充' && event.detail.includes(sourceMarker))).toHaveLength(1);
+    expect(upgradePhase4Content(migratedPlayed, PHASE4_CONTENT_VERSION)).toEqual(migratedPlayed);
+
+    const legacy = oldSave(164, 693, oldVersion);
+    const legacyEvents = structuredClone(legacy.events);
+    const migratedSave = verifySave(toJson(legacy));
+    expect(migratedSave.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
+    expect(migratedSave.state.phase4?.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(migratedSave.state.phase4?.nodes.find((node) => node.contentId === id)?.evidence).toContainEqual(expect.stringContaining(sourceMarker));
+    expect(verifySave(toJson(migratedSave))).toEqual(migratedSave);
   });
 });
