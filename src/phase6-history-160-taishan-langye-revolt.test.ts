@@ -576,4 +576,42 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('南海賊寇郡界'))).toBe(false);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A658 補列馮緄免職並保留八月來源日期註記', () => {
+    const id = 'feng-gun-dismissed-163';
+    const previous = createPhase4Model(162, 1, [], 'phase4-scenario-280');
+    const prefix = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('車騎將軍馮緄免職'));
+    expect(event?.source).toContain('延熹六年八月');
+    expect(HISTORY_CONTENT.find((item) => item.id === id)).toMatchObject({
+      startYear: 163,
+      endYear: 163,
+      precision: 'year',
+      introducedRevision: 281,
+      sourceDateNote: '延熹六年八月；遊戲按 163 年級觸發，不換算漢曆月份。',
+    });
+
+    for (const year of [163, 164]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-280'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+      expect(late.eventLedger.some((item) => item.detail.includes('車騎將軍馮緄免職'))).toBe(false);
+    }
+
+    const old = oldSave(162, 671, 'phase4-scenario-280');
+    const oldEvents = structuredClone(old.events);
+    const migrated = verifySave(toJson(old));
+    expect(migrated.events.slice(0, oldEvents.length)).toEqual(oldEvents);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    const lateSave = verifySave(toJson(oldSave(163, 672, 'phase4-scenario-280')));
+    expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 163 });
+    expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('車騎將軍馮緄免職'))).toBe(false);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
