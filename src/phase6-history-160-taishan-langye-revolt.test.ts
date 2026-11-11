@@ -879,7 +879,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const old = createPhase4Model(164, 1, [], 'phase4-scenario-289');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-291');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-292');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     for (const id of ids) expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(HISTORY_CONTENT.find((item) => item.id === ids[0])).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 290 });
@@ -914,12 +914,12 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-291');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-292');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 291 });
-    expect(content?.source).toContain('延熹八年八月戊辰，初令郡國有田者畒斂稅錢');
-    expect(content?.description).toContain('不推定稅額');
+    expect(content?.source).toContain('延熹八年八月戊辰，初令郡國有田者畒斂稅錢；原注文曰「畒十錢也」');
+    expect(content?.description).toContain('原注文明載每畝十錢');
     expect(content?.sourceDateNote).toContain('八月戊辰');
 
     const advanced = advancePhase4(upgraded, 360);
@@ -937,5 +937,14 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(migrated.events.slice(0, legacyEvents.length)).toEqual(legacyEvents);
     expect(migrated.state.phase4?.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(verifySave(toJson(migrated))).toEqual(migrated);
+
+    const playedAt165 = advancePhase4(createPhase4Model(164, 1, [], 'phase4-scenario-291'), 360);
+    const playedPrefix = structuredClone(playedAt165.eventLedger);
+    expect(playedAt165.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    const refined = upgradePhase4Content(playedAt165, PHASE4_CONTENT_VERSION);
+    expect(refined.eventLedger.slice(0, playedPrefix.length)).toEqual(playedPrefix);
+    expect(refined.nodes.find((node) => node.contentId === id)?.evidence).toContainEqual(expect.stringContaining('每畝十錢'));
+    expect(refined.eventLedger.filter((item) => item.type === '史實來源補充' && item.detail.includes('原注文「畒十錢也」'))).toHaveLength(1);
+    expect(upgradePhase4Content(refined, PHASE4_CONTENT_VERSION)).toEqual(refined);
   });
 });
