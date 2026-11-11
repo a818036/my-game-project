@@ -875,14 +875,14 @@ describe('A05／A06 存檔交易與重播', () => {
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   });
 
-  it('A571 v152 v6 JSON 存檔移除錯年索引、保留事件帳並可續玩',()=>{
-    const current=makeSave('phase6-v151-jiangxia-danyang-storage',178),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
-    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-152'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v152 fixture');
+  it('A571 v237 v6 JSON 存檔移除錯年索引、保留事件帳並可續玩',()=>{
+    const current=makeSave('phase6-v237-jiangxia-danyang-storage',178),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-237'}};const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v237 fixture');
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:[oldStart],state:oldState},migrated=verifySave(toJson(old)),id='jiangxia-uprising-169';
     expect(migrated.events[0]).toEqual(oldStart);expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)).toMatchObject({status:'resolved',resolvedYear:169});expect(migrated.state.phase4?.nodes.some(node=>node.contentId==='jiangxia-danyang-revolts-179')).toBe(false);expect(replay(migrated.events)).toEqual(migrated.state);
-    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v151-jiangxia-correction-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
-    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not continue v152 save');
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v237-jiangxia-correction-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event||continued.event.type!=='Phase4Changed')throw new Error('could not continue v237 save');
     expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('resolved');expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('江夏起事與丹陽圍守事件'))).toBe(false);expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實資料勘誤'&&item.detail.includes('江夏與丹陽'))).toBe(false);
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   });

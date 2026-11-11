@@ -513,6 +513,8 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
    model.nodes=model.nodes.filter(node=>node!==oldNode);
    model.causes=model.causes.filter(cause=>cause!=='jiangxia-danyang-revolts-179');
   }
+  const existingJiangxiaNode=model.nodes.find(node=>node.contentId==='jiangxia-uprising-169');
+  if(existingJiangxiaNode?.status==='pending'&&model.year>=169){existingJiangxiaNode.status='resolved';existingJiangxiaNode.resolvedYear=169;if(!existingJiangxiaNode.evidence.some(item=>item.includes('不回溯觸發'))){existingJiangxiaNode.evidence.push('v238 年序勘誤時已到或晚於 169 年；保留記事索引但不回溯觸發。');}}
   const incorrectEventWasRecorded=oldNode?.status==='triggered'||model.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('江夏起事與丹陽圍守事件'));
   if(incorrectEventWasRecorded&&!model.eventLedger.some(item=>item.type==='史實資料勘誤'&&item.detail.includes('江夏與丹陽記事'))){
    pushEvent(model,'史實資料勘誤','年序複核：舊版把《後漢書》卷八建寧二年九月的江夏與丹陽兩則記事誤繫於光和二年（179）。現由 169 年江夏、丹陽兩個獨立節點記錄；保留既有事件帳並附加此勘誤，不回補已過年次。','《後漢書》卷八〈孝靈帝紀〉建寧二年九月；卷八十六〈南蠻西南夷列傳〉建寧二年');
