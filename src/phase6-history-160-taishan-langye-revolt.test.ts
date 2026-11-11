@@ -150,4 +150,43 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     }
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('v269 跨年加入九真起事與魏朗平亂記事，並保留舊存檔前綴', () => {
+    const jiuzhenId = 'jiuzhen-revolt-wei-lang-161';
+    const previous = createPhase4Model(160, 1, [], 'phase4-scenario-269');
+    const previousLedger = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, previousLedger.length)).toEqual(previousLedger);
+    expect(upgraded.nodes.find((node) => node.contentId === jiuzhenId)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === jiuzhenId)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('九真蠻夷起事'));
+    expect(event?.source).toContain('延熹四年夏四月');
+    expect(event?.source).toContain('兒式');
+    expect(event?.source).toContain('戰歿');
+    expect(event?.source).toContain('魏朗擊破');
+    expect(event?.source).toContain('未載雙方兵力');
+    expect(HISTORY_CONTENT.find((item) => item.id === jiuzhenId)).toMatchObject({
+      startYear: 161,
+      endYear: 161,
+      precision: 'year',
+      introducedRevision: 270,
+    });
+
+    const sameYear = upgradePhase4Content(createPhase4Model(161, 1, [], 'phase4-scenario-269'), PHASE4_CONTENT_VERSION);
+    const late = upgradePhase4Content(createPhase4Model(162, 1, [], 'phase4-scenario-269'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === jiuzhenId)).toMatchObject({ status: 'resolved', resolvedYear: 161 });
+    expect(late.nodes.find((node) => node.contentId === jiuzhenId)).toMatchObject({ status: 'resolved', resolvedYear: 161 });
+    expect(sameYear.eventLedger.some((item) => item.detail.includes('九真蠻夷起事'))).toBe(false);
+    expect(late.eventLedger.some((item) => item.detail.includes('九真蠻夷起事'))).toBe(false);
+
+    const previousSave = oldSave(160, 649, 'phase4-scenario-269');
+    const oldPrefix = structuredClone(previousSave.events);
+    const migrated = verifySave(toJson(previousSave));
+    expect(migrated.events.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === jiuzhenId)?.status).toBe('pending');
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });

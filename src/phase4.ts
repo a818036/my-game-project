@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-269';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-270';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:267},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:268},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -35,6 +35,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'court-succession-yin-song-160',kind:EVENT_KIND,title:'司徒尹頌去世及司徒、司空更替',...sameYear(160),precision:YEAR_PRECISION,source:HH7+'延熹三年冬十一月記司徒尹頌薨；其後司空韓縯為司徒、太常北海孫朗為司空。原文未載任命詔日與理由。',carrier:'尹頌、韓縯、孫朗（史料記載）',description:'記錄司徒尹頌去世、司空韓縯任司徒及太常孫朗任司空；不推測任命原因、交接日或任期。',sourceDateNote:'延熹三年冬十一月；遊戲按 160 年級觸發，不換算模型月份。',introducedRevision:269 },
   { id:'epidemic-and-disasters-161',kind:EVENT_KIND,title:'京師大疫與多地災異',...sameYear(161),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹四年條記正月大疫、宮殿與武庫火災，並記京兆、扶風、涼州地震及山體穨裂。本節點採年級精度，不把天災異象當作因果證據，不推估疫病傳播或傷亡。',carrier:'漢廷與京師、京兆、扶風、涼州地方（史料記載）',description:'記錄史書所載疫病、火災與地震；不推演災害因果、疫病範圍、死亡數或損失。',introducedRevision:147 },
   { id:'qiang-incursion-sanfu-161',kind:EVENT_KIND,title:'羌人侵擾三輔與並涼二州，皇甫規擊破',...sameYear(161),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹四年條記零吾羌與先零諸種叛而寇三輔；同年後文記先零、沈氐羌與諸種羌寇並、涼二州，十一月中郎將皇甫規擊破之。僅保留同年記事與原文所述結果，不推定兩條間的行軍路線、戰事連續性或傷亡。',carrier:'羌人諸種、皇甫規與並涼地方（史料記載）',description:'記錄羌人侵擾三輔及並、涼二州，並列皇甫規擊破的史書記事；不補戰場細節、兵力、傷亡或地方控制變化。',sourceDateNote:'《後漢書》卷七繫於延熹四年，並記十一月皇甫規擊破羌人；遊戲只按 161 年級觸發，不換算漢曆月份為模型日期。',introducedRevision:223 },
+  { id:'jiuzhen-revolt-wei-lang-161',kind:EVENT_KIND,title:'九真蠻夷起事，魏朗擊破並屯據日南',...sameYear(161),precision:YEAR_PRECISION,source:HH7+'延熹四年夏四月記九真蠻夷叛，太守兒式討之而戰歿；朝廷遣九真都尉魏朗擊破，復屯據日南。原文未載雙方兵力、傷亡總數與戰後治理細節。',carrier:'九真蠻夷、太守兒式與九真都尉魏朗（史料記載）',description:'記錄九真蠻夷起事、太守兒式戰歿、魏朗奉遣擊破並屯據日南的史書記事；不補參戰規模、傷亡總數、戰事過程或後續治理。',sourceDateNote:'延熹四年夏四月；遊戲按 161 年級觸發，不換算漢曆月份。',introducedRevision:270 },
   { id:'changsha-cangwu-revolt-162',kind:EVENT_KIND,title:'長沙、零陵地方起事攻桂陽等地',...sameYear(162),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹五年條記長沙賊起、寇桂陽與蒼梧；又記長沙、零陵賊起，攻桂陽、蒼梧、南海、交阯，遣御史中丞盛脩督州郡討之而未克。本節點保留原史記載，不推定起事者為同一組織。',carrier:'長沙、零陵地方起事者及被波及郡縣（史料記載）',description:'記錄史書所載南方郡縣起事與討伐未克；不把不同條目合併為同一支軍隊，不推演傷亡、疆界或後續結果。',introducedRevision:147 },
   { id:'changping-nandun-claimants-162',kind:EVENT_KIND,title:'陳景、管伯分別圖舉兵而伏誅',...sameYear(162),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹五年條記冬十月，長平陳景自號「黃帝子」並署置官屬，南頓管伯亦稱「真人」，二人「並圖舉兵，悉伏誅」。本節點只記原典同年並列的兩起事件，不推定彼此協作、參與者規模或執行方式。',carrier:'長平陳景、南頓管伯與漢廷（史料記載）',description:'記錄長平陳景與南頓管伯各自自立名號、圖謀舉兵並被誅；依原文並列概述，不建立人物狀態，不推演地方戰事、官府部署或玩家世界控制變化。',introducedRevision:224 },
   { id:'wuling-revolt-suppressed-163',kind:EVENT_KIND,title:'武陵地方再起，太守陳奉擊破並降之',...sameYear(163),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉延熹六年條記武陵蠻復叛，太守陳奉與戰，大破降之。本節點按年級精度記載，不補交戰過程或傷亡數。',carrier:'武陵地方起事者與太守陳奉（史料記載）',description:'記錄武陵地方再起及來源所載大破、降服；不將降服擴寫為全面同化、長期治理或未載人物命運。',introducedRevision:147 },
