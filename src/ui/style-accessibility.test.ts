@@ -232,6 +232,23 @@ describe('主要淺色介面的文字對比', () => {
     expect(focus).toMatch(/outline-color:Highlight!important/);
   });
 
+  it('強制色彩模式保留選取、分頁、跳轉及按鈕的系統色辨識', () => {
+    const rules = rulesForCondition('@media(forced-colors:active)');
+    const declaration = (selector: string) => rules.find((rule) => rule.selector === selector)?.declarations ?? '';
+
+    expect(declaration('.intent.selected')).toMatch(/border:2px solid Highlight/);
+    expect(declaration('.intent.selected')).toMatch(/box-shadow:none/);
+    expect(declaration('.feature-nav label.active')).toMatch(/border-color:Highlight/);
+    expect(declaration('.feature-nav label:focus-within')).toMatch(/outline-color:Highlight/);
+    expect(declaration('.skip-link')).toMatch(/background:Canvas/);
+    expect(declaration('.skip-link')).toMatch(/color:CanvasText/);
+    expect(declaration('.skip-link')).toMatch(/border-color:Highlight/);
+    expect(declaration('.primary,.quiet')).toMatch(/background:ButtonFace/);
+    expect(declaration('.primary,.quiet')).toMatch(/color:ButtonText/);
+    expect(declaration('.primary:disabled,.quiet:disabled,button:disabled')).toMatch(/border-color:GrayText/);
+    expect(declaration('.primary:disabled,.quiet:disabled,button:disabled')).toMatch(/color:GrayText/);
+  });
+
   it('對話紀錄長字串允許斷行並維持一般正文尺寸',()=>{
     expect(lastRule('.dialogue-history li')).toMatch(/overflow-wrap:\s*anywhere/);
     const paragraph=lastRule('.dialogue-history li p');
