@@ -1106,4 +1106,19 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(migrated.state.phase4?.eventLedger.slice(oldLedger.length).filter(item=>item.type==='史實來源補充'&&item.source?.includes('卷九〈孝獻帝紀〉'))).toHaveLength(1);
     expect(replay(migrated.events)).toEqual(migrated.state);expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+  it('A599 v254 177 年 v6 JSON 舊存檔續玩可觸發178年異象並重播',()=>{
+    const current=makeSave('phase6-v254-hen-anomaly-storage',177),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-254'}};
+    const oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v254 fixture');
+    const old:SaveFile={...current,events:[oldStart],state:oldState},migrated=verifySave(toJson(old)),id='attendant-temple-hen-transforms-178';
+    expect(migrated.events.slice(0,old.events.length)).toEqual(old.events);
+    expect(migrated.events.some(event=>event.type==='Phase4ContentUpdated'&&event.payload.contentVersion==='phase4-scenario-255')).toBe(true);
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v254-hen-anomaly-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event)throw new Error('could not continue v254 fixture');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('侍中寺雌雞'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
+    expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  });
 });
