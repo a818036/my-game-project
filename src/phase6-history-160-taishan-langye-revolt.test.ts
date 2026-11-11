@@ -346,4 +346,43 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('艾縣賊焚燒長沙'))).toBe(false);
     expect(verifySave(toJson(migrated))).toEqual(migrated);
   });
+
+  it('A652 將零陵蠻侵擾長沙獨立記錄，舊存檔升版不回補', () => {
+    const linglingId = 'lingling-tribes-revolt-raids-changsha-162';
+    const previous = createPhase4Model(161, 1, [], 'phase4-scenario-274');
+    const oldLedger = structuredClone(previous.eventLedger);
+    const upgraded = upgradePhase4Content(previous, PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0, oldLedger.length)).toEqual(oldLedger);
+    expect(upgraded.nodes.find((node) => node.contentId === linglingId)?.status).toBe('pending');
+
+    const advanced = advancePhase4(upgraded, 360);
+    expect(advanced.nodes.find((node) => node.contentId === linglingId)?.status).toBe('triggered');
+    const event = advanced.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('零陵蠻起事侵擾長沙'));
+    expect(event?.source).toContain('零陵蠻亦叛，寇長沙');
+    expect(HISTORY_CONTENT.find((item) => item.id === linglingId)).toMatchObject({
+      startYear: 162,
+      endYear: 162,
+      precision: 'year',
+      introducedRevision: 275,
+    });
+    expect(HISTORY_CONTENT.find((item) => item.id === linglingId)?.sourceDateNote).toBeUndefined();
+    expect(HISTORY_CONTENT.find((item) => item.id === 'changsha-cangwu-revolt-162')?.source).not.toContain('零陵蠻亦叛，寇長沙');
+
+    for (const year of [162, 163]) {
+      const late = upgradePhase4Content(createPhase4Model(year, 1, [], 'phase4-scenario-274'), PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find((node) => node.contentId === linglingId)).toMatchObject({ status: 'resolved', resolvedYear: 162 });
+      expect(late.eventLedger.some((item) => item.detail.includes('零陵蠻起事侵擾長沙'))).toBe(false);
+    }
+
+    const old = oldSave(161, 659, 'phase4-scenario-274');
+    const oldPrefix = structuredClone(old.events);
+    const migrated = verifySave(toJson(old));
+    expect(migrated.events.slice(0, oldPrefix.length)).toEqual(oldPrefix);
+    expect(migrated.state.phase4?.nodes.find((node) => node.contentId === linglingId)?.status).toBe('pending');
+    expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    const lateSave = verifySave(toJson(oldSave(162, 660, 'phase4-scenario-274')));
+    expect(lateSave.state.phase4?.nodes.find((node) => node.contentId === linglingId)).toMatchObject({ status: 'resolved', resolvedYear: 162 });
+    expect(lateSave.state.phase4?.eventLedger.some((item) => item.detail.includes('零陵蠻起事侵擾長沙'))).toBe(false);
+    expect(verifySave(toJson(migrated))).toEqual(migrated);
+  });
 });
