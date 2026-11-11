@@ -197,6 +197,24 @@ describe('開局存檔載入提示',()=>{
     }
   });
 
+  it.each([
+    {saved:'999',expected:'24'},
+    {saved:'10',expected:'16'},
+    {saved:'not-a-number',expected:'18'},
+  ])('A639 將無效或過期字級偏好 $saved 限制為 $expected px',async({saved,expected})=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    const getItem=vi.spyOn(Storage.prototype,'getItem').mockReturnValue(saved);
+    const setItem=vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{});
+    try{
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+      expect(host.querySelector<HTMLInputElement>('.reader-control input[type="range"]')?.value).toBe(expected);
+      expect(document.documentElement.style.getPropertyValue('--reader-size')).toBe(`${expected}px`);
+      expect(setItem).toHaveBeenCalledWith('shenzhou-font-size',expected);
+    }finally{
+      getItem.mockRestore();setItem.mockRestore();
+    }
+  });
+
   it('開局畫面有單一主要地標、頁面標題及具可讀標籤的表單控制項',async()=>{
     vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
     await act(async()=>{root.render(createElement(App));await Promise.resolve();});
