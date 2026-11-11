@@ -109,7 +109,8 @@ describe('主要淺色介面的文字對比', () => {
     const disabled = rulesForSelector('.primary:disabled').find((rule) => rule.conditions.length === 0)?.declarations;
     expect(disabled).toBeDefined();
     const declarations = disabled!;
-    const foreground = declarations.match(/(?:^|;)color:\s*(#[0-9a-fA-F]{6})/)?.[1];
+    const foregroundValue = declarations.match(/(?:^|;)color:\s*(#[0-9a-fA-F]{6}|var\(--ink\))/)?.[1];
+    const foreground = foregroundValue === 'var(--ink)' ? stylesheet.match(/--ink:\s*(#[0-9a-fA-F]{6})/)?.[1] : foregroundValue;
     const background = declarations.match(/(?:^|;)background:\s*(#[0-9a-fA-F]{6})/)?.[1];
     expect(declarations).toMatch(/opacity:\s*1(?:;|$)/);
     expect(foreground).toBeDefined();
@@ -222,6 +223,18 @@ describe('主要淺色介面的文字對比', () => {
     for (const selector of ['.name-dialog h2', '.name-dialog p', '.name-dialog label']) {
       expect(contrastRatio(lastRuleColor(selector), dialogBackground), selector).toBeGreaterThanOrEqual(4.5);
     }
+  });
+
+  it('結局方向與軍政文字欄在閱讀底色達 WCAG AA 並保留可操作高度', () => {
+    const selector = '.phase-panel select,.phase-panel input,.phase-panel textarea,.phase4-panel select,.phase4-panel input,.phase4-panel textarea';
+    const declarations = lastRule(selector);
+    const foregroundValue = declarations.match(/(?:^|;)color:\s*(#[0-9a-fA-F]{6}|var\(--ink\))/)?.[1];
+    const foreground = foregroundValue === 'var(--ink)' ? stylesheet.match(/--ink:\s*(#[0-9a-fA-F]{6})/)?.[1] : foregroundValue;
+    const background = declarations.match(/(?:^|;)background:\s*(#[0-9a-fA-F]{6})/)?.[1];
+    expect(foreground).toBeDefined();
+    expect(background).toBeDefined();
+    expect(contrastRatio(foreground!, background!)).toBeGreaterThanOrEqual(4.5);
+    expect(declarations).toMatch(/min-height:\s*44px/);
   });
 
   it('ChatGPT 模型選擇欄使用高對比閱讀底色與易操作高度', () => {
