@@ -551,6 +551,34 @@ describe('開局存檔載入提示',()=>{
     expect(results.violations.map(({id,help,nodes})=>({id,help,targets:nodes.flatMap(node=>node.target.map(String))})),JSON.stringify(results.violations,null,2)).toEqual([]);
   });
 
+  it('A618 匯出無法驗證存檔時保留原始資料並保留復原提示',async()=>{
+    const raw={format:'shenzhou-save',version:6,worldlineId:'broken-world',events:[],state:{worldlineId:'broken-world',unexpected:{value:'原始值'}}};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({...emptyWorkspace,unreadableSaves:[{worldlineId:'broken-world',version:6,reason:'存檔狀態與事件重播結果不一致',raw:raw as never}]});
+    let downloadedBlob:Blob|undefined;
+    const createObjectURL=vi.fn((blob:Blob)=>{downloadedBlob=blob;return 'blob:recovery-test';});
+    const revokeObjectURL=vi.fn();
+    const createDescriptor=Object.getOwnPropertyDescriptor(URL,'createObjectURL');
+    const revokeDescriptor=Object.getOwnPropertyDescriptor(URL,'revokeObjectURL');
+    Object.defineProperty(URL,'createObjectURL',{configurable:true,value:createObjectURL});
+    Object.defineProperty(URL,'revokeObjectURL',{configurable:true,value:revokeObjectURL});
+    const downloadedNames:string[]=[];
+    const click=vi.spyOn(HTMLAnchorElement.prototype,'click').mockImplementation(function(this:HTMLAnchorElement){downloadedNames.push(this.download);});
+    try{
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+      await act(async()=>{host.querySelector<HTMLButtonElement>('.save-recovery button')!.click();});
+      expect(click).toHaveBeenCalledOnce();
+      expect(downloadedNames).toEqual(['shenzhou-broken-world-原始備份.json']);
+      expect(createObjectURL).toHaveBeenCalledOnce();
+      expect(downloadedBlob?.type).toBe('application/json');
+      expect(JSON.parse(await downloadedBlob!.text())).toEqual(raw);
+      expect(host.querySelector('.save-recovery h2')?.textContent).toBe('有存檔未能通過驗證');
+    }finally{
+      if(createDescriptor)Object.defineProperty(URL,'createObjectURL',createDescriptor);else delete (URL as Partial<typeof URL>).createObjectURL;
+      if(revokeDescriptor)Object.defineProperty(URL,'revokeObjectURL',revokeDescriptor);else delete (URL as Partial<typeof URL>).revokeObjectURL;
+      click.mockRestore();
+    }
+  });
+
   it('開局保存期間在開局畫面播報狀態，保存後更新同一節點',async()=>{
     let finishSave!:()=>void;
     const saveResult=new Promise<void>(resolve=>{finishSave=resolve;});
