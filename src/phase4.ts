@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-339';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-340';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:337},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:338},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -516,6 +516,12 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'sample-local-vacancy',kind:EVENT_KIND,title:'郡府文書職缺（示例）',startYear:184,endYear:300,precision:YEAR_PRECISION,source:'本專案示例情境，非史實人物／職缺。',causes:['local-office-vacancy'],carrier:'示例郡府',description:'已標明為示例的人事內容，用於驗證遞補流程。',example:true },
   { id:'cao-zhen-expedition-against-shu-230',kind:EVENT_KIND,title:'曹真、司馬懿等多路伐蜀，因大雨撤軍',...sameYear(230),precision:YEAR_PRECISION,source:'《三國志》卷三〈魏書·明帝紀〉記太和四年秋七月詔曹真、司馬懿等伐蜀，九月因大雨詔令還軍；卷九〈魏書·曹真傳〉記曹真由子午道、司馬懿由漢水進軍，其他諸軍分道並進，連月大雨造成棧道斷絕，遂奉詔撤回。本內容包只採年級精度，不推演接戰、傷亡或完整行軍日程。',carrier:'曹真、司馬懿與魏軍（史書所載多路行動）',description:'記錄魏軍多路伐蜀及因連月大雨、棧道斷絕而撤回；史料未載本節點所需的逐路接戰結果，不推演戰鬥、傷亡、疆界或玩家控制權。',sourceDateNote:'原史記太和四年秋七月下詔出兵、九月詔令還軍；保留漢曆月份註記，不換算成遊戲日曆。',introducedRevision:143 },
   { id:'wuling-revolt-suppressed-186',kind:EVENT_KIND,title:'武陵蠻起事、郡兵討破',...sameYear(186),precision:YEAR_PRECISION,source:HH8+'記中平三年冬十月武陵蠻叛、寇郡界，郡兵討破。本內容包只採公元年級精度，不把原史季節與漢曆月份換算為遊戲日期。',carrier:'武陵地方起事者與郡兵（史料記載）',description:'記錄武陵蠻起事、侵擾郡界及郡兵討破；不推演群體身分、戰場細節、額外傷亡或後續控制。',introducedRevision:164 },
+  { id:'epidemic-zong-ju-dies-yang-ci-appointed-187',kind:EVENT_KIND,title:'大疫、宗俱薨與楊賜任司空',...sameYear(187),precision:YEAR_PRECISION,source:HH8+'中平四年春正月記「大疫，司徒宗俱薨，以光祿勳楊賜為司空」。只保留疫病、人物去世與任命記事，不推定疫病範圍、病因、傷亡、任命關係或官員任期。',carrier:'漢廷記事（史料記載）',description:'記錄春正月大疫、司徒宗俱去世及光祿勳楊賜任司空；不推演疫病傳播、傷亡、任免原因或制度效果。',introducedRevision:340 },
+  { id:'taiwei-li-xian-dismissed-187',kind:EVENT_KIND,title:'太尉李咸免職',...sameYear(187),precision:YEAR_PRECISION,source:HH8+'中平四年三月記「太尉李咸免」。本節點只記免職，不推測原因、交接日期或其後任命。',carrier:'太尉李咸與漢廷（史料記事）',description:'記錄太尉李咸免職；不推測免職原因、交接日、後續仕途或職缺處置。',introducedRevision:340 },
+  { id:'pei-xiang-shi-qian-dies-in-prison-187',kind:EVENT_KIND,title:'沛相師遷下獄死',...sameYear(187),precision:YEAR_PRECISION,source:HH8+'中平四年五月記「沛相師遷坐誣罔國王，下獄死」。保留原文官職、罪名文字與結果，不補人物身分考證、案情、審判過程或處刑細節。',carrier:'沛相師遷（史料記載）',description:'記錄史書所載沛相師遷因誣罔國王下獄而死；不推演案件細節、司法程序或人物關係。',introducedRevision:340 },
+  { id:'northsea-earthquake-coastal-flood-187',kind:EVENT_KIND,title:'北海地震、東萊與北海海水溢',...sameYear(187),precision:YEAR_PRECISION,source:HH8+'中平四年六月記「北海地震，東萊、北海海水溢」。注文另引《續漢志》記大魚；本節點只記本紀災異及注文存在，不推測災害範圍、損失、魚類現象成因或彼此因果。',carrier:'北海、東萊地方災異記事（史料記載）',description:'記錄北海地震及東萊、北海海水溢；注文所載大魚僅作來源附註，不推定災害範圍、損失或現象成因。',introducedRevision:340 },
+  { id:'sikong-yang-ci-dismissed-tang-zhen-appointed-187',kind:EVENT_KIND,title:'楊賜免司空，唐珍繼任',...sameYear(187),precision:YEAR_PRECISION,source:HH8+'中平四年秋七月記「司空楊賜免，太常潁川唐珍為司空」。只記原文任免，不推測免職原因、交接時間或任期。',carrier:'楊賜、唐珍與漢廷（史料記事）',description:'記錄楊賜免司空、太常唐珍任司空；不補原因、確切交接日或兩人後續官職。',introducedRevision:340 },
+  { id:'rinan-tribute-duan-jiong-dismissal-xianbei-raids-eclipse-187',kind:EVENT_KIND,title:'日南入貢、段熲罷職、鮮卑寇邊與日食',...sameYear(187),precision:YEAR_PRECISION,source:HH8+'中平四年冬十二月記日南徼外國重譯貢獻、太尉段熲罷、鮮卑寇幽并二州及癸酉晦日食。只保留同段原文記事與漢曆註記，不推演外交內容、任免原因、侵擾戰果、天象影響或記事間因果。',carrier:'日南使節記事、漢廷、幽并邊地與天象記錄（史料記事）',description:'記錄日南徼外國入貢、段熲免太尉、鮮卑侵擾幽州與并州，以及十二月癸酉晦日日食；不推測使節內容、戰果、任免原因、災損或天象影響。',introducedRevision:340 },
 ] as HistoricalNodeContent[]).map((content) => content.lateSameYear === undefined && (content.introducedRevision ?? 0) >= DEFAULT_LATE_SAME_YEAR_REVISION ? { ...content, lateSameYear: true } : content);
 /** Sourced Han-calendar dates shown separately from the annual simulation trigger. */
 export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
@@ -542,6 +548,12 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'sikong-liu-xiao-dismissed-qiao-xuan-appointed-186': '原史紀年：《後漢書》卷八中平三年秋七月記劉囂罷司空，八月記橋玄為司空；保留原文月份與先後。',
   'dong-chong-dies-in-prison-186': '原史紀年：《後漢書》卷八中平三年九月記執金吾董寵下獄死；遊戲仍按年級呈現，不推定案情或處置日期。',
   'jinan-revolt-dongpingling-186': '原史紀年：《後漢書》卷八中平三年冬記濟南賊攻東平陵，未標月份或日期；遊戲只按 186 年級觸發。',
+  'epidemic-zong-ju-dies-yang-ci-appointed-187': '原史紀年：《後漢書》卷八中平四年春正月記大疫、司徒宗俱薨及楊賜為司空；遊戲只按 187 年級觸發。',
+  'taiwei-li-xian-dismissed-187': '原史紀年：《後漢書》卷八中平四年三月記太尉李咸免；保留漢曆月份，不推測原因或交接日。',
+  'pei-xiang-shi-qian-dies-in-prison-187': '原史紀年：《後漢書》卷八中平四年五月記沛相師遷坐誣罔國王、下獄死；保留漢曆月份，不補案情或人物考證。',
+  'northsea-earthquake-coastal-flood-187': '原史紀年：《後漢書》卷八中平四年六月記北海地震、東萊與北海海水溢；注文另引《續漢志》大魚記事，不推測影響或因果。',
+  'sikong-yang-ci-dismissed-tang-zhen-appointed-187': '原史紀年：《後漢書》卷八中平四年秋七月記楊賜免司空、唐珍為司空；保留月份，不推定免職原因或任期。',
+  'rinan-tribute-duan-jiong-dismissal-xianbei-raids-eclipse-187': '原史紀年：《後漢書》卷八中平四年冬十二月記日南入貢、段熲罷、鮮卑寇幽并二州及癸酉晦日食；只按 187 年級觸發，不換算遊戲日期或推演記事因果。',
   'zhang-xiu-ba-commander-revolt-184': '原史紀年：《後漢書》卷八中平元年秋七月記巴郡妖巫張脩反、寇郡縣；遊戲只按 184 年級觸發，不推定戰事日期。',
   'henan-yin-xu-guan-dies-in-prison-184': '原史紀年：《後漢書》卷八中平元年秋七月記河南尹徐灌下獄死；遊戲只按 184 年級觸發，不推定案情或執行日期。',
   'huangfu-song-cangting-captures-yellow-turban-leader-184': '原史紀年：《後漢書》卷八中平元年八月記皇甫嵩與黃巾戰於倉亭，獲其帥；注文辨其帥為卜已（異本作卜己）。遊戲只按 184 年級觸發。',
