@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(228);
+    expect(withinCatalogYears).toHaveLength(233);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -125,6 +125,11 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'zhang-rang-eunuchs-enfeoffed-185': ['中平二年六月', '討張角功', '張讓等十二人', '列侯'],
       'zhao-zhong-appointed-chariot-general-186': ['中平三年', '趙忠為車騎將軍', '傅爕', '私賞'],
       'solar-eclipse-186': ['中平三年', '五月，壬辰晦', '日有食之'],
+      'eating-spouse-reports-186': ['中平三年春正月', '河內人婦食夫', '河南人夫食婦'],
+      'taiwei-guo-xi-dismissed-wenren-xi-appointed-186': ['夏四月', '太尉郭禧罷', '聞人襲為太尉'],
+      'sikong-liu-xiao-dismissed-qiao-xuan-appointed-186': ['秋七月', '司空劉囂罷', '八月', '橋玄為司空'],
+      'dong-chong-dies-in-prison-186': ['九月', '執金吾董寵下獄死'],
+      'jinan-revolt-dongpingling-186': ['中平三年冬', '濟南賊起攻東平陵'],
       'han-sui-kills-bian-zhang-sieges-longxi-187': ['中平四年', '韓遂殺邊章', '北宮伯玉', '李文侯', '十餘萬', '李相如叛而與韓遂連和'],
       'geng-bi-lianzhu-campaign-fu-xie-dies-187': ['中平四年', '耿鄙率六郡兵', '程球', '狄道', '傅爕拒絕投賊並戰死', '馬騰亦擁兵反', '共推王國為主'],
       'zhang-chun-wuhuan-revolt-187': ['中平四年', '張純', '公孫瓚', '丘力居', '十餘萬', '公綦稠', '張舉稱天子'],
@@ -223,7 +228,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(119);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(124);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -479,6 +484,11 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wanjin-hall-built-west-garden-185',
       'luoyang-infant-two-heads-four-arms-185',
       'zhao-zhong-appointed-chariot-general-186',
+      'eating-spouse-reports-186',
+      'taiwei-guo-xi-dismissed-wenren-xi-appointed-186',
+      'sikong-liu-xiao-dismissed-qiao-xuan-appointed-186',
+      'dong-chong-dies-in-prison-186',
+      'jinan-revolt-dongpingling-186',
       'solar-eclipse-186',
       'partisan-amnesty-return-184',
       'liangzhou-meiyang-campaign-185',
@@ -511,7 +521,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(119);
-    expect(uniqueNotedEvents.size).toBe(334);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(124);
+    expect(uniqueNotedEvents.size).toBe(339);
   });
 });
