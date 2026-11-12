@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-367';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-368';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:365},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:366},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -578,7 +578,8 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'sun-quan-hefei-bridge-retreat-214',kind:EVENT_KIND,title:'合肥未克，孫權撤軍時遭張遼襲擊',...sameYear(214),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉將孫權征合肥未下、撤軍遭張遼襲擊，凌統、甘寧等護衛孫權，孫權乘駿馬越津橋得去，列於建安十九年（214）記事之下；但卷十七〈魏書·張遼傳〉將同一合肥圍城戰記在建安二十年（215）曹操征張魯段。原典繫年有異，本內容包暫按卷四十七採 214 年級觸發，並保留差異，不宣稱年次已無爭議。',carrier:'孫權、凌統、甘寧與張遼（歷史記載）',description:'記錄征合肥未克、撤軍途中遭襲及孫權脫離的原典概述；不推演未載的完整交戰、額外傷亡、橋梁狀態或個人傷勢。',sourceDateNote:'繫年有異：《三國志》卷四十七篇章列於建安十九年（214）；卷十七〈張遼傳〉列於建安二十年（215）。遊戲為保留既有 v101 存檔相容性，暫按卷四十七置於 214 年；不補月日。',introducedRevision:101 },
   { id:'sun-quan-captures-wancheng-214',kind:EVENT_KIND,title:'孫權征皖城、克城並獲朱光',...sameYear(214),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記建安十九年五月孫權征皖城，閏月克之，獲廬江太守朱光及參軍董和。本內容包保留原史漢曆月份，不換算為遊戲日期，並採年級觸發。',carrier:'孫權、朱光與孫吳軍（歷史記載）',description:'記錄征皖城、克城及朱光被獲；不推估俘獲人口數，不模擬完整圍城、戰損、城邑長期控制或個人遭遇。',sourceDateNote:'原史紀年：建安十九年五月征皖城、閏月克之。漢曆月份保留於史料註記，不映射為遊戲日曆月份或精確日。',introducedRevision:111 },
   { id:'sun-quan-lukou-jingzhou-partition-dating-215',kind:EVENT_KIND,title:'陸口駐軍與湘水分荊州的繫年異文',...sameYear(215),precision:YEAR_PRECISION,source:'《資治通鑑》卷六十七將相關事件置於獻帝建安二十年（215）：孫權進駐陸口節度諸軍、魯肅屯益陽拒關羽，其後劉備與孫權議和並以湘水分界。《三國志》卷四十七則把征取荊州三郡、陸口駐軍、關羽至益陽及湘水分界等記事列在建安十九年（214）。本節點只記兩部史書的編年差異，不代表第二次發生，也不裁定唯一正確年份。',carrier:'孫權、魯肅、關羽與劉備（史籍編年）',description:'作為陸口駐軍及湘水分界相關記事的另一種年次記錄；214 年原型節點依《三國志》卷四十七保留，215 年節點依《資治通鑑》編年呈現。不要把它解讀為重複出兵、再度議和或確定發生在不同年份；史料未提供可供本模型採用的月日。',introducedRevision:130 },
-  { id:'han-zhong-campaign-215',kind:EVENT_KIND,title:'曹操征定漢中、張魯出降',...sameYear(215),precision:YEAR_PRECISION,source:'《三國志》卷八〈魏書·張魯傳〉記建安二十年曹操征漢中、攻破陽平關，張魯奔巴中後出降；本內容包採年級精度。',causes:['han-zhong-campaign'],carrier:'曹操與張魯（歷史事件）',description:'記錄曹操征定漢中及張魯出降的年級節點；不模擬完整行軍、兵力或漢中疆界。',introducedRevision:17 },
+  { id:'cao-consort-made-empress-215',kind:EVENT_KIND,title:'貴人曹氏立為皇后',...sameYear(215),precision:YEAR_PRECISION,source:HH9+'建安二十年春正月甲子記立貴人曹氏為皇后；只記冊立，不推測儀式細節、婚姻背景或政治效果。',carrier:'曹氏與漢廷（史料記事）',description:'記錄貴人曹氏被立為皇后；不補寫原典未載的個人背景、儀節或政治影響。',sourceDateNote:'《後漢書》卷九建安二十年春正月甲子記立貴人曹氏為皇后；保留漢曆日期，遊戲只按 215 年級觸發。',introducedRevision:368 },
+  { id:'han-zhong-campaign-215',kind:EVENT_KIND,title:'曹操征定漢中、張魯出降',...sameYear(215),precision:YEAR_PRECISION,source:'《三國志》卷八〈魏書·張魯傳〉記建安二十年曹操征漢中、攻破陽平關，張魯奔巴中後出降；《後漢書》卷九補記秋七月曹操破漢中、張魯降。兩書同一戰事沿用本節點，不重複結算；本內容包採年級精度。',causes:['han-zhong-campaign'],carrier:'曹操與張魯（歷史事件）',description:'合記兩書對曹操征漢中及張魯出降的記事；不模擬完整行軍、兵力或漢中疆界。',sourceDateNote:'《後漢書》卷九建安二十年秋七月記曹操破漢中、張魯降；月份保留為原史註記，不換算成遊戲日期。',introducedRevision:17 },
   { id:'cao-crowned-king-of-wei-216',kind:EVENT_KIND,title:'曹操進爵魏王',...sameYear(216),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安二十一年五月記天子進公爵為魏王；本內容包採公元年級精度，不將漢曆月日映射為模型月份。',causes:['wei-royal-elevation'],carrier:'漢廷與曹操（歷史事件）',description:'記錄曹操受封魏王及漢廷名位變化；不自動改變玩家勢力、控制權或替玩家選擇政治立場。',introducedRevision:18 },
   { id:'sun-quan-ruxu-campaign-216',kind:EVENT_KIND,title:'曹操進攻濡須、孫權與之相持',...sameYear(216),precision:YEAR_PRECISION,source:SG47+'記建安二十一年冬曹操至居巢並攻濡須。本內容包只採公元年級精度，不推演其後逐日戰況或未載損失。',carrier:'曹操、孫權與孫吳軍（歷史記載）',description:'記錄曹操冬季進至居巢並攻濡須；不將不同年份的濡須戰事混併，也不推演兵力、傷亡或精確戰果。',introducedRevision:102 },
   { id:'sun-quan-sends-envoy-to-cao-217',kind:EVENT_KIND,title:'孫權遣徐詳赴曹操處請降、雙方約定修好',...sameYear(217),precision:YEAR_PRECISION,source:SG47+'記建安二十二年春，孫權令都尉徐詳赴曹操處請降；曹操遣使回覆修好，並約定重結婚姻。本內容包採年級精度，不推演條約內容、婚姻安排或後續外交細節。',carrier:'孫權、徐詳與曹操（歷史記載）',description:'記錄孫權遣徐詳赴曹操處、曹操回覆修好的年級外交節點；保留原文「請降」與「修好」先後，不代玩家作出外交選擇。',introducedRevision:102 },
@@ -791,6 +792,8 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'guo-ma-rebellion-279': '原史紀年：天紀三年夏郭馬起事。原文未載月日，不推定月份。',
   'sima-yi-feigns-illness-248': '原史紀年：正始九年冬，李勝赴荊州前拜訪司馬懿。保留原文季節，不推定月份或日程。',
   'yi-province-surrender-214': '原史紀年：建安十九年夏雒城破，劉備進圍成都後劉璋出降。原文季節不換算成遊戲月份。',
+  'cao-consort-made-empress-215': '原史紀年：建安二十年春正月甲子立貴人曹氏為皇后；保留漢曆日期，不換算遊戲日期。',
+  'han-zhong-campaign-215': '原史紀年：《後漢書》卷九建安二十年秋七月記曹操破漢中、張魯降；月份不換算成遊戲日期。',
   'drought-and-rainwater-214': '原史紀年：建安十九年夏四月旱、五月雨水。保留漢曆月份，不推論因果或災損。',
   'xiahou-yuan-captures-song-jian-214': '原史紀年：建安十九年冬十月夏侯淵討宋建於枹罕、獲之。月份不換算模型日期。',
   'empress-fu-killed-214': '原史紀年：建安十九年十一月丁卯。原文所載遇害記事按年級觸發。',

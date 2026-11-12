@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(384);
+    expect(withinCatalogYears).toHaveLength(385);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -189,6 +189,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'guo-ma-rebellion-279': ['天紀三年夏記郭馬反'],
       'sima-yi-feigns-illness-248': ['正始九年冬李勝出任荊州刺史'],
       'yi-province-surrender-214': ['建安十九年夏雒城破', '據益州'],
+      'cao-consort-made-empress-215': ['建安二十年春正月甲子', '立貴人曹氏為皇后'],
+      'han-zhong-campaign-215': ['秋七月曹操破漢中、張魯降'],
       'drought-and-rainwater-214': ['夏四月記「旱」', '五月記「雨水」'],
       'xiahou-yuan-captures-song-jian-214': ['冬十月記曹操遣將夏侯淵', '討宋建於枹罕，獲之'],
       'empress-fu-killed-214': ['十一月丁卯', '滅其族及二皇子'],
@@ -282,7 +284,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(179);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(181);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -685,6 +687,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'empress-fu-killed-214',
       'sun-quan-hefei-bridge-retreat-214',
       'sun-quan-captures-wancheng-214',
+      'cao-consort-made-empress-215',
+      'han-zhong-campaign-215',
       'sun-quan-hunts-tiger-lingting-218',
       'guan-yu-falls-219',
       'sun-quan-declines-imperial-title-221',
@@ -705,7 +709,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(179);
-    expect(uniqueNotedEvents.size).toBe(493);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(181);
+    expect(uniqueNotedEvents.size).toBe(495);
   });
 });
