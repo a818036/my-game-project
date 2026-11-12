@@ -270,6 +270,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'six-provinces-flood-bohai-sea-overflow-167',
       'fuyu-raid-xuantu-167',
       'qiang-incursions-167',
+      'capital-and-shangdang-earth-split-167',
       'duan-jiong-defeats-xianling-fengyishan-168',
       'court-offices-reorganized-spring-168',
       'wang-chang-liu-chong-succession-168',
@@ -368,6 +369,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(212);
+    expect(uniqueNotedEvents.size).toBe(213);
   });
 });
