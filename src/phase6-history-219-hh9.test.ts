@@ -6,8 +6,8 @@ const persons:PersonRef[]=[];
 
 describe('A749 補列 219 年建安二十四年記事',()=>{
   it('依原典記錄日食、取漢中、稱漢中王及漢水溢，保留日期精度',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-397');
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(666);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-398');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(667);
     const expected=[
       ['solar-eclipse-jianan-24-219','春二月壬子晦','日有食之'],
       ['liu-bei-takes-hanzhong-219','夏五月','劉備取漢中'],
