@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-331';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-332';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:329},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:330},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -286,6 +286,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'rinan-envoy-tributes-183',kind:EVENT_KIND,title:'日南徼外國重譯入貢',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'光和六年正月：日南徼外國重譯貢獻，未載國名、貢物。',carrier:'日南來使',description:'不推定國名、貢物與外交結果。',sourceDateNote:'光和六年正月。',introducedRevision:262 },
   { id:'changling-county-restored-183',kind:EVENT_KIND,title:'復置長陵縣，比照豐、沛',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'光和六年二月：復長陵縣，比豐、沛。',carrier:'漢廷',description:'不推定縣界、行政細節與效果。',sourceDateNote:'光和六年二月。',introducedRevision:262 },
   { id:'garden-office-established-183',kind:EVENT_KIND,title:'始置圃囿署，以宦者為令',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'光和六年：始置圃囿署，以宦者為令。',carrier:'漢廷',description:'原文未載月份與職掌。',introducedRevision:262 },
+  { id:'great-amnesty-guanghe-6-183',kind:EVENT_KIND,title:'光和六年三月大赦天下',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'光和六年三月辛未，大赦天下。原典未說明赦免對象、例外或個案結果。',carrier:'漢廷與受赦者（史料記事）',description:'記錄三月大赦天下；不推定赦免對象、例外、執行情況或個別案件結果。',sourceDateNote:'《後漢書》卷八光和六年三月辛未記大赦天下。保留漢曆年月干支，只按 183 年級觸發，不換算模型日期。',introducedRevision:332 },
   { id:'winter-cold-eastern-commandries-183',kind:EVENT_KIND,title:'光和六年旱災、河溢、山岸崩與冬寒',...sameYear(183),precision:YEAR_PRECISION,source:HH8+'記光和六年夏大旱、秋金城河水溢與五原山岸崩，並記「大有年」；卷一〇五〈五行志〉另記同年冬大寒，北海、東萊、琅邪井中冰厚尺餘。本節點只並列原典年級與季節記載，不推斷災害成因、相互因果、受災範圍、農損或人口後果。',carrier:'漢廷與來源列明的金城、五原、北海、東萊及琅邪地方（史料記載）',description:'並列光和六年夏旱、秋季金城河溢與五原山岸崩、該年「大有年」及冬季北海等地井冰記事；不推定夏旱影響區域、農損或疾病，也不推演其他災異間因果、各地災情關聯、實際收成數字、受災人口或每日天候。',sourceDateNote:'《後漢書》卷八記光和六年夏大旱、秋金城河水溢與五原山岸崩，並稱是歲「大有年」；卷一〇五記同年冬北海、東萊、琅邪井冰厚尺餘。只保留原典的季節與年級，不換算為遊戲日曆或推論各記事的因果。',introducedRevision:90 },
   { id:'yellow-turban-184',kind:EVENT_KIND,title:'黃巾起事',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'記中平元年二月張角起事；三月戊申以河南尹何進為大將軍、屯都亭並置八關都尉；三月壬子詔出馬弩、舉薦知戰陣者，遣盧植討張角、皇甫嵩與朱儁討潁川黃巾。卷七十一〈皇甫嵩朱儁列傳〉詳述奉詔討賊，並記嵩、儁合軍四萬餘人。保留年級觸發與原典年月，不把部署寫成逐日戰報或完整戰場模擬。',causes:['yellow-turban-uprising'],carrier:'張角與黃巾軍、漢廷奉命出征官軍（史料記載）',description:'記錄中平元年張角起事及漢廷同年三月的軍事部署：何進屯都亭、設八關都尉，並命官員出馬弩、薦舉知戰陣者；盧植、皇甫嵩與朱儁分路奉命出征。卷七十一記嵩、儁合軍四萬餘人。各路兵力與戰果不合併為同一軍隊，也不補逐日行軍或完整戰場。',sourceDateNote:'原史記載：《後漢書》卷八記中平元年二月張角起事，三月戊申任何進為大將軍、三月壬子下徵馬弩與出兵諸詔；卷七十一記皇甫嵩與朱儁合軍四萬餘。均為漢曆年月，不換算成原型 30 日制的月份或日期。',introducedRevision:2 },
   { id:'anping-ganling-respond-yellow-turbans-184',kind:EVENT_KIND,title:'安平、甘陵人執王響應黃巾',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年春二月記「安平、甘陵人各執其王以應之」；注文指安平王續、甘陵王忠。',carrier:'安平、甘陵地方（史料記載）',description:'只記原文被執響應，不推定二王意願或後續。',sourceDateNote:'中平元年春二月。',introducedRevision:264 },
