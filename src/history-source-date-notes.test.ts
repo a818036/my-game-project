@@ -306,6 +306,15 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'song-lady-made-empress-171',
       'xianbei-raids-bingzhou-171',
       'hu-guang-dies-172',
+      'great-amnesty-xiping-1-172',
+      'hou-lan-suicide-172',
+      'capital-rainwater-172',
+      'empress-dowager-dou-dies-buried-172',
+      'taixue-students-arrested-172',
+      'bohai-king-kui-dies-172',
+      'situ-yuan-wei-succeeds-xu-xun-172',
+      'xianbei-raid-bingzhou-172',
+      'ganling-prince-hui-dies-172',
       'lu-zhi-jiujiang-revolt-175',
       'han-campaign-against-xianbei-defeated-177',
       'xianbei-raids-liaoxi-177',
@@ -385,6 +394,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(229);
+    expect(uniqueNotedEvents.size).toBe(238);
   });
 });
