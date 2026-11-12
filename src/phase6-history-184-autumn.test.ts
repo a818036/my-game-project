@@ -9,7 +9,7 @@ const persons:PersonRef[]=[];
 describe('A713 補列 184 年下半年戰事與政局記事',()=>{
   it('逐項保留原文、日期精度及不推演界線',()=>{
     const entries=ids.map(id=>HISTORY_CONTENT.find(item=>item.id===id));
-    expect(entries.map(item=>item?.kind)).toEqual(['event','event','death','event','event','event']);
+    expect(entries.map(item=>item?.kind)).toEqual(['event','event','event','event','event','event']);
     expect(entries.every(item=>item?.startYear===184&&item.endYear===184&&item.precision==='year'&&item.introducedRevision===336)).toBe(true);
     expect(entries[0]?.source).toContain('董卓攻張角，不剋');
     expect(entries[1]?.source).toContain('巴郡妖巫張脩反，寇郡縣');
@@ -24,6 +24,10 @@ describe('A713 補列 184 年下半年戰事與政局記事',()=>{
     expect(entries[4]?.sourceDateNote).toContain('乙巳');
     expect(entries[5]?.sourceDateNote).toContain('九月');
     expect(entries.every(item=>item?.description&&!/每日|時辰/.test(item.description))).toBe(true);
+    const fresh=createPhase4Model(184,1,persons,PHASE4_CONTENT_VERSION);
+    expect(fresh.nodes.find(node=>node.contentId===ids[2])?.status).toBe('triggered');
+    expect(fresh.eventLedger.some(event=>event.type==='史實事件形成'&&event.source===entries[2]?.source)).toBe(true);
+    expect(fresh.eventLedger.some(event=>event.type==='死亡硬節點觸發'&&event.source===entries[2]?.source)).toBe(false);
   });
 
   it('v335 舊存檔升版保留帳目、跨年觸發並避免同年或晚年回補',()=>{
@@ -35,9 +39,9 @@ describe('A713 補列 184 年下半年戰事與政局記事',()=>{
     const advanced=advancePhase4(upgraded,360);
     for(const id of ids){
       const node=advanced.nodes.find(node=>node.contentId===id);
-      expect(node?.status,id).toBe(id===ids[2]?'resolved':'triggered');
+      expect(node?.status,id).toBe('triggered');
     }
-    expect(advanced.eventLedger.some(event=>event.type==='死亡硬節點觸發'&&event.source===HISTORY_CONTENT.find(item=>item.id===ids[2])?.source)).toBe(true);
+    expect(advanced.eventLedger.some(event=>event.type==='史實事件形成'&&event.source===HISTORY_CONTENT.find(item=>item.id===ids[2])?.source)).toBe(true);
     for(const year of [184,185]){
       const late=upgradePhase4Content(createPhase4Model(year,1,persons,'phase4-scenario-335'),PHASE4_CONTENT_VERSION);
       for(const id of ids){
@@ -60,7 +64,7 @@ describe('A713 補列 184 年下半年戰事與政局記事',()=>{
     const continued=advancePhase4(imported.state.phase4!,360);
     for(const id of ids){
       const node=continued.nodes.find(node=>node.contentId===id);
-      expect(node?.status,id).toBe(id===ids[2]?'resolved':'triggered');
+      expect(node?.status,id).toBe('triggered');
     }
     expect(replay(imported.events)).toEqual(imported.state);
   });
