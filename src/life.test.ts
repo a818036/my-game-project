@@ -3,7 +3,7 @@ import {createOpeningFacts,dispatch,ENGINE_VERSION,replay,type GameCommand,type 
 import {answerKnownSunQuanBiographyQuestion,inspectLifePlan,lifeChoices,localInteraction} from './life';
 import {HISTORY_CONTENT} from './phase4';
 import {toJson,parseSave,migrateSaveFile} from './storage';
-function start(){const facts=createOpeningFacts(81,184,{regions:[],surnames:[]});return dispatch(null,{version:ENGINE_VERSION,type:'StartGame',name:'測試',seed:81,facts,commandId:'life-start',expectedRevision:0});}
+function start(birthYear=184){const facts=createOpeningFacts(81,birthYear,{regions:[],surnames:[]});return dispatch(null,{version:ENGINE_VERSION,type:'StartGame',name:'測試',seed:81,facts,commandId:'life-start',expectedRevision:0});}
 describe('人生情境計畫',()=>{
   it('嬰兒沒有成人選項；成年有不同選項；偽造成人 ID 被引擎拒絕',()=>{
     const state=start().state!;expect(lifeChoices(state).map(c=>c.id)).toEqual(['observe','listen','reflect','rest']);
@@ -12,7 +12,7 @@ describe('人生情境計畫',()=>{
     expect(inspectLifePlan(state,['observe','observe']).errors).not.toEqual([]);
   });
   it('四項複選一次結算，時間可追溯，無收入、外出、代辦、成熟五維或虛構訪客',()=>{
-    const state=start().state!,before=structuredClone(state);
+    const state=start(183).state!,before=structuredClone(state);
     const command:GameCommand={version:5,type:'SubmitLifePlan',worldlineId:state.worldlineId,expectedRevision:state.revision,commandId:'four',choiceIds:['observe','listen','reflect','rest'],supplement:'我想慢慢觀察'};
     const {state:next,event}=dispatch(state,command);expect(next!.turn).toBe(1);expect(next!.phase4!.day-state.phase4!.day).toBe(4);
     expect(next!.character.money).toBe(state.character.money);expect(next!.accounts).toEqual(state.accounts);expect(next!.ledger).toEqual(state.ledger);

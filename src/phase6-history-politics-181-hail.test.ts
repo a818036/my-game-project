@@ -18,7 +18,7 @@ function oldV220Save(): SaveFile {
 
 describe('A539 181 年六月雨雹記事', () => {
   it('依來源只按年級呈現原文記事，不推算災害細節', () => {
-    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(454);
+    expect(HISTORY_CONTENT.filter((node) => node.kind === 'event' && !node.retired)).toHaveLength(459);
     const fresh = advancePhase4(createPhase4Model(180, 1, persons, PHASE4_CONTENT_VERSION), 360);
     const event = fresh.eventLedger.find((item) => item.type === '史實事件形成' && item.detail.includes('光和四年六月雨雹'));
     expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');

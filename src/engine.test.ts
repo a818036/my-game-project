@@ -4,8 +4,8 @@ import { applyAccountEntry, placeInSubspace } from './ledger';
 import { applyPhase2Action, advancePhase2, kinshipTerm, validateStatValue, type Phase2Action } from './phase2';
 
 const noHistory: OpeningHistory = { regions: [], surnames: [] };
-function start(commandId = 'start-a', seed = 987654, profile = noHistory) {
-  const facts = createOpeningFacts(seed, 184, profile);
+function start(commandId = 'start-a', seed = 987654, profile = noHistory, birthYear = 184) {
+  const facts = createOpeningFacts(seed, birthYear, profile);
   const command: GameCommand = { version: ENGINE_VERSION, commandId, expectedRevision: 0, type: 'StartGame', name: `${facts.surname}景初`, seed, facts };
   const result = dispatch(null, command);
   if (!result.state || !result.event) throw new Error('test fixture start failed');
@@ -97,7 +97,7 @@ describe('ROADMAP 第一階段：正式驗收案例', () => {
   });
 
   it('A37 複選耕讀與經商只推進一回合及一輪後台，兩筆資產變動逐項可追溯並可重播', () => {
-    const initial=start('action-plan');
+    const initial=start('action-plan', 987654, noHistory, 183);
     const command:GameCommand={version:ENGINE_VERSION,commandId:'plan-one',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持','經商營生'],supplement:''};
     const sent=dispatch(initial.state,command); const duplicate=dispatch(sent.state,command);
     expect(sent.state?.turn).toBe(1); expect(sent.state?.backend).toMatchObject({personnelChecks:1,talentChecks:1,historyChecks:1,trendChecks:1});
@@ -132,7 +132,7 @@ describe('ROADMAP 第一階段：正式驗收案例', () => {
   });
 
   it('A41 同一計畫命令快速重送只結算一次，保存事件不重複扣款或推進後台',()=>{
-    const initial=start('action-double-submit');
+    const initial=start('action-double-submit', 987654, noHistory, 183);
     const command:GameCommand={version:ENGINE_VERSION,commandId:'double-submit-once',expectedRevision:initial.state.revision,worldlineId:initial.state.worldlineId,type:'SubmitActionPlan',intents:['耕讀自持','經商營生'],supplement:'快速連點驗收'};
     const first=dispatch(initial.state,command);const duplicate=dispatch(first.state,command);
     expect(duplicate.duplicate).toBe(true);expect(duplicate.state).toEqual(first.state);

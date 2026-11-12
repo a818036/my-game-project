@@ -39,7 +39,7 @@ describe('A304 歷史內容來源索引', () => {
     const indexableContent = HISTORY_CONTENT.filter((item) => item.kind === 'event' || item.kind === 'death');
     const activeEvents = indexableContent.filter((item) => item.kind === 'event' && !item.retired);
 
-    expect(activeEvents).toHaveLength(454);
+    expect(activeEvents).toHaveLength(459);
     expect(rowCounts.size, '歷史索引不得重複列出同一事件 ID').toBe(indexRows.length);
     expect([...rowCounts.keys()].sort(), '歷史索引項目須與來源事件及死亡節點完全對應').toEqual(indexableContent.map((item) => item.id).sort());
     for (const event of activeEvents) {
@@ -114,15 +114,15 @@ describe('A304 歷史內容來源索引', () => {
 
     expect(inferredEntries).toHaveLength(1);
     expect(earlyBackgroundEntries).toHaveLength(249);
-    expect(lateHistoricalNodes).toHaveLength(204);
+    expect(lateHistoricalNodes).toHaveLength(209);
     expect(readme).toContain(`${lateHistoricalNodes.length} 個 183–280 年節點`);
-    expect(readme).toContain('一筆死亡索引');
+    expect(readme).toContain('兩筆死亡索引');
     expect(readme).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);
     expect(readme).toContain(`現行史實索引共 ${indexedEntries.length} 項`);
-    expect(historyDocument).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件節點，另有一筆死亡索引`);
+    expect(historyDocument).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件節點，另有兩筆死亡索引`);
     expect(historyDocument).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);
     expect(historyDocument).toContain(`目前共有 ${indexedEntries.length} 個現行史實索引項目`);
-    expect(acceptanceDocument).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件節點，涵蓋 98 個年次，另有一筆死亡索引`);
+    expect(acceptanceDocument).toContain(`${lateHistoricalNodes.length} 個現行來源支持的史實事件節點，涵蓋 98 個年次，另有兩筆死亡索引`);
     expect(acceptanceDocument).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);
     expect(acceptanceDocument).toContain(`現行索引共 ${indexedEntries.length} 項`);
   });

@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(204);
+    expect(withinCatalogYears).toHaveLength(210);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -196,11 +196,16 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taiwei-and-minister-succession-guanghe-2-179': ['三月條記司徒袁滂免', '乙丑', '段熲為太尉'],
       'scholar-nomination-edict-180': ['光和三年六月', '各一人', '悉除議郎'],
       'hailstorm-chicken-egg-181': ['光和四年', '六月庚辰', '雨雹如雞子'],
+      'zhang-xiu-ba-commander-revolt-184': ['秋七月', '巴郡妖巫張脩反'],
+      'henan-yin-xu-guan-dies-in-prison-184': ['秋七月', '河南尹徐灌下獄死'],
+      'huangfu-song-cangting-captures-yellow-turban-leader-184': ['八月', '戰於倉亭，獲其帥'],
+      'huangfu-song-north-campaign-edict-184': ['八月記事後記「乙巳', '詔皇甫嵩北討張角'],
+      'anping-king-xu-executed-state-abolished-184': ['九月', '安平王續有罪誅，國除'],
       'wu-xiangyang-jiangxia-campaign-236': ['嘉禾五年', '攻襄陽'],
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(101);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -424,6 +429,11 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'winter-cold-eastern-commandries-183',
       'yellow-turban-184',
       'anping-ganling-respond-yellow-turbans-184',
+      'zhang-xiu-ba-commander-revolt-184',
+      'henan-yin-xu-guan-dies-in-prison-184',
+      'huangfu-song-cangting-captures-yellow-turban-leader-184',
+      'huangfu-song-north-campaign-edict-184',
+      'anping-king-xu-executed-state-abolished-184',
       'huangjin-campaign-outcome-184',
       'court-appointments-april-184',
       'changshe-battle-184',
@@ -465,7 +475,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(311);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(101);
+    expect(uniqueNotedEvents.size).toBe(316);
   });
 });
