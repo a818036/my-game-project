@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-383';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-384';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:381},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:382},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -603,7 +603,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'wei-han-transition-220',kind:EVENT_KIND,title:'漢魏禪代',...sameYear(220),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉建安二十五年冬十月乙卯記皇帝遜位、魏王丕稱天子，奉帝為山陽公，並記其邑一萬戶及四皇子由王降為列侯；《三國志》卷二〈魏書·文帝紀〉黃初元年十一月癸酉記奉漢帝為山陽公、行漢正朔、以天子之禮郊祭，並封公之四子為列侯。兩書月份與干支記法有異，並列原文，不裁定差異或換算日期。',causes:['han-dynasty-abdication'],carrier:'漢帝與魏王朝廷（歷史事件）',description:'記錄漢魏禪代、漢帝受封山陽公及四子封侯等兩書所載結果；只按年級呈現，不推演玩家世界的制度、疆域或結局。',introducedRevision:3 },
   { id:'cao-cao-dies-cao-pi-succeeds-220',kind:EVENT_KIND,title:'曹操卒於洛陽、曹丕承接魏王事務',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉記建安二十五年春正月至洛陽、庚子太祖崩；卷二〈魏書·文帝紀〉記曹丕嗣位為丞相、魏王，後改建安二十五年為延康元年。本內容包依年序列為公元 220 年並採年級精度。',causes:['cao-cao-death-and-cao-pi-succession-220'],carrier:'曹操、曹丕與魏王朝廷（史書所載）',description:'記錄曹操去世及曹丕承接丞相、魏王職位的政權交接背景；不補月內行程、私下遺言或繼承爭議，也不改變玩家角色狀態。',introducedRevision:138 },
   { id:'liu-bei-proclaims-emperor-221',kind:EVENT_KIND,title:'劉備於成都即皇帝位',...sameYear(221),precision:YEAR_PRECISION,source:'《三國志》卷三十二〈蜀書·先主傳〉記章武元年劉備於成都武擔之南即皇帝位；本內容包採年級精度。',causes:['shu-han-imperial-proclamation'],carrier:'劉備與蜀漢朝廷（歷史事件）',description:'記錄劉備建立蜀漢政權的稱帝節點；不替玩家選擇陣營，也不模擬完整建國制度。',introducedRevision:6 },
-  { id:'sun-quan-accepts-king-of-wu-title-221',kind:EVENT_KIND,title:'孫權徙治武昌、受魏封吳王',...sameYear(221),precision:YEAR_PRECISION,source:SG47+'記黃初二年孫權自公安都鄂、改名武昌，十一月魏文帝策命孫權為吳王；傳文並於該段回述「自魏文帝踐祚，權使命稱藩」，原文未另給稱藩使節或月份；裴松之注引《江表傳》又記孫權群臣曾議不受魏封，孫權以時勢回應而接受。本內容包採年級精度。',carrier:'孫權、曹丕與孫吳群臣（歷史記載）',description:'記錄孫權遷治武昌、受魏冊封為吳王及史料所載遣使稱藩的背景與朝臣議論；該稱藩回述不另定月份或年份，也不推演外交動機或稱藩完整程序、玩家世界的臣屬關係。',introducedRevision:93 },
+  { id:'sun-quan-accepts-king-of-wu-title-221',kind:EVENT_KIND,title:'孫權徙治武昌、受魏封吳王',...sameYear(221),precision:YEAR_PRECISION,source:SG47+'記黃初二年孫權自公安都鄂、改名武昌，十一月魏文帝策命孫權為吳王；傳文並於該段回述「自魏文帝踐祚，權使命稱藩」，原文未另給稱藩使節或月份；裴松之注引《江表傳》另記魏廷求雀頭香、大貝、明珠、象牙、犀角、玳瑁、孔雀、翡翠、鬥鴨與長鳴雞，群臣奏議不宜給與，孫權命備送所求物品。本內容包採年級精度。',carrier:'孫權、曹丕與孫吳群臣（歷史記載）',description:'記錄孫權遷治武昌、受魏冊封為吳王、遣使稱藩背景，以及裴注所載魏廷求珍物與吳廷奏議後備送物品；該稱藩回述不另定月份或年份，也不推演外交動機、供物價值或玩家世界的臣屬關係。',introducedRevision:93 },
   { id:'sun-quan-declines-imperial-title-221',kind:EVENT_KIND,title:'群臣勸孫權即尊號，孫權不許',...sameYear(221),precision:YEAR_PRECISION,source:SG47+'黃初二年條記「夏四月，權群臣勸即尊號，權不許」；本內容包只記勸進及拒絕，不推論孫權動機，採年級精度。',carrier:'孫權與群臣（史書所載）',description:'記錄群臣勸孫權即尊號而孫權不許；不補政治動機、廷議內容或後續政策。',sourceDateNote:'原史紀年：黃初二年夏四月，群臣勸即尊號，權不許。漢曆月份不換算為遊戲模型日期。',introducedRevision:124 },
   { id:'sun-quan-capital-reports-sweet-dew-221',kind:EVENT_KIND,title:'建業上報甘露降',...sameYear(221),precision:YEAR_PRECISION,source:SG47+'黃初二年條記「五月，建業言甘露降」；本內容包只記錄史書所載上報，不判定現象真偽或其祥瑞含義，採年級精度。',carrier:'建業方面（孫權治下的報告來源；非孫權本人行為）',description:'記錄《吳主傳》所載建業上報甘露降一事；不把上報記錄等同現象已獲驗證，也不推論祥瑞性、政治效果或後續決策。',sourceDateNote:'原史紀年：黃初二年五月，建業言甘露降。僅記史書上報內容，不判定真偽或祥瑞，不換算為遊戲日曆。',introducedRevision:123 },
   { id:'sun-quan-builds-wuchang-and-warns-generals-221',kind:EVENT_KIND,title:'築武昌城、告誡諸將保持戒備',...sameYear(221),precision:YEAR_PRECISION,source:SG47+'黃初二年八月記孫權築武昌城並下令諸將戒備；本內容包採年級精度，保留八月為原史月份。',carrier:'孫權與孫吳諸將（史書所載）',description:'記錄築武昌城及孫權告誡諸將不可忽視軍備戒備；不推演未載的工程規模、軍隊數量或訓練細節。',sourceDateNote:'原史紀年：黃初二年八月築武昌城、告誡諸將。漢曆月份不換算為遊戲模型月份。',introducedRevision:122 },
@@ -1261,6 +1261,17 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
    invasionNode.evidence.push(note);
    if(invasionNode.status==='triggered'&&!model.eventLedger.some(item=>item.type==='史實來源補充'&&item.detail.includes('分清南征啟程與各路攻吳日期'))){
     pushEvent(model,'史實來源補充',note,'《三國志》卷二〈魏書·文帝紀〉黃初三年六月、七月條；卷四十七〈吳書·吳主傳〉黃武元年秋九月條');
+   }
+  }
+ }
+ const sunQuanGiftsAnnotationVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-384');
+ if(targetIndex>=sunQuanGiftsAnnotationVersionIndex&&currentIndex<sunQuanGiftsAnnotationVersionIndex){
+  const diplomacyNode=model.nodes.find(node=>node.contentId==='sun-quan-accepts-king-of-wu-title-221');
+  const note='來源補充：裴松之注引《江表傳》記魏廷求雀頭香、大貝、明珠、象牙、犀角、玳瑁、孔雀、翡翠、鬥鴨、長鳴雞；群臣奏稱所求珍玩非禮、建議不予，孫權答後「皆具以與之」。僅補記原文所載奏議與備送結果，不推測供物價值或外交動機。';
+  if(diplomacyNode&&!diplomacyNode.evidence.some(item=>item.includes('魏廷求雀頭香、大貝'))){
+   diplomacyNode.evidence.push(note);
+   if(diplomacyNode.status==='triggered'&&!model.eventLedger.some(item=>item.type==='史實來源補充'&&item.detail.includes('魏廷求雀頭香、大貝'))){
+    pushEvent(model,'史實來源補充',note,'《三國志》卷四十七裴松之注引《江表傳》黃初二年條');
    }
   }
  }
