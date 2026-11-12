@@ -281,6 +281,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'dong-guiren-empress-dowager-169',
       'great-wind-hail-169',
       'court-sealed-memorial-edict-169',
+      'duan-jiong-defeats-xianling-shehuosai-169',
       'jiangxia-uprising-169',
       'taiwei-sikong-appointments-169',
       'epidemic-lingdi-171',
@@ -297,8 +298,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'tang-zhen-dismissed-xu-xun-sikong-174',
       'drought-locust-seven-provinces-176',
       'xianbei-raids-three-frontiers-176',
-      'wind-hail-and-memorial-edict-179',
-      'duan-jiong-defeats-dongqiang-shehuosai-179',
       'guo-xi-succeeds-liu-chong-taiwei-179',
       'xianbei-raids-bingzhou-179',
       'taiwei-and-minister-succession-guanghe-2-179',
@@ -366,6 +365,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(210);
+    expect(uniqueNotedEvents.size).toBe(209);
   });
 });

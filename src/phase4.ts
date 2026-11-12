@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-304';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-305';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:302},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:303},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -103,6 +103,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'dong-guiren-empress-dowager-169',kind:EVENT_KIND,title:'尊慎園董貴人為孝仁皇后',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年三月乙巳，尊慎園董貴人為孝仁皇后。只記原文所載尊號，不推定此前身分狀態、儀制、在世與否或其他政治後果。',carrier:'慎園董貴人與漢廷（史料記載）',description:'記錄建寧二年尊慎園董貴人為孝仁皇后；不補儀式、人物生死狀態、執行細節或玩家人物狀態。',sourceDateNote:'《後漢書》記建寧二年三月乙巳；遊戲僅按 169 年級觸發，不換算漢曆日期為模型時間。',introducedRevision:302 },
   { id:'great-wind-hail-169',kind:EVENT_KIND,title:'夏四月大風雨雹',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年夏四月癸巳記大風、雨雹。原文未述地點範圍、損害或因果。',carrier:'建寧二年天候記事（史料記載）',description:'記錄原典所載大風與雨雹；不推定發生地點、影響範圍、損害、傷亡或成因。',sourceDateNote:'《後漢書》記建寧二年夏四月癸巳；遊戲僅按 169 年級觸發，不換算漢曆日期為模型時間。',introducedRevision:303 },
   { id:'court-sealed-memorial-edict-169',kind:EVENT_KIND,title:'詔公卿以下各上封事',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年夏四月癸巳條又記「詔公卿以下各上封事」。原文未說明詔令與同條天候記事的因果關係，也未記封事內容或採納結果。',carrier:'漢廷與奉詔公卿以下（史料記載）',description:'只記原典所載詔令；不推定封事內容、上書者名單、朝廷採納情況或政策效果，也不與同條風雹記事建立因果。',sourceDateNote:'《後漢書》建寧二年夏四月癸巳條記此詔；遊戲僅按 169 年級觸發，不換算漢曆日期為模型時間。',introducedRevision:304 },
+  { id:'duan-jiong-defeats-xianling-shehuosai-169',kind:EVENT_KIND,title:'段熲大破先零羌於射虎塞外谷',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年秋七月記破羌將軍段熲大破先零羌於射虎塞外谷，並稱「東羌悉平」。只記原文，不推估兵力、傷亡、戰線或其後各部狀態。',carrier:'段熲、先零羌與東羌（史料記載）',description:'記錄秋七月段熲於射虎塞外谷大破先零羌及原文所稱東羌悉平；不推估傷亡、兵力、戰場邊界，也不把記載推廣為此後無羌人活動。',sourceDateNote:'《後漢書》卷八建寧二年秋七月記段熲大破先零羌於射虎塞外谷，原文稱東羌悉平；遊戲只按 169 年級觸發，不換算模型日期。',introducedRevision:305 },
   { id:'jiangxia-uprising-169',kind:EVENT_KIND,title:'江夏蠻叛，州郡討平',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年九月記「江夏蠻叛，州郡討平之」；'+HH86+'亦繫於建寧二年。只保留原文所述起事與討平，不推演規模、傷亡或行政後果。',carrier:'江夏地方起事者與州郡官府（史料記載）',description:'記錄建寧二年江夏起事及州郡討平；不將史料族群稱謂擴寫成現代身分，不補戰事、傷亡、參與人數或後續控制。',sourceDateNote:'《後漢書》卷八繫於建寧二年九月；遊戲只按 169 年級呈現，不將漢曆月份換算為模型日期。',introducedRevision:237 },
   { id:'taiwei-sikong-appointments-169',kind:EVENT_KIND,title:'169年三公任免',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年五月太尉聞人襲罷、司空許栩免；六月劉寵為太尉、許訓為司徒、劉囂為司空。',carrier:'朝廷',description:'只記任免，不改玩家官職。',sourceDateNote:'五月、六月；只按年級呈現。',introducedRevision:239 },
   { id:'bingzhou-raid-169',kind:EVENT_KIND,title:'鮮卑寇并州',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年條記「鮮卑寇并州」。',carrier:'鮮卑',description:'只記侵擾，不推演未載後果。',introducedRevision:240 },
@@ -134,8 +135,8 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'drought-locust-seven-provinces-176',kind:EVENT_KIND,title:'大旱與七州蝗災',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年夏四月條記「大旱，七州蝗」。原文未列七州名稱或災情後果。',carrier:'漢廷與受災州郡（史料記載）',description:'記錄史書所載大旱與七州蝗災；不推定七州範圍、作物損失、饑荒、人口遷徙或其他後果。',sourceDateNote:'《後漢書》卷八〈孝靈帝紀〉熹平五年夏四月記大旱、七州蝗；保留漢曆原註，遊戲只按 176 年級觸發，不推算月日或災害持續時間。',introducedRevision:248 },
   { id:'xianbei-raids-three-frontiers-176',kind:EVENT_KIND,title:'鮮卑寇漢廷三邊',...sameYear(176),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十七熹平五年夏四月條記鮮卑寇三邊，注指東、西、北邊；未述侵擾結果。',carrier:'鮮卑與漢廷三邊（史載）',description:'記錄鮮卑寇三邊，不補具體郡縣、戰事、傷亡或控制變化；與 177 年三路出塞分開。',sourceDateNote:'《資治通鑑》卷五十七熹平五年夏四月條載鮮卑寇三邊，注指東、西、北邊；僅按 176 年級呈現。',introducedRevision:249 },
   { id:'epidemic-party-ban-relief-179',kind:EVENT_KIND,title:'大疫致醫藥，黨人小功以下禁錮解除',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年條記春季大疫、使者巡行致醫藥；四月大赦並記「諸黨人禁錮小功以下皆除之」。本節點不把有限解除擴寫為全面解禁。',carrier:'漢廷、疫病影響者與部分黨人親屬（史料記載）',description:'記錄疫病救療及特定範圍禁錮解除；不推估感染與死亡人數，也不宣稱所有黨人及親屬均獲解禁。',introducedRevision:146 },
-  { id:'wind-hail-and-memorial-edict-179',kind:EVENT_KIND,title:'夏四月大風雨雹，詔公卿上封事',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年夏四月癸巳記「大風雨雹」，並詔公卿以下各上封事。只記原文，不推演災損、成因或上書內容。',carrier:'漢廷（史料記載）',description:'記錄夏四月大風雨雹及詔公卿上封事；原文未說明受災地點、損失、成因與上書內容，均不補推。',sourceDateNote:'《後漢書》卷八光和二年夏四月癸巳記大風雨雹，並詔公卿以下各上封事。保留漢曆原註；遊戲只按 179 年級觸發，不換算月日或推演天候後果。',introducedRevision:256 },
-  { id:'duan-jiong-defeats-dongqiang-shehuosai-179',kind:EVENT_KIND,title:'段熲於射虎塞外谷大破東羌',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年秋七月記破羌將軍段熲於射虎塞外谷大破先零羌，並稱「東羌悉平」。只記原文，不推估兵力、傷亡、戰線或其後各部狀態。',carrier:'段熲、先零羌與東羌（史料記載）',description:'記錄秋七月段熲於射虎塞外谷大破先零羌及原文所稱東羌悉平；不推估傷亡、兵力、戰場邊界，也不把記載推廣為此後無羌人活動。',sourceDateNote:'《後漢書》卷八光和二年秋七月記段熲大破先零羌於射虎塞外谷，原文稱東羌悉平。保留史料月份，遊戲只按 179 年級觸發，不換算模型日期。',introducedRevision:257 },
+  { id:'wind-hail-and-memorial-edict-179',kind:EVENT_KIND,title:'舊版誤繫年：建寧二年風雹與封事詔令（正確為169年）',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'此舊版節點誤繫光和二年（179）。原文「夏四月癸巳，大風，雨雹。詔公卿以下各上封事」見於建寧二年（169）條；v305 起退役，改由 169 年大風雨雹及封事詔令節點分開記錄。',carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年風雹及求封事詔令誤列於 179 年；v305 起退役，正確年次的兩項記事分列於 169 年。遷移保留舊事件帳，不回補已過年份。',introducedRevision:256,retired:true,retiredIn:'phase4-scenario-305' },
+  { id:'duan-jiong-defeats-dongqiang-shehuosai-179',kind:EVENT_KIND,title:'舊版誤繫年：段熲射虎塞外谷戰事（正確為169年）',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'此舊版節點誤繫光和二年（179）。原文秋七月「破羌將軍段熲大破先零羌於射虎塞外谷，東羌悉平」見於建寧二年（169）條；v305 起退役，改由 169 年節點記錄。',carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年段熲射虎塞外谷記事誤列於 179 年；v305 起退役，改列於 169 年。原文稱「東羌悉平」，不推估兵力、傷亡、戰線或此後各部狀態。',introducedRevision:257,retired:true,retiredIn:'phase4-scenario-305' },
   { id:'guo-xi-succeeds-liu-chong-taiwei-179',kind:EVENT_KIND,title:'郭禧繼任太尉',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年十一月記太尉劉寵免、太僕郭禧為太尉；不推定免職原因、任期或官制效果。',carrier:'劉寵、郭禧與漢廷（史料記載）',description:'記錄十一月劉寵免太尉、郭禧繼任；不推定免職原因、實際任期或其他人事變更。',sourceDateNote:'《後漢書》卷八光和二年十一月記劉寵免太尉、郭禧繼任。保留史料月份，遊戲只按 179 年級觸發，不換算模型日期。',introducedRevision:257 },
   { id:'xianbei-raids-bingzhou-179',kind:EVENT_KIND,title:'鮮卑寇并州',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年條另記「鮮卑寇并州」，未標具體月份或戰事結果；不推估傷亡、行軍路線或控制變化。',carrier:'鮮卑與并州地方（史料記載）',description:'記錄光和二年鮮卑侵擾并州；原文未標月份或戰事結果，不補推其規模、傷亡、路線與控制變化。',sourceDateNote:'《後漢書》卷八於光和二年十一月記事後另記鮮卑寇并州，該句未標具體月份；保留未繫月的來源粒度，遊戲只按 179 年級觸發。',introducedRevision:257 },
   { id:'taiwei-and-minister-succession-guanghe-2-179',kind:EVENT_KIND,title:'179 年三公更替：劉郃、段熲、張濟相繼任職',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年三月條記司徒袁滂免、大鴻臚劉郃為司徒；同條乙丑日記太尉橋玄罷、太中大夫段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空。本內容包採年級精度，只記原文任免，不推定任命原因、任期或其他官制效果。',carrier:'袁滂、劉郃、橋玄、段熲、袁逢、張濟與漢廷（史料記載）',description:'記錄 179 年司徒袁滂免、劉郃繼任，太尉橋玄免、段熲繼任，以及司空袁逢免、張濟繼任；不推定任免原因、實際任期或更廣泛官制效果，也不轉成玩家人事變更。',sourceDateNote:'原史紀年：《後漢書》卷八記光和二年三月袁滂免、劉郃為司徒；乙丑日橋玄罷、段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空，但未另標該項日月。保留已標示的漢曆月份與干支，不換算模型日期或推定月內間隔；遊戲只按 179 年級觸發。',introducedRevision:211 },
@@ -613,6 +614,17 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
    pushEvent(model,'史實資料勘誤','年序複核：舊版把《後漢書》卷八建寧二年九月的江夏與丹陽兩則記事誤繫於光和二年（179）。現由 169 年江夏、丹陽兩個獨立節點記錄；保留既有事件帳並附加此勘誤，不回補已過年次。','《後漢書》卷八〈孝靈帝紀〉建寧二年九月；卷八十六〈南蠻西南夷列傳〉建寧二年');
   }
  }
+ const 建寧二年射虎塞記事勘誤版本=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-305');
+ if(targetIndex>=建寧二年射虎塞記事勘誤版本&&currentIndex<建寧二年射虎塞記事勘誤版本){
+  const obsoleteIds=['wind-hail-and-memorial-edict-179','duan-jiong-defeats-dongqiang-shehuosai-179'];
+  const obsoleteNodes=model.nodes.filter(node=>obsoleteIds.includes(node.contentId));
+  const mistakenEventWasRecorded=obsoleteNodes.some(node=>node.status==='triggered')||model.eventLedger.some(item=>item.type==='史實事件形成'&&obsoleteIds.some(id=>item.detail.includes(id)));
+  model.nodes=model.nodes.filter(node=>!obsoleteIds.includes(node.contentId));
+  model.causes=model.causes.filter(cause=>!obsoleteIds.includes(cause));
+  if(mistakenEventWasRecorded&&!model.eventLedger.some(item=>item.type==='史實資料勘誤'&&item.detail.includes('射虎塞外谷記事'))){
+   pushEvent(model,'史實資料勘誤','《後漢書》卷八年序複核：大風雨雹、詔公卿以下各上封事及段熲射虎塞外谷戰事，均見於建寧二年（169），並非光和二年（179）。舊版 179 年事件帳保留不改寫；舊待發節點移除，正確 169 年記事分列。已到或晚於 169 年的存檔不回溯觸發。','《後漢書》卷八〈孝靈帝紀〉建寧二年夏四月、秋七月條；光和二年條');
+  }
+ }
  const sourceCorrectionVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-106');
  if(targetIndex>=sourceCorrectionVersionIndex&&currentIndex<sourceCorrectionVersionIndex){
   const legacyNode=model.nodes.find(node=>node.contentId==='sun-quan-mother-dies-201');
@@ -730,6 +742,8 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
   if(model.year>content.endYear||((content.lateSameYear??((content.introducedRevision??0)>=DEFAULT_LATE_SAME_YEAR_REVISION))&&model.year===content.endYear)){node.status='resolved';node.resolvedYear=content.endYear;node.evidence.push(model.year===content.endYear?'新增內容只有年級日期，無法判定事件在目前年份內是否已發生；不回溯觸發。':'此歷史內容於目前存檔日期後才加入；不回溯觸發。');}
   else processHistoryNode(model,node);
  }
+ const 建寧二年更正節點Ids=['great-wind-hail-169','court-sealed-memorial-edict-169','duan-jiong-defeats-xianling-shehuosai-169'];
+ for(const node of model.nodes){if(!建寧二年更正節點Ids.includes(node.contentId)||node.status!=='pending'||model.year<169)continue;node.status='resolved';node.resolvedYear=169;node.evidence.push('年序勘誤升版時已到或晚於建寧二年（169）；保留正確年次記事，不回溯觸發。');}
  if(targetIndex>=wulingRevoltVersionIndex&&currentIndex<wulingRevoltVersionIndex){
   const wulingNode=model.nodes.find(node=>node.contentId==='wuling-revolt-suppressed-186');
   if(wulingNode&&!wulingNode.evidence.some(item=>item.includes('中平三年武陵蠻記事')))wulingNode.evidence.push('中平三年武陵蠻記事：《後漢書》卷八記冬十月武陵蠻叛、寇郡界，郡兵討破。只按原典年級觸發，不把漢曆月份換算成遊戲日期；同年舊存檔不回溯觸發。');

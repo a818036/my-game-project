@@ -41,20 +41,17 @@ function questionWorld(): GameState {
 describe('A604 補列 179 年大風雨雹及上封事詔令', () => {
   it('依《後漢書》保留夏四月癸巳來源註記，只按年級呈現且問答不改狀態', () => {
     const node = HISTORY_CONTENT.find((item) => item.id === id);
-    expect(node).toMatchObject({ startYear: 179, endYear: 179, precision: 'year', introducedRevision: 256 });
-    expect(node?.source).toContain('夏四月癸巳');
-    expect(node?.source).toContain('大風雨雹');
-    expect(node?.source).toContain('各上封事');
-    expect(node?.description).toContain('不補推');
-    expect(node?.sourceDateNote).toContain('遊戲只按 179 年級觸發');
+    expect(node).toMatchObject({ startYear: 179, endYear: 179, retired: true, retiredIn: PHASE4_CONTENT_VERSION });
+    expect(node?.source).toContain('建寧二年（169）');
 
     const fresh = advancePhase4(createPhase4Model(178, 1, [], PHASE4_CONTENT_VERSION), 360);
-    expect(fresh.nodes.find((item) => item.contentId === id)?.status).toBe('triggered');
+    expect(fresh.nodes.find((item) => item.contentId === id)).toBeUndefined();
+    expect(fresh.eventLedger.some(item => item.type === '史實事件形成' && item.detail.includes('大風雨雹'))).toBe(false);
 
     const state = questionWorld();
     const before = structuredClone(state);
     const answer = answerKnownHistoricalEventQuestion('西元 179 年有哪些記載？', state);
-    expect(answer?.answer).toContain('大風雨雹');
+    expect(answer?.answer).not.toContain('大風雨雹');
     expect(answer?.answer).toContain('《後漢書》卷八');
     expect(state).toEqual(before);
   });
@@ -68,12 +65,12 @@ describe('A604 補列 179 年大風雨雹及上封事詔令', () => {
     expect(migrated.events[0]).toEqual(old.events[0]);
     expect(migrated.state.phase4?.contentVersion).toBe(PHASE4_CONTENT_VERSION);
     expect(migrated.state.phase4?.eventLedger.slice(0, prefix.length)).toEqual(prefix);
-    expect(migrated.state.phase4?.nodes.find((item) => item.contentId === id)?.status).toBe('pending');
-    expect(advancePhase4(migrated.state.phase4!, 360).nodes.find((item) => item.contentId === id)?.status).toBe('triggered');
+    expect(migrated.state.phase4?.nodes.find((item) => item.contentId === id)).toBeUndefined();
+    expect(advancePhase4(migrated.state.phase4!, 360).nodes.find((item) => item.contentId === id)).toBeUndefined();
     expect(replay(migrated.events)).toEqual(migrated.state);
 
     const late = verifySave(toJson(saveAtVersion(179, 605)));
-    expect(late.state.phase4?.nodes.find((item) => item.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 179 });
+    expect(late.state.phase4?.nodes.find((item) => item.contentId === id)).toBeUndefined();
     expect(late.state.phase4?.eventLedger.some((item) => item.detail.includes('大風雨雹'))).toBe(false);
   });
 });
