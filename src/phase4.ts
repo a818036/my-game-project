@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-333';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-334';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:331},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:332},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -292,6 +292,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'anping-ganling-respond-yellow-turbans-184',kind:EVENT_KIND,title:'安平、甘陵人執王響應黃巾',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年春二月記「安平、甘陵人各執其王以應之」；注文指安平王續、甘陵王忠。',carrier:'安平、甘陵地方（史料記載）',description:'只記原文被執響應，不推定二王意願或後續。',sourceDateNote:'中平元年春二月。',introducedRevision:264 },
   { id:'guangyang-yellow-turban-kills-governors-184',kind:EVENT_KIND,title:'廣陽黃巾殺幽州刺史郭勳及太守劉衞',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記「廣陽黃巾殺幽州刺史郭勳及太守劉衞」。原文未繫月份；本節點採年級精度，不推定月份、戰事細節、其他傷亡或地方控制變化。',carrier:'廣陽黃巾、幽州刺史郭勳及太守劉衞（史料記載）',description:'記錄廣陽黃巾殺幽州刺史郭勳及太守劉衞；原文未明載月份，不推定戰事經過、原因、其他傷亡或後續行政變化。',introducedRevision:265 },
   { id:'xiang-xu-zhang-jun-die-in-prison-184',kind:EVENT_KIND,title:'向栩、張鈞因言宦者下獄死',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記「侍中向栩、張鈞坐言宦者，下獄死」。原文未詳述案情、執行日期或其他涉案者。',carrier:'向栩、張鈞與漢廷司法機關（史書記載）',description:'記錄向栩、張鈞因言宦者而下獄死；不補推兩人的言論內容、審訊過程、處刑方式或其他涉案者。',introducedRevision:333 },
+  { id:'zhu-jun-defeated-by-bocai-184',kind:EVENT_KIND,title:'朱儁先為波才所敗',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記「朱儁為黃巾波才所敗」。原文未繫月份；本節點不補戰場、兵力、傷亡或退卻細節，也不與後續長社之戰合併。',carrier:'朱儁、波才與交戰軍隊（史料記載）',description:'記錄朱儁曾為波才所敗；只採年級精度，不補戰場、兵力、傷亡、退卻路線或此後軍隊狀態，也不與後續長社戰局合併。',introducedRevision:334 },
+  { id:'runnan-yellow-turbans-defeat-zhao-qian-184',kind:EVENT_KIND,title:'汝南黃巾於邵陵擊敗太守趙謙',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記「汝南黃巾敗太守趙謙於邵陵」。原文未繫月份；本節點不補邵陵以外的戰況、傷亡或趙謙後續。',carrier:'汝南黃巾、太守趙謙與邵陵地方（史料記載）',description:'記錄汝南黃巾在邵陵擊敗太守趙謙；只採年級精度，不推定月份、傷亡、戰事經過、趙謙後續或郡縣控制變化。',introducedRevision:334 },
+  { id:'jia-cong-suppresses-jiaozhi-mutiny-184',kind:EVENT_KIND,title:'交阯屯兵拘執刺史、合浦太守，賈琮討平',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記交阯屯兵執刺史及合浦太守來達、自稱「柱天將軍」，並記遣交阯刺史賈琮討平之。原文未述起事者姓名、兵數、交戰細節與具體日期；本節點僅按年級呈現所載結果。',carrier:'交阯屯兵、刺史及合浦太守來達、交阯刺史賈琮（史料記載）',description:'記錄交阯屯兵拘執刺史與合浦太守來達、自稱「柱天將軍」，以及賈琮討平的原典記載；不補起事者姓名、兵數、戰場細節、傷亡或後續治理。',introducedRevision:334 },
   { id:'huangjin-campaign-outcome-184',kind:EVENT_KIND,title:'廣宗、下曲陽戰事與張角兄弟敗亡',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年冬十月記皇甫嵩與黃巾戰於廣宗、獲張角弟梁，張角先死而遭戮屍；十一月記嵩破黃巾於下曲陽、斬張角弟寶。卷七十一〈皇甫嵩朱儁列傳〉補廣宗交戰、斬梁，以及嵩與鉅鹿太守郭典攻下曲陽。本節點只採公元年級觸發並保留原史月序，不補日序、地點座標或其他戰線的因果。',carrier:'漢廷討伐軍與黃巾軍（史料記載）',description:'記錄十月廣宗戰事中張角之弟張梁被斬、張角病死後遭戮屍，以及十一月皇甫嵩與郭典攻下曲陽、張角之弟張寶被斬。只保留原典所載月序與結果；不補逐日日程、精確兵力、平民命運，不合併各路戰事，也不表示其他黃巾軍活動同年立即全部停止。',sourceDateNote:'《後漢書》卷八、卷七十一記中平元年冬十月廣宗、十一月下曲陽記事；漢曆月份只保留原文次序，不轉為遊戲月日。',introducedRevision:172 },
   { id:'court-appointments-april-184',kind:EVENT_KIND,title:'三公任免',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'夏四月楊賜免、鄧盛任太尉；張濟免、張溫任司空。',carrier:'朝廷',description:'不推測任免原因、任期。',sourceDateNote:'夏四月',introducedRevision:263 },
   { id:'zhu-jun-captures-wancheng-184',kind:EVENT_KIND,title:'朱儁攻取宛城、孫夏敗亡',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記「癸巳，朱儁拔宛城，斬黃巾別帥孫夏」；卷七十一〈皇甫嵩朱儁列傳〉記朱儁先前曾被波才擊敗，後奉詔討南陽，並記孫夏為黃巾別帥。本節點保留史書所載行動與結果；原典未在癸巳前明列月份，不推定月日、完整戰役或其他黃巾軍後續。',causes:['zhu-jun-wancheng-campaign-184'],carrier:'朱儁與南陽黃巾軍（史料記載）',description:'記錄朱儁攻取宛城、斬黃巾別帥孫夏。只按公元年級觸發，不把原文「癸巳」換算為未明載的月日，不推演完整戰役、額外傷亡或其他黃巾勢力的結局。',introducedRevision:173 },
