@@ -330,6 +330,14 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'solar-eclipse-xiping-2-173',
       'xianbei-raid-beidi-bingzhou-174',
       'tang-zhen-dismissed-xu-xun-sikong-174',
+      'fuyu-envoys-tribute-174',
+      'amnesty-xiping-3-174',
+      'chen-dan-appointed-taiwei-174',
+      'zhongshan-prince-chang-dies-fief-ended-174',
+      'kang-enfeoffed-jinan-174',
+      'luo-river-overflow-174',
+      'prisoners-redeem-unresolved-xiping-3-174',
+      'rencheng-prince-bo-dies-174',
       'drought-locust-seven-provinces-176',
       'xianbei-raids-three-frontiers-176',
       'guo-xi-succeeds-liu-chong-taiwei-179',
@@ -399,6 +407,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(244);
+    expect(uniqueNotedEvents.size).toBe(252);
   });
 });

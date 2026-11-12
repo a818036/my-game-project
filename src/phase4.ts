@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-321';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-322';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:319},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:320},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -165,6 +165,14 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'xusheng-revolt-suppressed-174',kind:EVENT_KIND,title:'臧旻、陳夤於會稽破許生並斬之',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年十一月條記楊州刺史臧旻率丹陽太守陳夤大破許生於會稽並斬之。本節點採年級精度，不補戰鬥日程或未載的傷亡數。',carrier:'臧旻、陳夤與許生（史料記載）',description:'記錄對 172 年會稽起事的後續處置，依來源記載許生被斬；不補寫兵力、戰場細節或其他人物命運。',introducedRevision:146 },
   { id:'xianbei-raid-beidi-bingzhou-174',kind:EVENT_KIND,title:'鮮卑寇北地、并州，夏育追擊破敵',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年十二月條記「鮮卑寇北地，北地太守夏育追擊破之」，又記「鮮卑又寇并州」。原文未載第二次侵擾的結果。',carrier:'鮮卑、北地太守夏育與并州地方（史料記載）',description:'記錄十二月鮮卑侵擾北地及夏育追擊破敵，並分開保留同條「又寇并州」的記事；不把北地戰果延伸至并州，不推演傷亡或控制變化。',sourceDateNote:'《後漢書》卷八熹平三年十二月條先記鮮卑寇北地、北地太守夏育追擊破之，又記鮮卑寇并州但未載結果。保留漢曆十二月原註與兩則記事差異；遊戲只按 174 年級觸發，不換算模型日期。',introducedRevision:245 },
   { id:'tang-zhen-dismissed-xu-xun-sikong-174',kind:EVENT_KIND,title:'司空唐珍罷，許訓為司空',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年條記「司空唐珍罷，永樂少府許訓為司空」。',carrier:'司空唐珍、永樂少府許訓與漢廷（史料記載）',description:'記錄唐珍免司空、許訓任司空；不改動玩家官職，不推測免職原因、任期或其他官制效果。',sourceDateNote:'《後漢書》卷八熹平三年條記司空唐珍罷、永樂少府許訓為司空；原典未對此句另標月份，保留年級精度，不推算月日，遊戲只按 174 年級觸發。',introducedRevision:246 },
+  { id:'fuyu-envoys-tribute-174',kind:EVENT_KIND,title:'夫餘國遣使貢獻',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年春正月記「夫餘國遣使貢獻」。原文未列使者姓名、貢物或後續交涉。',carrier:'夫餘國使者與漢廷（史料記載）',description:'記錄夫餘國遣使貢獻；不補使者姓名、貢物、交涉過程或外交效果。',sourceDateNote:'《後漢書》卷八熹平三年春正月記夫餘國遣使貢獻；遊戲只按 174 年級觸發，不換算模型日期。',introducedRevision:322 },
+  { id:'amnesty-xiping-3-174',kind:EVENT_KIND,title:'大赦天下',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年二月己巳記「大赦天下」。原文未述個案範圍或執行情況。',carrier:'漢廷與受詔者（史料記載）',description:'記錄二月大赦天下；不推定個案結果、實際執行或玩家法律狀態。',sourceDateNote:'《後漢書》卷八熹平三年二月己巳記大赦天下；遊戲只按 174 年級觸發，不換算模型日期。',introducedRevision:322 },
+  { id:'chen-dan-appointed-taiwei-174',kind:EVENT_KIND,title:'太常陳耽為太尉',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年二月條記「太常陳耽為太尉」。只記任命，不推測前任交接、任命日或任期。',carrier:'太常陳耽與漢廷（史料記載）',description:'記錄陳耽由太常任太尉；不推測前任、任命原因、交接日期或任期，也不改動玩家官職。',sourceDateNote:'《後漢書》卷八將太常陳耽為太尉列於熹平三年二月己巳大赦之後，未另標任命日；保留篇章次序，只按年級觸發。',introducedRevision:322 },
+  { id:'zhongshan-prince-chang-dies-fief-ended-174',kind:EVENT_KIND,title:'中山王暢薨，無子，國除',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年三月記「中山王暢薨，無子，國除」。不補年齡、死因、封國後續或其他人物狀態。',carrier:'中山王暢與中山國（史料記載）',description:'記錄中山王暢去世、無子及國除；不推測死因、嗣位安排、封國後續或玩家狀態。',sourceDateNote:'《後漢書》卷八熹平三年三月記中山王暢薨、無子、國除；遊戲只按 174 年級觸發，不換算模型日期。',introducedRevision:322 },
+  { id:'kang-enfeoffed-jinan-174',kind:EVENT_KIND,title:'封河間王利子康為濟南王',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年夏六月記「封河閒王利子康為濟南王，奉孝仁皇祀」。保留原文稱謂，不推測未載的儀式、封地範圍或制度效果。',carrier:'河間王利之子康與漢廷（史料記載）',description:'記錄河間王利之子康受封濟南王並奉孝仁皇祀；不補個人其他姓名、儀式、封地範圍或制度效果。',sourceDateNote:'《後漢書》卷八熹平三年夏六月記封河間王利子康為濟南王；遊戲只按 174 年級觸發，不換算模型日期。',introducedRevision:322 },
+  { id:'luo-river-overflow-174',kind:EVENT_KIND,title:'洛水溢',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年秋條記「洛水溢」。原文未載地點細節、損害或後續處置。',carrier:'洛水沿岸地方（史料記載）',description:'記錄洛水溢；不推測洪水範圍、傷亡、損害、原因或後續處置。',sourceDateNote:'《後漢書》卷八熹平三年秋條記洛水溢；保留季節精度，不推定月份，遊戲只按 174 年級觸發。',introducedRevision:322 },
+  { id:'prisoners-redeem-unresolved-xiping-3-174',kind:EVENT_KIND,title:'繫囚罪未決入縑贖令',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年冬十月癸丑記「令天下繫囚罪未決，入縑贖」。原文未述執行、適用個案或後續結果。',carrier:'漢廷與繫囚罪未決者（史料記載）',description:'記錄繫囚罪未決者入縑贖令；不推定赎額、個案適用、實際執行或司法效果。',sourceDateNote:'《後漢書》卷八熹平三年冬十月癸丑記繫囚罪未決入縑贖令；遊戲只按 174 年級觸發，不換算模型日期。',introducedRevision:322 },
+  { id:'rencheng-prince-bo-dies-174',kind:EVENT_KIND,title:'任城王博薨',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年條於十一月臧旻等擊斬許生記事後記「任城王博薨」，未另標月份。',carrier:'任城王博（史料記載）',description:'記錄任城王博去世；原典未另標月份，不推定確切日期、死因、嗣位或封國後續。',sourceDateNote:'《後漢書》卷八在熹平三年十一月記事之後記任城王博薨，但未另標其月份；只保留篇章次序，遊戲按 174 年級觸發。',introducedRevision:322 },
   { id:'yizhou-revolt-quelled-176',kind:EVENT_KIND,title:'益州郡夷叛，太守李顒討平',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年條記「益州郡夷叛，太守李顒討平之」。本節點採年級精度，不把史料概述擴寫成完整族群、兵力或戰役名冊。',carrier:'益州郡地方起事者與太守李顒（史料記載）',description:'記錄益州郡地方起事及太守李顒討平的史書概述；不推演族群身分、戰役過程或傷亡。',introducedRevision:146 },
   { id:'cao-luan-executed-party-purge-176',kind:EVENT_KIND,title:'曹鸞訟黨人被誅，黨人門生故吏等禁錮',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年閏月條記永昌太守曹鸞「坐訟黨人，棄市」，並記詔黨人門生故吏父兄子弟在位者皆免官禁錮。本節點按年級精度呈現。',carrier:'曹鸞、遭黨錮者及其門生故吏親屬（史料記載）',description:'記錄曹鸞因申理黨人而被處死，以及詔令擴及相關在位者；不將處置外推至未被來源列明的全部親族或個別人物。',introducedRevision:146 },
   { id:'drought-locust-seven-provinces-176',kind:EVENT_KIND,title:'大旱與七州蝗災',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年夏四月條記「大旱，七州蝗」。原文未列七州名稱或災情後果。',carrier:'漢廷與受災州郡（史料記載）',description:'記錄史書所載大旱與七州蝗災；不推定七州範圍、作物損失、饑荒、人口遷徙或其他後果。',sourceDateNote:'《後漢書》卷八〈孝靈帝紀〉熹平五年夏四月記大旱、七州蝗；保留漢曆原註，遊戲只按 176 年級觸發，不推算月日或災害持續時間。',introducedRevision:248 },
