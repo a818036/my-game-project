@@ -762,6 +762,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wu-adopts-qianxiang-calendar-223',
       'wei-morning-raid-ruxu-defeated-223',
       'wu-captures-jin-zong-at-qichun-223',
+      'cao-campaign-guangling-224',
+      'cao-campaign-guangling-225',
       'sun-quan-campaigns-at-hefei-234',
       'wu-executes-wei-wen-zhuge-zhi-231',
       'shu-wei-qishan-lucheng-campaign-231',
@@ -774,6 +776,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(213);
-    expect(uniqueNotedEvents.size).toBe(530);
+    expect(uniqueNotedEvents.size).toBe(532);
   });
 });

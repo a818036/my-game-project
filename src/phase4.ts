@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-401';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-402';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:399},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:400},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -635,7 +635,8 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'wu-adopts-qianxiang-calendar-223',kind:EVENT_KIND,title:'吳改四分、使用乾象曆',...sameYear(223),precision:YEAR_PRECISION,source:SG47+'黃武二年春正月記事記城江夏山，並載「改四分，用《乾象曆》」。本內容包採年級精度，只記史書所載曆法更改，不以此推演遊戲曆法、日期換算或施行細節。',carrier:'孫吳朝廷（史書所載制度事件）',description:'記錄吳廷改用四分曆及乾象曆；不補曆法算法、頒行範圍、實際觀測或日常作息，也不改動玩家世界日期。',sourceDateNote:'原史紀年：黃武二年春正月，記「改四分，用《乾象曆》」。保留史料月份，不轉換成遊戲日期。',introducedRevision:126 },
   { id:'wei-morning-raid-ruxu-defeated-223',kind:EVENT_KIND,title:'魏軍晨渡濡須，朱桓擊退曹仁部將',...sameYear(223),precision:YEAR_PRECISION,source:SG47+'黃武二年三月記曹仁遣常彫等率兵五千乘油船晨渡濡須中洲，曹仁之子曹泰引軍急攻朱桓；朱桓守軍拒戰，並遣嚴圭等擊破常彫部，原文稱「是月，魏軍皆退」。本內容包採年級精度，只轉述史書明載，不推演未載傷亡、戰鬥過程或完整兵力。',carrier:'曹仁、曹泰、朱桓、常彫與嚴圭（歷史記載）',description:'記錄魏軍渡濡須中洲攻擊朱桓、吳軍擊破常彫部及魏軍當月撤退；不推演逐日戰況、個人死傷、戰損或控制權變更。',sourceDateNote:'原史紀年：黃武二年三月，曹仁遣軍晨渡濡須中洲攻朱桓，朱桓遣嚴圭擊破常彫等，魏軍於該月皆退。保留漢曆月份，不映射成本遊戲日期。',introducedRevision:127 },
   { id:'wu-captures-jin-zong-at-qichun-223',kind:EVENT_KIND,title:'孫權遣賀齊等襲蘄春、生擒晉宗',...sameYear(223),precision:YEAR_PRECISION,source:SG47+'黃武二年六月記戲口守將晉宗殺將王直、率眾叛魏，魏任晉宗為蘄春太守；孫權命賀齊、糜芳、劉邵等襲蘄春，史文記「邵等生虜宗」。本內容包採年級精度，只記載明文事件，不推演晉宗後續、戰役傷亡或地方控制。',carrier:'孫權、賀齊、糜芳、劉邵與晉宗（史書所載）',description:'記錄晉宗叛魏後任蘄春太守、孫權派軍襲擊並生擒晉宗；不推演戰役過程、傷亡、俘虜處置或邊界變更。',sourceDateNote:'原史紀年：黃武二年六月。戲口守將晉宗叛魏後，孫權遣賀齊、糜芳、劉邵等襲蘄春並生擒晉宗。保留月份，不換算成本遊戲日期。',introducedRevision:128 },
-  { id:'cao-campaign-guangling-224',kind:EVENT_KIND,title:'曹丕親征廣陵、臨江觀兵',...sameYear(224),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉記黃初五年行幸廣陵故城、臨江觀兵；本內容包按公元年級精度記錄。',causes:['wei-eastern-campaign'],carrier:'魏廷與東吳江防（歷史事件）',description:'記錄曹丕東巡至廣陵並臨江觀兵；不推演完整水戰、兵力或兩方疆界變更。',introducedRevision:19 },
+  { id:'cao-campaign-guangling-224',kind:EVENT_KIND,title:'舊版誤繫年：曹丕行幸廣陵（正確為225年）',...sameYear(224),precision:YEAR_PRECISION,source:'舊版錯將《三國志》卷二〈魏書·文帝紀〉黃初六年冬十月行幸廣陵故城、臨江觀兵記事列入黃初五年（224）。黃初五年原文另記九月遂至廣陵，冬十月行還許昌宮；此舊索引自 phase4-scenario-402 起退役，保留舊事件帳供存檔相容。',carrier:'舊版史實索引（已勘誤）',description:'舊版將黃初六年（225）行幸廣陵、臨江觀兵誤列於黃初五年（224）。此節點保留舊 ID 供遷移辨識，不再觸發；正確記事改由 225 年節點記錄，既有事件帳不回寫。',sourceDateNote:'原典年序：黃初五年九月遂至廣陵、赦青徐二州，冬十月行還許昌宮；行幸廣陵故城、臨江觀兵見於黃初六年冬十月。舊 224 年索引自 phase4-scenario-402 起退役。',introducedRevision:19,retired:true,retiredIn:'phase4-scenario-402' },
+  { id:'cao-campaign-guangling-225',kind:EVENT_KIND,title:'曹丕行幸廣陵故城、臨江觀兵',...sameYear(225),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉黃初六年冬十月記「行幸廣陵故城，臨江觀兵，戎卒十餘萬，旌旗數百里」；並記是歲大寒、水道結冰，舟不得入江，乃引還。本內容包只保留原文所載年次、行幸、觀兵、軍容描述及退回原因，不推演逐日行程、戰果、江面狀況以外的天候、傷亡或邊界變更。',causes:['wei-eastern-campaign'],carrier:'魏廷與東吳江防（史書記事）',description:'記錄曹丕於黃初六年行幸廣陵故城、臨江觀兵，及史載大寒、水道冰、舟不得入江而引還；不把「戎卒十餘萬、旌旗數百里」改寫為玩家部隊，不推演戰果、兵力部署或疆界。',sourceDateNote:'黃初六年冬十月；《三國志》卷二記行幸廣陵故城、臨江觀兵，並記「是歲大寒，水道冰，舟不得入江，乃引還」。遊戲僅按 225 年級觸發，不換算漢曆月份或精確日期。',introducedRevision:402 },
   { id:'wu-chancellor-succession-225',kind:EVENT_KIND,title:'孫權在位期間：孫邵去世、顧雍繼任吳丞相',...sameYear(225),precision:YEAR_PRECISION,source:SG47+'記黃武四年夏五月丞相孫邵卒，六月以太常顧雍為丞相。黃武元年為 222 年，黃武四年為公元 225 年；本內容包保留年級觸發，原典月份只作史料註記。',carrier:'孫邵、顧雍與孫吳朝廷（史書所記）',description:'記錄孫權在位期間的吳廷丞相更替；原記事未交代任命者，不推定為孫權親自任命，也不推演政策後果或未載廷議。',introducedRevision:113 },
   { id:'zhugeliang-south-campaign-225',kind:EVENT_KIND,title:'諸葛亮南征、四郡平定',...sameYear(225),precision:YEAR_PRECISION,source:'《三國志》卷三十三〈蜀書·後主傳〉記建興三年春三月丞相亮南征四郡、四郡皆平；本內容包採公元年級精度。',causes:['shu-southern-rebellion'],carrier:'蜀漢朝廷與南中四郡（歷史事件）',description:'記錄蜀漢南征及四郡平定的年級節點；不模擬完整戰役、地方人口或縣級疆界。',introducedRevision:19 },
   { id:'cao-pi-death-cao-rui-accession-226',kind:EVENT_KIND,title:'魏文帝去世、明帝曹叡即位',...sameYear(226),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉記黃初七年五月文帝崩；卷三〈魏書·明帝紀〉記丁巳曹叡即皇帝位。本內容包只採公元年級精度。',causes:['wei-imperial-succession'],carrier:'曹丕、曹叡與魏廷（歷史事件）',description:'記錄魏廷皇位交接；不把它套用為玩家角色死亡節點，也不自動改變玩家控制權或選擇。',introducedRevision:19 },
@@ -1040,6 +1041,16 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
   model.causes=model.causes.filter(cause=>cause!=='drought-locust-seven-provinces-176');
   if(oldEventWasRecorded&&!model.eventLedger.some(item=>item.type==='史實資料勘誤'&&item.detail.includes('熹平六年（177）'))){
    pushEvent(model,'史實資料勘誤','《後漢書》卷八年序複核：熹平五年（176）無「大旱，七州蝗」記事；原文位於熹平六年（177）夏四月。舊版 176 年錯置節點移除，既有事件帳保留並附加勘誤；正確 177 年節點不對已到年份回溯觸發。','《後漢書》卷八〈孝靈帝紀〉熹平五年、熹平六年條');
+  }
+ }
+ const guanglingChronologyCorrectionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-402');
+ if(targetIndex>=guanglingChronologyCorrectionIndex&&currentIndex<guanglingChronologyCorrectionIndex){
+  const oldNode=model.nodes.find(node=>node.contentId==='cao-campaign-guangling-224');
+  const oldEventWasRecorded=oldNode?.status==='triggered'||model.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('曹丕親征廣陵、臨江觀兵'));
+  model.nodes=model.nodes.filter(node=>node.contentId!=='cao-campaign-guangling-224');
+  model.causes=model.causes.filter(cause=>cause!=='wei-eastern-campaign');
+  if(oldEventWasRecorded&&!model.eventLedger.some(item=>item.type==='史實資料勘誤'&&item.detail.includes('黃初六年（225）臨江觀兵'))){
+   pushEvent(model,'史實資料勘誤','《三國志》卷二年序核對：行幸廣陵故城、臨江觀兵見於黃初六年（225）冬十月；黃初五年（224）記事為九月至廣陵、赦青徐二州及冬十月行還許昌宮。舊版 224 年錯置節點退役，既有事件帳保留；已到年份不回溯觸發正確節點。','《三國志》卷二〈魏書·文帝紀〉黃初五年、黃初六年條');
   }
  }
  const known=new Set(model.nodes.map(node=>node.contentId));
