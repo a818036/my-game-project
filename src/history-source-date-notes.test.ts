@@ -267,6 +267,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'capital-earthquake-165',
       'ling-emperor-accession-court-purge-168',
       'huan-emperor-burial-amnesty-rewards-168',
+      'jianing-ancestor-posthumous-titles-168',
       'six-provinces-flood-bohai-sea-overflow-167',
       'fuyu-raid-xuantu-167',
       'qiang-incursions-167',
@@ -376,6 +377,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(220);
+    expect(uniqueNotedEvents.size).toBe(221);
   });
 });
