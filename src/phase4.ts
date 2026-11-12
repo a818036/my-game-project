@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-377';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-378';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:375},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:376},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -611,7 +611,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'sun-quan-sends-condolences-to-shu-223',kind:EVENT_KIND,title:'孫權遣使弔劉備',...sameYear(223),precision:YEAR_PRECISION,source:SG47+'記黃武二年劉備薨於白帝，裴松之注引《吳書》記孫權遣立信都尉馮熙聘蜀弔喪。本內容包採年級精度。',carrier:'孫權、馮熙與蜀漢朝廷（歷史記載）',description:'記錄孫權遣馮熙赴蜀弔劉備；不推演使團路線、私下談話或完整外交協議。',introducedRevision:94 },
   { id:'sun-quan-renews-alliance-with-shu-224',kind:EVENT_KIND,title:'孫權、劉禪互遣使重結盟好',...sameYear(224),precision:YEAR_PRECISION,source:SG47+'記黃武三年夏孫權遣輔義中郎將張溫聘蜀；同年蜀遣鄧芝來聘，原文稱「重結盟好」。本內容包採年級精度。',carrier:'孫權、張溫、劉禪與鄧芝（歷史記載）',description:'記錄吳蜀雙方互遣使者及史書所述重結盟好；不推演使節談判細節、盟約條款或實際軍事協調。',introducedRevision:95 },
   { id:'yiling-campaign-222',kind:EVENT_KIND,title:'夷陵戰局逆轉、孫權遣使復通蜀漢',...sameYear(222),precision:YEAR_PRECISION,source:'《三國志》卷三十二〈蜀書·先主傳〉記章武二年夏六月陸議於猇亭大破先主軍；'+SG47+'又記十二月孫權遣太中大夫鄭泉聘劉備於白帝，「始復通也」。本內容包採年級精度。',causes:['yiling-campaign-defeat'],carrier:'劉備軍、孫權與吳蜀使者（歷史記載）',description:'記錄夷陵戰局逆轉及孫權於年末遣使至白帝與劉備恢復往來；不推演完整戰役、損失、盟約內容或領土控制。',introducedRevision:7 },
-  { id:'wei-three-front-campaign-and-dongkou-storm-222',kind:EVENT_KIND,title:'魏軍多路攻吳、洞口風災造成呂範部下溺亡',...sameYear(222),precision:YEAR_PRECISION,source:SG47+'黃武元年條記魏軍秋九月分出洞口、濡須並圍南郡；孫權遣呂範等督五軍，以舟軍拒曹休等，並分援南郡與濡須。原文續記冬十一月大風，呂範等兵溺死者數千，其餘軍隊還江南；同段另記魏軍襲徐陵及吳軍追擊。本內容包採年級精度，僅轉述史書記載，不把概述傷亡拆成個人狀態。',carrier:'孫權、呂範、曹休、曹仁與魏吳軍（歷史記載）',description:'記錄魏軍多路進攻、孫吳分軍抵禦及年末風災中呂範部下溺亡的史載。只保留原文所述「數千」及大風，不推演逐日戰況、各路完整兵力、個別死傷或領土控制。',sourceDateNote:'原史紀年：黃武元年秋九月魏軍出洞口、濡須並圍南郡；冬十一月大風，呂範等兵溺死者數千。保留月份與原文精度，不換算成遊戲日期。',introducedRevision:125 },
+  { id:'wei-three-front-campaign-and-dongkou-storm-222',kind:EVENT_KIND,title:'魏軍多路攻吳、洞口風災造成呂範部下溺亡',...sameYear(222),precision:YEAR_PRECISION,source:SG47+'黃武元年條記魏軍秋九月分出洞口、濡須並圍南郡；孫權遣呂範等督五軍，以舟軍拒曹休等，並分援南郡與濡須。原文續記冬十一月大風，呂範等兵溺死者數千，其餘軍隊還江南；同段另記魏軍襲徐陵及吳軍追擊。《三國志》卷二〈文帝紀〉另記黃初三年六月治兵、庚午南征，七月軍次譙；兩傳分記南征與秋九月攻勢，不將六月日期等同攻吳起始日。本內容包採年級精度，僅轉述史書記載，不把概述傷亡拆成個人狀態。',carrier:'孫權、呂範、曹休、曹仁與魏吳軍（歷史記載）',description:'記錄魏軍多路進攻、孫吳分軍抵禦及年末風災中呂範部下溺亡的史載。只保留原文所述「數千」及大風，不推演逐日戰況、各路完整兵力、個別死傷或領土控制。',sourceDateNote:'原史紀年：黃武元年秋九月魏軍出洞口、濡須並圍南郡；冬十一月大風，呂範等兵溺死者數千。保留月份與原文精度，不換算成遊戲日期。',introducedRevision:125 },
   { id:'liu-bei-dies-223',kind:EVENT_KIND,title:'劉備崩於永安宮',...sameYear(223),precision:YEAR_PRECISION,source:'《三國志》卷三十二〈蜀書·先主傳〉記章武三年先主殂於永安宮；本內容包採年級精度，不處理史料日期疑點或映射為模型月日。',causes:['liu-bei-death-historical'],carrier:'劉備與蜀漢朝廷（歷史事件）',description:'記錄劉備去世及蜀漢朝廷交接背景，不模擬完整託孤過程或人物後續命運。',introducedRevision:7 },
   { id:'liu-shan-succeeds-liu-bei-223',kind:EVENT_KIND,title:'劉禪於成都即位',...sameYear(223),precision:YEAR_PRECISION,source:'《三國志》卷三十三〈蜀書·後主傳〉記建興元年五月後主即位；其上承章武三年劉備於永安宮去世。本內容包採公元年級精度，保留原史五月而不換算為遊戲日期。',causes:['liu-shan-succession-223'],carrier:'劉禪與蜀漢朝廷（史書所載）',description:'記錄劉備去世後劉禪於成都即位；不推演未載的即位儀式細節、朝廷日常或玩家勢力承接。',sourceDateNote:'原史紀年：建興元年五月，後主即位。保留漢曆月份，不換算為遊戲日期。',introducedRevision:138 },
   { id:'wu-adopts-qianxiang-calendar-223',kind:EVENT_KIND,title:'吳改四分、使用乾象曆',...sameYear(223),precision:YEAR_PRECISION,source:SG47+'黃武二年春正月記事記城江夏山，並載「改四分，用《乾象曆》」。本內容包採年級精度，只記史書所載曆法更改，不以此推演遊戲曆法、日期換算或施行細節。',carrier:'孫吳朝廷（史書所載制度事件）',description:'記錄吳廷改用四分曆及乾象曆；不補曆法算法、頒行範圍、實際觀測或日常作息，也不改動玩家世界日期。',sourceDateNote:'原史紀年：黃武二年春正月，記「改四分，用《乾象曆》」。保留史料月份，不轉換成遊戲日期。',introducedRevision:126 },
@@ -685,6 +685,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
 ] as HistoricalNodeContent[]).map((content) => content.lateSameYear === undefined && (content.introducedRevision ?? 0) >= DEFAULT_LATE_SAME_YEAR_REVISION ? { ...content, lateSameYear: true } : content);
 /** Sourced Han-calendar dates shown separately from the annual simulation trigger. */
 export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
+  'wei-three-front-campaign-and-dongkou-storm-222': '原史紀年：《三國志》卷二〈文帝紀〉另記黃初三年六月治兵、庚午南征，七月軍次譙；《吳主傳》明繫洞口、濡須與南郡多路攻勢於黃武元年秋九月。分清南征啟程與各路攻吳的原文日期，不把六月移作九月戰事起始日；遊戲仍按 222 年級觸發。',
   'huangfu-song-appointed-left-chariot-general-184': '原史紀年：《後漢書》卷八中平元年冬十月廣宗記事後記皇甫嵩為左車騎將軍；只保留篇章先後，不推定到任日或任期。',
   'beigong-boyu-xianling-revolt-184': '原史紀年：《後漢書》卷八將北宮伯玉與先零羌起事記事置於中平元年冬季段落，但未另標月份；遊戲只按 184 年級呈現。',
   'court-rations-and-stable-horses-issued-to-army-184': '原史紀年：《後漢書》卷八記減膳與廄馬給軍，未另標月份；遊戲只按 184 年級呈現。',
@@ -1242,6 +1243,17 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
    jingzhouNode.evidence.push(note);
    if(jingzhouNode.status==='triggered'&&!model.eventLedger.some(item=>item.type==='史實來源補充'&&item.detail.includes('建安二十四年《後漢書》卷九冬十一月'))){
     pushEvent(model,'史實來源補充',note,'《後漢書》卷九〈孝獻帝紀〉建安二十四年條；《三國志》卷四十七〈吳書·吳主傳〉');
+   }
+  }
+ }
+ const weiSouthernCampaignDateVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-378');
+ if(targetIndex>=weiSouthernCampaignDateVersionIndex&&currentIndex<weiSouthernCampaignDateVersionIndex){
+  const invasionNode=model.nodes.find(node=>node.contentId==='wei-three-front-campaign-and-dongkou-storm-222');
+  const note='史料日期界線補充：《三國志》卷二〈文帝紀〉另記黃初三年六月治兵、庚午南征，七月軍次譙；《吳主傳》明繫洞口、濡須與南郡多路攻勢於黃武元年秋九月。分清南征啟程與各路攻吳日期，不把六月移作九月戰事起始日；按 222 年級觸發，不換算漢曆日期。';
+  if(invasionNode&&!invasionNode.evidence.some(item=>item.includes('史料日期界線補充'))){
+   invasionNode.evidence.push(note);
+   if(invasionNode.status==='triggered'&&!model.eventLedger.some(item=>item.type==='史實來源補充'&&item.detail.includes('分清南征啟程與各路攻吳日期'))){
+    pushEvent(model,'史實來源補充',note,'《三國志》卷二〈魏書·文帝紀〉黃初三年六月、七月條；卷四十七〈吳書·吳主傳〉黃武元年秋九月條');
    }
   }
  }

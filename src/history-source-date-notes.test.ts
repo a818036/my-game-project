@@ -294,9 +294,10 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'changsha-month-dead-revived-191': ['是歲', '死經月復活'],
       'wu-xiangyang-jiangxia-campaign-236': ['嘉禾五年', '攻襄陽'],
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
+      'wei-three-front-campaign-and-dongkou-storm-222': ['黃武元年條記魏軍秋九月', '分出洞口、濡須並圍南郡', '黃初三年六月治兵、庚午南征'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(193);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(194);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -734,7 +735,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(193);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(194);
     expect(uniqueNotedEvents.size).toBe(510);
   });
 });

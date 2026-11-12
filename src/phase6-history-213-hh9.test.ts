@@ -7,7 +7,7 @@ const persons:PersonRef[]=[];
 describe('A743 補列 213 年建安十八年記事',()=>{
   it('逐筆保留《後漢書》記事、日期精度與不推測界線',()=>{
     expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(648);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-377');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-378');
     expect(ids.map(id=>HISTORY_CONTENT.find(item=>item.id===id))).toEqual([
       expect.objectContaining({startYear:213,endYear:213,precision:'year',introducedRevision:366,sourceDateNote:expect.stringContaining('春正月庚寅')}),
       expect.objectContaining({startYear:213,endYear:213,precision:'year',introducedRevision:366,sourceDateNote:expect.stringContaining('夏五月')}),

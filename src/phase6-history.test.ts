@@ -381,7 +381,7 @@ describe('A752 220 年漢魏禪代雙史料核對',()=>{
     const old=createPhase4Model(219,1,[],'phase4-scenario-374');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-377');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-378');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -411,7 +411,7 @@ describe('A753 釐清黃初二年孫權受封吳王的月份註記',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-375');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-377');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-378');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -439,7 +439,7 @@ describe('A754 釐清孫權使魏與孫登立太子的未繫月記事',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-376');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-377');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-378');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -447,6 +447,46 @@ describe('A754 釐清孫權使魏與孫登立太子的未繫月記事',()=>{
     expect(continued.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
     const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('趙咨使魏'));
     expect(event?.source).toContain('遣都尉趙咨使魏');
+  });
+});
+
+describe('A755 區分魏文帝南征與魏軍多路攻吳的史料日期',()=>{
+  const id='wei-three-front-campaign-and-dongkou-storm-222';
+
+  it('並列魏、吳紀年而不把六月南征等同九月攻吳',()=>{
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-378');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('文帝紀');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃初三年六月');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃武元年秋九月');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('不把六月移作九月戰事起始日');
+    expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({startYear:222,endYear:222,precision:'year'});
+  });
+
+  it('v377 舊世界線升至 v378 保留事件帳，補入日期界線且仍按年級觸發',()=>{
+    const old=createPhase4Model(221,1,[],'phase4-scenario-377');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    const node=upgraded.nodes.find(item=>item.contentId===id);
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.contentVersion).toBe('phase4-scenario-378');
+    expect(node?.status).toBe('pending');
+    expect(node?.evidence.join(' ')).toContain('不把六月移作九月戰事起始日');
+
+    const continued=advancePhase4(upgraded,360);
+    expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
+    expect(continued.eventLedger.filter(item=>item.type==='史實事件形成'&&item.detail.includes('魏軍多路攻吳')).length).toBe(1);
+    expect(continued.eventLedger.some(item=>item.type==='史實來源補充'&&item.detail.includes('分清南征啟程與各路攻吳日期'))).toBe(false);
+  });
+
+  it('已觸發的舊節點追加一次來源補充且重複升版不重複記帳',()=>{
+    const old=createPhase4Model(222,1,[],'phase4-scenario-377');
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    const node=upgraded.nodes.find(item=>item.contentId===id);
+    expect(node?.evidence.join(' ')).toContain('《三國志》卷二');
+    expect(upgraded.eventLedger.filter(item=>item.type==='史實來源補充'&&item.detail.includes('分清南征啟程與各路攻吳日期'))).toHaveLength(1);
+    const repeated=upgradePhase4Content(upgraded,PHASE4_CONTENT_VERSION);
+    expect(repeated.eventLedger).toEqual(upgraded.eventLedger);
+    expect(repeated.nodes.find(item=>item.contentId===id)?.evidence).toEqual(node?.evidence);
   });
 });
 
