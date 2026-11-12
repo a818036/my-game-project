@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-350';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-351';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:349},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:350},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -447,7 +447,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'jianghuai-famine-197',kind:EVENT_KIND,title:'江淮間飢荒記事',...sameYear(197),precision:YEAR_PRECISION,source:HH9+'建安二年記「是歲飢，江淮閒民相食」。只轉述史書所記，不推定成因、持續時間、人口數或遊戲資源變化。',carrier:'江淮間民眾（史料記事）',description:'記錄本紀所述江淮間飢荒及民眾相食；不量化災情、不改變玩家糧食或人口，也不補推成因。',sourceDateNote:'《後漢書》卷九建安二年「是歲」條記江淮間飢、民相食；只採年級精度。',introducedRevision:350 },
   { id:'yuan-shu-kills-chen-prince-chong-197',kind:EVENT_KIND,title:'袁術殺陳王寵',...sameYear(197),precision:YEAR_PRECISION,source:HH9+'建安二年記袁術殺陳王寵。只記本紀所載，不補推案情、月份或人物狀態。',carrier:'袁術與陳王寵（史料記事）',description:'記錄袁術殺陳王寵；不推測案情、月份或其他人物與玩家狀態。',sourceDateNote:'《後漢書》卷九建安二年「是歲」條記袁術殺陳王寵；只採年級精度。',introducedRevision:350 },
   { id:'sun-ce-envoy-pays-tribute-197',kind:EVENT_KIND,title:'孫策遣使奉貢',...sameYear(197),precision:YEAR_PRECISION,source:HH9+'建安二年記孫策遣使奉貢。只記本紀所載，不推測使者姓名、路線、受貢方或外交結果。',carrier:'孫策與使者（史料記事）',description:'記錄孫策遣使奉貢；不補推使者身分、交通路線或外交結果。',sourceDateNote:'《後漢書》卷九建安二年「是歲」條記孫策遣使奉貢；只採年級精度。',introducedRevision:350 },
-  { id:'lu-bu-xiapi-198',kind:EVENT_KIND,title:'下邳之戰與呂布敗亡',...sameYear(198),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉及卷三十二〈蜀書·先主傳〉記建安三年曹操征呂布、圍下邳並擒殺呂布；卷三十二並記劉備隨曹操東征、助圍下邳，呂布被擒後劉備取回妻子並隨曹操還許。本內容包採年級精度。',causes:['lu-bu-downfall'],carrier:'曹操、呂布與劉備（歷史事件）',description:'記錄曹操圍下邳、呂布敗亡，以及劉備隨曹操東征並助圍下邳、事後取回妻子並還許的原文敘述；不補行軍細節，不模擬完整攻城、兵力、決水或徐州控制變化。',introducedRevision:10 },
+  { id:'lu-bu-xiapi-198',kind:EVENT_KIND,title:'下邳之戰與呂布敗亡',...sameYear(198),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉及卷三十二〈蜀書·先主傳〉記建安三年曹操征呂布、圍下邳並擒殺呂布；卷三十二並記劉備隨曹操東征、助圍下邳，呂布被擒後劉備取回妻子並隨曹操還許。《後漢書》卷九建安三年十二月癸酉亦記曹操擊呂布於徐州、斬之。本內容包採年級精度。',causes:['lu-bu-downfall'],carrier:'曹操、呂布與劉備（歷史事件）',description:'記錄曹操圍下邳、呂布敗亡，以及劉備隨曹操東征並助圍下邳、事後取回妻子並還許的原文敘述；不補行軍細節，不模擬完整攻城、兵力、決水或徐州控制變化。',introducedRevision:10 },
+  { id:'peimao-duanwei-campaign-against-li-jue-198',kind:EVENT_KIND,title:'裴茂、段煨討李傕',...sameYear(198),precision:YEAR_PRECISION,source:HH9+'建安三年夏四月記遣謁者裴茂率中郎將段煨討李傕，並夷三族。只記本紀所載，不補推戰役、案情或族屬名單。',carrier:'裴茂、段煨與李傕（史料記事）',description:'記錄裴茂、段煨奉命討李傕及夷三族；不推測完整作戰經過、司法細節或族屬名單。',sourceDateNote:'《後漢書》卷九建安三年夏四月記裴茂、段煨討李傕及夷三族；保留月份。',introducedRevision:351 },
+  { id:'zhang-yang-assassinated-198',kind:EVENT_KIND,title:'盜殺大司馬張楊',...sameYear(198),precision:YEAR_PRECISION,source:HH9+'建安三年冬十一月記盜殺大司馬張楊。只記原文，不推測行兇者、地點、動機或後續。',carrier:'張楊與未具名行兇者（史料記事）',description:'記錄大司馬張楊遭盜殺；原典未具名行兇者，不補造姓名、案情或動機。',sourceDateNote:'《後漢書》卷九建安三年冬十一月記盜殺大司馬張楊；保留月份。',introducedRevision:351 },
   { id:'sun-quan-joins-sun-ce-expedition-199',kind:EVENT_KIND,title:'孫權隨孫策征劉勳、轉討黃祖',...sameYear(199),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記建安四年孫權從孫策征廬江太守劉勳；劉勳敗後，進討黃祖於沙羨。本內容包只採年級精度，不推定月日。',carrier:'孫策、孫權、劉勳與黃祖（歷史記載）',description:'記錄孫權隨孫策征劉勳及後續討黃祖的來源敘述；不補寫行軍日程、個人戰功、傷亡或勢力控制，也不推演私人生活細節。',introducedRevision:105 },
   { id:'liu-bei-kills-chezhou-199',kind:EVENT_KIND,title:'劉備殺車胄、屯兵沛地',...sameYear(199),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉於建安四年記劉備殺徐州刺史車胄、舉兵屯沛；卷三十二〈蜀書·先主傳〉補記關羽留守下邳、劉備還小沛。本內容包採年級精度。',causes:['liu-bei-chezhou-conflict-199'],carrier:'劉備、關羽及徐州刺史車胄（歷史事件）',description:'記錄車胄遇害、關羽留守下邳與劉備屯回沛地；不模擬徐州各郡縣易手或完整軍事行動，也不改寫玩家世界線人物狀態。',introducedRevision:28 },
   { id:'guandu-campaign-200',kind:EVENT_KIND,title:'官渡之戰',...sameYear(200),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安五年記曹操與袁紹相拒官渡、烏巢糧運遭襲及袁軍潰敗；本內容包採年級精度，不推定遊戲模型月份。',causes:['guandu-campaign'],carrier:'曹操與袁紹（歷史事件）',description:'記錄曹操、袁紹於官渡相持後袁軍潰敗的年級節點；不模擬完整戰役、兵力、補給或勢力控制。',introducedRevision:9 },
