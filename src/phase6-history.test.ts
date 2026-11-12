@@ -381,7 +381,7 @@ describe('A752 220 年漢魏禪代雙史料核對',()=>{
     const old=createPhase4Model(219,1,[],'phase4-scenario-374');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-375');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-376');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -390,6 +390,35 @@ describe('A752 220 年漢魏禪代雙史料核對',()=>{
     const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('漢魏禪代'));
     expect(event?.source).toContain('《後漢書》卷九');
     expect(event?.source).toContain('《三國志》卷二');
+  });
+});
+
+describe('A753 補列黃初二年孫權受封吳王的月份註記',()=>{
+  const id='sun-quan-accepts-king-of-wu-title-221';
+
+  it('只將十一月註記用於吳王策命，不移植到未標月的稱藩回述',()=>{
+    const node=HISTORY_CONTENT.find(item=>item.id===id);
+    expect(node).toMatchObject({startYear:221,endYear:221,precision:'year'});
+    expect(node?.source).toContain('黃初二年');
+    expect(node?.source).toContain('十一月魏文帝策命孫權為吳王');
+    expect(node?.source).toContain('原文未另給稱藩使節或月份');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃初二年十一月');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('未標該使節的月份');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('不把十一月註記套用於未繫月的回述');
+  });
+
+  it('v375 世界線升至 v376 後保留事件帳，跨年至 221 年才形成受封記事',()=>{
+    const old=createPhase4Model(220,1,[],'phase4-scenario-375');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.contentVersion).toBe('phase4-scenario-376');
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+
+    const continued=advancePhase4(upgraded,360);
+    expect(continued.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('受魏封吳王'));
+    expect(event?.source).toContain('十一月魏文帝策命孫權為吳王');
   });
 });
 
