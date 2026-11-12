@@ -6,8 +6,8 @@ const persons:PersonRef[]=[];
 
 describe('A744 補列 214 年建安十九年記事',()=>{
   it('保留《後漢書》原文、年級精度與日期界線，並沿用益州戰局節點',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(651);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-381');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(652);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-382');
     expect(ids.map(id=>HISTORY_CONTENT.find(item=>item.id===id))).toEqual([
       expect.objectContaining({startYear:214,endYear:214,precision:'year',introducedRevision:367,sourceDateNote:expect.stringContaining('夏四月')}),
       expect.objectContaining({startYear:214,endYear:214,precision:'year',introducedRevision:367,sourceDateNote:expect.stringContaining('冬十月')}),

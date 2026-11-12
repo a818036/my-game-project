@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-381';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-382';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:379},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:380},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -630,6 +630,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'zhugeliang-moves-to-hanzhong-227',kind:EVENT_KIND,title:'諸葛亮進屯漢中',...sameYear(227),precision:YEAR_PRECISION,source:'《三國志》卷三十三〈蜀書·後主傳〉記建興五年春丞相亮出屯漢中；卷三十五〈蜀書·諸葛亮傳〉記其後於建興六年出祁山。本內容包採公元年級精度。',causes:['shu-northern-expedition-preparation'],carrier:'蜀漢朝廷與漢中軍（歷史事件）',description:'記錄蜀漢北伐前的進屯與準備；不推演完整軍隊規模、屯田或疆界變更。',introducedRevision:19 },
   { id:'sun-quan-protects-families-of-defectors-227',kind:EVENT_KIND,title:'孫權下令不得因部下亡叛而殺其妻子',...sameYear(227),precision:YEAR_PRECISION,source:SG47+'裴松之注引《江表傳》載：「督將亡叛而殺其妻子，是使妻去夫，子棄父，甚傷義教，自今勿殺也。」此注文列於黃武七年記事段中，但沒有提供詔令月日；本內容包只採年級精度，明示為裴注所引材料。',carrier:'孫權與吳廷督將（裴注所引史料）',description:'記錄裴注所引材料中的禁令；不推演成完整司法制度、執行情況、適用範圍或人物動機。',introducedRevision:117 },
   { id:'wu-expedition-yizhou-230',kind:EVENT_KIND,title:'孫權遣衛溫、諸葛直浮海求夷洲',...sameYear(230),precision:YEAR_PRECISION,source:SG47+'黃龍二年條承前記遣衛溫、諸葛直率甲士萬人浮海求夷洲及亶洲，未至亶洲而得夷洲數千人還；此為孫權紀傳中的省略主語記事，本內容包只採公元年級精度。',causes:['wu-maritime-expedition-230'],carrier:'孫權、衛溫與諸葛直（《吳主傳》記事）',description:'記錄孫權紀傳中所載出海行動及史料所記返回人數；不將古地名直接對應現代地理，不推演航路、控制權或完整人口後果。',introducedRevision:20 },
+  { id:'wu-temporarily-establishes-guangzhou-230',kind:EVENT_KIND,title:'吳廷分交州置廣州、旋即復舊',...sameYear(230),precision:YEAR_PRECISION,source:SG47+'黃龍二年「是歲」記分交州置廣州，俄復舊。',carrier:'孫吳朝廷與交州',description:'記錄史載置廣州後旋即復舊；不補疆界、存續時長或後續治理。',introducedRevision:382 },
   { id:'pan-jun-wuling-expedition-231',kind:EVENT_KIND,title:'孫權遣潘濬率眾征武陵',...sameYear(231),precision:YEAR_PRECISION,source:SG47+'黃龍三年春二月承前記遣太常潘濬率眾五萬討武陵蠻夷；此為孫權紀傳中的省略主語記事，本內容包只採公元年級精度。',causes:['wu-wuling-expedition-231'],carrier:'孫權、潘濬與所部（《吳主傳》記事）',description:'記錄孫權紀傳中所載出兵行動。史料以「武陵蠻夷」稱呼對象；不將此稱呼擴寫為同質群體，不推演征討結果、人口或領土控制。',introducedRevision:21 },
   { id:'shu-wei-qishan-lucheng-campaign-231',kind:EVENT_KIND,title:'蜀魏隴右戰事與鹵城交鋒',...sameYear(231),precision:YEAR_PRECISION,source:'《資治通鑑》卷七十二太和五年條記蜀漢丞相亮率軍圍祁山，以木牛運糧；魏廷命司馬懿西屯長安並督張郃、費曜、戴陵、郭淮等拒之。其後司馬懿救祁山、郭淮與費曜等邀擊亮軍，亮破之並刈麥；兩軍在上邽之東相遇後未交戰。其後追至鹵城，五月魏軍攻擊蜀軍南圍，魏延、高翔、吳班逆戰，通鑑記魏軍大敗；六月亮因糧盡退軍，司馬懿遣張郃追擊，張郃於木門中伏受傷而卒。本內容包只採公元年級精度；不拼作逐日戰報。',carrier:'蜀漢與曹魏兩軍；涉及諸葛亮、司馬懿、張郃、郭淮、魏延、高翔、吳班等（《資治通鑑》記事）',description:'並列蜀軍圍祁山、魏軍西援、上邽與鹵城附近交戰及蜀軍糧盡退兵等來源主線；保留參戰方與多名將領，不把整場戰事歸為單一人物。通鑑記張郃追擊中伏身亡；遊戲不模擬完整戰役、兵力、精確地點、傷亡數或各郡控制，也不把史書月份映射到遊戲日曆。',sourceDateNote:'《資治通鑑》分記二月遣潘濬、五月鹵城交戰及六月退軍；本節點只按公元 231 年觸發，不換算為模型月份或日。',introducedRevision:149 },
   { id:'wu-liaodong-envoy-mission-232',kind:EVENT_KIND,title:'吳使赴遼東、周賀於成山遇截',...sameYear(232),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾元年記三月遣周賀、裴潛乘海赴遼東；九月魏將田豫於成山截擊並斬周賀；冬十月公孫淵遣宿舒、孫綜稱藩並獻貂馬，孫權加淵爵位。本內容包只採公元年級精度，不推演海程或遼東控制變化。',carrier:'周賀、裴潛與公孫淵（歷史記載）',description:'記錄吳廷遣使赴遼東、周賀於成山遭魏軍截擊，以及公孫淵後遣使稱藩；不擴寫為全面戰爭，也不推定遼東領土控制變化。',introducedRevision:73 },
