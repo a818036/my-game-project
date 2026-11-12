@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-361';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-362';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:359},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:360},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -505,6 +505,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'kong-rong-executed-208',kind:EVENT_KIND,title:'孔融遇害並夷其族',...sameYear(208),precision:YEAR_PRECISION,source:HH9+'建安十三年八月壬子記曹操殺太中大夫孔融、夷其族。只記本紀所載，不補推案情、族人名單或處置細節。',carrier:'太中大夫孔融與曹操（史料記事）',description:'記錄孔融及史書所稱其族遭殺；原文未列族人名單與個別遭遇，不補姓名、案情或因果。',sourceDateNote:'《後漢書》卷九建安十三年八月壬子記曹操殺孔融、夷其族；保留漢曆日期，不映射成遊戲日。',introducedRevision:361 },
   { id:'solar-eclipse-jianan-13-208',kind:EVENT_KIND,title:'建安十三年冬十月朔日日食',...sameYear(208),precision:YEAR_PRECISION,source:HH9+'建安十三年冬十月癸未朔，日有食之。只記原文天象，不推算現代日期、觀測範圍、成因或政局影響。',carrier:'漢廷天象記事（史料記載）',description:'記錄《後漢書》所載建安十三年冬十月癸未朔日食；不推算現代日期、可見範圍、成因或政治意義。',sourceDateNote:'《後漢書》卷九建安十三年冬十月癸未朔記日食；保留漢曆註記，遊戲只按 208 年級呈現。',introducedRevision:361 },
   { id:'sun-quan-chooses-resistance-208',kind:EVENT_KIND,title:'孫權決議抗曹、與劉備合兵',...sameYear(208),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記曹操新得劉表部眾後，多數議者勸孫權迎降；周瑜、魯肅力主拒曹且「意與權同」，孫權遣周瑜、程普率軍與劉備並力。本內容包只採年級精度，不推定決策月日。',carrier:'孫權、周瑜、魯肅、程普與劉備（歷史記載）',description:'記錄孫權在曹操南下時選擇抵抗並與劉備合兵；不把史料中的議論改寫成私下獨白，也不另行重演赤壁戰果。',introducedRevision:92 },
+  { id:'jingzhou-earthquake-jianan-14-209',kind:EVENT_KIND,title:'建安十四年冬十月荊州地震',...sameYear(209),precision:YEAR_PRECISION,source:HH9+'建安十四年冬十月記荊州地震。只記本紀所載地區與月份，不推測震央、規模、損害、現代日期或成因。',carrier:'荊州地震記事（史料記載）',description:'記錄《後漢書》所載建安十四年冬十月荊州地震；不推測震央、規模、損害或成因，也不觸發虛構的居民傷亡。',sourceDateNote:'《後漢書》卷九建安十四年冬十月記荊州地震；保留漢曆月份，遊戲僅按 209 年級呈現。',introducedRevision:362 },
   { id:'jiangling-campaign-209',kind:EVENT_KIND,title:'周瑜與曹仁相守江陵、曹仁退走',...sameYear(209),precision:YEAR_PRECISION,source:'《資治通鑑》卷六十六於建安十四年記周瑜攻曹仁、相守一年有餘後曹仁退走；《三國志》卷五十四〈吳書·周瑜傳〉補記周瑜進南郡、與曹仁隔江相持及江陵戰事。本內容包採年級精度。',carrier:'周瑜與曹仁（歷史事件）',description:'記錄江陵相持及曹仁退走的史料結果；不模擬完整戰役、戰損數、控制權交割或援軍部署。',introducedRevision:30 },
   { id:'sun-quan-appoints-zhou-yu-nanjun-209',kind:EVENT_KIND,title:'孫權任周瑜為南郡太守',...sameYear(209),precision:YEAR_PRECISION,source:SG47+'建安十四年記周瑜、曹仁相守一年餘、曹仁退走後，孫權以周瑜為南郡太守；同段記劉備表孫權行車騎將軍、領徐州牧。本內容包採年級精度。',carrier:'孫權、周瑜與劉備（歷史記載）',description:'記錄江陵戰後的官職任命與劉備對孫權的表奏；不推演具體任命日期、轄境邊界或未載的政治交易。',introducedRevision:103 },
   { id:'sun-quan-moves-governance-to-muling-211',kind:EVENT_KIND,title:'孫權徙治秣陵',...sameYear(211),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記建安十六年「權徙治秣陵」；本內容包依建安年次換算為公元 211 年，採年級精度，不推定遷治日期或遷徙過程。',carrier:'孫權與孫吳官府（歷史記載）',description:'記錄孫權徙治秣陵；不等同完整首都行政模擬，不推定搬遷日程、人口規模或對地方的控制變化。',introducedRevision:104 },
