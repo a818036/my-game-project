@@ -349,7 +349,20 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'prisoners-redeem-unresolved-xiping-3-174',
       'rencheng-prince-bo-dies-174',
       'drought-locust-seven-provinces-176',
+      'drought-locust-seven-provinces-177',
       'xianbei-raids-three-frontiers-176',
+      'amnesty-xiping-5-176',
+      'songgao-mountain-name-restored-176',
+      'rain-prayer-and-prison-review-176',
+      'chen-dan-removed-xu-xun-taiwei-176',
+      'liu-yi-appointed-sikong-176',
+      'xu-xun-removed-liu-kuan-taiwei-176',
+      'rear-palace-locust-tree-uprooted-176',
+      'yuan-wei-removed-yang-ci-situ-176',
+      'ganling-prince-ding-dies-176',
+      'elderly-taixue-students-appointed-176',
+      'xianbei-raid-youzhou-176',
+      'yellow-dragon-reported-peiguo-176',
       'guo-xi-succeeds-liu-chong-taiwei-179',
       'xianbei-raids-bingzhou-179',
       'taiwei-and-minister-succession-guanghe-2-179',
@@ -417,6 +430,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(262);
+    expect(uniqueNotedEvents.size).toBe(275);
   });
 });

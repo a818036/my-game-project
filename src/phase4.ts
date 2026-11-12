@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-323';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-324';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:321},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:322},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -185,8 +185,21 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'rencheng-prince-bo-dies-174',kind:EVENT_KIND,title:'任城王博薨',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年條於十一月臧旻等擊斬許生記事後記「任城王博薨」，未另標月份。',carrier:'任城王博（史料記載）',description:'記錄任城王博去世；原典未另標月份，不推定確切日期、死因、嗣位或封國後續。',sourceDateNote:'《後漢書》卷八在熹平三年十一月記事之後記任城王博薨，但未另標其月份；只保留篇章次序，遊戲按 174 年級觸發。',introducedRevision:322 },
   { id:'yizhou-revolt-quelled-176',kind:EVENT_KIND,title:'益州郡夷叛，太守李顒討平',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年條記「益州郡夷叛，太守李顒討平之」。本節點採年級精度，不把史料概述擴寫成完整族群、兵力或戰役名冊。',carrier:'益州郡地方起事者與太守李顒（史料記載）',description:'記錄益州郡地方起事及太守李顒討平的史書概述；不推演族群身分、戰役過程或傷亡。',introducedRevision:146 },
   { id:'cao-luan-executed-party-purge-176',kind:EVENT_KIND,title:'曹鸞訟黨人被誅，黨人門生故吏等禁錮',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年閏月條記永昌太守曹鸞「坐訟黨人，棄市」，並記詔黨人門生故吏父兄子弟在位者皆免官禁錮。本節點按年級精度呈現。',carrier:'曹鸞、遭黨錮者及其門生故吏親屬（史料記載）',description:'記錄曹鸞因申理黨人而被處死，以及詔令擴及相關在位者；不將處置外推至未被來源列明的全部親族或個別人物。',introducedRevision:146 },
-  { id:'drought-locust-seven-provinces-176',kind:EVENT_KIND,title:'大旱與七州蝗災',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年夏四月條記「大旱，七州蝗」。原文未列七州名稱或災情後果。',carrier:'漢廷與受災州郡（史料記載）',description:'記錄史書所載大旱與七州蝗災；不推定七州範圍、作物損失、饑荒、人口遷徙或其他後果。',sourceDateNote:'《後漢書》卷八〈孝靈帝紀〉熹平五年夏四月記大旱、七州蝗；保留漢曆原註，遊戲只按 176 年級觸發，不推算月日或災害持續時間。',introducedRevision:248 },
+  { id:'drought-locust-seven-provinces-176',kind:EVENT_KIND,title:'舊版誤繫年：大旱與七州蝗災（正確為177年）',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'此舊版節點誤繫熹平五年（176）。《後漢書》卷八原文「大旱，七州蝗」位於熹平六年（177）夏四月條；熹平五年條並無此記事。phase4-scenario-324 起退役並更正至 177 年，既有事件帳不回寫。',carrier:'舊版史實索引（已勘誤）',description:'舊版把熹平六年（177）大旱與七州蝗災誤列於熹平五年（176）；現由 177 年節點記錄。升版保留舊事件帳，已過年次不回溯觸發。',sourceDateNote:'《後漢書》卷八〈孝靈帝紀〉將「大旱，七州蝗」記於熹平六年夏四月；舊版誤標熹平五年。phase4-scenario-324 起退役此錯置索引。',introducedRevision:248,retired:true,retiredIn:'phase4-scenario-324' },
+  { id:'drought-locust-seven-provinces-177',kind:EVENT_KIND,title:'大旱與七州蝗災',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年夏四月條記「大旱，七州蝗」。原文未列七州名稱或災情後果；更正舊版曾誤繫熹平五年（176）的年序。',carrier:'漢廷與受災州郡（史料記載）',description:'記錄熹平六年（177）史書所載大旱與七州蝗災；不推定七州範圍、作物損失、饑荒、人口遷徙或其他後果。',sourceDateNote:'《後漢書》卷八〈孝靈帝紀〉熹平六年夏四月記大旱、七州蝗；更正舊版誤繫熹平五年（176），保留漢曆原註，遊戲只按 177 年級觸發。',introducedRevision:324 },
   { id:'xianbei-raids-three-frontiers-176',kind:EVENT_KIND,title:'鮮卑寇漢廷三邊',...sameYear(176),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十七熹平五年夏四月條記鮮卑寇三邊，注指東、西、北邊；未述侵擾結果。',carrier:'鮮卑與漢廷三邊（史載）',description:'記錄鮮卑寇三邊，不補具體郡縣、戰事、傷亡或控制變化；與 177 年三路出塞分開。',sourceDateNote:'《資治通鑑》卷五十七熹平五年夏四月條載鮮卑寇三邊，注指東、西、北邊；僅按 176 年級呈現。',introducedRevision:249 },
+  { id:'amnesty-xiping-5-176',kind:EVENT_KIND,title:'大赦天下',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年夏四月癸亥記「大赦天下」。原文未述赦免個案、範圍例外或實際執行。',carrier:'漢廷與受詔者（史料記載）',description:'記錄熹平五年夏四月大赦天下；不推定赦免對象、個案結果或玩家法律狀態。',sourceDateNote:'《後漢書》卷八〈孝靈帝紀〉熹平五年夏四月癸亥記大赦天下；遊戲只按 176 年級觸發，不換算模型日期。',introducedRevision:324 },
+  { id:'songgao-mountain-name-restored-176',kind:EVENT_KIND,title:'復崇高山名為嵩高山',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年條記復崇高山名為嵩高山，注文引《東觀記》述中郎將堂谿典請雨後上言改名；本節點只記本紀所載更名，不推測儀式或天候效果。',carrier:'漢廷與嵩高山名號（史料記載）',description:'記錄朝廷恢復崇高山為嵩高山之名；不推定改名原因、儀式、實際執行細節或政治效果。',sourceDateNote:'《後漢書》卷八熹平五年大赦條後記復崇高山名為嵩高山，未另標月份；遊戲保留篇章次序，只按 176 年級觸發。',introducedRevision:324 },
+  { id:'rain-prayer-and-prison-review-176',kind:EVENT_KIND,title:'大雩並命行詔獄理冤釋輕繫',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年條記「大雩。使侍御史行詔獄亭部，理冤枉，原輕繫，休囚徒」。原文未標月份或逐案結果。',carrier:'漢廷、侍御史與詔獄亭部（史料記載）',description:'記錄大雩及派侍御史巡行詔獄亭部、理冤枉、釋放輕繫與休囚徒；不推測大雩效果、個別案件或受益者名單。',sourceDateNote:'《後漢書》卷八熹平五年條於復崇高山名記事後記大雩及侍御史行詔獄亭部，未另標月份；保留篇章次序，只按 176 年級觸發。',introducedRevision:324 },
+  { id:'chen-dan-removed-xu-xun-taiwei-176',kind:EVENT_KIND,title:'陳耽罷太尉，許訓繼任',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年五月記太尉陳耽罷、司空許訓為太尉；只記原文任免，不推測原因、交接或實際任期。',carrier:'陳耽、許訓與漢廷（史料記載）',description:'記錄五月陳耽免太尉及司空許訓任太尉；不推測免職原因、任期或其他官制效果。',sourceDateNote:'《後漢書》卷八熹平五年五月記陳耽罷、許訓為太尉；保留漢曆月份，不換算模型日期。',introducedRevision:324 },
+  { id:'liu-yi-appointed-sikong-176',kind:EVENT_KIND,title:'太常劉逸為司空',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年六月壬戌記太常南陽劉逸為司空；原文未述前任或任命原因。',carrier:'劉逸與漢廷（史料記載）',description:'記錄六月壬戌劉逸由太常任司空；不推測前任、任命原因、交接或任期。',sourceDateNote:'《後漢書》卷八熹平五年六月壬戌記太常劉逸為司空；保留原有漢曆干支，只按 176 年級觸發。',introducedRevision:324 },
+  { id:'xu-xun-removed-liu-kuan-taiwei-176',kind:EVENT_KIND,title:'許訓罷太尉，劉寬繼任',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年秋七月記太尉許訓罷、光祿勳劉寬為太尉；不補任免原因或任期。',carrier:'許訓、劉寬與漢廷（史料記載）',description:'記錄七月許訓免太尉及劉寬任太尉；不推測免職原因、交接日期或實際任期。',sourceDateNote:'《後漢書》卷八熹平五年秋七月記許訓罷、劉寬為太尉；保留原文月份，只按 176 年級呈現。',introducedRevision:324 },
+  { id:'rear-palace-locust-tree-uprooted-176',kind:EVENT_KIND,title:'御殿後槐樹自拔倒豎',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年冬十月壬午記御殿後槐樹自拔倒豎；原文未述原因、損害或傷亡。',carrier:'御殿後槐樹與宮廷（史料記載）',description:'記錄冬十月壬午御殿後槐樹自拔倒豎；不推定成因、損害、傷亡或災異含義。',sourceDateNote:'《後漢書》卷八熹平五年冬十月壬午記御殿後槐樹自拔倒豎；保留原文日期，不換算模型時間。',introducedRevision:324 },
+  { id:'yuan-wei-removed-yang-ci-situ-176',kind:EVENT_KIND,title:'袁隗罷司徒，楊賜繼任',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年條記司徒袁隗罷，十一月丙戌光祿大夫楊賜為司徒；分列免職與繼任的原文次序，不推測原因或交接間隔。',carrier:'袁隗、楊賜與漢廷（史料記載）',description:'記錄袁隗免司徒及十一月丙戌楊賜任司徒；不推測免職原因、職務交接或實際任期。',sourceDateNote:'《後漢書》卷八熹平五年先記司徒袁隗罷，後記十一月丙戌楊賜為司徒；只保留篇章順序及明載日期。',introducedRevision:324 },
+  { id:'ganling-prince-ding-dies-176',kind:EVENT_KIND,title:'甘陵王定薨',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年十二月記「甘陵王定薨」；原文未述死因、享年或封國後續。',carrier:'甘陵王定（史料記載）',description:'記錄甘陵王定去世；不推測月份內日期、死因、享年、嗣位或封國後續。',sourceDateNote:'《後漢書》卷八熹平五年十二月記甘陵王定薨；保留漢曆月份，只按 176 年級觸發。',introducedRevision:324 },
+  { id:'elderly-taixue-students-appointed-176',kind:EVENT_KIND,title:'試年六十以上太學生並授郎中等職',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年條記試太學生年六十以上百餘人，除郎中、太子舍人至王家郎、郡國文學吏；本節點保留「百餘」概數及原文職類。',carrier:'受試太學生與漢廷（史料記載）',description:'記錄年六十以上太學生百餘人受試後授任原文所列職務；不將「百餘」改為精確人數，不推定個人名單、考試內容或任職成效。',sourceDateNote:'《後漢書》卷八熹平五年十二月記事後記試太學生，未另標日期；遊戲保留篇章次序，只按 176 年級觸發。',introducedRevision:324 },
+  { id:'xianbei-raid-youzhou-176',kind:EVENT_KIND,title:'鮮卑寇幽州',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年「是歲」記鮮卑寇幽州；原文未述月份、戰事過程或結果。',carrier:'鮮卑與幽州地方（史料記載）',description:'記錄鮮卑侵擾幽州；不推測月份、戰事、傷亡或控制變化。',sourceDateNote:'《後漢書》卷八熹平五年「是歲」條記鮮卑寇幽州；只按年級呈現，不推算日期。',introducedRevision:324 },
+  { id:'yellow-dragon-reported-peiguo-176',kind:EVENT_KIND,title:'沛國上言譙見黃龍',...sameYear(176),precision:YEAR_PRECISION,source:HH8+'熹平五年「是歲」記「沛國言黃龍見譙」；本節點只記上報，不判定異象真偽。',carrier:'沛國上報者與譙地（史料記載）',description:'記錄沛國上報譙地見黃龍；不判定現象真偽，不附會瑞應、天象成因或政治意義。',sourceDateNote:'《後漢書》卷八熹平五年「是歲」條記沛國言黃龍見譙；只按年級記錄上報事實。',introducedRevision:324 },
   { id:'epidemic-party-ban-relief-179',kind:EVENT_KIND,title:'大疫致醫藥，黨人小功以下禁錮解除',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年條記春季大疫、使者巡行致醫藥；四月大赦並記「諸黨人禁錮小功以下皆除之」。本節點不把有限解除擴寫為全面解禁。',carrier:'漢廷、疫病影響者與部分黨人親屬（史料記載）',description:'記錄疫病救療及特定範圍禁錮解除；不推估感染與死亡人數，也不宣稱所有黨人及親屬均獲解禁。',introducedRevision:146 },
   { id:'wind-hail-and-memorial-edict-179',kind:EVENT_KIND,title:'舊版誤繫年：建寧二年風雹與封事詔令（正確為169年）',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'此舊版節點誤繫光和二年（179）。原文「夏四月癸巳，大風，雨雹。詔公卿以下各上封事」見於建寧二年（169）條；v305 起退役，改由 169 年大風雨雹及封事詔令節點分開記錄。',carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年風雹及求封事詔令誤列於 179 年；v305 起退役，正確年次的兩項記事分列於 169 年。遷移保留舊事件帳，不回補已過年份。',introducedRevision:256,retired:true,retiredIn:'phase4-scenario-305' },
   { id:'duan-jiong-defeats-dongqiang-shehuosai-179',kind:EVENT_KIND,title:'舊版誤繫年：段熲射虎塞外谷戰事（正確為169年）',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'此舊版節點誤繫光和二年（179）。原文秋七月「破羌將軍段熲大破先零羌於射虎塞外谷，東羌悉平」見於建寧二年（169）條；v305 起退役，改由 169 年節點記錄。',carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年段熲射虎塞外谷記事誤列於 179 年；v305 起退役，改列於 169 年。原文稱「東羌悉平」，不推估兵力、傷亡、戰線或此後各部狀態。',introducedRevision:257,retired:true,retiredIn:'phase4-scenario-305' },
@@ -629,6 +642,16 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
  const model=structuredClone(source);
  const currentIndex=PHASE4_CONTENT_VERSIONS.indexOf(model.contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]),targetIndex=PHASE4_CONTENT_VERSIONS.indexOf(contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]);
  if(currentIndex>=targetIndex)return model;
+ const xipingFiveYearCorrectionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-324');
+ if(targetIndex>=xipingFiveYearCorrectionIndex&&currentIndex<xipingFiveYearCorrectionIndex){
+  const oldNode=model.nodes.find(node=>node.contentId==='drought-locust-seven-provinces-176');
+  const oldEventWasRecorded=oldNode?.status==='triggered'||model.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('大旱與七州蝗災'));
+  model.nodes=model.nodes.filter(node=>node.contentId!=='drought-locust-seven-provinces-176');
+  model.causes=model.causes.filter(cause=>cause!=='drought-locust-seven-provinces-176');
+  if(oldEventWasRecorded&&!model.eventLedger.some(item=>item.type==='史實資料勘誤'&&item.detail.includes('熹平六年（177）'))){
+   pushEvent(model,'史實資料勘誤','《後漢書》卷八年序複核：熹平五年（176）無「大旱，七州蝗」記事；原文位於熹平六年（177）夏四月。舊版 176 年錯置節點移除，既有事件帳保留並附加勘誤；正確 177 年節點不對已到年份回溯觸發。','《後漢書》卷八〈孝靈帝紀〉熹平五年、熹平六年條');
+  }
+ }
  const known=new Set(model.nodes.map(node=>node.contentId));
  const 建寧年序勘誤版本=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-220');
  if(targetIndex>=建寧年序勘誤版本&&currentIndex<建寧年序勘誤版本){
