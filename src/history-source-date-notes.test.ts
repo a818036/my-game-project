@@ -316,6 +316,16 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'xianbei-raid-bingzhou-172',
       'ganling-prince-hui-dies-172',
       'lu-zhi-jiujiang-revolt-175',
+      'tuo-enfeoffed-rencheng-175',
+      'seven-commandery-flood-175',
+      'amnesty-and-yanling-fire-175',
+      'xianbei-raid-youzhou-175',
+      'locust-hongnong-sanfu-175',
+      'salt-monitor-canal-works-175',
+      'disaster-tax-relief-175',
+      'prisoners-redeem-unresolved-xiping-4-175',
+      'former-emperors-mothers-honored-175',
+      'pingzhun-renamed-zhongzhun-175',
       'han-campaign-against-xianbei-defeated-177',
       'xianbei-raids-liaoxi-177',
       'southern-palace-pingcheng-gate-arsenal-wall-collapse-177',
@@ -407,6 +417,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(252);
+    expect(uniqueNotedEvents.size).toBe(262);
   });
 });
