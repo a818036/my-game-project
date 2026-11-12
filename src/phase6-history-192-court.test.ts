@@ -16,8 +16,8 @@ describe('A722 補列 192 年初平三年記事',()=>{
     expect(entries.every(item=>item?.kind==='event'&&item.startYear===192&&item.endYear===192&&item.precision==='year'&&item.introducedRevision===345)).toBe(true);
     expect(entries.every(item=>item?.historicalPersonId===undefined)).toBe(true);
     expect(entries[0]?.source).toContain('春正月丁丑');
-    expect(entries[1]?.source).toContain('袁術遣將孫堅攻劉表於襄');
-    expect(entries[1]?.source).not.toContain('戰敗');
+    expect(entries[1]?.source).toContain('袁術遣將孫堅攻劉表於襄陽，堅戰歿');
+    expect(entries[1]?.source).toContain('不同來源的紀年記載');
     expect(entries[2]?.source).toContain('紹及瓚戰於界橋，瓚軍大敗');
     expect(HISTORY_CONTENT.filter(item=>item.id==='dong-zhuo-killed-192')).toHaveLength(1);
     expect(HISTORY_CONTENT.filter(item=>item.id==='sun-jian-death-191')).toHaveLength(1);
