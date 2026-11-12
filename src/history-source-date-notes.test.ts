@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(210);
+    expect(withinCatalogYears).toHaveLength(216);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -201,11 +201,17 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'huangfu-song-cangting-captures-yellow-turban-leader-184': ['八月', '戰於倉亭，獲其帥'],
       'huangfu-song-north-campaign-edict-184': ['八月記事後記「乙巳', '詔皇甫嵩北討張角'],
       'anping-king-xu-executed-state-abolished-184': ['九月', '安平王續有罪誅，國除'],
+      'huangfu-song-appointed-left-chariot-general-184': ['冬十月', '以皇甫嵩為左車騎將軍'],
+      'beigong-boyu-xianling-revolt-184': ['湟中義從胡北宮伯玉與先零羌叛', '攻殺護羌校尉伶徵、金城太守陳懿'],
+      'court-rations-and-stable-horses-issued-to-army-184': ['詔減太官珍羞，御食一肉', '廄馬非郊祭之用，悉出給軍'],
+      'amnesty-and-zhongping-era-begins-184': ['十二月己巳', '大赦天下，改元中平'],
+      'xiapi-prince-yi-dies-without-heir-184': ['是歲', '下邳王意薨，無子，國除'],
+      'reports-of-unusual-plants-184': ['是歲', '郡國生異草'],
       'wu-xiangyang-jiangxia-campaign-236': ['嘉禾五年', '攻襄陽'],
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(101);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(107);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -435,6 +441,12 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'huangfu-song-north-campaign-edict-184',
       'anping-king-xu-executed-state-abolished-184',
       'huangjin-campaign-outcome-184',
+      'huangfu-song-appointed-left-chariot-general-184',
+      'beigong-boyu-xianling-revolt-184',
+      'court-rations-and-stable-horses-issued-to-army-184',
+      'amnesty-and-zhongping-era-begins-184',
+      'xiapi-prince-yi-dies-without-heir-184',
+      'reports-of-unusual-plants-184',
       'court-appointments-april-184',
       'changshe-battle-184',
       'qin-jie-kills-zhang-mancheng-184',
@@ -475,7 +487,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(101);
-    expect(uniqueNotedEvents.size).toBe(316);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(107);
+    expect(uniqueNotedEvents.size).toBe(322);
   });
 });

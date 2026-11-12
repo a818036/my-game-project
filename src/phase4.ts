@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-336';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-337';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:334},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:335},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -304,6 +304,12 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'huangfu-song-north-campaign-edict-184',kind:EVENT_KIND,title:'詔皇甫嵩北討張角',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年八月記事後記「乙巳，詔皇甫嵩北討張角」。本節點只記詔令，不推定奉詔日期、出發日期、路線、到達或戰果。',carrier:'皇帝詔令與皇甫嵩（史料記載）',description:'記錄命皇甫嵩北討張角的詔令，與之後各場戰事分開；不把命令寫成已完成行軍或戰果。',sourceDateNote:'中平元年八月乙巳；保留漢曆干支，不換算為遊戲日曆。',introducedRevision:336 },
   { id:'anping-king-xu-executed-state-abolished-184',kind:EVENT_KIND,title:'安平王續有罪誅、國除',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年九月條記「安平王續有罪誅，國除」。本節點只記原典所述處置與國除，不推測罪名、程序、執行方式或相關於二月被執事件的因果。',carrier:'安平王續及安平國（史料記載）',description:'記錄安平王續遭誅及國除的原文記事；不補罪名、司法過程或前後政治因果，也不改寫二月人質記事。',sourceDateNote:'中平元年九月；漢曆月份只作原史註記，遊戲按 184 年級觸發。',introducedRevision:336 },
   { id:'huangjin-campaign-outcome-184',kind:EVENT_KIND,title:'廣宗、下曲陽戰事與張角兄弟敗亡',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年冬十月記皇甫嵩與黃巾戰於廣宗、獲張角弟梁，張角先死而遭戮屍；十一月記嵩破黃巾於下曲陽、斬張角弟寶。卷七十一〈皇甫嵩朱儁列傳〉補廣宗交戰、斬梁，以及嵩與鉅鹿太守郭典攻下曲陽。本節點只採公元年級觸發並保留原史月序，不補日序、地點座標或其他戰線的因果。',carrier:'漢廷討伐軍與黃巾軍（史料記載）',description:'記錄十月廣宗戰事中張角之弟張梁被斬、張角病死後遭戮屍，以及十一月皇甫嵩與郭典攻下曲陽、張角之弟張寶被斬。只保留原典所載月序與結果；不補逐日日程、精確兵力、平民命運，不合併各路戰事，也不表示其他黃巾軍活動同年立即全部停止。',sourceDateNote:'《後漢書》卷八、卷七十一記中平元年冬十月廣宗、十一月下曲陽記事；漢曆月份只保留原文次序，不轉為遊戲月日。',introducedRevision:172 },
+  { id:'huangfu-song-appointed-left-chariot-general-184',kind:EVENT_KIND,title:'皇甫嵩進位左車騎將軍',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年冬十月條於廣宗記事後記「以皇甫嵩為左車騎將軍」。本文只記任命，不推算其生效日期、任期、職權或與其他任免的制度關係。',carrier:'皇甫嵩與漢廷（史料記載）',description:'記錄史書所載皇甫嵩任左車騎將軍；不推算確切到任日、任期、官署權限或其他政治後果。',sourceDateNote:'中平元年冬十月廣宗記事後記皇甫嵩為左車騎將軍；保留原文先後，不換算為模型月份或日期。',introducedRevision:337 },
+  { id:'beigong-boyu-xianling-revolt-184',kind:EVENT_KIND,title:'北宮伯玉與先零羌起事',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記「湟中義從胡北宮伯玉與先零羌叛」，並以金城人邊章、韓遂為軍帥，攻殺護羌校尉伶徵、金城太守陳懿。本節點只記原文所列參與者、職銜與結果，不補出兵原因、兵數或後續疆界。',carrier:'北宮伯玉、先零羌、邊章、韓遂及原文所列官員（史料記載）',description:'記錄北宮伯玉與先零羌起事、推邊章及韓遂為軍帥，並攻殺伶徵與陳懿；不推測動機、兵力、戰場經過、額外傷亡或後續控制。',sourceDateNote:'《後漢書》將記事置於中平元年冬季段落，未另標該事月份；本內容包只按 184 年級呈現，不指派月份。',introducedRevision:337 },
+  { id:'court-rations-and-stable-horses-issued-to-army-184',kind:EVENT_KIND,title:'朝廷減省御膳並發廄馬給軍',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記「詔減太官珍羞，御食一肉；廄馬非郊祭之用，悉出給軍」。本節點只記詔令文字，不將其換算為玩家資源、軍隊規模或財政變動。',carrier:'漢廷、太官與廄馬（史料記載）',description:'記錄朝廷減省太官珍羞與御膳，並令非郊祭所用廄馬悉數給軍；不推算馬匹數量、受領部隊、實際執行或玩家帳目變化。',sourceDateNote:'中平元年條在冬季諸事中記減膳及廄馬給軍，未另標月份；遊戲只按 184 年級呈現。',introducedRevision:337 },
+  { id:'amnesty-and-zhongping-era-begins-184',kind:EVENT_KIND,title:'大赦天下，改元中平',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年十二月己巳記「大赦天下，改元中平」。只記原典詔令及改元，不推定赦免對象、例外、個案結果或實際施行範圍。',carrier:'漢廷與受赦者（史料記載）',description:'記錄十二月己巳大赦天下並改元中平；不推測赦免對象、例外、執行結果或對玩家及個別人物的法律效果。',sourceDateNote:'中平元年十二月己巳；保留漢曆月份與干支，不換算為遊戲日曆。',introducedRevision:337 },
+  { id:'xiapi-prince-yi-dies-without-heir-184',kind:EVENT_KIND,title:'下邳王意薨，無子而國除',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條「是歲」記「下邳王意薨，無子，國除」。只記原文所載死訊與國除，不推算日期、死因、繼承安排或封國人口去向。',carrier:'下邳王意與下邳國（史料記載）',description:'記錄下邳王意去世、無子及國除；原文僅繫於當年，不推測具體日期、死因、繼承程序或人口與土地後續。',sourceDateNote:'《後漢書》列為中平元年「是歲」記事，沒有月份或日期；只按 184 年級觸發。',introducedRevision:337 },
+  { id:'reports-of-unusual-plants-184',kind:EVENT_KIND,title:'郡國上報形似龍蛇鳥獸的異草',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條「是歲」記郡國生異草，形狀具龍、蛇、鳥、獸之貌。注文另引《風俗通》及《續漢志》補充文字；本節點只呈現記載與引文來源，不宣稱現象已驗證或推定祥瑞。',carrier:'郡國上報與史書記錄（史料記載）',description:'呈現郡國上報異草形狀的史書記載；不判定真偽、成因、祥瑞含義、分布範圍或實際後果。',sourceDateNote:'《後漢書》列為中平元年「是歲」記事，沒有月份或日期；只按 184 年級觸發。',introducedRevision:337 },
   { id:'court-appointments-april-184',kind:EVENT_KIND,title:'三公任免',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'夏四月楊賜免、鄧盛任太尉；張濟免、張溫任司空。',carrier:'朝廷',description:'不推測任免原因、任期。',sourceDateNote:'夏四月',introducedRevision:263 },
   { id:'zhu-jun-captures-wancheng-184',kind:EVENT_KIND,title:'朱儁攻取宛城、孫夏敗亡',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年條記「癸巳，朱儁拔宛城，斬黃巾別帥孫夏」；卷七十一〈皇甫嵩朱儁列傳〉記朱儁先前曾被波才擊敗，後奉詔討南陽，並記孫夏為黃巾別帥。本節點保留史書所載行動與結果；原典未在癸巳前明列月份，不推定月日、完整戰役或其他黃巾軍後續。',causes:['zhu-jun-wancheng-campaign-184'],carrier:'朱儁與南陽黃巾軍（史料記載）',description:'記錄朱儁攻取宛城、斬黃巾別帥孫夏。只按公元年級觸發，不把原文「癸巳」換算為未明載的月日，不推演完整戰役、額外傷亡或其他黃巾勢力的結局。',introducedRevision:173 },
   { id:'changshe-battle-184',kind:EVENT_KIND,title:'長社戰局轉折，漢軍擊破波才',...sameYear(184),precision:YEAR_PRECISION,source:HH8+'中平元年五月記皇甫嵩、朱儁再與波才等戰於長社並大破之；卷七十一〈皇甫嵩朱儁列傳〉記波才圍長社，皇甫嵩乘風縱火，曹操率兵抵達後與嵩、朱儁合軍擊破波才。本節點按年級觸發，不補逐日日序、各軍額外傷亡或汝南、陳國及南陽其他戰事的結果。',carrier:'皇甫嵩、朱儁、曹操所部官軍與波才軍（史料記載）',description:'記錄波才圍長社、皇甫嵩採火攻，以及曹操抵達後與嵩、朱儁合兵擊破波才。與宛城、廣宗、下曲陽及其他戰線分開；不推演原典外的傷亡、逐日戰報或戰後控制。',sourceDateNote:'《後漢書》卷八明載中平元年五月。這是漢曆月份註記；遊戲仍按公元年級觸發，不換算為原型月份或日序。',introducedRevision:174 },
@@ -496,6 +502,12 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
 ] as HistoricalNodeContent[]).map((content) => content.lateSameYear === undefined && (content.introducedRevision ?? 0) >= DEFAULT_LATE_SAME_YEAR_REVISION ? { ...content, lateSameYear: true } : content);
 /** Sourced Han-calendar dates shown separately from the annual simulation trigger. */
 export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
+  'huangfu-song-appointed-left-chariot-general-184': '原史紀年：《後漢書》卷八中平元年冬十月廣宗記事後記皇甫嵩為左車騎將軍；只保留篇章先後，不推定到任日或任期。',
+  'beigong-boyu-xianling-revolt-184': '原史紀年：《後漢書》卷八將北宮伯玉與先零羌起事記事置於中平元年冬季段落，但未另標月份；遊戲只按 184 年級呈現。',
+  'court-rations-and-stable-horses-issued-to-army-184': '原史紀年：《後漢書》卷八記減膳與廄馬給軍，未另標月份；遊戲只按 184 年級呈現。',
+  'amnesty-and-zhongping-era-begins-184': '原史紀年：《後漢書》卷八中平元年十二月己巳記大赦天下、改元中平；保留漢曆註記，不換算遊戲日曆。',
+  'xiapi-prince-yi-dies-without-heir-184': '原史紀年：《後漢書》卷八中平元年「是歲」記下邳王意薨、無子、國除，未標月份或日期。',
+  'reports-of-unusual-plants-184': '原史紀年：《後漢書》卷八中平元年「是歲」記事記郡國生異草，未標月份或日期；只保留史書報告。',
   'zhang-xiu-ba-commander-revolt-184': '原史紀年：《後漢書》卷八中平元年秋七月記巴郡妖巫張脩反、寇郡縣；遊戲只按 184 年級觸發，不推定戰事日期。',
   'henan-yin-xu-guan-dies-in-prison-184': '原史紀年：《後漢書》卷八中平元年秋七月記河南尹徐灌下獄死；遊戲只按 184 年級觸發，不推定案情或執行日期。',
   'huangfu-song-cangting-captures-yellow-turban-leader-184': '原史紀年：《後漢書》卷八中平元年八月記皇甫嵩與黃巾戰於倉亭，獲其帥；注文辨其帥為卜已（異本作卜己）。遊戲只按 184 年級觸發。',
