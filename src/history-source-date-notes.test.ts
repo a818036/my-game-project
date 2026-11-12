@@ -388,6 +388,14 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'luoyang-infant-two-heads-four-arms-report-179',
       'scholar-nomination-edict-180',
       'henei-henan-cannibalism-report-180',
+      'general-amnesty-guanghe-3-180',
+      'public-office-pavilion-collapse-180',
+      'liang-prince-yuan-dies-180',
+      'biaoshi-earthquake-spring-water-180',
+      'prisoners-silk-ransom-order-180',
+      'comet-wolf-arc-180',
+      'xianbei-raids-you-bing-180',
+      'emperor-builds-bigui-lingkun-gardens-180',
       'dong-chong-death-180',
       'taiwei-sikong-succession-180',
       'solar-eclipse-180-march',
@@ -450,6 +458,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(295);
+    expect(uniqueNotedEvents.size).toBe(303);
   });
 });

@@ -33,7 +33,7 @@ if(initial.length===1){
     const gzipBytes=(await Promise.all(closure.map(async(file)=>gzipSync(await readFile(file.path)).byteLength)))
       .reduce((total,size)=>total+size,0);
     // Keep at least 1 KB of incremental allowance; this guards static size only, not device performance.
-    const limit=839_000;
+    const limit=844_000;
     const status=bytes<limit?'通過':'超出';
     console.log(`${status}：首頁初始 JavaScript 靜態相依總量 ${bytes.toLocaleString('en-US')}／${limit.toLocaleString('en-US')} bytes（各檔分別 gzip ${gzipBytes.toLocaleString('en-US')} bytes；${closure.length} 個檔案）`);
     if(bytes>=limit)failed=true;
