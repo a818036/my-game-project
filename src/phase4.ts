@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-337';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-338';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:335},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:336},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -321,6 +321,18 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'beigong-boyu-raids-sanfu-185',kind:EVENT_KIND,title:'北宮伯玉等寇三輔，朝廷命皇甫嵩鎮長安討之',...sameYear(185),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十八中平二年條記「北宮伯玉等寇三輔，詔左車騎將軍皇甫嵩鎮長安以討之」。本節點只記年級侵寇及朝廷部署；該條未在此處記載此次部署的結果，不與同年後續張溫征涼州、美陽戰事合併或補造戰果。',carrier:'北宮伯玉等與朝廷軍事部署（史料記載）',description:'記錄北宮伯玉等侵寇三輔，以及朝廷命左車騎將軍皇甫嵩鎮守長安討伐。來源未在此條交代這次部署的結局；後續張溫征涼州及美陽戰事另有獨立節點。',introducedRevision:180 },
   { id:'hailstorm-fourth-month-185',kind:EVENT_KIND,title:'中平二年夏四月大雨雹',...sameYear(185),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十八中平二年條記「夏，四月，庚戌，大雨雹」。只按公元年級觸發，漢曆夏四月庚戌保留為來源註記；不換算模型日期，不推測影響地域、規模、損失、傷亡或生產影響。',carrier:'漢廷所記天候（史料記事）',description:'記錄中平二年夏季大雨雹；不推定影響地域、持續時間、農業損失、傷亡或對玩家領地的影響。遊戲按 185 年級觸發。',sourceDateNote:'《資治通鑑》卷五十八記中平二年夏四月庚戌大雨雹。四月庚戌為漢曆原註；遊戲只按 185 年級觸發，不換算模型日期。',introducedRevision:181 },
   { id:'zhang-rang-eunuchs-enfeoffed-185',kind:EVENT_KIND,title:'張讓等十二名中常侍因討張角功受封列侯',...sameYear(185),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十八中平二年六月條記「以討張角功，封中常侍張讓等十二人為列侯」。本節點只記原文所載授爵，採年級精度；不由「等十二人」推列未載姓名，不推演封邑、政治影響或玩家勢力變化。',carrier:'中常侍張讓等十二人與漢廷（史料記載）',description:'記錄朝廷以討張角之功封張讓等十二名中常侍為列侯；原文未列完整受封者姓名，不延伸推演封邑、政治效果或玩家勢力變化。遊戲按 185 年級觸發。',sourceDateNote:'《資治通鑑》卷五十八中平二年六月記以討張角功封中常侍張讓等十二人為列侯。六月為漢曆原註；遊戲只按 185 年級觸發，不換算模型日期。',introducedRevision:182 },
+  { id:'langya-prince-ju-dies-185',kind:EVENT_KIND,title:'琅邪王據薨',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年條先記春正月大疫，續載「琅邪王據薨」。原文未為薨逝另標月日；只記死訊，不推測死因、享年、繼承或與疫病的因果。',carrier:'琅邪王據（史料記載）',description:'記錄琅邪王據去世；原文未另標月份與日期，不推測死因、享年、嗣位或封國後續，也不改動玩家世界線人物狀態。',sourceDateNote:'《後漢書》卷八中平二年春正月大疫後續記琅邪王據薨，但未為此事另標月日；遊戲只按 185 年級觸發。',introducedRevision:338 },
+  { id:'guangyang-gate-building-collapses-185',kind:EVENT_KIND,title:'廣陽門外屋舍自壞',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年二月己亥記「廣陽門外屋自壞」。本節點只記原文所述屋舍自行倒壞，不推定建物用途、範圍、成因、傷亡或損失。',carrier:'洛陽廣陽門外屋舍（史料記事）',description:'記錄廣陽門外屋舍自壞；不推測建物用途、倒塌範圍、成因、傷亡、財物損失或後續修繕。',sourceDateNote:'《後漢書》卷八中平二年二月己亥記廣陽門外屋自壞；保留漢曆日期，不換算為遊戲日曆。',introducedRevision:338 },
+  { id:'situ-yuan-wei-dismissed-cui-lie-appointed-185',kind:EVENT_KIND,title:'司徒袁隗免，崔烈任司徒',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年條先記「司徒袁隗免」，三月續記「廷尉崔烈為司徒」。本節點保留篇章次序與任免，不推定免職原因、空缺日數或官職制度效果。',carrier:'司徒袁隗、廷尉崔烈與漢廷（史料記載）',description:'記錄袁隗免司徒、廷尉崔烈其後任司徒；原文只為崔烈任命標示三月，不補免職原因、空缺時長或官員任期。',sourceDateNote:'《後漢書》卷八中平二年條記司徒袁隗免，三月廷尉崔烈為司徒；保留任免次序與明載月份，不換算模型日期。',introducedRevision:338 },
+  { id:'taiwei-deng-sheng-replaced-zhang-yan-185',kind:EVENT_KIND,title:'鄧盛罷太尉，張延繼任',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年五月記「太尉鄧盛罷，太僕河南張延為太尉」。本節點只記任免，不補原因、交接日、任期或官制效果。',carrier:'太尉鄧盛、太僕張延與漢廷（史料記載）',description:'記錄五月鄧盛免太尉、張延由太僕任太尉；不推測任免原因、職權變化或在任期間。',sourceDateNote:'《後漢書》卷八中平二年五月記鄧盛罷太尉、張延為太尉；保留漢曆月份註記，不換算模型日期。',introducedRevision:338 },
+  { id:'three-fu-locusts-185',kind:EVENT_KIND,title:'三輔螟害',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年秋七月記「三輔螟」。只記原文所述蟲害，不推定具體郡縣、持續時間、農損、糧價或成因。',carrier:'三輔地方（史料記事）',description:'記錄三輔出現螟害；原文未列影響範圍或損害，不推估農作減產、糧食價格、持續時間或病因。',sourceDateNote:'《後漢書》卷八中平二年秋七月記三輔螟；保留漢曆季節與月份，遊戲只按 185 年級觸發。',introducedRevision:338 },
+  { id:'huangfu-song-dismissed-left-chariot-general-185',kind:EVENT_KIND,title:'皇甫嵩免左車騎將軍',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年秋七月三輔螟記事後記「左車騎將軍皇甫嵩免」。本節點只記免職，不推測原因、繼任者、離任日或後續行程。',carrier:'左車騎將軍皇甫嵩與漢廷（史料記載）',description:'記錄左車騎將軍皇甫嵩免職；不推斷免職原因、繼任者、確切生效日或其他職務安排。',sourceDateNote:'《後漢書》卷八將皇甫嵩免職記事置於中平二年秋七月三輔螟後；保留篇章位置，不補具體日期。',introducedRevision:338 },
+  { id:'zhang-wen-appointed-chariot-general-against-beigong-185',kind:EVENT_KIND,title:'張溫任車騎將軍討北宮伯玉',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年八月記「以司空張溫為車騎將軍，討北宮伯玉」。本節點只記任命與討伐部署；十一月戰事另由美陽節點記錄，不將此詔直接寫成戰果。',carrier:'司空張溫、北宮伯玉與漢廷（史料記載）',description:'記錄八月張溫由司空任車騎將軍並受命討北宮伯玉；任命不等於已出征或得勝，後續戰事另行記錄。',sourceDateNote:'《後漢書》卷八中平二年八月記張溫任車騎將軍討北宮伯玉；保留漢曆月份，不換算模型日期。',introducedRevision:338 },
+  { id:'yang-ci-appointed-sikong-185',kind:EVENT_KIND,title:'特進楊賜任司空',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年九月記「特進楊賜為司空」。只記任命，不推測任命原因、職權變化、到任日或任期。',carrier:'特進楊賜與漢廷（史料記載）',description:'記錄楊賜由特進任司空；不推測任命原因、確切到任日期、任期或官署運作。',sourceDateNote:'《後漢書》卷八中平二年九月記特進楊賜為司空；保留漢曆月份，不換算模型日期。',introducedRevision:338 },
+  { id:'yang-ci-dies-xu-xiang-succeeds-sikong-185',kind:EVENT_KIND,title:'司空楊賜薨，許相任司空',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年冬十月庚寅記「司空楊賜薨，光祿大夫許相為司空」。只記原文所載去世與任命，不推測死因、年齡、交接日或任期。',carrier:'司空楊賜、光祿大夫許相與漢廷（史料記載）',description:'記錄十月庚寅楊賜去世、光祿大夫許相任司空；不推測死因、享年、任命程序或後續官職。',sourceDateNote:'《後漢書》卷八中平二年冬十月庚寅記楊賜薨、許相為司空；保留漢曆干支，不換算模型日期。',introducedRevision:338 },
+  { id:'chen-dan-liu-tao-die-in-prison-185',kind:EVENT_KIND,title:'陳耽、劉陶下獄死',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年條在楊賜薨及許相任司空後記「前司徒陳耽、諫議大夫劉陶坐直言，下獄死」。原文未另標本事月份，不推測所言內容、案情或執行程序。',carrier:'前司徒陳耽、諫議大夫劉陶（史料記載）',description:'記錄陳耽、劉陶因直言下獄而死；不把兩人登錄成玩家角色死亡硬節點，不補言論內容、案情、司法過程或其他人物後續。',sourceDateNote:'《後漢書》卷八將陳耽、劉陶下獄死記事置於中平二年冬十月段落後，未另標月日；遊戲只按 185 年級呈現。',introducedRevision:338 },
+  { id:'wanjin-hall-built-west-garden-185',kind:EVENT_KIND,title:'西園營造萬金堂',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年條「是歲」記「造萬金堂於西園」。只記史書所載營建，不推算工程規模、資金來源、成本或使用情況。',carrier:'漢廷與西園（史料記事）',description:'記錄中平二年西園營造萬金堂；不推估成本、工程規模、資金來源、工期或對玩家財政的影響。',sourceDateNote:'《後漢書》卷八以中平二年「是歲」記造萬金堂於西園，未標月份或日期。',introducedRevision:338 },
+  { id:'luoyang-infant-two-heads-four-arms-185',kind:EVENT_KIND,title:'洛陽民生二首四臂之兒（史書異象記載）',...sameYear(185),precision:YEAR_PRECISION,source:HH8+'中平二年條「是歲」記「洛陽民生兒，兩頭四臂」。注文另引《續漢志》記錄文字；本節點只保存史書記載，不判定真偽、成因或嬰兒後續。',carrier:'洛陽地方史書記載（異象文字）',description:'呈現史書所記洛陽民生二首四臂之兒；明示為原典記載，不宣稱現象已驗證，不推論成因或相關人物後續。',sourceDateNote:'《後漢書》卷八以中平二年「是歲」記洛陽民生二首四臂之兒，未標月份或日期。',introducedRevision:338 },
   { id:'zhao-zhong-appointed-chariot-general-186',kind:EVENT_KIND,title:'趙忠任車騎將軍，傅爕拒絕私下封賞',...sameYear(186),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十八中平三年條記以中常侍趙忠為車騎將軍，並載趙忠之弟趙延向傅爕言及萬戶侯之賞，傅爕答「有功不論命也，傅爕豈求私賞哉」。本節點只保留任命與傅爕拒絕私賞的記事，不推演賞爵實際授予、朝廷制度變化或人物後續仕途。',carrier:'趙忠、傅爕與漢廷（史料記載）',description:'記錄趙忠任車騎將軍，以及傅爕拒絕趙延所言的私下封賞。只按年級呈現，不將談及的萬戶侯寫成已授爵，也不推演制度或人物後續。',sourceDateNote:'《資治通鑑》卷五十八中平三年春二月記事段記趙忠任車騎將軍及傅爕拒絕私賞。遊戲只按 186 年級觸發，不換算模型日期。',introducedRevision:183 },
   { id:'ling-emperor-south-palace-works-186',kind:EVENT_KIND,title:'靈帝命修玉堂並鑄造宮廷器物',...sameYear(186),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十八中平三年條記靈帝命鉤盾令宋典修南宮玉堂、掖庭令畢嵐鑄四銅人與四口大鐘，並在平門橋附近設置吐水銅獸及翻車、渴烏等器具，用於灑掃南北郊道路。本節點只記史載的命令與器物，不宣稱工程完整程度、實際節省民力或其他影響。',carrier:'漢廷與南宮、平門附近工程（史料記事）',description:'記錄靈帝命修南宮玉堂、鑄銅人與大鐘，並製作吐水銅獸、翻車和渴烏以灑掃郊路。只按 186 年級呈現，不推定工程成效、完工時間、民力節省或其他社會影響。',introducedRevision:191 },
   { id:'solar-eclipse-186',kind:EVENT_KIND,title:'中平三年五月晦日發生日食',...sameYear(186),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十八中平三年條記「五月，壬辰晦，日有食之」。本節點只記原文所載天象，按 186 年級呈現；不換算干支至公曆或遊戲日期，不推測可見地域、天文成因、政治預兆或其他影響。',carrier:'中平三年天象記事（史料記載）',description:'記錄史書所載五月晦日日食；只按 186 年級觸發，不推測可見地域、政治預兆或對人物與世界的影響。',sourceDateNote:'原史紀年：《資治通鑑》卷五十八中平三年五月壬辰晦記日食。保留漢曆日期作來源註記，只按 186 年級觸發，不換算成公曆或遊戲日期。',introducedRevision:192 },
@@ -508,6 +520,18 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'amnesty-and-zhongping-era-begins-184': '原史紀年：《後漢書》卷八中平元年十二月己巳記大赦天下、改元中平；保留漢曆註記，不換算遊戲日曆。',
   'xiapi-prince-yi-dies-without-heir-184': '原史紀年：《後漢書》卷八中平元年「是歲」記下邳王意薨、無子、國除，未標月份或日期。',
   'reports-of-unusual-plants-184': '原史紀年：《後漢書》卷八中平元年「是歲」記事記郡國生異草，未標月份或日期；只保留史書報告。',
+  'langya-prince-ju-dies-185': '原史紀年：《後漢書》卷八中平二年春正月大疫後續記琅邪王據薨，但未為薨逝另標月日。',
+  'guangyang-gate-building-collapses-185': '原史紀年：《後漢書》卷八中平二年二月己亥記廣陽門外屋自壞；保留漢曆註記，不換算模型日期。',
+  'situ-yuan-wei-dismissed-cui-lie-appointed-185': '原史紀年：《後漢書》卷八中平二年條先記司徒袁隗免，三月記廷尉崔烈為司徒；保留原文次序。',
+  'taiwei-deng-sheng-replaced-zhang-yan-185': '原史紀年：《後漢書》卷八中平二年五月記鄧盛罷太尉、張延為太尉；保留漢曆月份，不換算模型日期。',
+  'three-fu-locusts-185': '原史紀年：《後漢書》卷八中平二年秋七月記三輔螟；只保留史載年月，不推定災害細節。',
+  'huangfu-song-dismissed-left-chariot-general-185': '原史紀年：《後漢書》卷八將皇甫嵩免職記事置於中平二年秋七月三輔螟後；不另推具體日期。',
+  'zhang-wen-appointed-chariot-general-against-beigong-185': '原史紀年：《後漢書》卷八中平二年八月記張溫由司空為車騎將軍、討北宮伯玉；保留漢曆月份。',
+  'yang-ci-appointed-sikong-185': '原史紀年：《後漢書》卷八中平二年九月記特進楊賜為司空；保留漢曆月份，不換算模型日期。',
+  'yang-ci-dies-xu-xiang-succeeds-sikong-185': '原史紀年：《後漢書》卷八中平二年冬十月庚寅記楊賜薨、許相為司空；保留干支註記。',
+  'chen-dan-liu-tao-die-in-prison-185': '原史紀年：《後漢書》卷八將陳耽、劉陶下獄死記事置於中平二年冬十月段落後，但未另標月日。',
+  'wanjin-hall-built-west-garden-185': '原史紀年：《後漢書》卷八以中平二年「是歲」記造萬金堂於西園，未標月份或日期。',
+  'luoyang-infant-two-heads-four-arms-185': '原史紀年：《後漢書》卷八以中平二年「是歲」記洛陽民生二首四臂之兒，未標月份或日期。',
   'zhang-xiu-ba-commander-revolt-184': '原史紀年：《後漢書》卷八中平元年秋七月記巴郡妖巫張脩反、寇郡縣；遊戲只按 184 年級觸發，不推定戰事日期。',
   'henan-yin-xu-guan-dies-in-prison-184': '原史紀年：《後漢書》卷八中平元年秋七月記河南尹徐灌下獄死；遊戲只按 184 年級觸發，不推定案情或執行日期。',
   'huangfu-song-cangting-captures-yellow-turban-leader-184': '原史紀年：《後漢書》卷八中平元年八月記皇甫嵩與黃巾戰於倉亭，獲其帥；注文辨其帥為卜已（異本作卜己）。遊戲只按 184 年級觸發。',

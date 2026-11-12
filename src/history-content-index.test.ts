@@ -39,7 +39,7 @@ describe('A304 歷史內容來源索引', () => {
     const indexableContent = HISTORY_CONTENT.filter((item) => item.kind === 'event' || item.kind === 'death');
     const activeEvents = indexableContent.filter((item) => item.kind === 'event' && !item.retired);
 
-    expect(activeEvents).toHaveLength(466);
+    expect(activeEvents).toHaveLength(478);
     expect(rowCounts.size, '歷史索引不得重複列出同一事件 ID').toBe(indexRows.length);
     expect([...rowCounts.keys()].sort(), '歷史索引項目須與來源事件及死亡節點完全對應').toEqual(indexableContent.map((item) => item.id).sort());
     for (const event of activeEvents) {
@@ -114,7 +114,7 @@ describe('A304 歷史內容來源索引', () => {
 
     expect(inferredEntries).toHaveLength(1);
     expect(earlyBackgroundEntries).toHaveLength(249);
-    expect(lateHistoricalNodes).toHaveLength(216);
+    expect(lateHistoricalNodes).toHaveLength(228);
     expect(readme).toContain(`${lateHistoricalNodes.length} 個 183–280 年節點`);
     expect(readme).toContain('一筆死亡索引');
     expect(readme).toContain(`${earlyBackgroundEntries.length} 筆東漢背景記事`);

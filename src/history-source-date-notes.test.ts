@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(216);
+    expect(withinCatalogYears).toHaveLength(228);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -108,6 +108,18 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'zhao-ci-revolt-186': ['中平三年', '二月江夏兵', '六月荊州刺史'],
       'wuling-revolt-suppressed-186': ['中平三年', '冬十月武陵蠻叛', '郡兵討破'],
       'epidemic-185': ['春正月大疫'],
+      'langya-prince-ju-dies-185': ['春正月大疫', '琅邪王據薨'],
+      'guangyang-gate-building-collapses-185': ['二月己亥', '廣陽門外屋自壞'],
+      'situ-yuan-wei-dismissed-cui-lie-appointed-185': ['司徒袁隗免', '三月', '廷尉崔烈為司徒'],
+      'taiwei-deng-sheng-replaced-zhang-yan-185': ['五月', '太尉鄧盛罷', '張延為太尉'],
+      'three-fu-locusts-185': ['秋七月', '三輔螟'],
+      'huangfu-song-dismissed-left-chariot-general-185': ['左車騎將軍皇甫嵩免'],
+      'zhang-wen-appointed-chariot-general-against-beigong-185': ['八月', '司空張溫為車騎將軍', '討北宮伯玉'],
+      'yang-ci-appointed-sikong-185': ['九月', '特進楊賜為司空'],
+      'yang-ci-dies-xu-xiang-succeeds-sikong-185': ['冬十月庚寅', '司空楊賜薨', '許相為司空'],
+      'chen-dan-liu-tao-die-in-prison-185': ['前司徒陳耽', '諫議大夫劉陶', '坐直言，下獄死'],
+      'wanjin-hall-built-west-garden-185': ['是歲', '造萬金堂於西園'],
+      'luoyang-infant-two-heads-four-arms-185': ['是歲', '洛陽民生兒，兩頭四臂'],
       'south-palace-fire-185': ['二月己酉', '火半月乃滅', '稅天下田畝十錢'],
       'hailstorm-fourth-month-185': ['夏四月庚戌', '大雨雹'],
       'zhang-rang-eunuchs-enfeoffed-185': ['中平二年六月', '討張角功', '張讓等十二人', '列侯'],
@@ -211,7 +223,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(107);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(119);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -454,6 +466,18 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'south-palace-fire-185',
       'hailstorm-fourth-month-185',
       'zhang-rang-eunuchs-enfeoffed-185',
+      'langya-prince-ju-dies-185',
+      'guangyang-gate-building-collapses-185',
+      'situ-yuan-wei-dismissed-cui-lie-appointed-185',
+      'taiwei-deng-sheng-replaced-zhang-yan-185',
+      'three-fu-locusts-185',
+      'huangfu-song-dismissed-left-chariot-general-185',
+      'zhang-wen-appointed-chariot-general-against-beigong-185',
+      'yang-ci-appointed-sikong-185',
+      'yang-ci-dies-xu-xiang-succeeds-sikong-185',
+      'chen-dan-liu-tao-die-in-prison-185',
+      'wanjin-hall-built-west-garden-185',
+      'luoyang-infant-two-heads-four-arms-185',
       'zhao-zhong-appointed-chariot-general-186',
       'solar-eclipse-186',
       'partisan-amnesty-return-184',
@@ -487,7 +511,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(107);
-    expect(uniqueNotedEvents.size).toBe(322);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(119);
+    expect(uniqueNotedEvents.size).toBe(334);
   });
 });
