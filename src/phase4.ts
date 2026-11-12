@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-390';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-391';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:388},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:389},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -611,6 +611,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'sun-quan-sends-condolences-to-shu-223',kind:EVENT_KIND,title:'孫權遣使弔劉備',...sameYear(223),precision:YEAR_PRECISION,source:SG47+'記黃武二年劉備薨於白帝，裴松之注引《吳書》記孫權遣立信都尉馮熙聘蜀弔喪。本內容包採年級精度。',carrier:'孫權、馮熙與蜀漢朝廷（歷史記載）',description:'記錄孫權遣馮熙赴蜀弔劉備；不推演使團路線、私下談話或完整外交協議。',introducedRevision:94 },
   { id:'sun-quan-renews-alliance-with-shu-224',kind:EVENT_KIND,title:'孫權、劉禪互遣使重結盟好',...sameYear(224),precision:YEAR_PRECISION,source:SG47+'記黃武三年夏孫權遣輔義中郎將張溫聘蜀；同年蜀遣鄧芝來聘，原文稱「重結盟好」。本內容包採年級精度。',carrier:'孫權、張溫、劉禪與鄧芝（歷史記載）',description:'記錄吳蜀雙方互遣使者及史書所述重結盟好；不推演使節談判細節、盟約條款或實際軍事協調。',introducedRevision:95 },
   { id:'sun-wu-amnesty-death-crimes-224',kind:EVENT_KIND,title:'孫吳朝廷赦免死罪',...sameYear(224),precision:YEAR_PRECISION,source:SG47+'黃武三年秋八月記「赦死罪」。只記本紀所載赦令，不推測赦免對象、例外、適用範圍、實際執行或個案結果；本內容包採年級精度。',carrier:'孫吳朝廷與受赦者（史料記事）',description:'記錄黃武三年秋八月赦死罪一事；不推測赦免對象、例外、法律效果、執行範圍或個案結果。',sourceDateNote:'原史紀年：黃武三年秋八月，吳廷赦死罪。保留季節與月份，不換算成遊戲日曆。',introducedRevision:379 },
+  { id:'wei-establishes-taixue-and-classics-examinations-224',kind:EVENT_KIND,title:'魏廷立太學並定五經課試法',...sameYear(224),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉黃初五年夏四月記「立太學，制五經課試之法，置春秋穀梁博士」。只記設立太學、課試法與博士職置，不推估實際招生、完整課程、施行範圍或教育成效。',carrier:'魏廷、太學與春秋穀梁博士（史書記載）',description:'記錄魏廷於太學設置五經課試之法並置春秋、穀梁博士；不推演招生人數、實際考核、課程內容、制度覆蓋或教育效果。',sourceDateNote:'原史紀年：黃初五年夏四月立太學、制五經課試之法、置春秋穀梁博士；保留季節與月份，遊戲按 224 年級觸發。',introducedRevision:391 },
   { id:'wei-limits-accusations-224',kind:EVENT_KIND,title:'魏廷限定告發罪名並懲處妄告',...sameYear(224),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉黃初五年春正月記：「初令謀反大逆乃得相告，其餘皆勿聽治；敢妄相告，以其罪罪之。」只記詔令文字，不推演實際受理案件、司法程序或執法結果。',carrier:'魏廷與告發制度（史書記載）',description:'記錄魏廷限定可受理告發的罪名並規定妄告處置；不推測實際施行、個案、司法程序或玩家世界法律。',sourceDateNote:'原史紀年：黃初五年春正月，魏廷限定告發罪名並處置妄告；保留原史月份，遊戲按 224 年級觸發。',introducedRevision:390 },
   { id:'yiling-campaign-222',kind:EVENT_KIND,title:'夷陵戰局逆轉、孫權遣使復通蜀漢',...sameYear(222),precision:YEAR_PRECISION,source:'《三國志》卷三十二〈蜀書·先主傳〉記章武二年夏六月陸議於猇亭大破先主軍；'+SG47+'又記十二月孫權遣太中大夫鄭泉聘劉備於白帝，「始復通也」。本內容包採年級精度。',causes:['yiling-campaign-defeat'],carrier:'劉備軍、孫權與吳蜀使者（歷史記載）',description:'記錄夷陵戰局逆轉及孫權於年末遣使至白帝與劉備恢復往來；不推演完整戰役、損失、盟約內容或領土控制。',introducedRevision:7 },
   { id:'wei-three-front-campaign-and-dongkou-storm-222',kind:EVENT_KIND,title:'魏軍多路攻吳、洞口風災造成呂範部下溺亡',...sameYear(222),precision:YEAR_PRECISION,source:SG47+'黃武元年條記魏軍秋九月分出洞口、濡須並圍南郡；孫權遣呂範等督五軍，以舟軍拒曹休等，並分援南郡與濡須。原文續記冬十一月大風，呂範等兵溺死者數千，其餘軍隊還江南；同段另記魏軍襲徐陵及吳軍追擊。《三國志》卷二〈文帝紀〉另記黃初三年六月治兵、庚午南征，七月軍次譙；兩傳分記南征與秋九月攻勢，不將六月日期等同攻吳起始日。本內容包採年級精度，僅轉述史書記載，不把概述傷亡拆成個人狀態。',carrier:'孫權、呂範、曹休、曹仁與魏吳軍（歷史記載）',description:'記錄魏軍多路進攻、孫吳分軍抵禦及年末風災中呂範部下溺亡的史載。只保留原文所述「數千」及大風，不推演逐日戰況、各路完整兵力、個別死傷或領土控制。',sourceDateNote:'原史紀年：黃武元年秋九月魏軍出洞口、濡須並圍南郡；冬十一月大風，呂範等兵溺死者數千。保留月份與原文精度，不換算成遊戲日期。',introducedRevision:125 },
@@ -703,6 +704,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'wei-bans-private-vengeance-223': '原史紀年：黃初四年春正月，魏廷下詔禁止私自復仇；保留漢曆月份，不推定個案或執行情形，遊戲按 223 年級觸發。',
   'wei-cao-ren-dies-and-epidemic-223': '原史紀年：黃初四年記丁未大司馬曹仁薨、是月大疫；此處未另繫月份，不推算具體日期或疫情範圍，遊戲按 223 年級觸發。',
   'sun-wu-amnesty-death-crimes-224': '原史紀年：黃武三年秋八月，吳廷赦死罪。只保留季節與月份，不推測赦免範圍、法律效果或個案結果；遊戲按 224 年級觸發。',
+  'wei-establishes-taixue-and-classics-examinations-224': '原史紀年：黃初五年夏四月立太學、制五經課試之法、置春秋穀梁博士；保留季節與月份，不推演招生或教育成效，遊戲按 224 年級觸發。',
   'wei-limits-accusations-224': '原史紀年：黃初五年春正月，魏廷限定告發罪名並處置妄告；保留漢曆月份，不推定施行或個案，遊戲按 224 年級觸發。',
   'huangfu-song-appointed-left-chariot-general-184': '原史紀年：《後漢書》卷八中平元年冬十月廣宗記事後記皇甫嵩為左車騎將軍；只保留篇章先後，不推定到任日或任期。',
   'beigong-boyu-xianling-revolt-184': '原史紀年：《後漢書》卷八將北宮伯玉與先零羌起事記事置於中平元年冬季段落，但未另標月份；遊戲只按 184 年級呈現。',
