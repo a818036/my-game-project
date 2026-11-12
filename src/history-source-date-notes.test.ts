@@ -278,6 +278,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'eclipse-ransom-168',
       'xianbei-huimo-raid-you-bing-168',
       'great-amnesty-jianing-2-169',
+      'dong-guiren-empress-dowager-169',
       'jiangxia-uprising-169',
       'taiwei-sikong-appointments-169',
       'epidemic-lingdi-171',
@@ -363,6 +364,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(207);
+    expect(uniqueNotedEvents.size).toBe(208);
   });
 });

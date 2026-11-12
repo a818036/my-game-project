@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-301';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-302';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:299},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:300},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -100,6 +100,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'xianbei-huimo-raid-you-bing-168',kind:EVENT_KIND,title:'鮮卑、濊貊寇幽并二州',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'十二月鮮卑及濊貊寇幽并二州。',carrier:'鮮卑、濊貊（史料記載）',description:'記侵擾。',sourceDateNote:'十二月'+YEAR_TRIGGER,introducedRevision:231 },
   { id:'partisan-purge-expands-169',kind:EVENT_KIND,title:'黨錮擴大，士人與親屬遭禁錮',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年條記侯覽唆使有司奏虞放、杜密、李膺等為鉤黨，下獄，死者百餘人、妻子徙邊，並令州郡大舉鉤黨；史文記當時豪傑及儒學行義者皆被列為黨人。本內容包採年級精度，不把概數改寫為精確死亡名冊。',carrier:'漢廷、遭列鉤黨者及其家屬（史料記載）',description:'記錄建寧二年黨錮措施擴大及史料所述懲處；不推定各地執行細節、受害者完整名單、個別人物的玩家狀態或百餘人的精確統計。',introducedRevision:145 },
   { id:'great-amnesty-jianing-2-169',kind:EVENT_KIND,title:'建寧二年春正月大赦天下',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年春正月丁丑，大赦天下。原典未於本句說明赦免對象、例外或執行情況。',carrier:'漢廷與受赦者（史料記載）',description:'只記原文所載大赦天下；不推定適用對象、法律效果、個案結果或玩家人物狀態。',sourceDateNote:'《後漢書》記建寧二年春正月丁丑；遊戲僅按 169 年級觸發，不換算漢曆日期為模型時間。',introducedRevision:301 },
+  { id:'dong-guiren-empress-dowager-169',kind:EVENT_KIND,title:'尊慎園董貴人為孝仁皇后',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年三月乙巳，尊慎園董貴人為孝仁皇后。只記原文所載尊號，不推定此前身分狀態、儀制、在世與否或其他政治後果。',carrier:'慎園董貴人與漢廷（史料記載）',description:'記錄建寧二年尊慎園董貴人為孝仁皇后；不補儀式、人物生死狀態、執行細節或玩家人物狀態。',sourceDateNote:'《後漢書》記建寧二年三月乙巳；遊戲僅按 169 年級觸發，不換算漢曆日期為模型時間。',introducedRevision:302 },
   { id:'jiangxia-uprising-169',kind:EVENT_KIND,title:'江夏蠻叛，州郡討平',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年九月記「江夏蠻叛，州郡討平之」；'+HH86+'亦繫於建寧二年。只保留原文所述起事與討平，不推演規模、傷亡或行政後果。',carrier:'江夏地方起事者與州郡官府（史料記載）',description:'記錄建寧二年江夏起事及州郡討平；不將史料族群稱謂擴寫成現代身分，不補戰事、傷亡、參與人數或後續控制。',sourceDateNote:'《後漢書》卷八繫於建寧二年九月；遊戲只按 169 年級呈現，不將漢曆月份換算為模型日期。',introducedRevision:237 },
   { id:'taiwei-sikong-appointments-169',kind:EVENT_KIND,title:'169年三公任免',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年五月太尉聞人襲罷、司空許栩免；六月劉寵為太尉、許訓為司徒、劉囂為司空。',carrier:'朝廷',description:'只記任免，不改玩家官職。',sourceDateNote:'五月、六月；只按年級呈現。',introducedRevision:239 },
   { id:'bingzhou-raid-169',kind:EVENT_KIND,title:'鮮卑寇并州',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年條記「鮮卑寇并州」。',carrier:'鮮卑',description:'只記侵擾，不推演未載後果。',introducedRevision:240 },
