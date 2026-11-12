@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-306';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-307';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:304},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:305},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -105,6 +105,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'court-sealed-memorial-edict-169',kind:EVENT_KIND,title:'詔公卿以下各上封事',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年夏四月癸巳條又記「詔公卿以下各上封事」。原文未說明詔令與同條天候記事的因果關係，也未記封事內容或採納結果。',carrier:'漢廷與奉詔公卿以下（史料記載）',description:'只記原典所載詔令；不推定封事內容、上書者名單、朝廷採納情況或政策效果，也不與同條風雹記事建立因果。',sourceDateNote:'《後漢書》建寧二年夏四月癸巳條記此詔；遊戲僅按 169 年級觸發，不換算漢曆日期為模型時間。',introducedRevision:304 },
   { id:'duan-jiong-defeats-xianling-shehuosai-169',kind:EVENT_KIND,title:'段熲大破先零羌於射虎塞外谷',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年秋七月記破羌將軍段熲大破先零羌於射虎塞外谷，並稱「東羌悉平」。只記原文，不推估兵力、傷亡、戰線或其後各部狀態。',carrier:'段熲、先零羌與東羌（史料記載）',description:'記錄秋七月段熲於射虎塞外谷大破先零羌及原文所稱東羌悉平；不推估傷亡、兵力、戰場邊界，也不把記載推廣為此後無羌人活動。',sourceDateNote:'《後漢書》卷八建寧二年秋七月記段熲大破先零羌於射虎塞外谷，原文稱東羌悉平；遊戲只按 169 年級觸發，不換算模型日期。',introducedRevision:305 },
   { id:'cao-jie-charioteer-general-169',kind:EVENT_KIND,title:'建寧二年曹節任車騎將軍，百餘日罷',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年條於「是歲」記長樂太僕曹節為車騎將軍，「百餘日罷」。原文未提供起任、免職的月日或繼任者；遊戲只按年級呈現。',carrier:'曹節與漢廷（史料記載）',description:'記錄原典所載曹節任車騎將軍及百餘日後罷職；不推算精確任免日期、月內日數、繼任者或其他官制效果。',sourceDateNote:'《後漢書》卷八建寧二年條「是歲」記曹節任車騎將軍、百餘日罷；遊戲只按 169 年級觸發，不拆算為模型日數。',introducedRevision:306 },
+  { id:'lunar-eclipse-169',kind:EVENT_KIND,title:'建寧二年庚子晦日日食',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年條記「庚子晦，日有食之」。只記原文所載日食，不推算現代日期、可見範圍、成因或政治含義；遊戲僅按年級呈現。',carrier:'建寧二年天象記事（史料記載）',description:'記錄原典所載庚子晦日日食；不推算天文日期、可見地區、成因或政治影響。',sourceDateNote:'《後漢書》卷八建寧二年條記「庚子晦，日有食之」；遊戲僅按 169 年級觸發，不換算為模型日期。',introducedRevision:307 },
   { id:'jiangxia-uprising-169',kind:EVENT_KIND,title:'江夏蠻叛，州郡討平',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年九月記「江夏蠻叛，州郡討平之」；'+HH86+'亦繫於建寧二年。只保留原文所述起事與討平，不推演規模、傷亡或行政後果。',carrier:'江夏地方起事者與州郡官府（史料記載）',description:'記錄建寧二年江夏起事及州郡討平；不將史料族群稱謂擴寫成現代身分，不補戰事、傷亡、參與人數或後續控制。',sourceDateNote:'《後漢書》卷八繫於建寧二年九月；遊戲只按 169 年級呈現，不將漢曆月份換算為模型日期。',introducedRevision:237 },
   { id:'taiwei-sikong-appointments-169',kind:EVENT_KIND,title:'169年三公任免',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年五月太尉聞人襲罷、司空許栩免；六月劉寵為太尉、許訓為司徒、劉囂為司空。',carrier:'朝廷',description:'只記任免，不改玩家官職。',sourceDateNote:'五月、六月；只按年級呈現。',introducedRevision:239 },
   { id:'bingzhou-raid-169',kind:EVENT_KIND,title:'鮮卑寇并州',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年條記「鮮卑寇并州」。',carrier:'鮮卑',description:'只記侵擾，不推演未載後果。',introducedRevision:240 },
