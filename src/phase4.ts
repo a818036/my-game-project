@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-402';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-403';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:400},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:401},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -622,6 +622,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'wei-venus-daylight-and-return-to-xuchang-224',kind:EVENT_KIND,title:'冬十月乙卯太白晝見，魏廷行還許昌宮',...sameYear(224),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉黃初五年記「冬十月乙卯，太白晝見。行還許昌宮」。只記原文觀測與返宮記事，不推算現代日期、天象成因、行程路線或政治含義。',carrier:'魏廷與史書天象記事（史料所載）',description:'記錄冬十月乙卯太白晝見及行還許昌宮；只按 224 年級呈現，不推測現代天文日期、成因、觀測條件、返程路線或其他後果。',sourceDateNote:'原史紀年：黃初五年冬十月乙卯太白晝見，並記行還許昌宮；保留漢曆註記，遊戲只按 224 年級觸發，不換算模型日期。',introducedRevision:399 },
   { id:'wei-solar-eclipse-wushen-224',kind:EVENT_KIND,title:'黃初五年十一月戊申晦日日食',...sameYear(224),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉黃初五年十一月記「戊申晦，日有食之」。只記史書所載天象與原史曆日，不推算現代日期、可見範圍、成因或政治含義。',carrier:'魏廷天象記事（史料記載）',description:'記錄黃初五年十一月戊申晦日日食；只按 224 年級呈現，不推測現代日期、觀測範圍、天文成因或政治後果。',sourceDateNote:'原史紀年：黃初五年十一月戊申晦，日有食之；保留漢曆月份、干支與晦日註記，遊戲只按 224 年級觸發，不換算模型日期。',introducedRevision:400 },
   { id:'wei-circulates-east-of-xuchang-relieves-poor-225',kind:EVENT_KIND,title:'魏廷遣使巡行許昌以東至沛郡、問疾苦並振貸貧者',...sameYear(225),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉黃初六年春二月記「遣使者循行許昌以東盡沛郡，問民所疾苦，貧者振貸之」。只記遣使巡行、問疾苦及振貸貧者原文，不推測個別對象、貸予數量、執行方式或實際效果。',carrier:'魏廷遣使、許昌以東至沛郡及受貸貧者（史料記載）',description:'記錄魏廷遣使循行許昌以東至沛郡、詢問民間疾苦並向貧者振貸；不推演個別人物、貸予數量、地方成效或玩家世界資源。',sourceDateNote:'原史紀年：黃初六年春二月，遣使巡行許昌以東至沛郡、問民疾苦並振貸貧者；保留季節與月份，只按 225 年級觸發，不換算模型日期。',introducedRevision:401 },
+  { id:'wei-visits-zhaoling-and-tulao-canal-225',kind:EVENT_KIND,title:'曹丕行幸召陵、通討虜渠',...sameYear(225),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉黃初六年春三月記「行幸召陵，通討虜渠」。緊接原文另記乙巳還許昌宮；本節點只保留三月的行幸與「通討虜渠」原文，不將乙巳繫到前句，不推定工程類型、路線、規模或完成日期。',carrier:'魏廷與召陵、討虜渠（史書記事）',description:'記錄黃初六年三月行幸召陵及「通討虜渠」；不推測渠道所在、工程內容、路線、目的、規模或對地方的影響。',sourceDateNote:'原史紀年：黃初六年春三月記行幸召陵、通討虜渠；其後「乙巳，還許昌宮」未明確標示是否同繫前句，故不把乙巳日繫到本節點。遊戲只按 225 年級觸發。',introducedRevision:403 },
   { id:'wei-limits-accusations-224',kind:EVENT_KIND,title:'魏廷限定告發罪名並懲處妄告',...sameYear(224),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉黃初五年春正月記：「初令謀反大逆乃得相告，其餘皆勿聽治；敢妄相告，以其罪罪之。」只記詔令文字，不推演實際受理案件、司法程序或執法結果。',carrier:'魏廷與告發制度（史書記載）',description:'記錄魏廷限定可受理告發的罪名並規定妄告處置；不推測實際施行、個案、司法程序或玩家世界法律。',sourceDateNote:'原史紀年：黃初五年春正月，魏廷限定告發罪名並處置妄告；保留原史月份，遊戲按 224 年級觸發。',introducedRevision:390 },
   { id:'yiling-campaign-222',kind:EVENT_KIND,title:'夷陵戰局逆轉、孫權遣使復通蜀漢',...sameYear(222),precision:YEAR_PRECISION,source:'《三國志》卷三十二〈蜀書·先主傳〉記章武二年夏六月陸議於猇亭大破先主軍；'+SG47+'又記十二月孫權遣太中大夫鄭泉聘劉備於白帝，「始復通也」。本內容包採年級精度。',causes:['yiling-campaign-defeat'],carrier:'劉備軍、孫權與吳蜀使者（歷史記載）',description:'記錄夷陵戰局逆轉及孫權於年末遣使至白帝與劉備恢復往來；不推演完整戰役、損失、盟約內容或領土控制。',introducedRevision:7 },
   { id:'wei-three-front-campaign-and-dongkou-storm-222',kind:EVENT_KIND,title:'魏軍多路攻吳、洞口風災造成呂範部下溺亡',...sameYear(222),precision:YEAR_PRECISION,source:SG47+'黃武元年條記魏軍秋九月分出洞口、濡須並圍南郡；孫權遣呂範等督五軍，以舟軍拒曹休等，並分援南郡與濡須。原文續記冬十一月大風，呂範等兵溺死者數千，其餘軍隊還江南；同段另記魏軍襲徐陵及吳軍追擊。《三國志》卷二〈文帝紀〉另記黃初三年六月治兵、庚午南征，七月軍次譙；兩傳分記南征與秋九月攻勢，不將六月日期等同攻吳起始日。本內容包採年級精度，僅轉述史書記載，不把概述傷亡拆成個人狀態。',carrier:'孫權、呂範、曹休、曹仁與魏吳軍（歷史記載）',description:'記錄魏軍多路進攻、孫吳分軍抵禦及年末風災中呂範部下溺亡的史載。只保留原文所述「數千」及大風，不推演逐日戰況、各路完整兵力、個別死傷或領土控制。',sourceDateNote:'原史紀年：黃武元年秋九月魏軍出洞口、濡須並圍南郡；冬十一月大風，呂範等兵溺死者數千。保留月份與原文精度，不換算成遊戲日期。',introducedRevision:125 },

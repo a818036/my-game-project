@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(420);
+    expect(withinCatalogYears).toHaveLength(421);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -751,6 +751,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-venus-daylight-and-return-to-xuchang-224',
       'wei-solar-eclipse-wushen-224',
       'wei-circulates-east-of-xuchang-relieves-poor-225',
+      'wei-visits-zhaoling-and-tulao-canal-225',
       'wei-limits-accusations-224',
       'wei-three-front-campaign-and-dongkou-storm-222',
       'cao-rui-enfeoffed-prince-of-pingyuan-222',
@@ -776,6 +777,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(213);
-    expect(uniqueNotedEvents.size).toBe(532);
+    expect(uniqueNotedEvents.size).toBe(533);
   });
 });
