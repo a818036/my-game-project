@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(263);
+    expect(withinCatalogYears).toHaveLength(274);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -254,11 +254,22 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'yuan-wei-yuan-ji-executed-clan-190': ['三月戊午', '董卓殺太傅袁隗'],
       'white-wave-raids-hedong-190': ['冬十月', '白波賊寇河東'],
       'dong-zhuo-appointed-chancellor-190': ['十一月癸酉', '董卓為相國'],
+      'han-amnesty-chuping-2-191': ['春正月辛丑', '大赦天下'],
+      'sun-jian-defeats-hu-zhen-yangren-191': ['初平二年二月', '胡軫軍大敗'],
+      'dong-zhuo-excavates-imperial-tombs-191': ['發掘洛陽諸帝陵', '所涉陵墓'],
+      'dong-zhuo-enters-chang-an-191': ['夏四月', '董卓入長安'],
+      'luoyang-earthquake-191': ['六月丙戌', '地震'],
+      'han-court-appointments-191': ['秋七月', '太常馬日磾任太尉'],
+      'chiyou-flag-appears-191': ['九月', '蚩尤旗'],
+      'dong-zhuo-kills-zhang-wen-191': ['冬十月壬戌', '殺衛尉張溫'],
+      'ying-shao-defeats-taishan-yellow-turbans-191': ['十一月', '寇泰山'],
+      'gongsun-zan-defeats-yellow-turbans-dongguang-191': ['十一月', '戰於東光'],
+      'changsha-month-dead-revived-191': ['是歲', '死經月復活'],
       'wu-xiangyang-jiangxia-campaign-236': ['嘉禾五年', '攻襄陽'],
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(154);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(165);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -532,6 +543,17 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'yuan-wei-yuan-ji-executed-clan-190',
       'white-wave-raids-hedong-190',
       'dong-zhuo-appointed-chancellor-190',
+      'han-amnesty-chuping-2-191',
+      'sun-jian-defeats-hu-zhen-yangren-191',
+      'dong-zhuo-excavates-imperial-tombs-191',
+      'dong-zhuo-enters-chang-an-191',
+      'luoyang-earthquake-191',
+      'han-court-appointments-191',
+      'chiyou-flag-appears-191',
+      'dong-zhuo-kills-zhang-wen-191',
+      'ying-shao-defeats-taishan-yellow-turbans-191',
+      'gongsun-zan-defeats-yellow-turbans-dongguang-191',
+      'changsha-month-dead-revived-191',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -556,7 +578,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(154);
-    expect(uniqueNotedEvents.size).toBe(369);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(165);
+    expect(uniqueNotedEvents.size).toBe(380);
   });
 });

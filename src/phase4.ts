@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-343';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-344';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:341},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:342},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -362,6 +362,17 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'white-wave-raids-hedong-190',kind:EVENT_KIND,title:'白波賊寇河東，牛輔奉命出擊',...sameYear(190),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平元年冬十月記「白波賊寇河東，董卓遣其將牛輔擊之」。注文引薛瑩《書》稱黃巾郭泰等起於西河白波谷、時人稱白波賊。本節點保留本紀與注文各自表述，不推測兩者以外的組織細節或此次出擊結果。',carrier:'白波賊、牛輔與河東（史料記事）',description:'記錄白波賊侵擾河東、董卓遣牛輔出擊；注文另述白波賊稱呼來源。原典未在本條記此次出擊結果，不推演戰況、傷亡或後續控制。',sourceDateNote:'《後漢書》卷九初平元年冬十月記白波賊寇河東、董卓遣牛輔擊之；保留月份，不推定戰役結果或換算遊戲日期。',introducedRevision:343 },
   { id:'dong-zhuo-appointed-chancellor-190',kind:EVENT_KIND,title:'董卓自為相國',...sameYear(190),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平元年十一月癸酉記「董卓為相國」。只記任命記事，不推定制度變化、實際權限或其他未載政策效果。',carrier:'董卓與漢廷（史料記事）',description:'記錄董卓於十一月任相國；不推演官制效果、權力範圍或未載政令。',sourceDateNote:'《後漢書》卷九初平元年十一月癸酉記董卓為相國；保留漢曆月份及干支，不換算遊戲日期。',introducedRevision:343 },
   { id:'liu-yu-installation-proposal-191',kind:EVENT_KIND,title:'袁紹、韓馥等議奉劉虞為主',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷一〇三〈劉虞傳〉明記初平二年冀州刺史韓馥、勃海太守袁紹及山東諸將議立劉虞為主，劉虞拒絕；本內容包採年級精度。',carrier:'韓馥、袁紹及山東諸將（歷史事件）',description:'記錄諸將提出奉劉虞為主及劉虞拒絕；不寫成已即帝位，不推演政權合法性或州郡控制。',introducedRevision:26 },
+  { id:'han-amnesty-chuping-2-191',kind:EVENT_KIND,title:'朝廷大赦天下',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年春正月辛丑記「大赦天下」。本節點只記紀文，不推測赦免對象、例外、法律效果或個案結果。',carrier:'漢廷（史料記事）',description:'記錄初平二年春正月大赦天下；不推測赦免範圍、執行情況或個案結果。',sourceDateNote:'《後漢書》卷九初平二年春正月辛丑記大赦天下；保留漢曆日期，不換算為遊戲日期。',introducedRevision:344 },
+  { id:'sun-jian-defeats-hu-zhen-yangren-191',kind:EVENT_KIND,title:'孫堅於陽人擊敗胡軫軍',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年二月記袁術遣孫堅與董卓將胡軫戰於陽人，胡軫軍大敗。本節點按 191 年級記錄，不補推交戰日、兵力、傷亡或後續戰果。',carrier:'孫堅、胡軫與袁術（史料記事）',description:'記錄袁術遣孫堅與胡軫交戰及胡軫軍大敗；不擴寫戰況、傷亡、俘虜或後續控制。',sourceDateNote:'《後漢書》卷九初平二年二月記孫堅與胡軫戰於陽人、胡軫軍大敗；僅保留漢曆月份，不換算為遊戲日期。',introducedRevision:344 },
+  { id:'dong-zhuo-excavates-imperial-tombs-191',kind:EVENT_KIND,title:'董卓發掘洛陽諸帝陵',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年二月胡軫軍敗後記「董卓遂發掘洛陽諸帝陵」。本節點保留原文事件次序，不補推所涉陵墓、財物、規模或其他後果。',carrier:'董卓與洛陽（史料記事）',description:'記錄本紀所載董卓發掘洛陽諸帝陵；不指認個別陵墓、不推估損失或追加原文未載後果。',sourceDateNote:'《後漢書》卷九初平二年二月先記陽人戰事，後記董卓發掘洛陽諸帝陵；保留篇章次序，不換算遊戲日期。',introducedRevision:344 },
+  { id:'dong-zhuo-enters-chang-an-191',kind:EVENT_KIND,title:'董卓入長安',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年夏四月記「董卓入長安」。既有 190 年節點記獻帝車駕遷都及入長安；本節點只記董卓於次年入長安，不合併為同一事件或推演駐軍部署。',carrier:'董卓與長安（史料記事）',description:'記錄初平二年夏四月董卓入長安，與前一年獻帝遷都、車駕入長安分開呈現；不推演駐軍規模或政務變化。',sourceDateNote:'《後漢書》卷九初平二年夏四月記董卓入長安；按年級觸發並保留原史月份，不映射模型日期。',introducedRevision:344 },
+  { id:'luoyang-earthquake-191',kind:EVENT_KIND,title:'六月地震記事',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年六月丙戌記地震。本節點照錄紀文，不推定震央、規模、損害、成因或政治含義。',carrier:'漢廷紀年記事（史料記事）',description:'記錄初平二年六月地震；原文此處未標明地點，故不把洛陽當作已證實震央，也不推測災損。',sourceDateNote:'《後漢書》卷九初平二年六月丙戌記地震；原文未標明地點，保留干支，不換算現代日期。',introducedRevision:344 },
+  { id:'han-court-appointments-191',kind:EVENT_KIND,title:'三公任免',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年秋七月記司空种拂免、光祿大夫淳于嘉任司空；太尉趙謙罷、太常馬日磾任太尉。本節點保留來源任免，不推測原因、任期或實際職權。',carrier:'漢廷（史料記事）',description:'記錄秋七月所載司空、太尉任免；不推測免職原因、任期或職務效果。',sourceDateNote:'《後漢書》卷九初平二年秋七月記三公任免；保留月份，不換算為遊戲日期。',introducedRevision:344 },
+  { id:'chiyou-flag-appears-191',kind:EVENT_KIND,title:'角、亢間記有蚩尤旗',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年九月記「蚩尤旗見於角、亢」，並以注文引述星官說明。本節點只呈現史書記載及原有星宿名稱，不將其判作實際天象觀測或政治預兆。',carrier:'漢廷紀年記事（史料文字）',description:'記錄初平二年九月史書所載「蚩尤旗」見於角、亢；不驗證天象、不推斷占兆、戰爭或政治影響。',sourceDateNote:'《後漢書》卷九初平二年九月記蚩尤旗見於角、亢；只保留漢曆月份及原文星宿名稱。',introducedRevision:344 },
+  { id:'dong-zhuo-kills-zhang-wen-191',kind:EVENT_KIND,title:'董卓殺衛尉張溫',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年冬十月壬戌記董卓殺衛尉張溫。本節點只記原文，不補推案情、死因或處置過程，也不建立玩家死亡硬節點。',carrier:'張溫與董卓（史料記事）',description:'記錄董卓殺衛尉張溫；不補推案情或死亡過程，不改動玩家人物狀態。',sourceDateNote:'《後漢書》卷九初平二年冬十月壬戌記董卓殺衛尉張溫；保留漢曆日期，不換算為遊戲日期。',introducedRevision:344 },
+  { id:'ying-shao-defeats-taishan-yellow-turbans-191',kind:EVENT_KIND,title:'應劭擊破寇泰山的青州黃巾',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年十一月記青州黃巾寇泰山、太山太守應劭擊破之。本節點只呈現原文所載，不推估兵力、傷亡或戰後控制。',carrier:'青州黃巾與太山太守應劭（史料記事）',description:'記錄青州黃巾侵擾泰山及太守應劭擊破；不推測具體戰場、兵力、傷亡或後續控制。',sourceDateNote:'《後漢書》卷九初平二年十一月記青州黃巾寇泰山、應劭擊破；保留原文月份，不換算為遊戲日期。',introducedRevision:344 },
+  { id:'gongsun-zan-defeats-yellow-turbans-dongguang-191',kind:EVENT_KIND,title:'公孫瓚於東光擊破黃巾',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年十一月記黃巾轉寇勃海，公孫瓚與之戰於東光並再度大破。本節點保留與泰山記事的來源先後，不合併兩場戰事，不推測兵力、傷亡或逐日行軍。',carrier:'公孫瓚與黃巾軍（史料記事）',description:'記錄黃巾轉寇勃海及公孫瓚在東光大破之；與應劭擊破泰山來寇分開處理，不推演完整戰線或戰後控制。',sourceDateNote:'《後漢書》卷九初平二年十一月先記黃巾寇泰山，後記轉寇勃海及公孫瓚戰於東光；保留原文次序，不換算模型日期。',introducedRevision:344 },
+  { id:'changsha-month-dead-revived-191',kind:EVENT_KIND,title:'長沙有人死後經月復活的記載',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平二年「是歲」記「長沙有人死經月復活」。本節點只標示史書記載，不宣稱現象已驗證，不推測人物身分、原因或後續。',carrier:'長沙未具名人士（史料文字）',description:'記錄本紀「是歲」所載長沙有人死後經月復活；不判定真偽或成因，不作復活能力、死亡規則或人物狀態變更。',sourceDateNote:'《後漢書》卷九初平二年「是歲」記長沙有人死經月復活；只保留年級與原文，不推定具體月份。',introducedRevision:344 },
   { id:'dong-zhuo-killed-192',kind:EVENT_KIND,title:'董卓遇弒與李傕、郭汜攻陷長安',...sameYear(192),precision:YEAR_PRECISION,source:'《三國志》卷六〈魏書·董二袁劉傳〉記初平三年王允、士孫瑞與呂布共謀殺董卓；其後李傕、郭汜等攻長安，城陷並殺王允。本內容包採年級精度，不推定模型月日。',causes:['dong-zhuo-central-control','regional-arms-resistance'],carrier:'董卓舊部與漢廷（歷史事件）',carriersByCause:{'dong-zhuo-central-control':'仍維持董卓舊部中央武裝的勢力（因果承載）','regional-arms-resistance':'反董武裝與地方勢力（因果承載）'},description:'記錄董卓被殺，以及其舊部攻陷長安、王允遇害的年級轉折；不模擬完整圍城、人口死傷或各地控制變化。',introducedRevision:22 },
   { id:'qingzhou-yellow-turbans-surrender-192',kind:EVENT_KIND,title:'青州黃巾入兗與受降編為青州兵',...sameYear(192),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉記初平三年青州黃巾進入兗州、殺任城相鄭遂並轉入東平；劉岱出擊身死。其後曹操追至濟北受降，來源稱降卒三十餘萬、男女百餘萬口，並記收其精銳者號為青州兵。人數照錄為原典概數，不視作現代精確統計；遊戲僅按 192 年級呈現。',causes:['qingzhou-yellow-turban-invasion-192'],carrier:'青州黃巾、兗州地方官軍與曹操部（史料記載）',description:'記錄青州黃巾入兗、鄭遂遇害、劉岱出擊身死，以及曹操追至濟北受降並收其精銳稱青州兵的來源敘事；不推演完整戰役、精確人口、軍隊編制細節、平民命運或州郡控制變化。',introducedRevision:167 },
   { id:'cao-invades-xuzhou-193',kind:EVENT_KIND,title:'曹操再征徐州',...sameYear(193),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉記初平四年曹操再征陶謙、攻下十餘城，並記郯東交戰及襄賁陷落；本內容包採年級精度。',carrier:'曹操與陶謙所部（歷史事件）',description:'記錄曹操再征徐州與郯東、襄賁一帶戰事；不補寫完整戰線、人口數或後續領土控制。',introducedRevision:24 },
@@ -602,6 +613,17 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'yuan-wei-yuan-ji-executed-clan-190': '原史紀年：《後漢書》卷九初平元年三月戊午記董卓殺袁隗、袁基並夷其族；注文概數另列，不作完整名單。',
   'white-wave-raids-hedong-190': '原史紀年：《後漢書》卷九初平元年冬十月記白波賊寇河東、牛輔奉命出擊；原文未載出擊結果。',
   'dong-zhuo-appointed-chancellor-190': '原史紀年：《後漢書》卷九初平元年十一月癸酉記董卓為相國；保留漢曆月份與干支。',
+  'han-amnesty-chuping-2-191': '原史紀年：《後漢書》卷九初平二年春正月辛丑記大赦天下；保留漢曆日期，不換算為遊戲日期。',
+  'sun-jian-defeats-hu-zhen-yangren-191': '原史紀年：《後漢書》卷九初平二年二月記孫堅與胡軫戰於陽人、胡軫軍大敗；僅保留漢曆月份。',
+  'dong-zhuo-excavates-imperial-tombs-191': '原史紀年：《後漢書》卷九初平二年二月先記陽人戰事，後記董卓發掘洛陽諸帝陵；保留篇章次序。',
+  'dong-zhuo-enters-chang-an-191': '原史紀年：《後漢書》卷九初平二年夏四月記董卓入長安；按年級觸發，不映射模型日期。',
+  'luoyang-earthquake-191': '原史紀年：《後漢書》卷九初平二年六月丙戌記地震；原文未標明地點，不換算現代日期。',
+  'han-court-appointments-191': '原史紀年：《後漢書》卷九初平二年秋七月記司空及太尉任免；只保留月份。',
+  'chiyou-flag-appears-191': '原史紀年：《後漢書》卷九初平二年九月記蚩尤旗見於角、亢；只保留原文，不推斷占兆。',
+  'dong-zhuo-kills-zhang-wen-191': '原史紀年：《後漢書》卷九初平二年冬十月壬戌記董卓殺衛尉張溫；保留漢曆日期。',
+  'ying-shao-defeats-taishan-yellow-turbans-191': '原史紀年：《後漢書》卷九初平二年十一月記青州黃巾寇泰山、應劭擊破；保留月份。',
+  'gongsun-zan-defeats-yellow-turbans-dongguang-191': '原史紀年：《後漢書》卷九初平二年十一月先記黃巾寇泰山，後記轉寇勃海、公孫瓚戰於東光；保留篇章次序。',
+  'changsha-month-dead-revived-191': '原史紀年：《後漢書》卷九初平二年「是歲」記長沙有人死經月復活；只保留年級，不推定月份。',
   'zhang-xiu-ba-commander-revolt-184': '原史紀年：《後漢書》卷八中平元年秋七月記巴郡妖巫張脩反、寇郡縣；遊戲只按 184 年級觸發，不推定戰事日期。',
   'henan-yin-xu-guan-dies-in-prison-184': '原史紀年：《後漢書》卷八中平元年秋七月記河南尹徐灌下獄死；遊戲只按 184 年級觸發，不推定案情或執行日期。',
   'huangfu-song-cangting-captures-yellow-turban-leader-184': '原史紀年：《後漢書》卷八中平元年八月記皇甫嵩與黃巾戰於倉亭，獲其帥；注文辨其帥為卜已（異本作卜己）。遊戲只按 184 年級觸發。',
