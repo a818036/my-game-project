@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(277);
+    expect(withinCatalogYears).toHaveLength(296);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -557,6 +557,25 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'han-amnesty-chuping-3-192',
       'sun-jian-campaign-liu-biao-xiang-192',
       'yuan-shao-gongsun-zan-jieqiao-192',
+      'han-eclipse-chuping-4-193',
+      'han-amnesty-chuping-4-193',
+      'yuan-shu-kills-chen-wen-seizes-huainan-193',
+      'chang-an-xuanping-gate-collapse-193',
+      'unclouded-thunder-193-may',
+      'fufeng-wind-hail-193',
+      'huashan-collapse-193',
+      'zhou-zhong-dismissed-zhu-jun-taiwei-193',
+      'que-xuan-claims-emperor-193',
+      'rainwater-record-193',
+      'prison-review-light-detainees-193',
+      'heavenly-dog-northwest-193',
+      'imperial-taixue-ceremony-193',
+      'luoyang-earthquake-october-193',
+      'comet-tiangeshi-193',
+      'yang-biao-dismissed-zhao-wen-sikong-193',
+      'earthquake-december-193',
+      'zhao-wen-dismissed-zhang-xi-sikong-193',
+      'langya-prince-rong-dies-193',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -582,6 +601,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(165);
-    expect(uniqueNotedEvents.size).toBe(383);
+    expect(uniqueNotedEvents.size).toBe(402);
   });
 });
