@@ -6,7 +6,7 @@ const persons:PersonRef[]=[];
 
 describe('A736 補列 206 年建安十一年記事',()=>{
   it('記錄天象、官員遇害、封王與八國除國，保留異文界線',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(648);
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(649);
     for(const id of ids){
       const content=HISTORY_CONTENT.find(item=>item.id===id);
       expect(content).toMatchObject({kind:'event',startYear:206,endYear:206,precision:'year',introducedRevision:359});

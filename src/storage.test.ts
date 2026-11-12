@@ -1332,7 +1332,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old)),id='wei-han-transition-220';
     expect(migrated.events[0]).toEqual(oldStart);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-378'}});
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-379'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v374-han-wei-transition-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
@@ -1361,7 +1361,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old)),id='sun-quan-accepts-king-of-wu-title-221';
     expect(migrated.events[0]).toEqual(oldStart);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-378'}});
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-379'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v375-sun-quan-king-title-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
@@ -1387,7 +1387,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old)),id='sun-quan-wei-envoys-and-sun-deng-investiture-221';
     expect(migrated.events[0]).toEqual(oldStart);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-378'}});
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-379'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v376-sun-deng-investiture-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});

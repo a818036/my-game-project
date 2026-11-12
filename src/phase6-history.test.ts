@@ -381,7 +381,7 @@ describe('A752 220 年漢魏禪代雙史料核對',()=>{
     const old=createPhase4Model(219,1,[],'phase4-scenario-374');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-378');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-379');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -411,7 +411,7 @@ describe('A753 釐清黃初二年孫權受封吳王的月份註記',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-375');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-378');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-379');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -439,7 +439,7 @@ describe('A754 釐清孫權使魏與孫登立太子的未繫月記事',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-376');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-378');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-379');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -454,7 +454,7 @@ describe('A755 區分魏文帝南征與魏軍多路攻吳的史料日期',()=>{
   const id='wei-three-front-campaign-and-dongkou-storm-222';
 
   it('並列魏、吳紀年而不把六月南征等同九月攻吳',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-378');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('文帝紀');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃初三年六月');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃武元年秋九月');
@@ -465,7 +465,7 @@ describe('A755 區分魏文帝南征與魏軍多路攻吳的史料日期',()=>{
   it('v377 舊世界線升至 v378 保留事件帳，補入日期界線且仍按年級觸發',()=>{
     const old=createPhase4Model(221,1,[],'phase4-scenario-377');
     const prefix=structuredClone(old.eventLedger);
-    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    const upgraded=upgradePhase4Content(old,'phase4-scenario-378');
     const node=upgraded.nodes.find(item=>item.contentId===id);
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.contentVersion).toBe('phase4-scenario-378');
@@ -480,13 +480,47 @@ describe('A755 區分魏文帝南征與魏軍多路攻吳的史料日期',()=>{
 
   it('已觸發的舊節點追加一次來源補充且重複升版不重複記帳',()=>{
     const old=createPhase4Model(222,1,[],'phase4-scenario-377');
-    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    const upgraded=upgradePhase4Content(old,'phase4-scenario-378');
     const node=upgraded.nodes.find(item=>item.contentId===id);
     expect(node?.evidence.join(' ')).toContain('《三國志》卷二');
     expect(upgraded.eventLedger.filter(item=>item.type==='史實來源補充'&&item.detail.includes('分清南征啟程與各路攻吳日期'))).toHaveLength(1);
-    const repeated=upgradePhase4Content(upgraded,PHASE4_CONTENT_VERSION);
+    const repeated=upgradePhase4Content(upgraded,'phase4-scenario-378');
     expect(repeated.eventLedger).toEqual(upgraded.eventLedger);
     expect(repeated.nodes.find(item=>item.contentId===id)?.evidence).toEqual(node?.evidence);
+  });
+});
+
+describe('A756 補列黃武三年秋八月赦死罪記事',()=>{
+  const id='sun-wu-amnesty-death-crimes-224';
+
+  it('只記史書赦令與原史日期精度，不推測赦免範圍',()=>{
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    const node=HISTORY_CONTENT.find(item=>item.id===id);
+    expect(node).toMatchObject({startYear:224,endYear:224,precision:'year'});
+    expect(node?.source).toContain('黃武三年秋八月');
+    expect(node?.source).toContain('赦死罪');
+    expect(node?.source).toContain('不推測赦免對象、例外、適用範圍');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃武三年秋八月');
+    expect(node?.description).toContain('不推測赦免對象');
+  });
+
+  it('v378 舊存檔跨年至 224 年才觸發，保留舊事件帳且不回補已到年份',()=>{
+    const old=createPhase4Model(223,1,[],'phase4-scenario-378');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
+
+    const continued=advancePhase4(upgraded,360);
+    expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
+    expect(continued.eventLedger.filter(item=>item.type==='史實事件形成'&&item.detail.includes('赦免死罪'))).toHaveLength(1);
+
+    for(const year of [224,225]){
+      const alreadyThere=upgradePhase4Content(createPhase4Model(year,1,[],'phase4-scenario-378'),PHASE4_CONTENT_VERSION);
+      expect(alreadyThere.nodes.find(item=>item.contentId===id)).toMatchObject({status:'resolved',resolvedYear:224});
+      expect(alreadyThere.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('赦免死罪'))).toBe(false);
+    }
   });
 });
 
