@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-317';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-318';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:315},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:316},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -88,6 +88,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'ling-emperor-accession-court-purge-168',kind:EVENT_KIND,title:'靈帝即位與竇武、陳蕃遭誅',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'記建寧元年靈帝即位，並於同年九月記中常侍曹節矯詔誅太傅陳蕃、大將軍竇武等人；本內容包採公元年級精度，原典所載九月只作來源日期，不換算成模型月份。',carrier:'漢廷、竇武、陳蕃與曹節（史料記載）',description:'記錄靈帝即位及同年朝廷權力衝突造成的清洗；不以此概括所有士人，不補寫未記載的逐日政變過程、個人對話或未列人物命運。',sourceDateNote:'《後漢書》記九月丁亥誅竇武、陳蕃等；遊戲只按公元年觸發，不將漢曆月日映射到原型日期。',introducedRevision:144 },
   { id:'huan-emperor-burial-amnesty-rewards-168',kind:EVENT_KIND,title:'桓帝葬宣陵，朝廷大赦並賜爵帛',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'建寧元年二月辛酉葬孝桓皇帝於宣陵；後記庚午謁高廟、辛未謁世祖廟，隨後大赦天下，賜民爵及帛各有差。',carrier:'漢廷、桓帝劉志與受賜民眾（史料記載）',description:'記錄桓帝安葬、祭祀、大赦及原典所載賜爵帛；不推定受賜者名單、具體數額、執行情況，也不套用為玩家資源或身分變化。',sourceDateNote:'《後漢書》建寧元年二月記事；遊戲僅按 168 年級觸發，不換算漢曆日期為模型時間。',introducedRevision:300 },
   { id:'jianing-ancestor-posthumous-titles-168',kind:EVENT_KIND,title:'追尊皇祖、考與兩位夫人',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'建寧元年閏月甲午，追尊皇祖為孝元皇，夫人夏氏為孝元皇后，考為孝仁皇，夫人董氏為慎園貴人。只記原文所載尊號，不推定未載人名、儀制或政治後果。',carrier:'漢廷與原文所列受尊者（史料記載）',description:'記錄原文對皇祖、考及兩位夫人所追尊的名號；不補人名、稱謂以外的身分、儀式細節或制度效果。',sourceDateNote:'《後漢書》卷八建寧元年閏月甲午記事；遊戲只按 168 年級觸發，不把漢曆月份、日辰映射為遊戲日期。',introducedRevision:317 },
+  { id:'duan-jiong-ordered-to-campaign-against-xianling-168',kind:EVENT_KIND,title:'朝廷命段熲討先零羌',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'建寧元年正月記「使護羌校尉段熲討先零羌」。本節點只記朝廷下令，不把命令等同戰役已開始或已獲戰果。',carrier:'漢廷、護羌校尉段熲與先零羌（史料記載）',description:'記錄朝廷命護羌校尉段熲討先零羌；不推演出兵日期、行軍路線、戰況、兵力或結果。',sourceDateNote:'《後漢書》卷八建寧元年正月條載命段熲討先零羌；遊戲只按 168 年級觸發，另見二月逢義山戰果，不換算漢曆月份為模型日期。',introducedRevision:318 },
   { id:'huan-emperor-death-party-ban-lifted-167',kind:EVENT_KIND,title:'悉除黨錮，桓帝崩',...sameYear(167),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉永康元年六月條記「悉除黨錮」，十二月記桓帝崩於德陽前殿、年三十六。本節點採公元年級精度，原典月份只作來源日期，不推定模型中的月內事件先後。',carrier:'漢廷、受黨錮者與桓帝劉志（史料記載）',description:'記錄黨錮全面解除與桓帝去世的同年記事；不補寫解除令影響細節、死亡日或朝廷交接過程。',introducedRevision:147 },
   { id:'six-provinces-flood-bohai-sea-overflow-167',kind:EVENT_KIND,title:'六州大水、勃海海溢與賑濟',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年秋八月記事記「六州大水，勃海海溢」，其後記詔州郡賑濟溺死者家屬與亡失穀食者。原文列有錢、穀數額，本原型不將其換算為玩家帳目或人口變化。',carrier:'六州、勃海與受災者（史料記載）',description:'記錄原典所載多地水災及朝廷救濟；不推定六州具體名單、受災範圍、總傷亡或其他損失，也不將記載的賑濟數額套用至玩家世界線。',sourceDateNote:'《後漢書》置於永康元年秋八月記事段；遊戲僅按 167 年級觸發，不映射漢曆月份。',introducedRevision:299 },
   { id:'fuyu-raid-xuantu-167',kind:EVENT_KIND,title:'夫餘王侵玄菟，太守公孫域戰破之',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條記「夫餘王寇玄菟，太守公孫域與戰，破之」。只記原文所載侵擾及交戰結果，不補戰事日期、兵力、傷亡、路線或後續控制。',carrier:'夫餘王、公孫域與玄菟郡（史料記載）',description:'記錄夫餘王侵玄菟及太守公孫域與之交戰、擊破的原文結果；不推定戰事規模、傷亡、逐日過程或郡界控制變化。',sourceDateNote:'《後漢書》卷七永康元年條記夫餘王侵玄菟；遊戲僅按 167 年級觸發，不換算為模型日期。',introducedRevision:308 },
