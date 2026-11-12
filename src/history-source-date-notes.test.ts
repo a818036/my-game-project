@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(357);
+    expect(withinCatalogYears).toHaveLength(361);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -232,7 +232,11 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-enfeoffed-duke-of-wei-213': ['建安十八年五月'],
       'wei-succession-239': ['景初三年正月丁亥'],
       'zhou-yu-captures-deng-long-206': ['建安十一年', '周瑜追擊並生擒鄧龍'],
-      'gao-gan-defeat-206': ['建安十一年', '圍壺關三月'],
+      'gao-gan-defeat-206': ['建安十一年', '春三月亦記曹操破高幹於并州', '圍壺關三月'],
+      'comet-north-dipper-206': ['建安十一年春正月', '星孛於北斗'],
+      'zhang-meng-kills-handan-shang-206': ['建安十一年秋七月', '張猛殺雍州刺史邯鄲商', '《漢紀》作「涼州」'],
+      'langya-prince-xi-restored-206': ['建安十一年', '是歲', '立故琅邪王容子熙為琅邪王'],
+      'eight-principalities-abolished-206': ['建安十一年', '是歲', '八國皆除'],
       'sun-quan-builds-shitou-jianye-ruxu-212': ['明年，城石頭', '作濡須塢'],
       'xun-yu-dies-212': ['建安十七年', '病留壽春、以憂薨'],
       'sun-quan-campaigns-against-shiyang-226': ['征江夏、圍石陽'],
@@ -271,7 +275,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(167);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(171);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -640,6 +644,10 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'yuan-tan-defeat-205',
       'zhang-yan-black-mountain-surrenders-205',
       'court-grants-poor-officials-gold-silk-205',
+      'comet-north-dipper-206',
+      'zhang-meng-kills-handan-shang-206',
+      'langya-prince-xi-restored-206',
+      'eight-principalities-abolished-206',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -664,7 +672,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(167);
-    expect(uniqueNotedEvents.size).toBe(463);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(171);
+    expect(uniqueNotedEvents.size).toBe(467);
   });
 });

@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-358';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-359';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:356},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:357},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -489,7 +489,11 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'yuan-tan-defeat-205',kind:EVENT_KIND,title:'袁譚敗亡與袁氏勢力轉折',...sameYear(205),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十年春正月記曹操攻袁譚並斬之，袁熙、袁尚其後奔烏桓；'+HH9+'建安十年春正月亦記曹操破袁譚於青州、斬之。本內容包採年級精度，兩來源的同一敗亡事件合併，不重複結算。',causes:['yuan-tan-defeat'],carrier:'曹操、袁譚與袁氏餘部（歷史事件）',description:'依《三國志》及《後漢書》記錄袁譚敗亡及袁氏勢力轉折；不模擬完整戰役、兵力或河北控制細節。',sourceDateNote:'《後漢書》卷九建安十年春正月記曹操破袁譚於青州、斬之；與《三國志》所記同一事件合併，遊戲按 205 年級觸發。',introducedRevision:13 },
   { id:'zhang-yan-black-mountain-surrenders-205',kind:EVENT_KIND,title:'黑山賊張燕率眾歸降',...sameYear(205),precision:YEAR_PRECISION,source:HH9+'建安十年夏四月記黑山賊張燕率眾降。只記本紀所載，不推測歸降條件、兵數、安置方式、官職或地方控制變化。',carrier:'張燕與黑山部眾（史料記事）',description:'記錄張燕率眾歸降；原典此處未記歸降條件與部眾數量，不延伸為官職、軍隊編制或領地控制變化。',sourceDateNote:'《後漢書》卷九建安十年夏四月記張燕率眾降；保留漢曆月份，遊戲按年級觸發。',introducedRevision:358 },
   { id:'court-grants-poor-officials-gold-silk-205',kind:EVENT_KIND,title:'朝廷賜尤貧百官金帛',...sameYear(205),precision:YEAR_PRECISION,source:HH9+'建安十年秋九月記賜百官尤貧者金帛各有差。只記原文，不推定人數、數額、資金來源或個別受領者。',carrier:'漢廷與尤貧百官（史料記事）',description:'記錄朝廷向尤貧百官賜金帛；不換算為玩家金錢、人物庫存或經濟數值，也不推定名單與各人所得。',sourceDateNote:'《後漢書》卷九建安十年秋九月記賜尤貧百官金帛；保留漢曆月份，遊戲按年級觸發。',introducedRevision:358 },
-  { id:'gao-gan-defeat-206',kind:EVENT_KIND,title:'高幹敗走與壺關平定',...sameYear(206),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十一年記曹操征高幹、圍壺關三月而拔之，高幹走荊州後被捕斬；本內容包採年級精度。',causes:['gao-gan-rebellion'],carrier:'曹操與高幹（歷史事件）',description:'記錄高幹叛亂的平定；不模擬完整圍城、兵力或并州疆界變化。',introducedRevision:16 },
+  { id:'gao-gan-defeat-206',kind:EVENT_KIND,title:'高幹敗走與壺關平定',...sameYear(206),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十一年記曹操征高幹、圍壺關三月而拔之，高幹走荊州後被捕斬；'+HH9+'建安十一年春三月亦記曹操破高幹於并州、獲之。兩來源合記同一戰事，不重複結算；本內容包採年級精度。',causes:['gao-gan-rebellion'],carrier:'曹操與高幹（歷史事件）',description:'記錄高幹敗走及壺關平定；不把原文「圍壺關三月」誤解為漢曆三月，不模擬完整圍城、兵力或并州疆界變化。',introducedRevision:16 },
+  { id:'comet-north-dipper-206',kind:EVENT_KIND,title:'建安十一年春正月有星孛於北斗（史書天象記載）',...sameYear(206),precision:YEAR_PRECISION,source:HH9+'建安十一年春正月記有星孛於北斗。只記本紀天象文字，不辨識現代天體或推測日期換算、成因及政治徵兆。',carrier:'漢廷天象記事（史料記載）',description:'記錄原典所載春正月星孛於北斗；不推測天體辨識、現代位置、成因或預兆。',sourceDateNote:'《後漢書》卷九建安十一年春正月記星孛於北斗；保留漢曆月份，不映射成遊戲日期。',introducedRevision:359 },
+  { id:'zhang-meng-kills-handan-shang-206',kind:EVENT_KIND,title:'張猛殺雍州刺史邯鄲商',...sameYear(206),precision:YEAR_PRECISION,source:HH9+'建安十一年秋七月記武威太守張猛殺雍州刺史邯鄲商；同條注文指出袁宏《漢紀》作「涼州」。保留兩來源稱謂差異，不擅自裁定官號或地域，亦不推測案情與後續。',carrier:'張猛與邯鄲商（史料記事）',description:'記錄《後漢書》所載張猛殺雍州刺史邯鄲商，並保留袁宏《漢紀》作「涼州」的異文；不推測行兇經過、動機、官署層級或後續任免。',sourceDateNote:'《後漢書》卷九建安十一年秋七月記張猛殺雍州刺史邯鄲商，注文記《漢紀》作涼州；保留差異，遊戲按年級觸發。',introducedRevision:359 },
+  { id:'langya-prince-xi-restored-206',kind:EVENT_KIND,title:'故琅邪王容之子熙立為琅邪王',...sameYear(206),precision:YEAR_PRECISION,source:HH9+'建安十一年「是歲」記立故琅邪王容子熙為琅邪王。只記本紀所載，不推測冊立日期、封國範圍或後續承襲。',carrier:'琅邪王熙與漢廷（史料記事）',description:'記錄故琅邪王容之子熙受立為琅邪王；不推定封國疆界、冊立月日或後續繼承。',sourceDateNote:'《後漢書》卷九建安十一年「是歲」條記立故琅邪王容子熙為琅邪王；未載月份，只按 206 年級呈現。',introducedRevision:359 },
+  { id:'eight-principalities-abolished-206',kind:EVENT_KIND,title:'齊等八國除國',...sameYear(206),precision:YEAR_PRECISION,source:HH9+'建安十一年「是歲」記齊、北海、阜陵、下邳、常山、甘陵、濟陰、平原八國皆除。只記原文，不推測除國原因、行政改置、封地人口或財產轉移。',carrier:'齊、北海、阜陵、下邳、常山、甘陵、濟陰與平原八國（史料記事）',description:'記錄本紀所載八國除國；不推測原因、改置方式、人物遷徙、人口或財產變化。',sourceDateNote:'《後漢書》卷九建安十一年「是歲」條記齊、北海、阜陵、下邳、常山、甘陵、濟陰、平原八國皆除；未載月份，只按 206 年級呈現。',introducedRevision:359 },
   { id:'white-wolf-mountain-207',kind:EVENT_KIND,title:'白狼山戰事與烏桓勢力轉折',...sameYear(207),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十二年記曹操北征烏桓、白狼山交戰，蹋頓被斬，袁尚、袁熙奔遼東後為公孫康所斬；本內容包採年級精度。',causes:['wuhuan-northern-campaign'],carrier:'曹操、蹋頓與袁尚、袁熙（歷史事件）',description:'記錄北征烏桓及袁氏餘部轉折；不模擬完整行軍路線、兵力、戰場或塞外疆界。',introducedRevision:12 },
   { id:'sun-quan-western-expedition-huang-zu-207',kind:EVENT_KIND,title:'孫權再征黃祖、擄其人民而還',...sameYear(207),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉建安十二年記孫權西征黃祖，虜其人民而還；本內容包保留原文用語與年級精度，不推定人數或個別遭遇。',carrier:'孫權與孫吳軍隊（歷史記載）',description:'記錄孫權西征黃祖及「虜其人民而還」的原文概述；不推估人數、身份、個人經歷、額外傷亡或完整戰事。',introducedRevision:100 },
   { id:'sun-quan-defeats-huang-zu-jiangxia-208',kind:EVENT_KIND,title:'孫權再征黃祖、克其城並分置新都郡',...sameYear(208),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉建安十三年記孫權春季再征黃祖，呂蒙破其舟軍前鋒，凌統、董襲攻城，黃祖敗亡；同年賀齊討黟、歙，分置數縣並以六縣為新都郡。教育部年號表列建安元年為 196 年，按年序換算建安十三年為公元 208 年。本內容包只採年級精度。',carrier:'孫權、呂蒙、凌統、董襲、賀齊與黃祖（歷史記載）',description:'記錄孫權攻克黃祖所據之城及同年新都郡設置記事；原典另載俘獲數萬人，本節點不把該概述拆成個人狀態、人口帳或持續控制模擬，也不混同赤壁戰事。',introducedRevision:110 },
@@ -804,8 +808,12 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'sun-quan-sends-envoy-to-cao-217': '原史紀年：建安二十二年春。保留季節記載，不推定月日或換算成遊戲日期。',
   'cao-enfeoffed-duke-of-wei-213': '原史紀年：建安十八年五月。漢曆月份不換算為遊戲日曆日期。',
   'wei-succession-239': '原史紀年：景初三年正月丁亥。保留干支日原文，不換算成公曆日期或遊戲日。',
+  'comet-north-dipper-206': '原史紀年：建安十一年春正月。保留漢曆月份，不換算為遊戲日期。',
+  'zhang-meng-kills-handan-shang-206': '原史紀年：建安十一年秋七月。保留《後漢書》雍州與《漢紀》涼州的原文差異。',
+  'langya-prince-xi-restored-206': '原史紀年：建安十一年「是歲」，未載月份，只按年級呈現。',
+  'eight-principalities-abolished-206': '原史紀年：建安十一年「是歲」，未載月份，只按年級呈現。',
   'zhou-yu-captures-deng-long-206': '原史紀年：建安十一年（206）。來源未記月日，故只保存年序，不推定行動日期。',
-  'gao-gan-defeat-206': '原史紀年：建安十一年（206）。原文「圍壺關三月」記圍城持續三個月，不是漢曆三月；不推定月內日期。',
+  'gao-gan-defeat-206': '原史紀年：《後漢書》記建安十一年春三月曹操破高幹於并州、獲之；《三國志》記圍壺關三月，此處「三月」指圍城持續三個月，不是漢曆三月。兩種原文並存，不推定月內逐日行程。',
   'sun-quan-builds-shitou-jianye-ruxu-212': '原史紀年：建安十七年（212），承前文「明年」。原文未載月份，不推定築城或作塢的月日。',
   'xun-yu-dies-212': '原史紀年：建安十七年（212）。《三國志》記荀彧疾留壽春、以憂薨；相關裴注材料另有死因敘述，來源均未載月份或確切日期。',
   'sun-quan-campaigns-against-shiyang-226': '原史紀年：黃武五年秋七月（226）。依《三國志》卷四十七〈吳主傳〉記載，孫權聞魏文帝崩後征江夏、圍石陽，不克而還；漢曆月份不換算為模型日期。',
