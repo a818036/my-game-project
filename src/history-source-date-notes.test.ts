@@ -277,6 +277,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'fuling-prince-tong-dies-167',
       'wei-ba-prefectures-omen-reports-167',
       'xihe-reports-white-hare-167',
+      'bohai-king-kui-restored-167',
       'duan-jiong-defeats-xianling-fengyishan-168',
       'court-offices-reorganized-spring-168',
       'wang-chang-liu-chong-succession-168',
@@ -375,6 +376,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(219);
+    expect(uniqueNotedEvents.size).toBe(220);
   });
 });

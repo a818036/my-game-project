@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-315';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-316';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:313},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:314},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -98,6 +98,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'fuling-prince-tong-dies-167',kind:EVENT_KIND,title:'阜陵王統去世',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條記「六月庚申，大赦天下」後續載「丙寅，阜陵王統薨」。只記原文死訊及篇章先後；不推測死因、享年、嗣位或封國後續。',carrier:'阜陵王統（史料記載）',description:'記錄阜陵王統去世；原文未載死因、享年及其後封國處置。',sourceDateNote:'《後漢書》卷七永康元年條於六月庚申條後載「丙寅，阜陵王統薨」，但未重標月份；遊戲按 167 年級呈現，不換算漢曆為模型日期。',introducedRevision:313 },
   { id:'wei-ba-prefectures-omen-reports-167',kind:EVENT_KIND,title:'魏郡、巴郡上報嘉禾、甘露與黃龍',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年秋八月條記「魏郡言嘉禾生，甘露降。巴郡言黃龍見」。只記史書所載上報，不把報告視為現象已驗證；不推論真偽、祥瑞含義、成因或政治後果。',carrier:'魏郡、巴郡（史書所載報告來源）',description:'記錄魏郡上報嘉禾與甘露、巴郡上報黃龍；不判定現象真偽，也不推論祥瑞、因果或後續政策。',sourceDateNote:'《後漢書》卷七永康元年秋八月記魏郡、巴郡上報祥異；保留原史季節與月份，不換算為遊戲日曆。',introducedRevision:314 },
   { id:'xihe-reports-white-hare-167',kind:EVENT_KIND,title:'西河上報白菟',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年十一月記「西河言白菟見」。本節點只記西河上報，不判定是否確有白菟，也不推論瑞應、成因或政治意義。',carrier:'西河（史書所載報告來源）',description:'記錄西河上報白菟，不宣稱現象已獲驗證，不附會祥瑞或因果。',sourceDateNote:'《後漢書》卷七永康元年十一月記西河上報白菟；保留來源月份，遊戲只按 167 年級觸發，不換算漢曆為模型日期。',introducedRevision:315 },
+  { id:'bohai-king-kui-restored-167',kind:EVENT_KIND,title:'癭陶王悝復為勃海王',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年十二月壬申記「復癭陶王悝為勃海王」。只記原文所載復封，不推測其間處置、原因或政治後果。',carrier:'癭陶王悝與漢廷（史料記載）',description:'記錄癭陶王悝復為勃海王；不補推此前年內過程、復封原因或後續封國狀態。',sourceDateNote:'《後漢書》卷七永康元年十二月壬申記復癭陶王悝為勃海王；遊戲僅按 167 年級觸發，不換算漢曆日期為模型日期。',introducedRevision:316 },
   { id:'duan-jiong-defeats-xianling-fengyishan-168',kind:EVENT_KIND,title:'段熲大破先零羌於逢義山',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'段熲大破先零羌於逢義山。',carrier:'段熲',description:'記大破。',sourceDateNote:'二月'+YEAR_TRIGGER,introducedRevision:233 },
   { id:'court-offices-reorganized-spring-168',kind:EVENT_KIND,title:'太尉與司空任免交替',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'夏四月太尉周景薨，司空宣酆免；長樂衛尉王暢為司空。五月太中大夫劉矩為太尉。',carrier:'周景、宣酆、王暢、劉矩與漢廷',description:'記職位更替。',sourceDateNote:'夏四月戊辰、五月'+YEAR_TRIGGER,introducedRevision:234 },
   { id:'wang-chang-liu-chong-succession-168',kind:EVENT_KIND,title:'三公官職秋冬交替',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'八月司空王暢免，宗正劉寵為司空；十一月太尉劉矩免，太僕沛國聞人襲為太尉。',carrier:'王暢、劉寵、劉矩、聞人襲',description:'記八、十一月任免，不推定原因、任期或玩家官職。',sourceDateNote:'八月、十一月'+YEAR_TRIGGER,introducedRevision:236 },
