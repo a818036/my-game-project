@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(363);
+    expect(withinCatalogYears).toHaveLength(367);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -651,6 +651,11 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'white-wolf-mountain-207',
       'comet-chunwei-207',
       'yellow-turbans-kill-jinan-prince-yun-207',
+      'red-cliffs-208',
+      'zhao-wen-dismissed-han-situ-208',
+      'cao-court-reorganization-208',
+      'kong-rong-executed-208',
+      'solar-eclipse-jianan-13-208',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -676,6 +681,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(171);
-    expect(uniqueNotedEvents.size).toBe(470);
+    expect(uniqueNotedEvents.size).toBe(475);
   });
 });
