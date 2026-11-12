@@ -5,7 +5,7 @@ const id = 'wei-mars-enters-taiwei-renxu-225';
 
 describe('A786 黃初六年五月壬戌熒惑入太微', () => {
   it('並列兩書日期記載，只保存天象原文而不附會占驗', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-407');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-408');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 225, endYear: 225, precision: 'year', introducedRevision: 407 });
     expect(content.source).toContain('《三國志》卷二');

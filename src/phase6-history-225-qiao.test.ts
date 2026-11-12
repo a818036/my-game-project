@@ -6,7 +6,7 @@ const id = 'wei-visits-qiao-225';
 
 describe('A785 黃初六年五月戊申行幸譙', () => {
   it('依原文保留月份與干支，不擴寫行幸目的與影響', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-407');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-408');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 225, endYear: 225, precision: 'year', introducedRevision: 406 });
     expect(content.source).toContain('五月戊申，幸譙');
