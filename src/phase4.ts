@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-340';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-341';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:338},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:339},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -522,6 +522,20 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'northsea-earthquake-coastal-flood-187',kind:EVENT_KIND,title:'北海地震、東萊與北海海水溢',...sameYear(187),precision:YEAR_PRECISION,source:HH8+'中平四年六月記「北海地震，東萊、北海海水溢」。注文另引《續漢志》記大魚；本節點只記本紀災異及注文存在，不推測災害範圍、損失、魚類現象成因或彼此因果。',carrier:'北海、東萊地方災異記事（史料記載）',description:'記錄北海地震及東萊、北海海水溢；注文所載大魚僅作來源附註，不推定災害範圍、損失或現象成因。',introducedRevision:340 },
   { id:'sikong-yang-ci-dismissed-tang-zhen-appointed-187',kind:EVENT_KIND,title:'楊賜免司空，唐珍繼任',...sameYear(187),precision:YEAR_PRECISION,source:HH8+'中平四年秋七月記「司空楊賜免，太常潁川唐珍為司空」。只記原文任免，不推測免職原因、交接時間或任期。',carrier:'楊賜、唐珍與漢廷（史料記事）',description:'記錄楊賜免司空、太常唐珍任司空；不補原因、確切交接日或兩人後續官職。',introducedRevision:340 },
   { id:'rinan-tribute-duan-jiong-dismissal-xianbei-raids-eclipse-187',kind:EVENT_KIND,title:'日南入貢、段熲罷職、鮮卑寇邊與日食',...sameYear(187),precision:YEAR_PRECISION,source:HH8+'中平四年冬十二月記日南徼外國重譯貢獻、太尉段熲罷、鮮卑寇幽并二州及癸酉晦日食。只保留同段原文記事與漢曆註記，不推演外交內容、任免原因、侵擾戰果、天象影響或記事間因果。',carrier:'日南使節記事、漢廷、幽并邊地與天象記錄（史料記事）',description:'記錄日南徼外國入貢、段熲免太尉、鮮卑侵擾幽州與并州，以及十二月癸酉晦日日食；不推測使節內容、戰果、任免原因、災損或天象影響。',introducedRevision:340 },
+  { id:'amnesty-rain-prayer-judicial-review-188',kind:EVENT_KIND,title:'大赦、祈雨與巡行理冤詔令',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年夏四月癸亥記大赦天下、大雩，並命侍御史巡行詔獄亭部，理冤枉、原輕繫、休囚徒。只記原典同段政令與處置，不推定赦免個案、求雨結果或各地執行情形。',carrier:'漢廷與奉命巡行者（史料記載）',description:'記錄大赦、祈雨及巡行處理冤獄、釋放輕繫囚徒的命令；不推演赦免對象、求雨結果或執行成效。',introducedRevision:341 },
+  { id:'yizhou-commandery-yi-revolt-pacified-188',kind:EVENT_KIND,title:'益州郡夷起事、太守李顒討平',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年夏四月記益州郡夷叛，太守李顒討平之。只記史書所載起事與討平，不補參與群體、戰鬥日期、傷亡或後續治理。',carrier:'益州郡地方起事者與太守李顒（史料記事）',description:'記錄益州郡夷起事及太守李顒討平；不把益州郡與益州全境混同，也不推演戰場、傷亡或後續治理。',introducedRevision:341 },
+  { id:'songgao-mountain-name-restored-188',kind:EVENT_KIND,title:'崇高山復名嵩高山',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年夏四月記「復崇高山名為嵩高山」。本節點只記原文山名更改，不推演地理疆界、祭祀制度或民間稱呼。',carrier:'嵩高山名稱記事（史料記載）',description:'記錄史書所載將崇高山名稱復為嵩高山；不推演行政區劃、宗教活動或後續地名使用。',introducedRevision:341 },
+  { id:'taiwei-chen-dan-removed-xu-xun-appointed-188',kind:EVENT_KIND,title:'太尉陳耽罷，許訓繼任',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年五月記太尉陳耽罷，司空許訓為太尉。只記任免，不推測免職原因、交接日或許訓後續任期。',carrier:'陳耽、許訓與漢廷（史料記事）',description:'記錄陳耽免太尉、司空許訓任太尉；不推測任免原因、交接日或後續官職。',introducedRevision:341 },
+  { id:'cao-luan-executed-partisan-prohibition-188',kind:EVENT_KIND,title:'曹鸞因訟黨人被誅、黨人親屬遭禁錮',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年閏月記永昌太守曹鸞坐訟黨人棄市，詔黨人門生故吏父兄子弟在位者皆免官禁錮。只記原文處置，不推測涉案名單、審理過程、執行範圍或未載因果。',carrier:'曹鸞、黨人相關人員與漢廷（史料記事）',description:'記錄曹鸞因訟黨人被處死，以及詔令免除黨人門生、故吏與親屬中在位者官職並禁錮；不擴充人員名單或推演執行情況。',introducedRevision:341 },
+  { id:'sikong-liu-yi-appointed-188',kind:EVENT_KIND,title:'太常劉逸任司空',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年六月壬戌記太常南陽劉逸為司空。只記任命，不推測前任職缺原因、交接時間或任期。',carrier:'太常劉逸與漢廷（史料記事）',description:'記錄太常劉逸任司空；不補任命原因、交接日或後續官職。',introducedRevision:341 },
+  { id:'taiwei-xu-xun-removed-liu-kuan-appointed-188',kind:EVENT_KIND,title:'太尉許訓罷，劉寬繼任',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年秋七月記太尉許訓罷，光祿勳劉寬為太尉。只記任免，不推測原因、交接日或任期。',carrier:'許訓、劉寬與漢廷（史料記事）',description:'記錄許訓免太尉、光祿勳劉寬任太尉；不推測免職原因、交接日或後續仕途。',introducedRevision:341 },
+  { id:'palace-locust-tree-uprooted-188',kind:EVENT_KIND,title:'御殿後槐樹自拔倒豎',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年冬十月記「御殿後槐樹自拔倒豎」。只呈現原典異象文字，不判定真偽、成因、地點細節或政治預兆。',carrier:'漢廷宮殿異象記載（史料記事）',description:'記錄史書所載御殿後槐樹自拔倒豎；不推測現象成因、損害或政治含義。',introducedRevision:341 },
+  { id:'situ-yuan-wei-dismissed-188',kind:EVENT_KIND,title:'司徒袁隗罷職',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年冬十月記司徒袁隗罷。只記免職，不推測原因、交接時間或後續任命。',carrier:'司徒袁隗與漢廷（史料記事）',description:'記錄司徒袁隗免職；不推測原因、交接日或職缺後續處理。',introducedRevision:341 },
+  { id:'yang-ci-appointed-situ-188',kind:EVENT_KIND,title:'光祿大夫楊賜任司徒',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年十一月丙戌記光祿大夫楊賜為司徒。只記任命，不推測前任免職原因、交接日或任期。',carrier:'楊賜與漢廷（史料記事）',description:'記錄光祿大夫楊賜任司徒；不推演任命原因、交接日或其後仕途。',introducedRevision:341 },
+  { id:'ganling-prince-ding-dies-188',kind:EVENT_KIND,title:'甘陵王定去世',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年十二月記甘陵王定薨。只記原文死訊，不推測死因、日期或嗣位與封國後續。',carrier:'甘陵王定（史料記載）',description:'記錄甘陵王定去世；不推測死因、確切日期、繼承或封國後續，也不改動玩家人物狀態。',introducedRevision:341 },
+  { id:'senior-taixue-students-appointed-offices-188',kind:EVENT_KIND,title:'年長太學生受試後授予官職',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年十二月記試太學生年六十以上百餘人，除郎中、太子舍人、王家郎、郡國文學吏。只記原文考試與授職，不補具體名單、考核內容或個別任命。',carrier:'太學生與漢廷（史料記事）',description:'記錄六十歲以上百餘名太學生受試後，獲授郎中、太子舍人、王家郎及郡國文學吏等職；不推定名單或各人分配。',introducedRevision:341 },
+  { id:'xianbei-raids-youzhou-188',kind:EVENT_KIND,title:'鮮卑侵擾幽州',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年「是歲」記鮮卑寇幽州，未標月份。只記侵擾記事，不推測地點、規模、戰果、傷亡或邊界變化。',carrier:'鮮卑與幽州（史料記事）',description:'記錄史書所載鮮卑侵擾幽州；來源未標月份，不推演戰事、規模、傷亡或控制變化。',introducedRevision:341 },
+  { id:'peiguo-reports-yellow-dragon-188',kind:EVENT_KIND,title:'沛國上報黃龍見於譙',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年「是歲」記沛國言黃龍見譙。只記地方上報，不判定現象真偽、成因、可見範圍或祥瑞效果。',carrier:'沛國官署上報（史料記載）',description:'記錄沛國上報譙地出現黃龍；不判定現象真偽、成因或政治效果。',introducedRevision:341 },
 ] as HistoricalNodeContent[]).map((content) => content.lateSameYear === undefined && (content.introducedRevision ?? 0) >= DEFAULT_LATE_SAME_YEAR_REVISION ? { ...content, lateSameYear: true } : content);
 /** Sourced Han-calendar dates shown separately from the annual simulation trigger. */
 export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
@@ -554,6 +568,20 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'northsea-earthquake-coastal-flood-187': '原史紀年：《後漢書》卷八中平四年六月記北海地震、東萊與北海海水溢；注文另引《續漢志》大魚記事，不推測影響或因果。',
   'sikong-yang-ci-dismissed-tang-zhen-appointed-187': '原史紀年：《後漢書》卷八中平四年秋七月記楊賜免司空、唐珍為司空；保留月份，不推定免職原因或任期。',
   'rinan-tribute-duan-jiong-dismissal-xianbei-raids-eclipse-187': '原史紀年：《後漢書》卷八中平四年冬十二月記日南入貢、段熲罷、鮮卑寇幽并二州及癸酉晦日食；只按 187 年級觸發，不換算遊戲日期或推演記事因果。',
+  'amnesty-rain-prayer-judicial-review-188': '原史紀年：《後漢書》卷八中平五年夏四月癸亥記大赦、大雩及巡行理冤詔令；保留漢曆日期，不推定個案或執行結果。',
+  'yizhou-commandery-yi-revolt-pacified-188': '原史紀年：《後漢書》卷八中平五年夏四月記益州郡夷叛、太守李顒討平；只按年級觸發，不混同益州全境。',
+  'songgao-mountain-name-restored-188': '原史紀年：《後漢書》卷八中平五年夏四月記崇高山復名嵩高山；保留來源月份，不推演地理或制度影響。',
+  'taiwei-chen-dan-removed-xu-xun-appointed-188': '原史紀年：《後漢書》卷八中平五年五月記陳耽罷太尉、許訓為太尉；保留漢曆月份，不推測原因或任期。',
+  'cao-luan-executed-partisan-prohibition-188': '原史紀年：《後漢書》卷八中平五年閏月記永昌太守曹鸞坐訟黨人棄市及黨人相關人員免官禁錮詔；保留閏月註記，不推演名單或範圍。',
+  'sikong-liu-yi-appointed-188': '原史紀年：《後漢書》卷八中平五年六月壬戌記太常劉逸為司空；保留漢曆日期，不換算遊戲模型日期。',
+  'taiwei-xu-xun-removed-liu-kuan-appointed-188': '原史紀年：《後漢書》卷八中平五年秋七月記許訓罷太尉、劉寬為太尉；保留月份先後。',
+  'palace-locust-tree-uprooted-188': '原史紀年：《後漢書》卷八中平五年冬十月記御殿後槐樹自拔倒豎；只保留原文，不推測成因。',
+  'situ-yuan-wei-dismissed-188': '原史紀年：《後漢書》卷八中平五年冬十月記司徒袁隗罷；保留篇章月份，不推測免職原因。',
+  'yang-ci-appointed-situ-188': '原史紀年：《後漢書》卷八中平五年十一月丙戌記楊賜為司徒；保留漢曆月份與干支。',
+  'ganling-prince-ding-dies-188': '原史紀年：《後漢書》卷八中平五年十二月記甘陵王定薨；保留月份，不推測死因或繼承。',
+  'senior-taixue-students-appointed-offices-188': '原史紀年：《後漢書》卷八中平五年十二月記試六十歲以上太學生百餘人並授官；保留漢曆月份，不推定名單。',
+  'xianbei-raids-youzhou-188': '原史紀年：《後漢書》卷八中平五年「是歲」記鮮卑寇幽州，未標月份；只按年級觸發。',
+  'peiguo-reports-yellow-dragon-188': '原史紀年：《後漢書》卷八中平五年「是歲」記沛國言黃龍見譙；只保留地方上報，不判定真偽或成因。',
   'zhang-xiu-ba-commander-revolt-184': '原史紀年：《後漢書》卷八中平元年秋七月記巴郡妖巫張脩反、寇郡縣；遊戲只按 184 年級觸發，不推定戰事日期。',
   'henan-yin-xu-guan-dies-in-prison-184': '原史紀年：《後漢書》卷八中平元年秋七月記河南尹徐灌下獄死；遊戲只按 184 年級觸發，不推定案情或執行日期。',
   'huangfu-song-cangting-captures-yellow-turban-leader-184': '原史紀年：《後漢書》卷八中平元年八月記皇甫嵩與黃巾戰於倉亭，獲其帥；注文辨其帥為卜已（異本作卜己）。遊戲只按 184 年級觸發。',

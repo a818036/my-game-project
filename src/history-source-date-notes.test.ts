@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(239);
+    expect(withinCatalogYears).toHaveLength(253);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -143,6 +143,20 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'xingyang-revolt-suppressed-187': ['中平四年', '滎陽賊', '何苗出擊', '封濟陽侯'],
       'changsha-ou-xing-revolt-187': ['中平四年冬十月'],
       'yizhou-ma-xiang-revolt-188': ['中平五年六月'],
+      'amnesty-rain-prayer-judicial-review-188': ['中平五年夏四月癸亥', '大赦天下', '大雩', '理冤枉、原輕繫、休囚徒'],
+      'yizhou-commandery-yi-revolt-pacified-188': ['中平五年夏四月', '益州郡夷叛', '太守李顒討平之'],
+      'songgao-mountain-name-restored-188': ['中平五年夏四月', '復崇高山名為嵩高山'],
+      'taiwei-chen-dan-removed-xu-xun-appointed-188': ['中平五年五月', '太尉陳耽罷', '司空許訓為太尉'],
+      'cao-luan-executed-partisan-prohibition-188': ['中平五年閏月', '永昌太守曹鸞', '坐訟黨人棄市', '門生故吏父兄子弟在位者皆免官禁錮'],
+      'sikong-liu-yi-appointed-188': ['中平五年六月壬戌', '太常南陽劉逸為司空'],
+      'taiwei-xu-xun-removed-liu-kuan-appointed-188': ['中平五年秋七月', '太尉許訓罷', '光祿勳劉寬為太尉'],
+      'palace-locust-tree-uprooted-188': ['中平五年冬十月', '御殿後槐樹自拔倒豎'],
+      'situ-yuan-wei-dismissed-188': ['中平五年冬十月', '司徒袁隗罷'],
+      'yang-ci-appointed-situ-188': ['中平五年十一月丙戌', '光祿大夫楊賜為司徒'],
+      'ganling-prince-ding-dies-188': ['中平五年十二月', '甘陵王定薨'],
+      'senior-taixue-students-appointed-offices-188': ['中平五年十二月', '年六十以上百餘人', '除郎中、太子舍人'],
+      'xianbei-raids-youzhou-188': ['中平五年「是歲」', '鮮卑寇幽州'],
+      'peiguo-reports-yellow-dragon-188': ['中平五年「是歲」', '沛國言黃龍見譙'],
       'emperor-returns-east-195': ['興平二年七月'],
       'hou-yin-rebellion-218': ['建安二十三年冬十月'],
       'sun-quan-hunts-tiger-lingting-218': ['建安二十三年十月', '庱亭射虎', '投以雙戟'],
@@ -234,7 +248,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(130);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(144);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -527,7 +541,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(130);
-    expect(uniqueNotedEvents.size).toBe(345);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(144);
+    expect(uniqueNotedEvents.size).toBe(359);
   });
 });
