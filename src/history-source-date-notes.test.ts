@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(329);
+    expect(withinCatalogYears).toHaveLength(335);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -609,6 +609,12 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-cao-kills-tai-chong-feng-shuo-196',
       'yang-biao-zhang-xi-dismissed-196',
       'cao-cao-appointed-sikong-196',
+      'yuan-shao-assumes-grand-general-197',
+      'locusts-197',
+      'han-river-flood-197',
+      'jianghuai-famine-197',
+      'yuan-shu-kills-chen-prince-chong-197',
+      'sun-ce-envoy-pays-tribute-197',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -634,6 +640,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(165);
-    expect(uniqueNotedEvents.size).toBe(435);
+    expect(uniqueNotedEvents.size).toBe(441);
   });
 });
