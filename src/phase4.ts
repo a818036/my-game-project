@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-325';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-326';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:323},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:324},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -167,6 +167,12 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'jiaozhi-wuhuh-man-uprising-178',kind:EVENT_KIND,title:'合浦、交阯烏滸民起事並攻沒郡縣',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年春正月條記合浦、交阯烏滸蠻起事、招引九真與日南民眾攻沒郡縣；卷八十六〈南蠻西南夷列傳〉補記「合數萬人」。人數保留史料概數，不換算為精確人口或遊戲兵力。本內容包採年級精度，不推演未載的戰況與平定結果。',carrier:'合浦、交阯烏滸民及九真、日南地方民眾（史料記載）',description:'記錄嶺南地方起事、招引九真與日南民眾及郡縣失守；卷八十六所記「合數萬人」僅保留為史料概數，不推定精確參與人數、起事原因、各郡控制持續時間或未載的平定結果。',sourceDateNote:'《後漢書》卷八記光和元年春正月合浦、交阯烏滸蠻叛、招引九真與日南民眾攻沒郡縣；卷八十六記合數萬人。春正月與概數均為史料記載；遊戲只按 178 年級觸發，不換算為模型日期或精確兵力。',introducedRevision:145 },
   { id:'taiwei-succession-guanghe-1-178',kind:EVENT_KIND,title:'張顥任太尉，陳球、橋玄先後繼任',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年條記三月太常常山張顥為太尉；九月張顥罷、太常陳球繼任；十一月陳球免，十二月丁巳光祿大夫橋玄為太尉。本內容包採年級精度，只記原文明載的任免，不推定任期、原因或其他官制效果。',carrier:'張顥、陳球、橋玄與漢廷（史料記載）',description:'記錄張顥任太尉後於九月罷任、由陳球繼任；十一月陳球免職、十二月橋玄接任。不把史實任命轉成玩家人事變更，也不推定任免原因、實際任期或其他官制效果。',introducedRevision:209 },
   { id:'hongdu-mencourt-founded-178',kind:EVENT_KIND,title:'光和元年置鴻都門學生',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年條記「始置鴻都門學生」；卷六十下〈蔡邕列傳〉補述鴻都門學及其學生被薦舉任官的記載。本節點採年級精度，不將不同傳記外推成完整學制、選才標準或實際任官名單。',carrier:'漢廷與鴻都門學生（史料記載）',description:'記錄靈帝朝設置鴻都門學生的史料記事；不自動授予玩家官職、人才、能力或政治效果，也不推定未載的就學者個人經歷。',introducedRevision:151 },
+  { id:'meng-yu-removed-taiwei-178',kind:EVENT_KIND,title:'太尉孟戫罷',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年春正月條記合浦、交阯起事後又記「太尉孟戫罷」；未另載罷職日期、原因或繼任者。',carrier:'孟戫與漢廷（史料記載）',description:'記錄孟戫罷太尉；原文未載具體日期、免職原因或此處繼任安排。',sourceDateNote:'《後漢書》卷八光和元年春正月記事後記太尉孟戫罷；保留原文篇章次序，不把日期精確指定為正月某日。',introducedRevision:326 },
+  { id:'yuan-pang-appointed-situ-february-eclipse-earthquake-178',kind:EVENT_KIND,title:'日食、袁滂任司徒與地震',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年二月記辛亥朔日食、癸丑光祿勳袁滂為司徒、己未地震；只按原文次序合列，不推定彼此因果。',carrier:'漢廷與京師天象、地震記事（史料記載）',description:'依原文次序記錄二月日食、袁滂任司徒及地震；不推測天象／地震成因、災損、任命原因或因果關係。',sourceDateNote:'《後漢書》卷八光和元年二月辛亥朔、癸丑、己未條；保留漢曆干支，遊戲只按年級觸發。',introducedRevision:326 },
+  { id:'amnesty-and-era-change-guanghe-178',kind:EVENT_KIND,title:'大赦天下並改元光和',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年三月辛丑記「大赦天下，改元光和」；原文未載赦免個案或改元儀節。',carrier:'漢廷與受詔者（史料記載）',description:'記錄三月大赦並改元光和；不推定赦免對象、個案結果或改元儀式。',sourceDateNote:'《後漢書》卷八光和元年三月辛丑條；保留漢曆日期，遊戲按 178 年級觸發。',introducedRevision:326 },
+  { id:'lai-yan-appointed-sikong-april-earthquake-178',kind:EVENT_KIND,title:'地震、陳耽免與來豔任司空',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年夏四月丙辰記地震，並記雌雞化雄記事及司空陳耽免、太常來豔為司空；分列史料並述，不推定因果。',carrier:'漢廷與京師地震記事（史料記載）',description:'記錄夏四月地震，以及陳耽免司空、來豔任司空；不推測地震成因、損害、任免原因或其與異象記載的關係。',sourceDateNote:'《後漢書》卷八光和元年夏四月丙辰地震；同條另記雌雞化雄及陳耽、來豔任免，未為後兩事另標日期。只按 178 年級觸發。',introducedRevision:326 },
+  { id:'guanghe-178-palace-omens-may-to-august',kind:EVENT_KIND,title:'德陽殿白衣人、殿庭黑氣、青虹與星孛記事',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年五月記白衣人入德陽殿門後亡去不獲，六月記黑氣墮所御溫德殿庭，秋七月記青虹見御坐玉堂後殿庭，八月記有星孛於天市。只轉述史書異象文字，不將其視為已驗證現象或推演成因。',carrier:'宮廷異象記事（史書所載）',description:'依原文列出五月至八月四則宮廷異象記事；不推測現象真偽、天文或物理成因、預言、政治因果及人物遭遇。',sourceDateNote:'《後漢書》卷八光和元年五月、六月、秋七月及八月記事；保留各自月份與篇章次序，遊戲僅按年級觸發。',introducedRevision:326 },
+  { id:'lai-yan-dies-yuan-feng-appointed-sikong-178',kind:EVENT_KIND,title:'司空來豔薨、袁逢任司空',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年九月記司空來豔薨；冬十月記屯騎校尉袁逢為司空。原文分月記載，未明言兩事的承接關係。',carrier:'來豔、袁逢與漢廷（史料記載）',description:'分別記錄九月來豔去世及冬十月袁逢任司空；原文未明言任命為接替來豔，不推測因果、任命日或任期。',sourceDateNote:'《後漢書》卷八光和元年九月記來豔薨，冬十月記袁逢為司空；保留兩筆先後與漢曆月份，不推定直接承接。',introducedRevision:326 },
   { id:'jinan-revolt-dongpingling-170',kind:EVENT_KIND,title:'濟南賊起攻東平陵',...sameYear(170),precision:YEAR_PRECISION,source:HH8+'建寧三年條記「冬，濟南賊起，攻東平陵」。同條另記鬱林烏滸民相率內屬。本節點只採年級精度，不推定起事原因、規模或後續平定。',carrier:'濟南地方起事者與東平陵（史料記載）',description:'記錄濟南地方起事並攻東平陵；不補寫未見於本條的參與者名單、傷亡、控制變化或平定結果。',introducedRevision:146 },
   { id:'ling-emperor-majority-pardon-171',kind:EVENT_KIND,title:'靈帝加元服，大赦而黨人不赦',...sameYear(171),precision:YEAR_PRECISION,source:HH8+'建寧四年正月條記帝加元服、大赦天下，「唯黨人不赦」。本節點按年級精度呈現，不將漢曆月日映射為模型日期。',carrier:'漢廷與仍受黨錮者（史料記載）',description:'記錄靈帝加元服及大赦範圍的明文例外；不將一般大赦說成黨錮全面解除。',introducedRevision:146 },
   { id:'xusheng-yue-king-revolt-172',kind:EVENT_KIND,title:'會稽許生自稱越王並寇郡縣',...sameYear(172),precision:YEAR_PRECISION,source:HH8+'熹平元年十一月條記會稽人許生自稱「越王」、寇郡縣，並記朝廷遣楊州刺史臧旻、丹陽太守陳夤討破之。本節點採年級精度，不補月日換算或戰鬥細節。',carrier:'許生及會稽郡縣（史料記載）',description:'記錄許生自稱越王並在會稽郡縣起事；其後平定另以 174 年節點記錄，不在本節點預先結算。',introducedRevision:146 },

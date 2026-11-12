@@ -335,6 +335,12 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'southern-palace-pingcheng-gate-arsenal-wall-collapse-177',
       'attendant-temple-hen-transforms-178',
       'jiaozhi-wuhuh-man-uprising-178',
+      'meng-yu-removed-taiwei-178',
+      'yuan-pang-appointed-situ-february-eclipse-earthquake-178',
+      'amnesty-and-era-change-guanghe-178',
+      'lai-yan-appointed-sikong-april-earthquake-178',
+      'guanghe-178-palace-omens-may-to-august',
+      'lai-yan-dies-yuan-feng-appointed-sikong-178',
       'zong-ju-dies-yang-ci-sikong-173',
       'li-xian-dismissed-duan-jiong-appointed-173',      'pei-minister-shi-qian-imprisoned-173',
       'situ-tang-zhen-succeeds-yang-ci-173',
@@ -434,6 +440,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(279);
+    expect(uniqueNotedEvents.size).toBe(285);
   });
 });
