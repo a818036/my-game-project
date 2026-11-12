@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-380';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-381';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:378},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:379},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -623,8 +623,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'zhugeliang-south-campaign-225',kind:EVENT_KIND,title:'諸葛亮南征、四郡平定',...sameYear(225),precision:YEAR_PRECISION,source:'《三國志》卷三十三〈蜀書·後主傳〉記建興三年春三月丞相亮南征四郡、四郡皆平；本內容包採公元年級精度。',causes:['shu-southern-rebellion'],carrier:'蜀漢朝廷與南中四郡（歷史事件）',description:'記錄蜀漢南征及四郡平定的年級節點；不模擬完整戰役、地方人口或縣級疆界。',introducedRevision:19 },
   { id:'cao-pi-death-cao-rui-accession-226',kind:EVENT_KIND,title:'魏文帝去世、明帝曹叡即位',...sameYear(226),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉記黃初七年五月文帝崩；卷三〈魏書·明帝紀〉記丁巳曹叡即皇帝位。本內容包只採公元年級精度。',causes:['wei-imperial-succession'],carrier:'曹丕、曹叡與魏廷（歷史事件）',description:'記錄魏廷皇位交接；不把它套用為玩家角色死亡節點，也不自動改變玩家控制權或選擇。',introducedRevision:19 },
   { id:'sun-quan-campaigns-against-shiyang-226',kind:EVENT_KIND,title:'孫權出兵圍江夏石陽，未克而還',...sameYear(226),precision:YEAR_PRECISION,source:SG47+'記孫權聞魏文帝崩後征江夏、圍石陽，不克而還。本內容包採年級精度。',carrier:'孫權與孫吳軍（歷史記載）',description:'記錄孫權出兵江夏並圍石陽、未能攻克後撤回；不推演兵力、傷亡、戰術細節或疆界變更。',introducedRevision:96 },
-  { id:'wu-establishes-dongan-and-appoints-quan-cong-226',kind:EVENT_KIND,title:'孫吳置東安郡、任全琮為太守',...sameYear(226),precision:YEAR_PRECISION,source:SG47+'黃武五年條：「分三郡惡地十縣置東安郡，以全琮為太守，平討山越。」',carrier:'吳廷、全琮與山越',description:'記置郡、任太守及平討山越；未載縣名、疆界、討擊結果與後續治理，不作推演。',introducedRevision:380 },
+  { id:'wu-establishes-dongan-and-appoints-quan-cong-226',kind:EVENT_KIND,title:'孫吳置東安郡、任全琮為太守',...sameYear(226),precision:YEAR_PRECISION,source:SG47+'黃武五年條：「分三郡惡地十縣置東安郡，以全琮為太守，平討山越。」',carrier:'吳廷、全琮',description:'記置郡、任太守及討山越；不推演縣界與戰果。',introducedRevision:380 },
   { id:'sun-quan-shiting-campaign-228',kind:EVENT_KIND,title:'周魴誘曹休、孫權命陸遜破魏軍於石亭',...sameYear(228),precision:YEAR_PRECISION,source:SG47+'記黃武七年鄱陽太守周魴偽叛誘曹休，秋八月孫權至皖口，命陸遜督諸將大破曹休於石亭。本內容包採年級精度。',carrier:'孫權、周魴、陸遜、曹休與魏吳軍隊（歷史記載）',description:'記錄誘敵、孫權到皖口及陸遜在石亭擊破曹休；不推演兵力、傷亡數、完整戰術或疆界變更。',introducedRevision:97 },
+  { id:'wu-abolishes-dongan-commandery-228',kind:EVENT_KIND,title:'吳廷罷東安郡',...sameYear(228),precision:YEAR_PRECISION,source:SG47+'黃武七年三月條記「罷東安郡」。',carrier:'吳廷與東安郡',description:'記罷郡；不推定後續縣郡歸屬或人口移置。',introducedRevision:381 },
   { id:'sun-quan-campaigns-at-hefei-234',kind:EVENT_KIND,title:'孫權進向合肥新城、分遣吳軍入淮沔',...sameYear(234),precision:YEAR_PRECISION,source:'《三國志》卷三〈魏書·明帝紀〉記青龍二年五月孫權入居巢湖口、向合肥新城，另遣陸議、孫韶各將萬餘人入淮、沔；六月滿寵進軍拒守，秋七月魏明帝親東征，孫權及陸議、孫韶各軍退回。卷四十七〈吳主傳〉記同年孫權下詔察農桑時役事、修城備盜及開倉賑貧。本內容包採年級精度，不將跨傳記載合併成逐日行程。',carrier:'孫權、陸議、孫韶及魏吳軍隊（歷史記載）',description:'記錄孫權進向合肥新城與分遣部隊入淮沔、滿寵進軍拒守及魏帝東征後各軍撤回；不推演戰鬥、路線、傷亡或疆界變更。',sourceDateNote:'原史紀年：青龍二年五月孫權向合肥新城，六月滿寵拒守，秋七月魏明帝東征、孫權諸軍退回。這些是漢曆月份，不映射為本遊戲 30 日制日期。',introducedRevision:98 },
   { id:'zhugeliang-moves-to-hanzhong-227',kind:EVENT_KIND,title:'諸葛亮進屯漢中',...sameYear(227),precision:YEAR_PRECISION,source:'《三國志》卷三十三〈蜀書·後主傳〉記建興五年春丞相亮出屯漢中；卷三十五〈蜀書·諸葛亮傳〉記其後於建興六年出祁山。本內容包採公元年級精度。',causes:['shu-northern-expedition-preparation'],carrier:'蜀漢朝廷與漢中軍（歷史事件）',description:'記錄蜀漢北伐前的進屯與準備；不推演完整軍隊規模、屯田或疆界變更。',introducedRevision:19 },
   { id:'sun-quan-protects-families-of-defectors-227',kind:EVENT_KIND,title:'孫權下令不得因部下亡叛而殺其妻子',...sameYear(227),precision:YEAR_PRECISION,source:SG47+'裴松之注引《江表傳》載：「督將亡叛而殺其妻子，是使妻去夫，子棄父，甚傷義教，自今勿殺也。」此注文列於黃武七年記事段中，但沒有提供詔令月日；本內容包只採年級精度，明示為裴注所引材料。',carrier:'孫權與吳廷督將（裴注所引史料）',description:'記錄裴注所引材料中的禁令；不推演成完整司法制度、執行情況、適用範圍或人物動機。',introducedRevision:117 },
@@ -838,6 +839,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'sun-quan-proclaims-emperor-229': '原史紀年：黃龍元年夏四月。漢曆月份不換算為遊戲日曆日期。',
   'sun-quan-moves-capital-to-jianye-229': '原史紀年：黃龍元年秋九月。遷都與輔太子記事維持年級遊戲觸發，不換算成模型日期。',
   'sun-quan-shiting-campaign-228': '原史紀年：黃武七年秋八月。漢曆月份不換算為遊戲日曆日期。',
+  'wu-abolishes-dongan-commandery-228': '原史紀年：《三國志》卷四十七記黃武七年三月罷東安郡；按年級觸發，不換算模型月份。',
   'pan-jun-wuling-expedition-231': '原史紀年：黃龍三年春二月。漢曆月份不換算為遊戲日曆日期。',
   'shu-wei-qishan-lucheng-campaign-231': '原史紀年：《資治通鑑》按二月、五月、六月分記事件。保留月序作來源線索；遊戲只按 231 年觸發，不將漢曆換算成模型月份或日。',
   'wu-liaodong-envoy-mission-232': '原史紀年：嘉禾元年三月遣使、九月遇截、冬十月公孫淵遣使。多段年內事件仍以年級觸發。',
