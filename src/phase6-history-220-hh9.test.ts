@@ -5,8 +5,8 @@ const id='solar-eclipse-jianan-25-220';
 
 describe('A750 補列 220 年建安二十五年日食',()=>{
   it('依《後漢書》卷九記二月丁未朔日食並保留年級精度',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-396');
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(665);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-397');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(666);
     expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({
       startYear:220,
       endYear:220,
