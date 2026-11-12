@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(355);
+    expect(withinCatalogYears).toHaveLength(357);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -226,6 +226,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wu-agriculture-relief-and-fortifications-240': ['赤烏三年記正月', '夏四月詔', '冬十一月民饑'],
       'yuan-shao-dies-202': ['建安七年五月卒'],
       'yuan-tan-defeat-205': ['建安十年春正月'],
+      'zhang-yan-black-mountain-surrenders-205': ['建安十年夏四月', '張燕率眾降'],
+      'court-grants-poor-officials-gold-silk-205': ['建安十年秋九月', '賜百官尤貧者金帛'],
       'ruxu-campaign-213': ['建安十八年正月'],
       'cao-enfeoffed-duke-of-wei-213': ['建安十八年五月'],
       'wei-succession-239': ['景初三年正月丁亥'],
@@ -269,7 +271,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(165);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(167);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -635,6 +637,9 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'court-establishes-sizhi-203',
       'comet-dongjing-jianan-9-204',
       'court-grants-gold-silk-recurring-204',
+      'yuan-tan-defeat-205',
+      'zhang-yan-black-mountain-surrenders-205',
+      'court-grants-poor-officials-gold-silk-205',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -659,7 +664,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(165);
-    expect(uniqueNotedEvents.size).toBe(461);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(167);
+    expect(uniqueNotedEvents.size).toBe(463);
   });
 });

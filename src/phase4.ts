@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-357';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-358';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -486,7 +486,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'ye-falls-204',kind:EVENT_KIND,title:'鄴城陷落與袁氏河北局勢逆轉',...sameYear(204),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安九年記曹操圍鄴，審配敗而被擒斬，鄴城平定；本內容包採年級精度。',causes:['ye-siege-and-fall'],carrier:'曹操與袁氏守軍（歷史事件）',description:'記錄鄴城陷落及河北局勢轉折；不模擬完整圍城、人口損耗或郡縣控制。',introducedRevision:14 },
   { id:'comet-dongjing-jianan-9-204',kind:EVENT_KIND,title:'建安九年冬十月有星孛於東井（史書天象記載）',...sameYear(204),precision:YEAR_PRECISION,source:HH9+'建安九年冬十月記有星孛於東井。只記本紀天象文字，不推算現代天體、日期、成因或政治徵兆。',carrier:'漢廷天象記事（史料記載）',description:'記錄《後漢書》所載冬十月星孛於東井；不推測天體辨識、現代位置、成因或預兆。',sourceDateNote:'《後漢書》卷九建安九年冬十月記星孛於東井；保留漢曆月份，不映射成遊戲日期。',introducedRevision:357 },
   { id:'court-grants-gold-silk-recurring-204',kind:EVENT_KIND,title:'朝廷賜三公以下金帛、後定三年一賜',...sameYear(204),precision:YEAR_PRECISION,source:HH9+'建安九年十二月記賜三公以下金帛各有差，自是三年一賜，以為常制。只記本紀所載賞賜與後續定制，不推測數額、財源、收受名單或玩家資源。',carrier:'漢廷與公卿百官（史料記事）',description:'記錄朝廷賜金帛及「三年一賜」記事；不套用至玩家金錢、資源或人物庫存，也不推測各人所得數額。',sourceDateNote:'《後漢書》卷九建安九年十二月記賜三公以下金帛，並稱自此三年一賜；保留原文日期及頻次表述。',introducedRevision:357 },
-  { id:'yuan-tan-defeat-205',kind:EVENT_KIND,title:'袁譚敗亡與袁氏勢力轉折',...sameYear(205),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十年春正月記曹操攻袁譚並斬之，袁熙、袁尚其後奔烏桓；本內容包採年級精度。',causes:['yuan-tan-defeat'],carrier:'曹操、袁譚與袁氏餘部（歷史事件）',description:'記錄袁譚敗亡及袁氏勢力轉折；不模擬完整戰役、兵力或河北控制細節。',introducedRevision:13 },
+  { id:'yuan-tan-defeat-205',kind:EVENT_KIND,title:'袁譚敗亡與袁氏勢力轉折',...sameYear(205),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十年春正月記曹操攻袁譚並斬之，袁熙、袁尚其後奔烏桓；'+HH9+'建安十年春正月亦記曹操破袁譚於青州、斬之。本內容包採年級精度，兩來源的同一敗亡事件合併，不重複結算。',causes:['yuan-tan-defeat'],carrier:'曹操、袁譚與袁氏餘部（歷史事件）',description:'依《三國志》及《後漢書》記錄袁譚敗亡及袁氏勢力轉折；不模擬完整戰役、兵力或河北控制細節。',sourceDateNote:'《後漢書》卷九建安十年春正月記曹操破袁譚於青州、斬之；與《三國志》所記同一事件合併，遊戲按 205 年級觸發。',introducedRevision:13 },
+  { id:'zhang-yan-black-mountain-surrenders-205',kind:EVENT_KIND,title:'黑山賊張燕率眾歸降',...sameYear(205),precision:YEAR_PRECISION,source:HH9+'建安十年夏四月記黑山賊張燕率眾降。只記本紀所載，不推測歸降條件、兵數、安置方式、官職或地方控制變化。',carrier:'張燕與黑山部眾（史料記事）',description:'記錄張燕率眾歸降；原典此處未記歸降條件與部眾數量，不延伸為官職、軍隊編制或領地控制變化。',sourceDateNote:'《後漢書》卷九建安十年夏四月記張燕率眾降；保留漢曆月份，遊戲按年級觸發。',introducedRevision:358 },
+  { id:'court-grants-poor-officials-gold-silk-205',kind:EVENT_KIND,title:'朝廷賜尤貧百官金帛',...sameYear(205),precision:YEAR_PRECISION,source:HH9+'建安十年秋九月記賜百官尤貧者金帛各有差。只記原文，不推定人數、數額、資金來源或個別受領者。',carrier:'漢廷與尤貧百官（史料記事）',description:'記錄朝廷向尤貧百官賜金帛；不換算為玩家金錢、人物庫存或經濟數值，也不推定名單與各人所得。',sourceDateNote:'《後漢書》卷九建安十年秋九月記賜尤貧百官金帛；保留漢曆月份，遊戲按年級觸發。',introducedRevision:358 },
   { id:'gao-gan-defeat-206',kind:EVENT_KIND,title:'高幹敗走與壺關平定',...sameYear(206),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十一年記曹操征高幹、圍壺關三月而拔之，高幹走荊州後被捕斬；本內容包採年級精度。',causes:['gao-gan-rebellion'],carrier:'曹操與高幹（歷史事件）',description:'記錄高幹叛亂的平定；不模擬完整圍城、兵力或并州疆界變化。',introducedRevision:16 },
   { id:'white-wolf-mountain-207',kind:EVENT_KIND,title:'白狼山戰事與烏桓勢力轉折',...sameYear(207),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十二年記曹操北征烏桓、白狼山交戰，蹋頓被斬，袁尚、袁熙奔遼東後為公孫康所斬；本內容包採年級精度。',causes:['wuhuan-northern-campaign'],carrier:'曹操、蹋頓與袁尚、袁熙（歷史事件）',description:'記錄北征烏桓及袁氏餘部轉折；不模擬完整行軍路線、兵力、戰場或塞外疆界。',introducedRevision:12 },
   { id:'sun-quan-western-expedition-huang-zu-207',kind:EVENT_KIND,title:'孫權再征黃祖、擄其人民而還',...sameYear(207),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉建安十二年記孫權西征黃祖，虜其人民而還；本內容包保留原文用語與年級精度，不推定人數或個別遭遇。',carrier:'孫權與孫吳軍隊（歷史記載）',description:'記錄孫權西征黃祖及「虜其人民而還」的原文概述；不推估人數、身份、個人經歷、額外傷亡或完整戰事。',introducedRevision:100 },
@@ -795,6 +797,8 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'sun-quan-falls-ill-after-southern-suburb-sacrifice-251': '原史紀年：太元元年冬十一月，孫權祭南郊還而寢疾。保留月份，不換算成本遊戲日期。',
   'yuan-shao-dies-202': '原史紀年：建安七年五月。漢曆月份不換算為遊戲日曆日期。',
   'yuan-tan-defeat-205': '原史紀年：建安十年春正月。漢曆月份不換算為遊戲日曆日期。',
+  'zhang-yan-black-mountain-surrenders-205': '原史紀年：建安十年夏四月。保留漢曆月份，不換算為遊戲日曆日期。',
+  'court-grants-poor-officials-gold-silk-205': '原史紀年：建安十年秋九月。保留漢曆月份，不換算為遊戲日曆日期。',
   'ruxu-campaign-213': '原史紀年：建安十八年正月。漢曆月份不換算為遊戲日曆日期。',
   'sun-quan-ruxu-campaign-216': '原史紀年：建安二十一年冬。保留季節記載，不推定月日或換算成遊戲日期。',
   'sun-quan-sends-envoy-to-cao-217': '原史紀年：建安二十二年春。保留季節記載，不推定月日或換算成遊戲日期。',
