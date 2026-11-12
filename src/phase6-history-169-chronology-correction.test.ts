@@ -25,8 +25,8 @@ describe('A682 建寧二年記事年序勘誤', () => {
 
     expect(corrected.map(node => node.contentId)).toEqual(expect.arrayContaining(correctedIds));
     expect(model.nodes.some(node => retiredIds.includes(node.contentId))).toBe(false);
-    expect(HISTORY_CONTENT.find(item => item.id === retiredIds[0])).toMatchObject({ startYear: 179, retired: true, retiredIn: PHASE4_CONTENT_VERSION });
-    expect(HISTORY_CONTENT.find(item => item.id === retiredIds[1])).toMatchObject({ startYear: 179, retired: true, retiredIn: PHASE4_CONTENT_VERSION });
+    expect(HISTORY_CONTENT.find(item => item.id === retiredIds[0])).toMatchObject({ startYear: 179, retired: true, retiredIn: 'phase4-scenario-305' });
+    expect(HISTORY_CONTENT.find(item => item.id === retiredIds[1])).toMatchObject({ startYear: 179, retired: true, retiredIn: 'phase4-scenario-305' });
     expect(HISTORY_CONTENT.find(item => item.id === correctedIds[2])).toMatchObject({ startYear: 169, endYear: 169, precision: 'year', introducedRevision: 305 });
     expect(HISTORY_CONTENT.find(item => item.id === correctedIds[2])?.source).toContain('建寧二年秋七月');
     expect(HISTORY_CONTENT.find(item => item.id === correctedIds[2])?.source).toContain('東羌悉平');

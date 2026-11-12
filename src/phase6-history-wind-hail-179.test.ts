@@ -41,7 +41,7 @@ function questionWorld(): GameState {
 describe('A604 補列 179 年大風雨雹及上封事詔令', () => {
   it('依《後漢書》保留夏四月癸巳來源註記，只按年級呈現且問答不改狀態', () => {
     const node = HISTORY_CONTENT.find((item) => item.id === id);
-    expect(node).toMatchObject({ startYear: 179, endYear: 179, retired: true, retiredIn: PHASE4_CONTENT_VERSION });
+    expect(node).toMatchObject({ startYear: 179, endYear: 179, retired: true, retiredIn: 'phase4-scenario-305' });
     expect(node?.source).toContain('建寧二年（169）');
 
     const fresh = advancePhase4(createPhase4Model(178, 1, [], PHASE4_CONTENT_VERSION), 360);
