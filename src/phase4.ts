@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-307';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-308';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:305},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:306},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -89,6 +89,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'huan-emperor-burial-amnesty-rewards-168',kind:EVENT_KIND,title:'桓帝葬宣陵，朝廷大赦並賜爵帛',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'建寧元年二月辛酉葬孝桓皇帝於宣陵；後記庚午謁高廟、辛未謁世祖廟，隨後大赦天下，賜民爵及帛各有差。',carrier:'漢廷、桓帝劉志與受賜民眾（史料記載）',description:'記錄桓帝安葬、祭祀、大赦及原典所載賜爵帛；不推定受賜者名單、具體數額、執行情況，也不套用為玩家資源或身分變化。',sourceDateNote:'《後漢書》建寧元年二月記事；遊戲僅按 168 年級觸發，不換算漢曆日期為模型時間。',introducedRevision:300 },
   { id:'huan-emperor-death-party-ban-lifted-167',kind:EVENT_KIND,title:'悉除黨錮，桓帝崩',...sameYear(167),precision:YEAR_PRECISION,source:'《後漢書》卷七〈孝桓帝紀〉永康元年六月條記「悉除黨錮」，十二月記桓帝崩於德陽前殿、年三十六。本節點採公元年級精度，原典月份只作來源日期，不推定模型中的月內事件先後。',carrier:'漢廷、受黨錮者與桓帝劉志（史料記載）',description:'記錄黨錮全面解除與桓帝去世的同年記事；不補寫解除令影響細節、死亡日或朝廷交接過程。',introducedRevision:147 },
   { id:'six-provinces-flood-bohai-sea-overflow-167',kind:EVENT_KIND,title:'六州大水、勃海海溢與賑濟',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年秋八月記事記「六州大水，勃海海溢」，其後記詔州郡賑濟溺死者家屬與亡失穀食者。原文列有錢、穀數額，本原型不將其換算為玩家帳目或人口變化。',carrier:'六州、勃海與受災者（史料記載）',description:'記錄原典所載多地水災及朝廷救濟；不推定六州具體名單、受災範圍、總傷亡或其他損失，也不將記載的賑濟數額套用至玩家世界線。',sourceDateNote:'《後漢書》置於永康元年秋八月記事段；遊戲僅按 167 年級觸發，不映射漢曆月份。',introducedRevision:299 },
+  { id:'fuyu-raid-xuantu-167',kind:EVENT_KIND,title:'夫餘王侵玄菟，太守公孫域戰破之',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條記「夫餘王寇玄菟，太守公孫域與戰，破之」。只記原文所載侵擾及交戰結果，不補戰事日期、兵力、傷亡、路線或後續控制。',carrier:'夫餘王、公孫域與玄菟郡（史料記載）',description:'記錄夫餘王侵玄菟及太守公孫域與之交戰、擊破的原文結果；不推定戰事規模、傷亡、逐日過程或郡界控制變化。',sourceDateNote:'《後漢書》卷七永康元年條記夫餘王侵玄菟；遊戲僅按 167 年級觸發，不換算為模型日期。',introducedRevision:308 },
   { id:'qiang-incursions-167',kind:EVENT_KIND,title:'永康元年先零、當煎羌侵擾與官軍討擊',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條：春正月先零羌寇三輔，張奐破之；當煎羌寇武威，段熲追擊於鸞鳥大破。夏四月先零羌再寇三輔，冬十月張奐擊破之。「西羌悉平」不解作全年無後續；記事不合併為單一戰事。',carrier:'先零羌、當煎羌、張奐與段熲（史料記載）',description:'記羌事；不推演戰果。',sourceDateNote:'原典記春正月、夏四月、冬十月；遊戲只按 167 年級呈現，不換算模型月份。',introducedRevision:227 },
   { id:'duan-jiong-defeats-xianling-fengyishan-168',kind:EVENT_KIND,title:'段熲大破先零羌於逢義山',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'段熲大破先零羌於逢義山。',carrier:'段熲',description:'記大破。',sourceDateNote:'二月'+YEAR_TRIGGER,introducedRevision:233 },
   { id:'court-offices-reorganized-spring-168',kind:EVENT_KIND,title:'太尉與司空任免交替',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'夏四月太尉周景薨，司空宣酆免；長樂衛尉王暢為司空。五月太中大夫劉矩為太尉。',carrier:'周景、宣酆、王暢、劉矩與漢廷',description:'記職位更替。',sourceDateNote:'夏四月戊辰、五月'+YEAR_TRIGGER,introducedRevision:234 },
