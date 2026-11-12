@@ -6,8 +6,8 @@ const persons:PersonRef[]=[];
 
 describe('A742 補列 212 年建安十七年記事',()=>{
   it('逐筆保留《後漢書》記事、日期精度與原文界線',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(626);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-365');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(631);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-366');
     expect(ids.map(id=>HISTORY_CONTENT.find(item=>item.id===id))).toEqual([
       expect.objectContaining({startYear:212,endYear:212,precision:'year',introducedRevision:365,sourceDateNote:expect.stringContaining('夏五月')}),
       expect.objectContaining({startYear:212,endYear:212,precision:'year',introducedRevision:365,sourceDateNote:expect.stringContaining('六月庚寅晦')}),
@@ -19,7 +19,7 @@ describe('A742 補列 212 年建安十七年記事',()=>{
     expect(HISTORY_CONTENT.find(item=>item.id===ids[4])?.source).toContain('熙為濟陰王、懿為山陽王、𨘷為濟北王、敦為東海王');
   });
 
-  it('v364 舊 v6 存檔升至 v365 保留事件帳前綴並跨年至 212 年結算',()=>{
+  it('v364 舊 v6 存檔升至 v366 保留事件帳前綴並跨年至 212 年結算',()=>{
     const prior=createPhase4Model(211,1,persons,'phase4-scenario-364');
     const prefix=structuredClone(prior.eventLedger);
     const upgraded=upgradePhase4Content(prior,PHASE4_CONTENT_VERSION);

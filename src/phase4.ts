@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-365';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-366';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:363},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:364},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -520,6 +520,11 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'zhou-yu-dies-210',kind:EVENT_KIND,title:'周瑜病卒於巴丘',...sameYear(210),precision:YEAR_PRECISION,source:'《資治通鑑》卷六十六繫周瑜卒於建安十五年；《三國志》卷五十四〈吳書·周瑜傳〉記周瑜欲取蜀、還江陵治裝，途中於巴丘病卒，年三十六。本內容包採年級精度。',causes:['zhou-yu-death-210'],carrier:'周瑜（歷史事件）',description:'記錄周瑜赴取蜀計畫途中病卒；不改寫玩家世界線人物狀態，不推演繼任、軍隊調度或戰役結果。',introducedRevision:31 },
   { id:'ruxu-campaign-213',kind:EVENT_KIND,title:'曹操攻濡須、孫權相拒',...sameYear(213),precision:YEAR_PRECISION,source:SG47+'記建安十八年正月曹操攻濡須，孫權與之相拒月餘，曹操退軍；《資治通鑑》卷六十六亦記濡須對峙與退兵。本內容包採年級精度。',carrier:'曹操與孫權（歷史事件）',description:'記錄曹操進攻濡須、孫權守拒及相持後退軍；不推演完整戰役、兵力、傷亡或疆界控制。',introducedRevision:32 },
   { id:'cao-enfeoffed-duke-of-wei-213',kind:EVENT_KIND,title:'曹操受封魏公',...sameYear(213),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉及《資治通鑑》卷六十六均記建安十八年五月曹操受封魏公；本內容包採年級精度。',causes:['cao-duke-of-wei-213'],carrier:'漢廷與曹操（歷史事件）',description:'記錄漢廷封曹操為魏公及加九錫；不將名位授予視為當時已稱帝，也不改寫玩家世界的政治控制。',introducedRevision:33 },
+  { id:'restores-nine-provinces-213',kind:EVENT_KIND,title:'漢廷復禹貢九州',...sameYear(213),precision:YEAR_PRECISION,source:HH9+'建安十八年春正月庚寅記復禹貢九州；保留紀文所記政令，不套入完整郡縣或行政區模擬。',carrier:'漢廷（史料記事）',description:'記錄復禹貢九州的政令；不補造各州邊界、所轄郡國、人口或實際行政效果。',sourceDateNote:'《後漢書》卷九建安十八年春正月庚寅記復禹貢九州；保留原典月份與干支，遊戲只按 213 年級觸發。',introducedRevision:366 },
+  { id:'heavy-rain-and-flood-213',kind:EVENT_KIND,title:'建安十八年大雨水',...sameYear(213),precision:YEAR_PRECISION,source:HH9+'建安十八年夏五月曹操受封魏公條後記「大雨水」；只保留本紀用語，不推測洪災範圍、成因或損失。',carrier:'漢廷天候記事（史料記載）',description:'記錄原文「大雨水」；不補推受災地區、傷亡、農損或玩家資源變化。',sourceDateNote:'《後漢書》卷九建安十八年夏五月條記「大雨水」；保留原典月份，不換算為遊戲日期。',introducedRevision:366 },
+  { id:'zhao-prince-gui-moved-to-boling-213',kind:EVENT_KIND,title:'趙王珪徙封博陵王',...sameYear(213),precision:YEAR_PRECISION,source:HH9+'建安十八年夏五月條記徙趙王珪為博陵王；只記原文封號變動，不推測原因、封國疆界或實際控制。',carrier:'趙王珪與漢廷（史料記事）',description:'記錄趙王珪徙封博陵王；不推定徙封原因、領地範圍或玩家世界的控制變化。',sourceDateNote:'《後漢書》卷九建安十八年夏五月條記徙趙王珪為博陵王；保留月份，遊戲只按 213 年級觸發。',introducedRevision:366 },
+  { id:'three-stars-enter-taiwei-213',kind:EVENT_KIND,title:'歲星、鎮星、熒惑俱入太微',...sameYear(213),precision:YEAR_PRECISION,source:HH9+'建安十八年「是歲」記歲星、鎮星、熒惑俱入太微；只記原典天象，不推測現代天文對應、占驗或政治因果。',carrier:'漢廷天象記事（史料記載）',description:'記錄三曜俱入太微的原典記事；不推測現代天體辨識、觀測參數或政治寓意。',sourceDateNote:'《後漢書》卷九建安十八年「是歲」記歲星、鎮星、熒惑俱入太微；未載月份，只按 213 年級呈現。',introducedRevision:366 },
+  { id:'pengcheng-prince-he-dies-213',kind:EVENT_KIND,title:'彭城王和薨',...sameYear(213),precision:YEAR_PRECISION,source:HH9+'建安十八年「是歲」記彭城王和薨；原文未載月份或死因，不作補推。',carrier:'彭城王和（史料記事）',description:'記錄彭城王和去世；不推定死因、繼承安排或玩家世界人物狀態變化。',sourceDateNote:'《後漢書》卷九建安十八年「是歲」記彭城王和薨；未載月份，只按 213 年級呈現。',introducedRevision:366 },
   { id:'xun-yu-dies-212',kind:EVENT_KIND,title:'荀彧卒於壽春',...sameYear(212),precision:YEAR_PRECISION,source:'《三國志》卷十〈魏書·荀彧荀攸賈詡傳〉記建安十七年荀彧病留壽春、以憂薨；裴松之注所引《魏氏春秋》另記空器後飲藥卒，《資治通鑑》卷六十六亦記壽春飲藥而卒。本內容包採公元年級精度，保留史料對死因敘述的差異。',causes:['xun-yu-death-212'],carrier:'荀彧（歷史事件）',description:'記錄荀彧於壽春去世；不同史料對死因敘述有異，不將其擴寫為確定的受命自盡或玩家可介入的死亡節點，也不改寫玩家世界人物狀態。',introducedRevision:34 },
   { id:'liaodong-campaign-238',kind:EVENT_KIND,title:'司馬懿征遼東、公孫淵敗亡',...sameYear(238),precision:YEAR_PRECISION,source:'《三國志》卷八〈魏書·公孫度傳〉記景初二年司馬懿征公孫淵，襄平陷落、公孫淵父子被斬，遼東、帶方、樂浪、玄菟悉平；《資治通鑑》卷七十四亦載同年征遼東及襄平陷落。本內容包採公元年級精度。',carrier:'司馬懿與公孫淵（歷史事件）',description:'記錄魏軍征遼東、襄平陷落及公孫淵父子敗亡；原典另載大規模處置，本節點不模擬額外傷亡、地方人口、完整郡界或玩家世界控制權。',introducedRevision:35 },
   { id:'wei-succession-239',kind:EVENT_KIND,title:'魏明帝崩、曹芳即位',...sameYear(239),precision:YEAR_PRECISION,source:'《三國志》卷三〈魏書·明帝紀〉記景初三年正月丁亥明帝崩於嘉福殿；卷四〈魏書·三少帝紀〉記曹芳同日即皇帝位，曹爽、司馬懿受遺命輔政。本內容包採公元年級精度。',causes:['wei-imperial-succession-239'],carrier:'曹叡、曹芳與魏廷（歷史事件）',description:'記錄魏明帝去世與曹芳即位；不模擬幼主攝政、權臣實際控制或魏廷內部權力變化。',introducedRevision:36 },
@@ -822,6 +827,11 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'sun-quan-ruxu-campaign-216': '原史紀年：建安二十一年冬。保留季節記載，不推定月日或換算成遊戲日期。',
   'sun-quan-sends-envoy-to-cao-217': '原史紀年：建安二十二年春。保留季節記載，不推定月日或換算成遊戲日期。',
   'cao-enfeoffed-duke-of-wei-213': '原史紀年：建安十八年五月。漢曆月份不換算為遊戲日曆日期。',
+  'restores-nine-provinces-213': '原史紀年：建安十八年春正月庚寅。保留漢曆日期，不換算成遊戲日期。',
+  'heavy-rain-and-flood-213': '原史紀年：建安十八年夏五月。原文「大雨水」不外推成災區或損失。',
+  'zhao-prince-gui-moved-to-boling-213': '原史紀年：建安十八年夏五月。保留月份，不推測徙封原因。',
+  'three-stars-enter-taiwei-213': '原史紀年：建安十八年「是歲」，未載月份，只按年級呈現。',
+  'pengcheng-prince-he-dies-213': '原史紀年：建安十八年「是歲」，未載月份，只按年級呈現。',
   'wei-succession-239': '原史紀年：景初三年正月丁亥。保留干支日原文，不換算成公曆日期或遊戲日。',
   'comet-north-dipper-206': '原史紀年：建安十一年春正月。保留漢曆月份，不換算為遊戲日期。',
   'zhang-meng-kills-handan-shang-206': '原史紀年：建安十一年秋七月。保留《後漢書》雍州與《漢紀》涼州的原文差異。',
