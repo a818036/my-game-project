@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(341);
+    expect(withinCatalogYears).toHaveLength(348);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -621,6 +621,13 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'dong-cheng-appointed-chariot-general-199',
       'yuan-shu-dies-199',
       'wuling-woman-revives-after-fourteen-days-199',
+      'dong-cheng-conspiracy-executed-200',
+      'nanyang-prince-feng-enfeoffed-200',
+      'nanyang-prince-feng-dies-200',
+      'solar-eclipse-jianan-5-200',
+      'filial-recommendation-edict-jianan-5-200',
+      'comet-daliang-200',
+      'donghai-prince-zhi-dies-200',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -646,6 +653,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(165);
-    expect(uniqueNotedEvents.size).toBe(447);
+    expect(uniqueNotedEvents.size).toBe(454);
   });
 });

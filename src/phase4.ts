@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-352';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-353';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:351},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:352},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -458,6 +458,13 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'liu-bei-kills-chezhou-199',kind:EVENT_KIND,title:'劉備殺車胄、屯兵沛地',...sameYear(199),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉於建安四年記劉備殺徐州刺史車胄、舉兵屯沛；卷三十二〈蜀書·先主傳〉補記關羽留守下邳、劉備還小沛。本內容包採年級精度。',causes:['liu-bei-chezhou-conflict-199'],carrier:'劉備、關羽及徐州刺史車胄（歷史事件）',description:'記錄車胄遇害、關羽留守下邳與劉備屯回沛地；不模擬徐州各郡縣易手或完整軍事行動，也不改寫玩家世界線人物狀態。',introducedRevision:28 },
   { id:'guandu-campaign-200',kind:EVENT_KIND,title:'官渡之戰',...sameYear(200),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安五年記曹操與袁紹相拒官渡、烏巢糧運遭襲及袁軍潰敗；本內容包採年級精度，不推定遊戲模型月份。',causes:['guandu-campaign'],carrier:'曹操與袁紹（歷史事件）',description:'記錄曹操、袁紹於官渡相持後袁軍潰敗的年級節點；不模擬完整戰役、兵力、補給或勢力控制。',introducedRevision:9 },
   { id:'cao-defeats-liu-bei-200',kind:EVENT_KIND,title:'曹操東征劉備、劉備敗走與關羽降曹',...sameYear(200),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安五年春正月記曹操東征劉備、破之，並載劉備將關羽降；卷三十二〈蜀書·先主傳〉記「五年，曹公東征先主，先主敗績」，曹操收其眾、虜劉備妻子並擒關羽。本內容包採年級精度，不補行軍日程。',carrier:'曹操、劉備與關羽（歷史記載）',description:'記錄曹操於建安五年東征並擊敗劉備、擒獲其家屬與關羽降曹；不推演戰役細節、具體日期或未由來源支持的後續狀態。',introducedRevision:140 },
+  { id:'dong-cheng-conspiracy-executed-200',kind:EVENT_KIND,title:'董承等受密詔誅曹操事洩而被殺',...sameYear(200),precision:YEAR_PRECISION,source:HH9+'建安五年春正月記車騎將軍董承、偏將軍王服、越騎校尉种輯受密詔誅曹操，事洩；壬午，曹操殺董承等，夷三族。只記原文所列人物與結果，不補案情細節或「等」所指名單。',carrier:'董承、王服、种輯與曹操（史料記事）',description:'記錄董承、王服、种輯受密詔而事洩、董承等遭殺並夷三族；不補造未列名單、密詔內容、案情或司法過程。',sourceDateNote:'《後漢書》卷九建安五年春正月記密詔事洩及壬午曹操殺董承等、夷三族；保留干支與漢曆註記，只按 200 年級觸發。',introducedRevision:353 },
+  { id:'nanyang-prince-feng-enfeoffed-200',kind:EVENT_KIND,title:'皇子馮封南陽王',...sameYear(200),precision:YEAR_PRECISION,source:HH9+'建安五年秋七月記立皇子馮為南陽王。只記原文封爵，不推測其母族、封國實控或儀制。',carrier:'皇子馮與漢廷（史料記事）',description:'記錄皇子馮封南陽王；不推定封地範圍、實際治理、人物關係或後續。',sourceDateNote:'《後漢書》卷九建安五年秋七月記立皇子馮為南陽王；保留月份，只按 200 年級觸發。',introducedRevision:353 },
+  { id:'nanyang-prince-feng-dies-200',kind:EVENT_KIND,title:'南陽王馮去世',...sameYear(200),precision:YEAR_PRECISION,source:HH9+'建安五年秋七月記事後記壬午南陽王馮薨。只記死訊，不推測死因、日期換算、嗣位或封國後續。',carrier:'南陽王馮（史料記事）',description:'記錄南陽王馮去世；不推測死因、享年、繼承或封國人口與土地後續。',sourceDateNote:'《後漢書》卷九建安五年秋七月記事後記壬午南陽王馮薨；保留篇章先後與干支，不換算模型日期。',introducedRevision:353 },
+  { id:'solar-eclipse-jianan-5-200',kind:EVENT_KIND,title:'建安五年九月庚午朔日食',...sameYear(200),precision:YEAR_PRECISION,source:HH9+'建安五年九月庚午朔記日食。只記原典天象與漢曆日期，不推算現代日期、觀測範圍、成因或政治含義。',carrier:'漢廷天象紀錄（史料記事）',description:'記錄建安五年九月庚午朔日食；不推算現代日期、可見範圍、天文成因或政治後果。',sourceDateNote:'《後漢書》卷九建安五年九月庚午朔記日食；保留漢曆月日，不換算模型日期。',introducedRevision:353 },
+  { id:'filial-recommendation-edict-jianan-5-200',kind:EVENT_KIND,title:'詔令舉薦至孝者並上封事',...sameYear(200),precision:YEAR_PRECISION,source:HH9+'建安五年九月記詔三公舉至孝二人，九卿、校尉、郡國守相各舉一人，皆上封事。只記詔令文字，不推測受薦者、封事內容或施行結果。',carrier:'漢廷及受詔官員（史料記事）',description:'記錄朝廷令官員舉薦至孝者並上封事；不推測人選、奏章內容、採納或制度效果。',sourceDateNote:'《後漢書》卷九建安五年九月日食記事後記舉薦至孝及上封事詔令；保留篇章先後，不推定干支或執行日期。',introducedRevision:353 },
+  { id:'comet-daliang-200',kind:EVENT_KIND,title:'冬十月有星孛於大梁（史書天象記載）',...sameYear(200),precision:YEAR_PRECISION,source:HH9+'建安五年冬十月記有星孛於大梁。只呈現史書天象文字，不推測天體辨識、觀測位置、成因或政治徵兆。',carrier:'漢廷天象記事（史料記載）',description:'記錄《後漢書》所載冬十月星孛於大梁；不推算現代天文位置、現象真偽、成因或政治意義。',sourceDateNote:'《後漢書》卷九建安五年冬十月記星孛於大梁；保留漢曆月份，遊戲只按年級呈現。',introducedRevision:353 },
+  { id:'donghai-prince-zhi-dies-200',kind:EVENT_KIND,title:'東海王祗去世',...sameYear(200),precision:YEAR_PRECISION,source:HH9+'建安五年冬十月星孛記事後記東海王祗薨。只記死訊，不推測死因、日期或封國後續。',carrier:'東海王祗（史料記事）',description:'記錄東海王祗去世；不推測死因、享年、繼承或封國後續。',sourceDateNote:'《後漢書》卷九建安五年冬十月星孛記事後記東海王祗薨；只保留篇章先後，不推定日辰。',introducedRevision:353 },
   { id:'sun-ce-dies-sun-quan-inherits-200',kind:EVENT_KIND,title:'孫策去世、孫權承接軍政事務',...sameYear(200),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記建安五年「策薨，以事授權」，並載孫策長史張昭勸孫權止哭巡軍；本內容包只採公元年級精度，原文此處未提供月日。',carrier:'孫策、孫權、張昭與孫氏軍府（歷史記載）',description:'記錄孫策去世後由孫權承接事務，以及張昭促其巡軍的記述；不補寫死亡日、私人反應細節、完整繼承程序或當時各郡控制狀態。',introducedRevision:91 },
   { id:'sun-quan-defeats-li-shu-200',kind:EVENT_KIND,title:'孫權攻取皖城、討平李術',...sameYear(200),precision:YEAR_PRECISION,source:SG47+'裴松之注引《江表傳》記建安五年李術不肯事孫權、接納亡叛；孫權舉兵攻皖城，城破後斬李術、徙其部曲三萬餘人。史料只支持年級概述，本內容包不推定月日或其後人口去向。',carrier:'孫權、李術與皖城部曲（《江表傳》記載）',description:'記錄孫權攻取皖城、李術被誅及部曲遷徙；不擴寫攻城經過、未記載的平民傷亡或被遷者後續生活。',introducedRevision:114 },
   { id:'sun-quan-mother-dies-201',kind:EVENT_KIND,title:'舊版誤年節點：建安七年吳氏去世（應為 202 年）',...sameYear(201),precision:YEAR_PRECISION,source:'舊版曾將'+SG47+'「建安七年，權母吳氏薨」誤換算成 201 年；建安四年為 199 年、建安七年應為 202 年。本節點為舊存檔相容用勘誤標記，不再進入新局年表，也不觸發史實事件。',carrier:'舊版年表資料（已勘誤）',description:'相容保留 v104–v105 存檔中的舊節點 ID；新存檔改由 202 年節點記錄。既有事件帳不回寫；升級時附加勘誤紀錄。',introducedRevision:104,retired:true },
