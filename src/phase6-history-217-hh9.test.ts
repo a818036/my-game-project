@@ -6,8 +6,8 @@ const persons:PersonRef[]=[];
 
 describe('A747 補列 217 年建安二十二年記事',()=>{
   it('按來源精度登錄華歆任命與冬季東北方星孛，並合併同年疫癘來源',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-385');
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(654);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-386');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(655);
     const hua=HISTORY_CONTENT.find(item=>item.id===ids[0]);
     expect(hua).toMatchObject({startYear:217,endYear:217,precision:'year',introducedRevision:370,sourceDateNote:expect.stringContaining('夏六月')});
     expect(hua?.source).toContain('華歆為御史大夫');
