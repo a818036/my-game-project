@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-355';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-356';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:354},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:355},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -481,6 +481,8 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'yuexi-man-transformation-reported-202',kind:EVENT_KIND,title:'越巂男子化為女子（史書記載）',...sameYear(202),precision:YEAR_PRECISION,source:HH9+'建安七年「是歲」記越巂男子化為女子。只呈現史書所載異聞，不宣稱現象已驗證，也不補人物姓名、原因或後續。',carrier:'越巂地方異聞（史書記載）',description:'記錄《後漢書》所載越巂男子化為女子；不推測個案身份、成因或可驗證性。',sourceDateNote:'《後漢書》卷九建安七年「是歲」條記越巂男子化為女子；原文未載月份，只按 202 年級呈現。',introducedRevision:355 },
   { id:'yuan-brothers-conflict-203',kind:EVENT_KIND,title:'袁譚袁尚爭冀州',...sameYear(203),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安八年記袁譚、袁尚爭冀州，袁譚敗退平原並遣辛毗向曹操求援；本內容包採年級精度。',causes:['yuan-family-conflict'],carrier:'袁譚、袁尚與曹操（歷史事件）',description:'記錄袁氏兄弟衝突及袁譚求援的轉折；不把政治聯姻草議當成穩定控制，也不模擬完整戰役。',introducedRevision:15 },
   { id:'sun-quan-western-campaign-huang-zu-203',kind:EVENT_KIND,title:'孫權西征黃祖、破其舟軍',...sameYear(203),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉建安八年記孫權西伐黃祖、破其舟軍而未克城；因山寇復動而還，並另遣將領處置地方軍務。本內容包只採年級精度。',carrier:'孫權與孫吳軍隊（歷史記載）',description:'記錄孫權西征黃祖、破舟軍但未克城，以及山寇復動後退回；不把未克城改寫為攻陷，也不推演完整戰事、軍隊傷亡或後續地方控制。',introducedRevision:100 },
+  { id:'court-welcomes-winter-northern-suburb-203',kind:EVENT_KIND,title:'朝廷初於北郊迎冬、復備八佾舞',...sameYear(203),precision:YEAR_PRECISION,source:HH9+'建安八年冬十月記公卿初迎冬於北郊、總章始復備八佾舞。記錄本紀所列禮儀記事，不推測實際儀程、參與名單或社會影響。',carrier:'漢廷公卿與總章（史料記事）',description:'記錄公卿於北郊迎冬及總章恢復八佾舞的本紀記事；不補寫實際儀程、參與者或禮制變化。',sourceDateNote:'《後漢書》卷九建安八年冬十月記公卿初迎冬於北郊、總章始復備八佾舞；保留漢曆月份，只按 203 年級呈現。',introducedRevision:356 },
+  { id:'court-establishes-sizhi-203',kind:EVENT_KIND,title:'初置司直官督中都官',...sameYear(203),precision:YEAR_PRECISION,source:HH9+'建安八年冬十月記事後記初置司直官，督中都官。只記官職設置及原文職掌，不推測員額、任命、執行成效或制度沿革。',carrier:'漢廷司直官（史料記事）',description:'記錄本紀所載初置司直官督察中都官；不推測人選、員額、後續任免或實際成效。',sourceDateNote:'《後漢書》卷九建安八年冬十月記事後記初置司直官，督中都官；保留原文先後，只按年級觸發。',introducedRevision:356 },
   { id:'ye-falls-204',kind:EVENT_KIND,title:'鄴城陷落與袁氏河北局勢逆轉',...sameYear(204),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安九年記曹操圍鄴，審配敗而被擒斬，鄴城平定；本內容包採年級精度。',causes:['ye-siege-and-fall'],carrier:'曹操與袁氏守軍（歷史事件）',description:'記錄鄴城陷落及河北局勢轉折；不模擬完整圍城、人口損耗或郡縣控制。',introducedRevision:14 },
   { id:'yuan-tan-defeat-205',kind:EVENT_KIND,title:'袁譚敗亡與袁氏勢力轉折',...sameYear(205),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十年春正月記曹操攻袁譚並斬之，袁熙、袁尚其後奔烏桓；本內容包採年級精度。',causes:['yuan-tan-defeat'],carrier:'曹操、袁譚與袁氏餘部（歷史事件）',description:'記錄袁譚敗亡及袁氏勢力轉折；不模擬完整戰役、兵力或河北控制細節。',introducedRevision:13 },
   { id:'gao-gan-defeat-206',kind:EVENT_KIND,title:'高幹敗走與壺關平定',...sameYear(206),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十一年記曹操征高幹、圍壺關三月而拔之，高幹走荊州後被捕斬；本內容包採年級精度。',causes:['gao-gan-rebellion'],carrier:'曹操與高幹（歷史事件）',description:'記錄高幹叛亂的平定；不模擬完整圍城、兵力或并州疆界變化。',introducedRevision:16 },

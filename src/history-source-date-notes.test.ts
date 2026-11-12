@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(351);
+    expect(withinCatalogYears).toHaveLength(353);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -631,6 +631,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'solar-eclipse-jianan-6-201',
       'yutian-presents-tamed-elephant-202',
       'yuexi-man-transformation-reported-202',
+      'court-welcomes-winter-northern-suburb-203',
+      'court-establishes-sizhi-203',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -656,6 +658,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(165);
-    expect(uniqueNotedEvents.size).toBe(457);
+    expect(uniqueNotedEvents.size).toBe(459);
   });
 });
