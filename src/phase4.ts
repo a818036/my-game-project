@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-364';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-365';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:362},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:363},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -511,6 +511,12 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'sun-quan-appoints-zhou-yu-nanjun-209',kind:EVENT_KIND,title:'孫權任周瑜為南郡太守',...sameYear(209),precision:YEAR_PRECISION,source:SG47+'建安十四年記周瑜、曹仁相守一年餘、曹仁退走後，孫權以周瑜為南郡太守；同段記劉備表孫權行車騎將軍、領徐州牧。本內容包採年級精度。',carrier:'孫權、周瑜與劉備（歷史記載）',description:'記錄江陵戰後的官職任命與劉備對孫權的表奏；不推演具體任命日期、轄境邊界或未載的政治交易。',introducedRevision:103 },
   { id:'sun-quan-moves-governance-to-muling-211',kind:EVENT_KIND,title:'孫權徙治秣陵',...sameYear(211),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記建安十六年「權徙治秣陵」；本內容包依建安年次換算為公元 211 年，採年級精度，不推定遷治日期或遷徙過程。',carrier:'孫權與孫吳官府（歷史記載）',description:'記錄孫權徙治秣陵；不等同完整首都行政模擬，不推定搬遷日程、人口規模或對地方的控制變化。',introducedRevision:104 },
   { id:'sun-quan-builds-shitou-jianye-ruxu-212',kind:EVENT_KIND,title:'築石頭城、改秣陵為建業並備濡須',...sameYear(212),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉承建安十六年徙治秣陵後記「明年，城石頭，改秣陵為建業。聞曹公將來侵，作濡須塢」；依前後文為建安十七年，即公元 212 年，採年級精度。',carrier:'孫權與孫吳官府（歷史記載）',description:'記錄築石頭城、將秣陵改名建業及營作濡須塢；不推演工程規模、完工日期或未載的軍事效果。',introducedRevision:104 },
+  { id:'ma-teng-executed-212',kind:EVENT_KIND,title:'馬騰被誅並夷三族',...sameYear(212),precision:YEAR_PRECISION,source:HH9+'建安十七年夏五月記誅衞尉馬騰、夷三族；只記本紀原文，不補推案情、具體處刑經過或族人名單。',carrier:'馬騰與漢廷（史料記事）',description:'記錄《後漢書》所載馬騰遇誅及夷三族；不補造案情、逐人名單或玩家世界人物狀態變化。',sourceDateNote:'《後漢書》卷九建安十七年夏五月記誅衞尉馬騰、夷三族；保留原典月份，遊戲只按 212 年級觸發。',introducedRevision:365 },
+  { id:'jianan-17-solar-eclipse-212',kind:EVENT_KIND,title:'建安十七年六月庚寅晦日日食',...sameYear(212),precision:YEAR_PRECISION,source:HH9+'建安十七年六月庚寅晦記日食；只記原典天象，不推算現代日期、可見範圍、成因或政治意義。',carrier:'漢廷天象記事（史料記載）',description:'記錄《後漢書》所載六月庚寅晦日日食；不推算現代日期、可見範圍、天文成因或政治影響。',sourceDateNote:'《後漢書》卷九建安十七年六月庚寅晦記日食；保留漢曆月份、干支與晦日註記，遊戲只按 212 年級呈現。',introducedRevision:365 },
+  { id:'weishui-yingshui-flood-locusts-212',kind:EVENT_KIND,title:'洧水、潁水溢並有螟害',...sameYear(212),precision:YEAR_PRECISION,source:HH9+'建安十七年秋七月記洧水、潁水溢及螟；只記原典所列水患與蟲害，不推測災區、規模、成因或損失。',carrier:'洧水、潁水流域及漢廷史料記事（史料記載）',description:'記錄洧水、潁水溢與螟害記事；不推定受災範圍、人口損失、農作減產或玩家資源變化。',sourceDateNote:'《後漢書》卷九建安十七年秋七月記洧水、潁水溢及螟；保留季節與月份，遊戲只按 212 年級觸發。',introducedRevision:365 },
+  { id:'ma-chao-defeats-liangzhou-wei-kang-212',kind:EVENT_KIND,title:'馬超攻破涼州並殺刺史韋康',...sameYear(212),precision:YEAR_PRECISION,source:HH9+'建安十七年秋八月記馬超破涼州、殺刺史韋康；只記原典結果，不推演未載戰事、兵力、傷亡或控制範圍。',carrier:'馬超、韋康與涼州（史料記事）',description:'記錄馬超攻破涼州並殺刺史韋康；不模擬完整戰役、兵力、傷亡或玩家世界疆域控制。',sourceDateNote:'《後漢書》卷九建安十七年秋八月記馬超破涼州、殺刺史韋康；保留月份，遊戲仍按 212 年級觸發。',introducedRevision:365 },
+  { id:'emperor-invests-four-princes-212',kind:EVENT_KIND,title:'漢廷冊立四位皇子為王',...sameYear(212),precision:YEAR_PRECISION,source:HH9+'建安十七年秋九月庚戌記立皇子熙為濟陰王、懿為山陽王、𨘷為濟北王、敦為東海王；保留原文名號，不推測封國疆界、繼承安排或實際控制。',carrier:'獻帝與四位皇子（史料記事）',description:'記錄皇子熙、懿、𨘷、敦受封為濟陰、山陽、濟北、東海王；不推演封國疆界、人口或繼承安排。',sourceDateNote:'《後漢書》卷九建安十七年秋九月庚戌記立皇子熙等四人為王；保留原史月份與干支，遊戲只按 212 年級觸發。',introducedRevision:365 },
+  { id:'comet-five-feudal-lords-212',kind:EVENT_KIND,title:'冬十二月五諸侯星孛',...sameYear(212),precision:YEAR_PRECISION,source:HH9+'建安十七年冬十二月記星孛於五諸侯；只記天象原文，不推測現代天文日期、成因、可見範圍或政治含義。',carrier:'漢廷天象記事（史料記載）',description:'記錄冬十二月星孛於五諸侯的史料記事；不推算現代日期、星體性質、觀測範圍或政治意義。',sourceDateNote:'《後漢書》卷九建安十七年冬十二月記星孛於五諸侯；保留漢曆季節、月份及星名，不換算成遊戲日期。',introducedRevision:365 },
   { id:'zhou-yu-dies-210',kind:EVENT_KIND,title:'周瑜病卒於巴丘',...sameYear(210),precision:YEAR_PRECISION,source:'《資治通鑑》卷六十六繫周瑜卒於建安十五年；《三國志》卷五十四〈吳書·周瑜傳〉記周瑜欲取蜀、還江陵治裝，途中於巴丘病卒，年三十六。本內容包採年級精度。',causes:['zhou-yu-death-210'],carrier:'周瑜（歷史事件）',description:'記錄周瑜赴取蜀計畫途中病卒；不改寫玩家世界線人物狀態，不推演繼任、軍隊調度或戰役結果。',introducedRevision:31 },
   { id:'ruxu-campaign-213',kind:EVENT_KIND,title:'曹操攻濡須、孫權相拒',...sameYear(213),precision:YEAR_PRECISION,source:SG47+'記建安十八年正月曹操攻濡須，孫權與之相拒月餘，曹操退軍；《資治通鑑》卷六十六亦記濡須對峙與退兵。本內容包採年級精度。',carrier:'曹操與孫權（歷史事件）',description:'記錄曹操進攻濡須、孫權守拒及相持後退軍；不推演完整戰役、兵力、傷亡或疆界控制。',introducedRevision:32 },
   { id:'cao-enfeoffed-duke-of-wei-213',kind:EVENT_KIND,title:'曹操受封魏公',...sameYear(213),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉及《資治通鑑》卷六十六均記建安十八年五月曹操受封魏公；本內容包採年級精度。',causes:['cao-duke-of-wei-213'],carrier:'漢廷與曹操（歷史事件）',description:'記錄漢廷封曹操為魏公及加九錫；不將名位授予視為當時已稱帝，也不改寫玩家世界的政治控制。',introducedRevision:33 },
