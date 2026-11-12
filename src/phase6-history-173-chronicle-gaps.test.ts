@@ -4,6 +4,7 @@ import { applyEvent, createOpeningFacts, dispatch, ENGINE_VERSION, replay, type 
 import { toJson, verifySave, type SaveFile } from './storage';
 
 const addedIds = [
+  'pei-minister-shi-qian-imprisoned-173',
   'situ-tang-zhen-succeeds-yang-ci-173',
   'rinan-foreign-envoys-tribute-173',
   'duan-jiong-dismissed-taiwei-173',
@@ -22,7 +23,7 @@ function saveAtYear(year: number, version: string, commandId: string): SaveFile 
 }
 
 describe('A698 補列熹平二年本紀記事', () => {
-  it('五筆新增記事各自保留來源、年級精度與原文限制', () => {
+  it('六筆新增記事各自保留來源、年級精度與原文限制', () => {
     const fresh = createPhase4Model(172, 1, [], PHASE4_CONTENT_VERSION);
     const items = addedIds.map(id => HISTORY_CONTENT.find(entry => entry.id === id));
 
@@ -31,11 +32,13 @@ describe('A698 補列熹平二年本紀記事', () => {
       expect(item).toMatchObject({ startYear: 173, endYear: 173, precision: 'year', introducedRevision: 321 });
       expect(fresh.nodes.some(node => node.contentId === item!.id)).toBe(true);
     }
-    expect(items[0]?.source).toContain('秋七月');
-    expect(items[1]?.source).toContain('日南徼外國重譯貢獻');
-    expect(items[2]?.source).toContain('太尉段熲罷');
-    expect(items[3]?.source).toContain('鮮卑寇幽并二州');
-    expect(items[4]?.source).toContain('癸酉晦，日有食之');
+    expect(items[0]?.source).toContain('坐誣罔國王');
+    expect(items[0]?.source).toContain('注文另引傳記材料質疑其官名可能有誤');
+    expect(items[1]?.source).toContain('秋七月');
+    expect(items[2]?.source).toContain('日南徼外國重譯貢獻');
+    expect(items[3]?.source).toContain('太尉段熲罷');
+    expect(items[4]?.source).toContain('鮮卑寇幽并二州');
+    expect(items[5]?.source).toContain('癸酉晦，日有食之');
   });
 
   it('172 年舊存檔升版後跨年至 173 年觸發，173 年及晚年不回補', () => {
