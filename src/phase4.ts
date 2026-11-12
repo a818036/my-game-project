@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-326';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-327';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:324},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:325},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -217,10 +217,20 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'wind-hail-and-memorial-edict-179',kind:EVENT_KIND,title:'舊版誤繫年：建寧二年風雹與封事詔令（正確為169年）',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'此舊版節點誤繫光和二年（179）。原文「夏四月癸巳，大風，雨雹。詔公卿以下各上封事」見於建寧二年（169）條；v305 起退役，改由 169 年大風雨雹及封事詔令節點分開記錄。',carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年風雹及求封事詔令誤列於 179 年；v305 起退役，正確年次的兩項記事分列於 169 年。遷移保留舊事件帳，不回補已過年份。',introducedRevision:256,retired:true,retiredIn:'phase4-scenario-305' },
   { id:'duan-jiong-defeats-dongqiang-shehuosai-179',kind:EVENT_KIND,title:'舊版誤繫年：段熲射虎塞外谷戰事（正確為169年）',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'此舊版節點誤繫光和二年（179）。原文秋七月「破羌將軍段熲大破先零羌於射虎塞外谷，東羌悉平」見於建寧二年（169）條；v305 起退役，改由 169 年節點記錄。',carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年段熲射虎塞外谷記事誤列於 179 年；v305 起退役，改列於 169 年。原文稱「東羌悉平」，不推估兵力、傷亡、戰線或此後各部狀態。',introducedRevision:257,retired:true,retiredIn:'phase4-scenario-305' },
   { id:'guo-xi-succeeds-liu-chong-taiwei-179',kind:EVENT_KIND,title:'郭禧繼任太尉',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年十一月記太尉劉寵免、太僕郭禧為太尉；不推定免職原因、任期或官制效果。',carrier:'劉寵、郭禧與漢廷（史料記載）',description:'記錄十一月劉寵免太尉、郭禧繼任；不推定免職原因、實際任期或其他人事變更。',sourceDateNote:'《後漢書》卷八光和二年十一月記劉寵免太尉、郭禧繼任。保留史料月份，遊戲只按 179 年級觸發，不換算模型日期。',introducedRevision:257 },
-  { id:'xianbei-raids-bingzhou-179',kind:EVENT_KIND,title:'鮮卑寇并州',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年條另記「鮮卑寇并州」，未標具體月份或戰事結果；不推估傷亡、行軍路線或控制變化。',carrier:'鮮卑與并州地方（史料記載）',description:'記錄光和二年鮮卑侵擾并州；原文未標月份或戰事結果，不補推其規模、傷亡、路線與控制變化。',sourceDateNote:'《後漢書》卷八於光和二年十一月記事後另記鮮卑寇并州，該句未標具體月份；保留未繫月的來源粒度，遊戲只按 179 年級觸發。',introducedRevision:257 },
+  { id:'xianbei-raids-bingzhou-179',kind:EVENT_KIND,title:'鮮卑侵寇幽、并二州',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年條末記「鮮卑寇幽并二州」，未標具體月份或戰事結果；勘正舊索引僅列并州的範圍，原事件帳不改寫。',carrier:'鮮卑與幽、并二州地方（史料記載）',description:'記錄光和二年鮮卑侵寇幽、并二州；原文未標月份或戰事結果，不補推規模、傷亡、路線與控制變化。',sourceDateNote:'《後漢書》卷八光和二年條末記「鮮卑寇幽并二州」，未標月份；更正舊索引遺漏幽州的範圍，遊戲只按 179 年級觸發，保留原事件帳。',introducedRevision:257 },
   { id:'taiwei-and-minister-succession-guanghe-2-179',kind:EVENT_KIND,title:'179 年三公更替：劉郃、段熲、張濟相繼任職',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年三月條記司徒袁滂免、大鴻臚劉郃為司徒；同條乙丑日記太尉橋玄罷、太中大夫段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空。本內容包採年級精度，只記原文任免，不推定任命原因、任期或其他官制效果。',carrier:'袁滂、劉郃、橋玄、段熲、袁逢、張濟與漢廷（史料記載）',description:'記錄 179 年司徒袁滂免、劉郃繼任，太尉橋玄免、段熲繼任，以及司空袁逢免、張濟繼任；不推定任免原因、實際任期或更廣泛官制效果，也不轉成玩家人事變更。',sourceDateNote:'原史紀年：《後漢書》卷八記光和二年三月袁滂免、劉郃為司徒；乙丑日橋玄罷、段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空，但未另標該項日月。保留已標示的漢曆月份與干支，不換算模型日期或推定月內間隔；遊戲只按 179 年級觸發。',introducedRevision:211 },
   { id:'jiangxia-danyang-revolts-179',kind:EVENT_KIND,title:'舊版誤繫年重複索引：江夏起事與丹陽圍守（建寧二年，169 年）',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'建寧二年九月分別記江夏蠻叛、州郡討平及丹陽山越賊圍太守陳夤、陳夤擊破之。舊版誤繫光和二年（179 年），已將兩地記事拆分為各自的 169 年節點；此索引保留舊 ID 供遷移辨識，v238 起退役。',carrier:'舊版史實索引（已勘誤）',description:'舊版把建寧二年九月兩則記事誤繫於光和二年。現由 `jiangxia-uprising-169` 與 `danyang-shanyue-siege-chen-yin-180` 分別記錄；遷移保留既有事件帳，只移除過時待發節點，不回補已過年次。',introducedRevision:152,retired:true,retiredIn:'phase4-scenario-238' },
   { id:'bajun-banshun-revolt-179',kind:EVENT_KIND,title:'巴郡板楯起事，州郡討之未克',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年冬十月條記「巴郡板楯蠻叛」，遣御史中丞蕭瑗督益州刺史討之，「不剋」。《後漢書》卷八十六〈南蠻西南夷列傳〉將板楯復叛繫於光和三年，並有校記指出本紀及《華陽國志》繫於二年；該傳另載討伐及曹謙宣詔赦降的敘述。保留原典繫年差異，不推定兩處記載為同一連續戰事。採年級精度，不推定起事規模、軍隊編制或傷亡。',carrier:'巴郡板楯（史書原稱）與益州州郡軍',description:'分別呈現本紀的光和二年起事、討伐未克記事，以及列傳光和三年復叛敘事；列傳本身註明與本紀及《華陽國志》繫年不同。另依本紀獨立記錄 182 年曹謙受降，不據此補推兩次記載間的戰事或控制狀態。',introducedRevision:153 },
+  { id:'jingzhao-earthquake-179',kind:EVENT_KIND,title:'京兆地震',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年記三公任免後另載「京兆地震」；原文未標月份或震災影響，不補推成因、範圍或損害。',carrier:'京兆地區（史料記載）',description:'記錄史書所載京兆地震；原文未標月份，不推測震央、規模、損害或政治含義。',sourceDateNote:'《後漢書》卷八光和二年三公任免記事後記「京兆地震」，未另標月份；只按 179 年級觸發，不換算為模型日期。',introducedRevision:327 },
+  { id:'solar-eclipse-guanghe-2-179',kind:EVENT_KIND,title:'光和二年夏四月日食',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年夏四月甲戌朔記「日有食之」。只記原文天象與曆日，不推算現代日期、可見範圍、天文成因或政治含義。',carrier:'漢廷天象紀錄（史料記載）',description:'記錄光和二年夏四月甲戌朔日食；不推算現代日期、觀測地、天文參數或政治後果。',sourceDateNote:'《後漢書》卷八光和二年夏四月甲戌朔記日食；保留漢曆日期，遊戲僅按 179 年級觸發。',introducedRevision:327 },
+  { id:'wang-fu-duan-jiong-die-in-prison-179',kind:EVENT_KIND,title:'王甫與段熲下獄死',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年夏四月辛巳記中常侍王甫及太尉段熲並下獄死。只記原文所載處置，不補案由、審理經過或更細死因。',carrier:'王甫、段熲與漢廷（史料記載）',description:'記錄王甫及段熲下獄死；本紀此處未載具體案由，不推測案件內容、審理或其他政治因果。',sourceDateNote:'《後漢書》卷八光和二年夏四月辛巳記王甫、段熲下獄死；保留原史曆日，只按 179 年級觸發。',introducedRevision:327 },
+  { id:'dongping-prince-duan-dies-179',kind:EVENT_KIND,title:'東平王端薨',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年大赦記事後記「東平王端薨」，原文未另標月份；只按年級記事，不推測死因、享年或封國後續。',carrier:'東平王端（史料記載）',description:'記錄東平王端去世；原文未另標月份與死因，不推定人物其他狀態或封國後續。',sourceDateNote:'《後漢書》卷八光和二年記東平王端薨，未另標月份；保留篇章位置而不推定日月，遊戲只按 179 年級觸發。',introducedRevision:327 },
+  { id:'liu-kuan-appointed-taiwei-179',kind:EVENT_KIND,title:'衛尉劉寬任太尉',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年五月記衛尉劉寬為太尉；原文未記其前任免職，不推測任命原因或任期。',carrier:'劉寬與漢廷（史料記載）',description:'記錄五月劉寬由衛尉任太尉；不推定前任離職原因、實際到任日或任期。',sourceDateNote:'《後漢書》卷八光和二年五月記衛尉劉寬為太尉；保留月份，遊戲按 179 年級觸發。',introducedRevision:327 },
+  { id:'zhang-xiu-dies-in-prison-179',kind:EVENT_KIND,title:'張脩有罪下獄死',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年秋七月記使匈奴中郎將張脩有罪、下獄死；注文稱其擅斬呼微、更立羌渠為單于。保留史料敘述，不擴寫審判過程或死因。',carrier:'張脩、呼微、羌渠與漢廷（史料記載）',description:'記錄張脩有罪下獄死及注文所述案情；不補審理細節、對外關係後果或原文未載處置。',sourceDateNote:'《後漢書》卷八光和二年秋七月記張脩有罪下獄死，注文載其擅斬呼微、更立羌渠；只保留原史月份，不推算具體日期。',introducedRevision:327 },
+  { id:'liu-he-chen-qiu-conspiracy-deaths-179',kind:EVENT_KIND,title:'劉郃等謀誅宦者事泄，下獄死',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年冬十月甲申，記司徒劉郃、永樂少府陳球、衛尉陽球、步兵校尉劉納謀誅宦者，事泄，皆下獄死。只記本紀文字，不補密謀經過、其他參與者或審理細節。',carrier:'劉郃、陳球、陽球、劉納與漢廷（史料記載）',description:'記錄四名官員謀誅宦者事泄及下獄死；不推演密謀細節、指揮關係或未載司法程序。',sourceDateNote:'《後漢書》卷八光和二年冬十月甲申記劉郃、陳球、陽球、劉納謀誅宦者事泄並下獄死；只按年級觸發，保留原史日期作註記。',introducedRevision:327 },
+  { id:'yang-ci-appointed-situ-179',kind:EVENT_KIND,title:'楊賜任司徒',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年十二月記光祿勳楊賜為司徒；不推測前任離職原因、到任日或任期。',carrier:'楊賜與漢廷（史料記載）',description:'記錄十二月楊賜任司徒；不推定任命原因、實際到任日或其他官制效果。',sourceDateNote:'《後漢書》卷八光和二年十二月記光祿勳楊賜為司徒；保留月份，遊戲只按 179 年級觸發。',introducedRevision:327 },
+  { id:'hejian-prince-li-dies-179',kind:EVENT_KIND,title:'河間王利薨',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年「是歲」記河間王利薨；只按年級記錄，不推測月份、死因、享年或繼承情形。',carrier:'河間王利（史料記載）',description:'記錄河間王利去世；原文只標「是歲」，不補日期或推測封國後續。',sourceDateNote:'《後漢書》卷八光和二年「是歲」記河間王利薨，未標月份；遊戲只按 179 年級觸發，不推定年內日期。',introducedRevision:327 },
+  { id:'luoyang-infant-two-heads-four-arms-report-179',kind:EVENT_KIND,title:'洛陽女子生二首四臂之兒（史書異象記載）',...sameYear(179),precision:YEAR_PRECISION,source:HH8+'光和二年「是歲」記洛陽女子生兒兩頭四臂，並附京房《易傳》解說。本節點只保存史書文字，不判定記載真偽，不作生理、超自然或政治因果主張。',carrier:'洛陽地方史書記載（異象文字）',description:'呈現原典所載「兩頭四臂」文字，並標明這是史書異象記載；不視為已驗證現象，不將描述套用於遊戲角色或補造人物後續。',sourceDateNote:'《後漢書》卷八光和二年「是歲」記洛陽女子生兒兩頭四臂；只保留年級，不推定月份或將注文解說當作成因。',introducedRevision:327 },
   { id:'song-empress-deposed-178',kind:EVENT_KIND,title:'靈帝收宋皇后璽綬，宋氏以憂而死',...sameYear(178),precision:YEAR_PRECISION,source:'《後漢書》卷十下〈皇后紀下〉記宋氏建寧三年入掖庭為貴人、次年立后；光和元年「策收璽綬」，其後「后自致暴室，以憂死」，並記其在位八年、父兄被誅。來源未給廢后與死亡的月日，本節點只採年級精度；不將史書敘述改寫成已證實的冤案因果。',carrier:'漢靈帝、宋皇后及其父兄（史書記載）',description:'記錄宋皇后被收璽綬、其後死於暴室及父兄被誅的來源敘述；不補宮中操作細節、月日或其他涉事者未載的個別責任。',introducedRevision:154 },
   { id:'jiangxia-local-uprising-180',kind:EVENT_KIND,title:'江夏、廬江起事擴大，陸康討平',...sameYear(180),precision:YEAR_PRECISION,source:HH8+'光和三年夏四月記「江夏蠻叛」；卷八十六〈南蠻西南夷列傳〉記江夏起事與廬江賊黃穰相連，稱十餘萬人、攻沒四縣、寇患累年，後由廬江太守陸康討破，餘眾降散。本節點按年級精度並列本紀與列傳記載，不把「十餘萬」改寫為精確統計，也不補四縣名稱或逐年戰事。',carrier:'江夏起事者、廬江賊黃穰及廬江太守陸康（史書記載）',description:'記錄江夏起事與黃穰相連、攻沒四縣及陸康討破的列傳敘述；保留原文概數，不推定各方兵力、傷亡、四縣名稱或年內日序。',introducedRevision:146 },
   { id:'he-empress-installed-180',kind:EVENT_KIND,title:'漢靈帝立何氏為皇后',...sameYear(180),precision:YEAR_PRECISION,source:'《後漢書》卷十下〈皇后紀下〉記「光和三年，立為皇后」，指靈思何皇后。本節點採年級精度；不推定冊立月日、未載的朝廷反應或其後權力變化。',carrier:'漢靈帝與何氏（史書記載）',description:'記錄何氏被立為皇后的年級記事；不由冊立本身推演外戚勢力、官職、政策或其他人物命運。',introducedRevision:156 },
@@ -655,6 +665,17 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
  const model=structuredClone(source);
  const currentIndex=PHASE4_CONTENT_VERSIONS.indexOf(model.contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]),targetIndex=PHASE4_CONTENT_VERSIONS.indexOf(contentVersion as typeof PHASE4_CONTENT_VERSIONS[number]);
  if(currentIndex>=targetIndex)return model;
+ const youBingXianbeiCorrectionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-327');
+ if(targetIndex>=youBingXianbeiCorrectionIndex&&currentIndex<youBingXianbeiCorrectionIndex){
+  const oldNode=model.nodes.find(node=>node.contentId==='xianbei-raids-bingzhou-179');
+  const priorEventRecorded=oldNode?.status==='triggered'||model.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('鮮卑寇并州'));
+  if(oldNode&&!oldNode.evidence.some(item=>item.includes('幽、并二州'))){
+   oldNode.evidence.push('史料範圍勘正：光和二年條末原文為「鮮卑寇幽并二州」，舊節點僅列并州；正確範圍為幽、并二州，既有事件帳不回寫。');
+  }
+  if(priorEventRecorded&&!model.eventLedger.some(item=>item.type==='史實資料勘誤'&&item.detail.includes('鮮卑寇幽并二州'))){
+   pushEvent(model,'史實資料勘誤','《後漢書》卷八光和二年條末原文為「鮮卑寇幽并二州」。舊版節點只列并州，現更正索引範圍；保留既有事件帳，不回寫已發生事件。','《後漢書》卷八〈孝靈帝紀〉光和二年條');
+  }
+ }
  const xipingFiveYearCorrectionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-324');
  if(targetIndex>=xipingFiveYearCorrectionIndex&&currentIndex<xipingFiveYearCorrectionIndex){
   const oldNode=model.nodes.find(node=>node.contentId==='drought-locust-seven-provinces-176');

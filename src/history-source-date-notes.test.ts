@@ -376,6 +376,16 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'guo-xi-succeeds-liu-chong-taiwei-179',
       'xianbei-raids-bingzhou-179',
       'taiwei-and-minister-succession-guanghe-2-179',
+      'jingzhao-earthquake-179',
+      'solar-eclipse-guanghe-2-179',
+      'wang-fu-duan-jiong-die-in-prison-179',
+      'dongping-prince-duan-dies-179',
+      'liu-kuan-appointed-taiwei-179',
+      'zhang-xiu-dies-in-prison-179',
+      'liu-he-chen-qiu-conspiracy-deaths-179',
+      'yang-ci-appointed-situ-179',
+      'hejian-prince-li-dies-179',
+      'luoyang-infant-two-heads-four-arms-report-179',
       'scholar-nomination-edict-180',
       'henei-henan-cannibalism-report-180',
       'dong-chong-death-180',
@@ -440,6 +450,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(285);
+    expect(uniqueNotedEvents.size).toBe(295);
   });
 });
