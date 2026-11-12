@@ -23,7 +23,10 @@ describe('A247 219 年荊州戰局來源補充',()=>{
     const upgraded=upgradePhase4Content(oldPending,PHASE4_CONTENT_VERSION);
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.eventLedger.at(-1)).toMatchObject({type:'史實來源補充'});
-    expect(upgraded.nodes.find(node=>node.contentId===id)).toMatchObject({status:'pending',evidence:[expect.stringContaining('史料補充')]});
+    expect(upgraded.nodes.find(node=>node.contentId===id)).toMatchObject({status:'pending',evidence:[
+      expect.stringContaining('史料補充'),
+      expect.stringContaining('建安二十四年《後漢書》卷九冬十一月'),
+    ]});
     const continued=advancePhase4(upgraded,360);
     expect(continued.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
     expect(continued.eventLedger.filter(item=>item.type==='史實事件形成'&&item.detail.includes(content.title))).toHaveLength(1);

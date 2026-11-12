@@ -523,7 +523,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const current=makeSave('phase6-v6-nonretroactive');const start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');const {phase4ContentVersion:_version,...payload}=start.payload;const legacyStart:GameEvent={...start,payload};let state=applyEvent(null,legacyStart)!;const events:GameEvent[]=[legacyStart];
     for(const [index,contentVersion] of ['phase4-scenario-2','phase4-scenario-3','phase4-scenario-4'].entries()){const revision=state.revision+1;const update:GameEvent={version:ENGINE_VERSION,eventId:`${state.worldlineId}:${revision}`,commandId:`phase6-v${index+2}`,commandHash:`phase6-v${index+2}`,revision,type:'Phase4ContentUpdated',payload:{contentVersion}};state=applyEvent(state,update);events.push(update);}
     for(let index=0,remaining=76*360;remaining>0;index++){const days=Math.min(3600,remaining);const advance=dispatch(state,{version:ENGINE_VERSION,commandId:`phase6-old-v4-advance-${index}`,expectedRevision:state.revision,worldlineId:state.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days}});state=advance.state!;events.push(advance.event!);remaining-=days;}expect(state.phase4?.year).toBe(260);const oldPrefix=[...events];const oldSave:SaveFile={...current,events,state};
-    const migrated=verifySave(toJson(oldSave));expect(migrated.events.slice(0,oldPrefix.length)).toEqual(oldPrefix);for(const [id,year] of [['guan-yu-falls-219',219],['liu-bei-proclaims-emperor-221',221],['yiling-campaign-222',222],['liu-bei-dies-223',223],['zhuge-liang-first-northern-expedition-228',228],['sun-quan-proclaims-emperor-229',229],['zhuge-liang-dies-234',234],['gaopingling-249',249],['tong-pass-campaign-211',211],['yi-province-surrender-214',214],['han-zhong-campaign-215',215]] as const)expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)).toMatchObject({status:'resolved',resolvedYear:year,evidence:['此歷史內容於目前存檔日期後才加入；不回溯觸發。']});expect(migrated.state.phase4?.eventLedger.some(event=>['荊州失守、關羽遇害','劉備於成都即皇帝位','夷陵戰局逆轉','劉備崩於永安宮','諸葛亮首次北伐與街亭失利','孫權即皇帝位','諸葛亮病卒於渭濱','高平陵政局轉折','潼關戰事與關中平定','雒城陷落與劉璋出降','曹操征定漢中、張魯出降'].some(title=>event.detail.includes(title)))).toBe(false);expect(replay(migrated.events)).toEqual(migrated.state);
+    const migrated=verifySave(toJson(oldSave));expect(migrated.events.slice(0,oldPrefix.length)).toEqual(oldPrefix);for(const [id,year] of [['guan-yu-falls-219',219],['liu-bei-proclaims-emperor-221',221],['yiling-campaign-222',222],['liu-bei-dies-223',223],['zhuge-liang-first-northern-expedition-228',228],['sun-quan-proclaims-emperor-229',229],['zhuge-liang-dies-234',234],['gaopingling-249',249],['tong-pass-campaign-211',211],['yi-province-surrender-214',214],['han-zhong-campaign-215',215]] as const){const evidence=id==='guan-yu-falls-219'?['此歷史內容於目前存檔日期後才加入；不回溯觸發。',expect.stringContaining('建安二十四年《後漢書》卷九冬十一月')]:['此歷史內容於目前存檔日期後才加入；不回溯觸發。'];expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)).toMatchObject({status:'resolved',resolvedYear:year,evidence});}expect(migrated.state.phase4?.eventLedger.some(event=>['荊州失守、關羽遇害','劉備於成都即皇帝位','夷陵戰局逆轉','劉備崩於永安宮','諸葛亮首次北伐與街亭失利','孫權即皇帝位','諸葛亮病卒於渭濱','高平陵政局轉折','潼關戰事與關中平定','雒城陷落與劉璋出降','曹操征定漢中、張魯出降'].some(title=>event.detail.includes(title)))).toBe(false);expect(replay(migrated.events)).toEqual(migrated.state);
   });
 
   it('舊版第一階段存檔先封存原檔，再遷移並可續玩', async () => {
@@ -793,7 +793,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old));const nodeId='guan-yu-falls-219';
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
     expect(migrated.events[oldEvents.length]).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
-    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)).toMatchObject({status:'pending',evidence:[expect.stringContaining('史料補充')]});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===nodeId)).toMatchObject({status:'pending',evidence:[expect.stringContaining('史料補充'),expect.stringContaining('建安二十四年《後漢書》卷九冬十一月')]});
     expect(migrated.state.phase4?.eventLedger.some(event=>event.type==='史實來源補充')).toBe(true);
     const result=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v131-jingzhou-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
     if(!result.state||!result.event||result.event.type!=='Phase4Changed')throw new Error('could not trigger migrated 219 save');
@@ -1244,6 +1244,28 @@ describe('A05／A06 存檔交易與重播', () => {
     for(const id of ids)expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v370-jianan-23-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
     if(!continued.state||!continued.event)throw new Error('could not continue v370 fixture');
+    for(const id of ids)expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
+    expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  },30_000);
+
+  it('A749 v371 218 年 v6 JSON 升級後觸發 219 年記事並可再匯入重播',()=>{
+    const current=makeSave('phase6-v371-jianan-24',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-371'}};
+    let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v371 fixture');
+    const oldEvents:GameEvent[]=[oldStart];
+    for(let year=185;year<=218;year++){
+      const continued=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v371-jianan-24-${year}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+      if(!continued.state||!continued.event)throw new Error('could not advance the v371 fixture');
+      oldState=continued.state;oldEvents.push(continued.event);
+    }
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState},migrated=verifySave(toJson(old));
+    const ids=['solar-eclipse-jianan-24-219','liu-bei-takes-hanzhong-219','liu-bei-proclaims-hanzhong-king-219','han-river-flood-219'];
+    expect(migrated.events[0]).toEqual(oldStart);
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    for(const id of ids)expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v371-jianan-24-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event)throw new Error('could not continue v371 fixture');
     for(const id of ids)expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
     expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
