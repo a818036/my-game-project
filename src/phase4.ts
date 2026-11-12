@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-387';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-388';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:385},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:386},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -618,6 +618,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'liu-shan-succeeds-liu-bei-223',kind:EVENT_KIND,title:'劉禪於成都即位',...sameYear(223),precision:YEAR_PRECISION,source:'《三國志》卷三十三〈蜀書·後主傳〉記建興元年五月後主即位；其上承章武三年劉備於永安宮去世。本內容包採公元年級精度，保留原史五月而不換算為遊戲日期。',causes:['liu-shan-succession-223'],carrier:'劉禪與蜀漢朝廷（史書所載）',description:'記錄劉備去世後劉禪於成都即位；不推演未載的即位儀式細節、朝廷日常或玩家勢力承接。',sourceDateNote:'原史紀年：建興元年五月，後主即位。保留漢曆月份，不換算為遊戲日期。',introducedRevision:138 },
   { id:'shu-zhuge-liang-opens-government-223',kind:EVENT_KIND,title:'諸葛亮開府治事並領益州牧',...sameYear(223),precision:YEAR_PRECISION,source:'《三國志》卷三十五〈蜀書·諸葛亮傳〉記建興元年封亮武鄉侯、開府治事，「頃之，又領益州牧」，並記政事無巨細咸決於亮。本內容包只按年級精度轉述，不擴寫成完整攝政、官僚或政策模型。',carrier:'劉禪、諸葛亮與蜀漢朝廷（史書所載）',description:'記錄諸葛亮於劉禪即位後開府治事、領益州牧及史書對其處理政事的概述；不推演未載的個別決策、官制細節或玩家勢力狀態。',sourceDateNote:'原史紀年：建興元年，封諸葛亮武鄉侯、開府治事，後領益州牧；本紀未為此記事另繫月日，遊戲按 223 年級觸發。',introducedRevision:386 },
   { id:'shu-zhuge-liang-sends-envoy-to-wu-223',kind:EVENT_KIND,title:'蜀漢遣使聘吳、結為和親',...sameYear(223),precision:YEAR_PRECISION,source:'《三國志》卷三十五〈蜀書·諸葛亮傳〉記建興元年南中諸郡叛亂，諸葛亮因新遭大喪未立即用兵，且遣使聘吳、結為和親。本內容包只按年級精度記錄原文所載外交往來，不推測使者姓名、路線、談判過程或盟約條款。',carrier:'諸葛亮與蜀漢朝廷（史書所載）',description:'記錄諸葛亮在劉備去世後遣使赴吳、結為和親；不推演具體使者、談判內容、盟約條款或實際軍事協調。',sourceDateNote:'原史紀年：建興元年，南中諸郡叛亂後遣使聘吳、結為和親；原文未另繫月日，遊戲按 223 年級觸發。',introducedRevision:387 },
+  { id:'wei-bans-private-vengeance-223',kind:EVENT_KIND,title:'魏廷下詔禁止民間私自復仇',...sameYear(223),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉黃初四年春正月記：「喪亂以來，兵革未戢，天下之人，互相殘殺。今海內初定，敢有私復讎者皆族之。」本內容包只記詔令原文及其戰亂初定背景，不推演個案、施行範圍或司法後果。',carrier:'魏廷與天下士民（史書所載詔令）',description:'記錄魏廷在戰亂初定之際下詔禁止民間私自復仇；不把詔令套用到玩家世界，也不推定任何個案或實際執行情形。',sourceDateNote:'原史紀年：黃初四年春正月，魏廷下詔禁止私自復仇；遊戲只按 223 年級觸發，不換算漢曆月份為模型日期。',introducedRevision:388 },
   { id:'wu-adopts-qianxiang-calendar-223',kind:EVENT_KIND,title:'吳改四分、使用乾象曆',...sameYear(223),precision:YEAR_PRECISION,source:SG47+'黃武二年春正月記事記城江夏山，並載「改四分，用《乾象曆》」。本內容包採年級精度，只記史書所載曆法更改，不以此推演遊戲曆法、日期換算或施行細節。',carrier:'孫吳朝廷（史書所載制度事件）',description:'記錄吳廷改用四分曆及乾象曆；不補曆法算法、頒行範圍、實際觀測或日常作息，也不改動玩家世界日期。',sourceDateNote:'原史紀年：黃武二年春正月，記「改四分，用《乾象曆》」。保留史料月份，不轉換成遊戲日期。',introducedRevision:126 },
   { id:'wei-morning-raid-ruxu-defeated-223',kind:EVENT_KIND,title:'魏軍晨渡濡須，朱桓擊退曹仁部將',...sameYear(223),precision:YEAR_PRECISION,source:SG47+'黃武二年三月記曹仁遣常彫等率兵五千乘油船晨渡濡須中洲，曹仁之子曹泰引軍急攻朱桓；朱桓守軍拒戰，並遣嚴圭等擊破常彫部，原文稱「是月，魏軍皆退」。本內容包採年級精度，只轉述史書明載，不推演未載傷亡、戰鬥過程或完整兵力。',carrier:'曹仁、曹泰、朱桓、常彫與嚴圭（歷史記載）',description:'記錄魏軍渡濡須中洲攻擊朱桓、吳軍擊破常彫部及魏軍當月撤退；不推演逐日戰況、個人死傷、戰損或控制權變更。',sourceDateNote:'原史紀年：黃武二年三月，曹仁遣軍晨渡濡須中洲攻朱桓，朱桓遣嚴圭擊破常彫等，魏軍於該月皆退。保留漢曆月份，不映射成本遊戲日期。',introducedRevision:127 },
   { id:'wu-captures-jin-zong-at-qichun-223',kind:EVENT_KIND,title:'孫權遣賀齊等襲蘄春、生擒晉宗',...sameYear(223),precision:YEAR_PRECISION,source:SG47+'黃武二年六月記戲口守將晉宗殺將王直、率眾叛魏，魏任晉宗為蘄春太守；孫權命賀齊、糜芳、劉邵等襲蘄春，史文記「邵等生虜宗」。本內容包採年級精度，只記載明文事件，不推演晉宗後續、戰役傷亡或地方控制。',carrier:'孫權、賀齊、糜芳、劉邵與晉宗（史書所載）',description:'記錄晉宗叛魏後任蘄春太守、孫權派軍襲擊並生擒晉宗；不推演戰役過程、傷亡、俘虜處置或邊界變更。',sourceDateNote:'原史紀年：黃武二年六月。戲口守將晉宗叛魏後，孫權遣賀齊、糜芳、劉邵等襲蘄春並生擒晉宗。保留月份，不換算成本遊戲日期。',introducedRevision:128 },
@@ -697,6 +698,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'cao-rui-enfeoffed-prince-of-pingyuan-222': '原史紀年：黃初三年，曹叡為平原王；本紀未在此句另繫月日，遊戲按 222 年級觸發。',
   'shu-zhuge-liang-opens-government-223': '原史紀年：建興元年，封諸葛亮武鄉侯、開府治事，後領益州牧；原文未為此記事另繫月日，遊戲按 223 年級觸發。',
   'shu-zhuge-liang-sends-envoy-to-wu-223': '原史紀年：建興元年，南中諸郡叛亂後遣使聘吳、結為和親；原文未另繫月日或使者姓名，遊戲按 223 年級觸發。',
+  'wei-bans-private-vengeance-223': '原史紀年：黃初四年春正月，魏廷下詔禁止私自復仇；保留漢曆月份，不推定個案或執行情形，遊戲按 223 年級觸發。',
   'sun-wu-amnesty-death-crimes-224': '原史紀年：黃武三年秋八月，吳廷赦死罪。只保留季節與月份，不推測赦免範圍、法律效果或個案結果；遊戲按 224 年級觸發。',
   'huangfu-song-appointed-left-chariot-general-184': '原史紀年：《後漢書》卷八中平元年冬十月廣宗記事後記皇甫嵩為左車騎將軍；只保留篇章先後，不推定到任日或任期。',
   'beigong-boyu-xianling-revolt-184': '原史紀年：《後漢書》卷八將北宮伯玉與先零羌起事記事置於中平元年冬季段落，但未另標月份；遊戲只按 184 年級呈現。',
