@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-354';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-355';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:353},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:354},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -477,6 +477,8 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'sun-quan-reorganizes-yuzhang-changsha-210',kind:EVENT_KIND,title:'孫權分置鄱陽、漢昌二郡並任魯肅',...sameYear(210),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記「建安十五年，分豫章為鄱陽郡；分長沙為漢昌郡。以魯肅為太守，屯陸口」；教育部《重編國語辭典修訂本》年號表列建安元年為 196 年，依年序換算建安十五年為公元 210 年。本內容包採年級精度。',carrier:'孫權、魯肅與漢昌、鄱陽新置郡級單位（歷史記載）',description:'記錄鄱陽、漢昌分置及魯肅任太守、屯陸口；不把不同編纂時期的縣名錄拼成 210 年疆界圖，也不模擬郡界、人口或行政成效。',introducedRevision:109 },
   { id:'runan-response-liu-bei-201',kind:EVENT_KIND,title:'汝南響應與劉備奔荊州',...sameYear(201),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉於建安六年記汝南共都等響應袁紹，曹操遣蔡揚攻之不利，後南征劉備，劉備奔劉表、共都等散。本內容包採年級精度。',causes:['runan-response-to-yuan-shao-201'],carrier:'汝南共都等、劉備與曹操（歷史事件）',description:'記錄汝南響應、曹操南征及劉備奔往劉表一方；不模擬完整戰役、勢力控制或未由史料支持的傷亡。',introducedRevision:29 },
   { id:'yuan-shao-dies-202',kind:EVENT_KIND,title:'袁紹病卒與袁氏繼承',...sameYear(202),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉記官渡之敗後袁紹發病吐血，建安七年五月卒；本內容包採年級精度，不將史料月份映射為模型月份。',causes:['yuan-family-succession'],carrier:'袁紹與袁氏諸子（歷史事件）',description:'記錄袁紹去世及繼承轉折；不預設袁氏諸子後續結果，不模擬完整內戰或勢力疆界。',introducedRevision:11 },
+  { id:'yutian-presents-tamed-elephant-202',kind:EVENT_KIND,title:'於窴國獻馴象',...sameYear(202),precision:YEAR_PRECISION,source:HH9+'建安七年記於窴國獻馴象。只記本紀所載進獻，不推測使者、象隻數量、行程、接收者或政治效果。',carrier:'於窴國與漢廷（史料記事）',description:'記錄《後漢書》所載於窴國進獻馴象；不推演外交條件、物資數值或其後去向。',sourceDateNote:'《後漢書》卷九建安七年袁紹去世記事後記於窴國獻馴象，保留篇章先後，只按 202 年級觸發。',introducedRevision:355 },
+  { id:'yuexi-man-transformation-reported-202',kind:EVENT_KIND,title:'越巂男子化為女子（史書記載）',...sameYear(202),precision:YEAR_PRECISION,source:HH9+'建安七年「是歲」記越巂男子化為女子。只呈現史書所載異聞，不宣稱現象已驗證，也不補人物姓名、原因或後續。',carrier:'越巂地方異聞（史書記載）',description:'記錄《後漢書》所載越巂男子化為女子；不推測個案身份、成因或可驗證性。',sourceDateNote:'《後漢書》卷九建安七年「是歲」條記越巂男子化為女子；原文未載月份，只按 202 年級呈現。',introducedRevision:355 },
   { id:'yuan-brothers-conflict-203',kind:EVENT_KIND,title:'袁譚袁尚爭冀州',...sameYear(203),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安八年記袁譚、袁尚爭冀州，袁譚敗退平原並遣辛毗向曹操求援；本內容包採年級精度。',causes:['yuan-family-conflict'],carrier:'袁譚、袁尚與曹操（歷史事件）',description:'記錄袁氏兄弟衝突及袁譚求援的轉折；不把政治聯姻草議當成穩定控制，也不模擬完整戰役。',introducedRevision:15 },
   { id:'sun-quan-western-campaign-huang-zu-203',kind:EVENT_KIND,title:'孫權西征黃祖、破其舟軍',...sameYear(203),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉建安八年記孫權西伐黃祖、破其舟軍而未克城；因山寇復動而還，並另遣將領處置地方軍務。本內容包只採年級精度。',carrier:'孫權與孫吳軍隊（歷史記載）',description:'記錄孫權西征黃祖、破舟軍但未克城，以及山寇復動後退回；不把未克城改寫為攻陷，也不推演完整戰事、軍隊傷亡或後續地方控制。',introducedRevision:100 },
   { id:'ye-falls-204',kind:EVENT_KIND,title:'鄴城陷落與袁氏河北局勢逆轉',...sameYear(204),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安九年記曹操圍鄴，審配敗而被擒斬，鄴城平定；本內容包採年級精度。',causes:['ye-siege-and-fall'],carrier:'曹操與袁氏守軍（歷史事件）',description:'記錄鄴城陷落及河北局勢轉折；不模擬完整圍城、人口損耗或郡縣控制。',introducedRevision:14 },
