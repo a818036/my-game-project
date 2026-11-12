@@ -1332,7 +1332,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old)),id='wei-han-transition-220';
     expect(migrated.events[0]).toEqual(oldStart);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-388'}});
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-389'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v374-han-wei-transition-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
@@ -1361,7 +1361,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old)),id='sun-quan-accepts-king-of-wu-title-221';
     expect(migrated.events[0]).toEqual(oldStart);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-388'}});
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-389'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v375-sun-quan-king-title-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
@@ -1387,7 +1387,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const migrated=verifySave(toJson(old)),id='sun-quan-wei-envoys-and-sun-deng-investiture-221';
     expect(migrated.events[0]).toEqual(oldStart);
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-388'}});
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-389'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v376-sun-deng-investiture-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
@@ -1440,7 +1440,7 @@ describe('A05／A06 存檔交易與重播', () => {
     const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
     const migrated=verifySave(toJson(old)),id='shu-zhuge-liang-sends-envoy-to-wu-223';
     expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
-    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-388'}});
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-389'}});
     expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
     const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v386-a765-envoy-to-wu-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
@@ -1453,5 +1453,32 @@ describe('A05／A06 存檔交易與重播', () => {
     const reimported=verifySave(toJson(saved));
     expect(reimported).toEqual(saved);
     expect(reimported.state.phase4?.eventLedger.filter(item=>item.type==='史實事件形成'&&item.detail.includes('蜀漢遣使聘吳、結為和親'))).toHaveLength(1);
+  });
+
+  it('A768 v388 年 222 年 v6 JSON 升級後跨年至 223 年觸發曹仁及大疫記事並可重播再匯入',()=>{
+    const current=makeSave('phase6-v388-a768-cao-ren-epidemic',184),start=current.events[0];
+    if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-388'}};
+    let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v388 fixture');
+    const oldEvents:GameEvent[]=[oldStart];
+    for(let year=185;year<=222;year++){
+      const advanced=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v388-a768-cao-ren-epidemic-${year}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+      if(!advanced.state||!advanced.event)throw new Error('could not advance v388 fixture');
+      oldState=advanced.state;oldEvents.push(advanced.event);
+    }
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
+    const migrated=verifySave(toJson(old)),id='wei-cao-ren-dies-and-epidemic-223';
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v388-a768-cao-ren-epidemic-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event)throw new Error('could not continue v388 fixture');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    expect(continued.state.phase4?.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('曹仁去世、同月發生大疫'))).toBe(true);
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
+    expect(replay(saved.events)).toEqual(saved.state);
+    const reimported=verifySave(toJson(saved));
+    expect(reimported).toEqual(saved);
   });
 });
