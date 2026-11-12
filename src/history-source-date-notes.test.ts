@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(253);
+    expect(withinCatalogYears).toHaveLength(258);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -157,6 +157,11 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'senior-taixue-students-appointed-offices-188': ['中平五年十二月', '年六十以上百餘人', '除郎中、太子舍人'],
       'xianbei-raids-youzhou-188': ['中平五年「是歲」', '鮮卑寇幽州'],
       'peiguo-reports-yellow-dragon-188': ['中平五年「是歲」', '沛國言黃龍見譙'],
+      'chen-cang-defeats-wang-guo-189': ['中平六年春二月', '皇甫嵩大破王國於陳倉'],
+      'liu-yu-captures-zhang-chun-189': ['中平六年三月', '劉虞購斬漁陽賊張純'],
+      'bao-hong-imprisoned-dies-189': ['中平六年三月', '下軍校尉鮑鴻下獄死'],
+      'ling-emperor-dies-bian-succeeds-189': ['中平六年夏四月丙辰', '帝崩於南宮嘉德殿', '戊午皇子辯即皇帝位'],
+      'he-jin-killed-eunuch-palace-crisis-189': ['中平六年秋八月', '張讓、段珪等殺大將軍何進', '少帝與陳留王'],
       'emperor-returns-east-195': ['興平二年七月'],
       'hou-yin-rebellion-218': ['建安二十三年冬十月'],
       'sun-quan-hunts-tiger-lingting-218': ['建安二十三年十月', '庱亭射虎', '投以雙戟'],
@@ -248,7 +253,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(144);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(149);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -541,7 +546,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(144);
-    expect(uniqueNotedEvents.size).toBe(359);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(149);
+    expect(uniqueNotedEvents.size).toBe(364);
   });
 });

@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-341';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-342';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:339},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:340},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -536,6 +536,11 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'senior-taixue-students-appointed-offices-188',kind:EVENT_KIND,title:'年長太學生受試後授予官職',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年十二月記試太學生年六十以上百餘人，除郎中、太子舍人、王家郎、郡國文學吏。只記原文考試與授職，不補具體名單、考核內容或個別任命。',carrier:'太學生與漢廷（史料記事）',description:'記錄六十歲以上百餘名太學生受試後，獲授郎中、太子舍人、王家郎及郡國文學吏等職；不推定名單或各人分配。',introducedRevision:341 },
   { id:'xianbei-raids-youzhou-188',kind:EVENT_KIND,title:'鮮卑侵擾幽州',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年「是歲」記鮮卑寇幽州，未標月份。只記侵擾記事，不推測地點、規模、戰果、傷亡或邊界變化。',carrier:'鮮卑與幽州（史料記事）',description:'記錄史書所載鮮卑侵擾幽州；來源未標月份，不推演戰事、規模、傷亡或控制變化。',introducedRevision:341 },
   { id:'peiguo-reports-yellow-dragon-188',kind:EVENT_KIND,title:'沛國上報黃龍見於譙',...sameYear(188),precision:YEAR_PRECISION,source:HH8+'中平五年「是歲」記沛國言黃龍見譙。只記地方上報，不判定現象真偽、成因、可見範圍或祥瑞效果。',carrier:'沛國官署上報（史料記載）',description:'記錄沛國上報譙地出現黃龍；不判定現象真偽、成因或政治效果。',introducedRevision:341 },
+  { id:'chen-cang-defeats-wang-guo-189',kind:EVENT_KIND,title:'皇甫嵩於陳倉大破王國',...sameYear(189),precision:YEAR_PRECISION,source:HH8+'中平六年春二月記左將軍皇甫嵩大破王國於陳倉；只錄原文戰果，不推演兵力、傷亡、地點控制或後續行動。',carrier:'皇甫嵩、王國與陳倉戰事（史料記事）',description:'記錄皇甫嵩於陳倉大破王國；不補戰況、傷亡或戰後控制。',introducedRevision:342 },
+  { id:'liu-yu-captures-zhang-chun-189',kind:EVENT_KIND,title:'劉虞購斬漁陽賊張純',...sameYear(189),precision:YEAR_PRECISION,source:HH8+'中平六年三月記幽州牧劉虞購斬漁陽賊張純；保留原文用語，不補張純死亡日期、懸賞方式或後續處置。',carrier:'劉虞、張純與幽州記事（史料記載）',description:'記錄劉虞購斬張純；不推演具體執行方式與未載後果。',introducedRevision:342 },
+  { id:'bao-hong-imprisoned-dies-189',kind:EVENT_KIND,title:'下軍校尉鮑鴻下獄死',...sameYear(189),precision:YEAR_PRECISION,source:HH8+'中平六年三月記下軍校尉鮑鴻下獄死；只記史載官職及死訊，不推測案情、死因或處置程序。',carrier:'下軍校尉鮑鴻（史料記載）',description:'記錄鮑鴻下獄死，不推測案情或死因，也不建立玩家死亡硬節點。',introducedRevision:342 },
+  { id:'ling-emperor-dies-bian-succeeds-189',kind:EVENT_KIND,title:'靈帝去世、皇子辯即位',...sameYear(189),precision:YEAR_PRECISION,source:HH8+'中平六年夏四月丙辰記帝崩於南宮嘉德殿、年三十四；戊午皇子辯即皇帝位、年十七。只記史實人物與原典年級，不改動玩家人物或其狀態。',carrier:'漢靈帝、皇子辯與漢廷（史料記載）',description:'記錄靈帝去世及皇子辯即位；不推演死因、宮廷權力或玩家人物狀態。',introducedRevision:342 },
+  { id:'he-jin-killed-eunuch-palace-crisis-189',kind:EVENT_KIND,title:'何進遇害與宮廷誅宦風波',...sameYear(189),precision:YEAR_PRECISION,source:HH8+'中平六年秋八月記張讓、段珪等殺大將軍何進，宮中交戰，少帝與陳留王一度被挾出宮，後還宮；只依原文按年級呈現，不推演兵數、傷亡或未載參與者。',carrier:'何進、宦官與漢廷（史料記事）',description:'記錄何進遇害及少帝、陳留王一度被挾出宮後還宮；不補兵力、傷亡或完整宮廷權力變化。',introducedRevision:342 },
 ] as HistoricalNodeContent[]).map((content) => content.lateSameYear === undefined && (content.introducedRevision ?? 0) >= DEFAULT_LATE_SAME_YEAR_REVISION ? { ...content, lateSameYear: true } : content);
 /** Sourced Han-calendar dates shown separately from the annual simulation trigger. */
 export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
@@ -582,6 +587,11 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'senior-taixue-students-appointed-offices-188': '原史紀年：《後漢書》卷八中平五年十二月記試六十歲以上太學生百餘人並授官；保留漢曆月份，不推定名單。',
   'xianbei-raids-youzhou-188': '原史紀年：《後漢書》卷八中平五年「是歲」記鮮卑寇幽州，未標月份；只按年級觸發。',
   'peiguo-reports-yellow-dragon-188': '原史紀年：《後漢書》卷八中平五年「是歲」記沛國言黃龍見譙；只保留地方上報，不判定真偽或成因。',
+  'chen-cang-defeats-wang-guo-189': '原史紀年：《後漢書》卷八中平六年春二月記皇甫嵩大破王國於陳倉；遊戲只按 189 年級觸發，不推演戰況。',
+  'liu-yu-captures-zhang-chun-189': '原史紀年：《後漢書》卷八中平六年三月記幽州牧劉虞購斬漁陽賊張純；保留原文用語與月份，不補執行細節。',
+  'bao-hong-imprisoned-dies-189': '原史紀年：《後漢書》卷八中平六年三月記下軍校尉鮑鴻下獄死；只按 189 年級觸發，不推測案情或死因。',
+  'ling-emperor-dies-bian-succeeds-189': '原史紀年：《後漢書》卷八中平六年夏四月丙辰記靈帝崩、戊午皇子辯即位；保留漢曆干支，僅按年級觸發。',
+  'he-jin-killed-eunuch-palace-crisis-189': '原史紀年：《後漢書》卷八中平六年秋八月記何進遇害及少帝、陳留王一度離宮後還宮；保留月份，不補戰事細節。',
   'zhang-xiu-ba-commander-revolt-184': '原史紀年：《後漢書》卷八中平元年秋七月記巴郡妖巫張脩反、寇郡縣；遊戲只按 184 年級觸發，不推定戰事日期。',
   'henan-yin-xu-guan-dies-in-prison-184': '原史紀年：《後漢書》卷八中平元年秋七月記河南尹徐灌下獄死；遊戲只按 184 年級觸發，不推定案情或執行日期。',
   'huangfu-song-cangting-captures-yellow-turban-leader-184': '原史紀年：《後漢書》卷八中平元年八月記皇甫嵩與黃巾戰於倉亭，獲其帥；注文辨其帥為卜已（異本作卜己）。遊戲只按 184 年級觸發。',
