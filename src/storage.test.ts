@@ -1397,4 +1397,32 @@ describe('A05／A06 存檔交易與重播', () => {
     expect(replay(saved.events)).toEqual(saved.state);
     expect(verifySave(toJson(saved))).toEqual(saved);
   },30_000);
+
+  it('A762 v383 已觸發的 221 年 v6 存檔升級後追加一次來源補充並可重播',()=>{
+    const current=makeSave('phase6-v383-a761-source-roundtrip',184),start=current.events[0];
+    if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-383'}};
+    let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v383 fixture');
+    const oldEvents:GameEvent[]=[oldStart];
+    for(let year=185;year<=221;year++){
+      const advanced=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v383-a761-source-roundtrip-${year}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+      if(!advanced.state||!advanced.event)throw new Error('could not advance v383 fixture');
+      oldState=advanced.state;oldEvents.push(advanced.event);
+    }
+    const id='sun-quan-accepts-king-of-wu-title-221';
+    expect(oldState.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    const oldLedger=structuredClone(oldState.phase4?.eventLedger??[]);
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
+    const migrated=verifySave(toJson(old));
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    expect(migrated.state.phase4?.eventLedger.slice(0,oldLedger.length)).toEqual(oldLedger);
+    expect(migrated.state.phase4?.eventLedger.filter(event=>event.type==='史實來源補充'&&event.detail.includes('魏廷求雀頭香、大貝'))).toHaveLength(1);
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.evidence.join(' ')).toContain('「皆具以與之」');
+    expect(replay(migrated.events)).toEqual(migrated.state);
+
+    const reimported=verifySave(toJson(migrated));
+    expect(reimported).toEqual(migrated);
+    expect(reimported.state.phase4?.eventLedger.filter(event=>event.type==='史實來源補充'&&event.detail.includes('魏廷求雀頭香、大貝'))).toHaveLength(1);
+  },30_000);
 });
