@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-356';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-357';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:355},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:356},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -484,6 +484,8 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'court-welcomes-winter-northern-suburb-203',kind:EVENT_KIND,title:'朝廷初於北郊迎冬、復備八佾舞',...sameYear(203),precision:YEAR_PRECISION,source:HH9+'建安八年冬十月記公卿初迎冬於北郊、總章始復備八佾舞。記錄本紀所列禮儀記事，不推測實際儀程、參與名單或社會影響。',carrier:'漢廷公卿與總章（史料記事）',description:'記錄公卿於北郊迎冬及總章恢復八佾舞的本紀記事；不補寫實際儀程、參與者或禮制變化。',sourceDateNote:'《後漢書》卷九建安八年冬十月記公卿初迎冬於北郊、總章始復備八佾舞；保留漢曆月份，只按 203 年級呈現。',introducedRevision:356 },
   { id:'court-establishes-sizhi-203',kind:EVENT_KIND,title:'初置司直官督中都官',...sameYear(203),precision:YEAR_PRECISION,source:HH9+'建安八年冬十月記事後記初置司直官，督中都官。只記官職設置及原文職掌，不推測員額、任命、執行成效或制度沿革。',carrier:'漢廷司直官（史料記事）',description:'記錄本紀所載初置司直官督察中都官；不推測人選、員額、後續任免或實際成效。',sourceDateNote:'《後漢書》卷九建安八年冬十月記事後記初置司直官，督中都官；保留原文先後，只按年級觸發。',introducedRevision:356 },
   { id:'ye-falls-204',kind:EVENT_KIND,title:'鄴城陷落與袁氏河北局勢逆轉',...sameYear(204),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安九年記曹操圍鄴，審配敗而被擒斬，鄴城平定；本內容包採年級精度。',causes:['ye-siege-and-fall'],carrier:'曹操與袁氏守軍（歷史事件）',description:'記錄鄴城陷落及河北局勢轉折；不模擬完整圍城、人口損耗或郡縣控制。',introducedRevision:14 },
+  { id:'comet-dongjing-jianan-9-204',kind:EVENT_KIND,title:'建安九年冬十月有星孛於東井（史書天象記載）',...sameYear(204),precision:YEAR_PRECISION,source:HH9+'建安九年冬十月記有星孛於東井。只記本紀天象文字，不推算現代天體、日期、成因或政治徵兆。',carrier:'漢廷天象記事（史料記載）',description:'記錄《後漢書》所載冬十月星孛於東井；不推測天體辨識、現代位置、成因或預兆。',sourceDateNote:'《後漢書》卷九建安九年冬十月記星孛於東井；保留漢曆月份，不映射成遊戲日期。',introducedRevision:357 },
+  { id:'court-grants-gold-silk-recurring-204',kind:EVENT_KIND,title:'朝廷賜三公以下金帛、後定三年一賜',...sameYear(204),precision:YEAR_PRECISION,source:HH9+'建安九年十二月記賜三公以下金帛各有差，自是三年一賜，以為常制。只記本紀所載賞賜與後續定制，不推測數額、財源、收受名單或玩家資源。',carrier:'漢廷與公卿百官（史料記事）',description:'記錄朝廷賜金帛及「三年一賜」記事；不套用至玩家金錢、資源或人物庫存，也不推測各人所得數額。',sourceDateNote:'《後漢書》卷九建安九年十二月記賜三公以下金帛，並稱自此三年一賜；保留原文日期及頻次表述。',introducedRevision:357 },
   { id:'yuan-tan-defeat-205',kind:EVENT_KIND,title:'袁譚敗亡與袁氏勢力轉折',...sameYear(205),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十年春正月記曹操攻袁譚並斬之，袁熙、袁尚其後奔烏桓；本內容包採年級精度。',causes:['yuan-tan-defeat'],carrier:'曹操、袁譚與袁氏餘部（歷史事件）',description:'記錄袁譚敗亡及袁氏勢力轉折；不模擬完整戰役、兵力或河北控制細節。',introducedRevision:13 },
   { id:'gao-gan-defeat-206',kind:EVENT_KIND,title:'高幹敗走與壺關平定',...sameYear(206),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十一年記曹操征高幹、圍壺關三月而拔之，高幹走荊州後被捕斬；本內容包採年級精度。',causes:['gao-gan-rebellion'],carrier:'曹操與高幹（歷史事件）',description:'記錄高幹叛亂的平定；不模擬完整圍城、兵力或并州疆界變化。',introducedRevision:16 },
   { id:'white-wolf-mountain-207',kind:EVENT_KIND,title:'白狼山戰事與烏桓勢力轉折',...sameYear(207),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安十二年記曹操北征烏桓、白狼山交戰，蹋頓被斬，袁尚、袁熙奔遼東後為公孫康所斬；本內容包採年級精度。',causes:['wuhuan-northern-campaign'],carrier:'曹操、蹋頓與袁尚、袁熙（歷史事件）',description:'記錄北征烏桓及袁氏餘部轉折；不模擬完整行軍路線、兵力、戰場或塞外疆界。',introducedRevision:12 },
