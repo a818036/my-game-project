@@ -218,6 +218,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'han-river-flood-219': ['建安二十四年八月', '漢水溢'],
       'solar-eclipse-jianan-25-220': ['建安二十五年二月丁未朔', '日有食之'],
       'era-name-changes-to-yankang-220': ['建安二十五年三月', '改元延康'],
+      'wei-han-transition-220': ['建安二十五年冬十月乙卯', '皇帝遜位', '黃初元年十一月癸酉', '山陽公', '行漢正朔', '四皇子'],
       'wu-shu-alliance-partition-229': ['黃龍元年六月蜀使陳震來賀孫權踐位', '沒有提供盟約簽訂月日'],
       'wu-chancellor-succession-225': ['黃武四年夏五月丞相孫邵卒', '六月以太常顧雍為丞相'],
       'zhuge-liang-dies-234': ['青龍二年秋諸葛亮病卒'],
@@ -294,7 +295,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(191);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(192);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -732,7 +733,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(191);
-    expect(uniqueNotedEvents.size).toBe(508);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(192);
+    expect(uniqueNotedEvents.size).toBe(509);
   });
 });

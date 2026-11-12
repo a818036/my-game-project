@@ -1316,4 +1316,33 @@ describe('A05／A06 存檔交易與重播', () => {
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
     expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   },30_000);
+
+  it('A752 v374 219 年 v6 JSON 升級後保留事件前綴並形成雙史料禪代記事',()=>{
+    const current=makeSave('phase6-v374-han-wei-transition',184),start=current.events[0];
+    if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-374'}};
+    let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v374 fixture');
+    const oldEvents:GameEvent[]=[oldStart];
+    for(let year=185;year<=219;year++){
+      const advanced=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v374-han-wei-transition-${year}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+      if(!advanced.state||!advanced.event)throw new Error('could not advance the v374 fixture');
+      oldState=advanced.state;oldEvents.push(advanced.event);
+    }
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState};
+    const migrated=verifySave(toJson(old)),id='wei-han-transition-220';
+    expect(migrated.events[0]).toEqual(oldStart);
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:'phase4-scenario-375'}});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v374-han-wei-transition-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event)throw new Error('could not continue v374 fixture');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
+    expect(replay(saved.events)).toEqual(saved.state);
+    expect(verifySave(toJson(saved))).toEqual(saved);
+    const historicalEvent=saved.state.phase4?.eventLedger.find(event=>event.type==='史實事件形成'&&event.detail.includes('漢魏禪代'));
+    expect(historicalEvent?.source).toContain('《後漢書》卷九');
+    expect(historicalEvent?.source).toContain('《三國志》卷二');
+  },30_000);
 });

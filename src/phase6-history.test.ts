@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {advancePhase4,createPhase4Model,upgradePhase4Content,PHASE4_CONTENT_VERSION,HISTORY_CONTENT} from './phase4';
+import {advancePhase4,createPhase4Model,upgradePhase4Content,PHASE4_CONTENT_VERSION,HISTORY_CONTENT,HISTORY_SOURCE_DATE_NOTES} from './phase4';
 import {answerKnownSunQuanBiographyQuestion} from './life';
 
 describe('Phase 6 sourced Sun Quan chronology',()=>{
@@ -358,6 +358,39 @@ describe('Phase 6 sourced Sun Quan chronology',()=>{
     expect(later.nodes.find(item=>item.contentId===shu)).toMatchObject({status:'resolved',resolvedYear:223});
   });
 
+});
+
+describe('A752 220 年漢魏禪代雙史料核對',()=>{
+  const id='wei-han-transition-220';
+
+  it('並列《後漢書》與《三國志》的記事結果及不同紀月，不裁定或換算',()=>{
+    const node=HISTORY_CONTENT.find(item=>item.id===id);
+    expect(node).toMatchObject({startYear:220,endYear:220,precision:'year'});
+    expect(node?.source).toContain('《後漢書》卷九');
+    expect(node?.source).toContain('冬十月乙卯');
+    expect(node?.source).toContain('四皇子由王降為列侯');
+    expect(node?.source).toContain('《三國志》卷二');
+    expect(node?.source).toContain('十一月癸酉');
+    expect(node?.source).toContain('行漢正朔');
+    expect(node?.description).toContain('山陽公及四子封侯');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('兩書月份與干支記法不同');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('不裁定差異、不換算為模型日期');
+  });
+
+  it('v374 的 219 年世界線升級後保留舊事件帳，續玩至 220 年才形成記事',()=>{
+    const old=createPhase4Model(219,1,[],'phase4-scenario-374');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.contentVersion).toBe('phase4-scenario-375');
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+
+    const continued=advancePhase4(upgraded,360);
+    expect(continued.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('漢魏禪代'));
+    expect(event?.source).toContain('《後漢書》卷九');
+    expect(event?.source).toContain('《三國志》卷二');
+  });
 });
 
 describe('A641 補列 183 年陳倉戰事',()=>{
