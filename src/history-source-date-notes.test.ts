@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(417);
+    expect(withinCatalogYears).toHaveLength(418);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -309,11 +309,12 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-naval-expedition-shouchun-224': ['黃初五年八月', '為水軍', '親御龍舟', '循蔡、頴', '浮淮', '幸壽春'],
       'wei-pardons-yangzhou-under-five-year-sentences-224': ['黃初五年', '揚州界將吏士民', '犯五歲刑已下', '皆原除之'],
       'wei-grants-amnesty-and-changes-garrisons-at-guangling-224': ['黃初五年九月', '遂至廣陵', '赦青、徐二州', '改易諸將守'],
+      'wei-venus-daylight-and-return-to-xuchang-224': ['冬十月乙卯', '太白晝見', '行還許昌宮'],
       'sun-wu-amnesty-death-crimes-224': ['黃武三年秋八月', '赦死罪'],
       'wu-abolishes-dongan-commandery-228': ['黃武七年三月', '罷東安郡'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(210);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(211);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -745,6 +746,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-naval-expedition-shouchun-224',
       'wei-pardons-yangzhou-under-five-year-sentences-224',
       'wei-grants-amnesty-and-changes-garrisons-at-guangling-224',
+      'wei-venus-daylight-and-return-to-xuchang-224',
       'wei-limits-accusations-224',
       'wei-three-front-campaign-and-dongkou-storm-222',
       'cao-rui-enfeoffed-prince-of-pingyuan-222',
@@ -767,7 +769,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(210);
-    expect(uniqueNotedEvents.size).toBe(527);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(211);
+    expect(uniqueNotedEvents.size).toBe(528);
   });
 });
