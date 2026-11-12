@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-369';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-370';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:367},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:368},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -586,7 +586,9 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'langya-prince-xi-killed-216',kind:EVENT_KIND,title:'琅邪王熙遇害、封國除',...sameYear(216),precision:YEAR_PRECISION,source:HH9+'建安二十一年「是歲」記曹操殺琅邪王熙、國除；注文稱其因謀欲渡江而被誅。只保留史料所述，不延伸案情、司法程序或其他封國處置。',carrier:'琅邪王熙與曹操（史料記事）',description:'記錄琅邪王熙遇害及其封國被除；原典注文所述原因照錄，不補充行動細節或擴張為其他封國制度。',sourceDateNote:'《後漢書》卷九建安二十一年「是歲」記曹操殺琅邪王熙、國除；注文稱其謀欲渡江。不補月份，遊戲按 216 年級觸發。',introducedRevision:369 },
   { id:'sun-quan-ruxu-campaign-216',kind:EVENT_KIND,title:'曹操進攻濡須、孫權與之相持',...sameYear(216),precision:YEAR_PRECISION,source:SG47+'記建安二十一年冬曹操至居巢並攻濡須。本內容包只採公元年級精度，不推演其後逐日戰況或未載損失。',carrier:'曹操、孫權與孫吳軍（歷史記載）',description:'記錄曹操冬季進至居巢並攻濡須；不將不同年份的濡須戰事混併，也不推演兵力、傷亡或精確戰果。',introducedRevision:102 },
   { id:'sun-quan-sends-envoy-to-cao-217',kind:EVENT_KIND,title:'孫權遣徐詳赴曹操處請降、雙方約定修好',...sameYear(217),precision:YEAR_PRECISION,source:SG47+'記建安二十二年春，孫權令都尉徐詳赴曹操處請降；曹操遣使回覆修好，並約定重結婚姻。本內容包採年級精度，不推演條約內容、婚姻安排或後續外交細節。',carrier:'孫權、徐詳與曹操（歷史記載）',description:'記錄孫權遣徐詳赴曹操處、曹操回覆修好的年級外交節點；保留原文「請降」與「修好」先後，不代玩家作出外交選擇。',introducedRevision:102 },
-  { id:'jianan-epidemic-217',kind:EVENT_KIND,title:'建安二十二年疫癘',...sameYear(217),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安二十三年條裴注載「去冬天降疫癘」；按其回指採建安二十二年（217）年級精度，另參卷二〈文帝紀〉裴注所述疫癘大起。',carrier:'北方疫癘與受災士民（歷史事件）',description:'記錄史料回指的建安二十二年疫癘；不推定病原、傳播率、人口損失或未明載的個人死因，也不自動改寫人物生死。',introducedRevision:18 },
+  { id:'jianan-epidemic-217',kind:EVENT_KIND,title:'建安二十二年疫癘',...sameYear(217),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安二十三年條裴注載「去冬天降疫癘」；按其回指採建安二十二年（217）年級精度，另參卷二〈文帝紀〉裴注所述疫癘大起。《後漢書》卷九建安二十二年另記「是歲大疫」；同記一項年級疫癘，不重複結算。',carrier:'北方疫癘與受災士民（歷史事件）',description:'記錄不同史料所載建安二十二年疫癘；不推定病原、傳播率、人口損失或未明載的個人死因，也不自動改寫人物生死。',introducedRevision:18 },
+  { id:'hua-xin-appointed-yushi-dafu-217',kind:EVENT_KIND,title:'華歆任御史大夫',...sameYear(217),precision:YEAR_PRECISION,source:HH9+'建安二十二年夏六月記丞相軍師華歆為御史大夫；原文未記月內日期。本內容包只記任職記事，不推演到任時間、職權變化或其他官制效果。',carrier:'華歆（史料記事）',description:'記錄華歆於夏六月任御史大夫；不推算任命日、任期、實際到任或未載政治效果。',sourceDateNote:'《後漢書》卷九建安二十二年夏六月記丞相軍師華歆為御史大夫；遊戲只按 217 年級觸發，不換算漢曆月日為模型日期。',introducedRevision:370 },
+  { id:'comet-northeast-jianan-22-217',kind:EVENT_KIND,title:'冬季東北方有星孛',...sameYear(217),precision:YEAR_PRECISION,source:HH9+'建安二十二年冬記「有星孛於東北」；只保存原文方位與季節，不推斷天體類型、觀測時間、成因或占兆。',carrier:'漢廷天象記事（史料記載）',description:'記錄冬季東北方有星孛的年級記事；不推測天文性質、可見範圍、成因或政治含義。',sourceDateNote:'《後漢書》卷九建安二十二年冬記東北方有星孛；原文未載月份、日辰，遊戲只按 217 年級觸發。',introducedRevision:370 },
   { id:'hou-yin-rebellion-218',kind:EVENT_KIND,title:'宛城侯音起事',...sameYear(218),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉建安二十三年冬十月記宛守將侯音等反、執南陽太守並據宛；本內容包採公元年級精度。',causes:['hou-yin-rebellion'],carrier:'侯音與宛城守軍（歷史事件）',description:'記錄宛城起事及其對南陽太守、吏民的影響；不模擬攻城、兵力或宛城控制，次年平定仍由 219 年節點記錄。',introducedRevision:18 },
   { id:'sun-quan-hunts-tiger-lingting-218',kind:EVENT_KIND,title:'孫權於庱亭射虎',...sameYear(218),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉建安二十三年十月記孫權將赴吳，乘馬於庱亭射虎；虎傷其馬，孫權投以雙戟，虎退，隨從張世再以戈擊虎並獲之。原文未記月內日期。',causes:['sun-quan-hunts-tiger-lingting'],carrier:'孫權與隨從張世（史料記載）',description:'按原文記載庱亭射虎及當場經過；不擴寫為日常狩獵習慣、精確日期、傷勢或其他未載細節。',sourceDateNote:'原史紀年：建安二十三年十月。原文不載月內日期；漢曆月份不換算為遊戲日曆日期。',introducedRevision:99 },
   { id:'guan-yu-falls-219',kind:EVENT_KIND,title:'孫權取荊州、關羽敗亡',...sameYear(219),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記孫權箋曹操、請討關羽，遣呂蒙襲公安，南郡太守糜芳降，陸遜取宜都、還屯夷陵；關羽退至麥城後被誘降而走，十二月於臨沮被獲。《三國志》卷三十六〈蜀書·關張馬黃趙傳〉另記關羽及其子平遇害。本內容包只採 219 年年級觸發，不合併為可推算的逐日行程。',causes:['jingzhou-campaign-collapse'],carrier:'孫權、呂蒙、陸遜、關羽及其部（歷史記載）',description:'在原有關羽敗亡節點中，補列孫權取荊州的來源序列：公安被襲、糜芳降、陸遜進取宜都、關羽退至麥城及其後被獲遇害。這是同一戰局的來源補充，不新增重複節點，也不推演完整戰役、兵力、傷亡總數或所有領土控制。',sourceDateNote:'《三國志》卷四十七將孫權征關羽繫於建安二十四年閏月，並記十二月關羽於臨沮被獲；卷三十六記其遇害。本遊戲仍按 219 年級觸發，漢曆月份不換算成遊戲月日。',introducedRevision:6 },
@@ -745,6 +747,8 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'huangfu-song-north-campaign-edict-184': '原史紀年：《後漢書》卷八中平元年八月乙巳詔皇甫嵩北討張角；保留漢曆干支，不換算為遊戲日曆。',
   'anping-king-xu-executed-state-abolished-184': '原史紀年：《後漢書》卷八中平元年九月記安平王續有罪誅、國除；遊戲只按 184 年級觸發，不推定罪名或處置程序。',
   'jianan-epidemic-217': '原史紀年背景：建安二十三年記事裴注回指「去冬天降疫癘」，本節點據年序列為建安二十二年（217）冬季。只保留季節回指，不推定月份或疫病起始日。',
+  'hua-xin-appointed-yushi-dafu-217': '原史紀年：《後漢書》卷九建安二十二年夏六月記華歆任御史大夫；遊戲按年級觸發，不換算模型日期。',
+  'comet-northeast-jianan-22-217': '原史紀年：《後漢書》卷九建安二十二年冬記東北方有星孛；原文未載月日，不推定天體性質或占兆。',
   'sun-quan-defeats-huang-zu-jiangxia-208': '原史紀年：建安十三年春孫權再征黃祖。只保留原文季節，遊戲仍按公元年級觸發。',
   'taiwei-succession-guanghe-1-178': '原史紀年：《後漢書》卷八記三月張顥任太尉、九月張顥罷而陳球繼任、十一月陳球免及十二月丁巳橋玄繼任。保留漢曆月份與干支註記；遊戲只按 178 年級觸發，不換算模型日期。',
   'taiwei-and-minister-succession-guanghe-2-179': '原史紀年：《後漢書》卷八記光和二年三月袁滂免、劉郃為司徒，乙丑日橋玄罷、段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空，但未另標該項日月。保留原文已標日期，不推算日數間隔，遊戲仍只按年級觸發。',
@@ -1198,6 +1202,17 @@ export function upgradePhase4Content(source:Phase4Model,contentVersion:string):P
    revoltNode.evidence.push('延熹八年桂陽、蒼梧記事來源補充：《後漢書》卷七續記零陵太守陳球拒之、度尚與抗徐等討擊，並記蒼梧太守張叙為賊所執、桂陽太守任胤背敵畏懦，二人皆棄市。此為既有 165 年起事節點的原文補充，不另結算起事或推演案情、兵力、額外傷亡與地方控制。');
    if(revoltNode.status==='triggered'&&!model.eventLedger.some(item=>item.type==='史實來源補充'&&item.detail.includes('延熹八年桂陽、蒼梧記事來源補充'))){
     pushEvent(model,'史實來源補充','延熹八年桂陽、蒼梧記事來源補充：既有 165 年胡蘭、朱蓋起事節點補列《後漢書》卷七記陳球拒之、度尚等討破，以及張叙被執、任胤與張叙皆棄市的原文；保留單一節點，不重複結算。','《後漢書》卷七〈孝桓帝紀〉延熹八年條');
+   }
+  }
+ }
+ const jiananEpidemicSourceVersionIndex=PHASE4_CONTENT_VERSIONS.indexOf('phase4-scenario-370');
+ if(targetIndex>=jiananEpidemicSourceVersionIndex&&currentIndex<jiananEpidemicSourceVersionIndex){
+  const epidemicNode=model.nodes.find(node=>node.contentId==='jianan-epidemic-217');
+  const note='史料補充：《後漢書》卷九建安二十二年另記「是歲大疫」；與既有《三國志》及裴注所載同為 217 年疫癘，不另新增或重複結算事件。';
+  if(epidemicNode&&!epidemicNode.evidence.some(item=>item.includes('《後漢書》卷九建安二十二年另記'))){
+   epidemicNode.evidence.push(note);
+   if(epidemicNode.status==='triggered'&&!model.eventLedger.some(item=>item.type==='史實來源補充'&&item.detail.includes('建安二十二年另記「是歲大疫」'))){
+    pushEvent(model,'史實來源補充',note,'《後漢書》卷九〈孝獻帝紀〉建安二十二年條');
    }
   }
  }
