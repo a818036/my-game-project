@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-313';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-314';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:311},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:312},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -96,6 +96,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'solar-eclipse-yongkang-167',kind:EVENT_KIND,title:'永康元年壬子晦日日食',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條記「壬子晦，日有食之」。只記原文所載天象及曆日，不推算現代日期、可見範圍、成因或政治含義。',carrier:'漢廷天象紀錄（史料記載）',description:'記錄原典所載永康元年壬子晦日日食；不推測天文參數、觀測地、因果或政治後果。',sourceDateNote:'《後漢書》卷七永康元年條記「壬子晦，日有食之」；保留原史干支與晦日註記，遊戲僅按 167 年級觸發，不換算為模型日期。',introducedRevision:311 },
   { id:'scholar-nomination-edict-yongkang-167',kind:EVENT_KIND,title:'詔舉賢良方正',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條在「壬子晦，日有食之」後記「詔公、卿、校尉舉賢良方正」。只記詔令原文及篇章先後；不推測因果、被舉薦者、任用結果或執行情況。',carrier:'漢廷（史料記載）',description:'記錄詔公、卿、校尉舉賢良方正；原文未列被舉薦者或後續結果。',sourceDateNote:'《後漢書》卷七永康元年條於日食記事後記舉賢良方正詔；未另標月日，僅按 167 年級呈現，不推定詔令與日食因果。',introducedRevision:312 },
   { id:'fuling-prince-tong-dies-167',kind:EVENT_KIND,title:'阜陵王統去世',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條記「六月庚申，大赦天下」後續載「丙寅，阜陵王統薨」。只記原文死訊及篇章先後；不推測死因、享年、嗣位或封國後續。',carrier:'阜陵王統（史料記載）',description:'記錄阜陵王統去世；原文未載死因、享年及其後封國處置。',sourceDateNote:'《後漢書》卷七永康元年條於六月庚申條後載「丙寅，阜陵王統薨」，但未重標月份；遊戲按 167 年級呈現，不換算漢曆為模型日期。',introducedRevision:313 },
+  { id:'wei-ba-prefectures-omen-reports-167',kind:EVENT_KIND,title:'魏郡、巴郡上報嘉禾、甘露與黃龍',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年秋八月條記「魏郡言嘉禾生，甘露降。巴郡言黃龍見」。只記史書所載上報，不把報告視為現象已驗證；不推論真偽、祥瑞含義、成因或政治後果。',carrier:'魏郡、巴郡（史書所載報告來源）',description:'記錄魏郡上報嘉禾與甘露、巴郡上報黃龍；不判定現象真偽，也不推論祥瑞、因果或後續政策。',sourceDateNote:'《後漢書》卷七永康元年秋八月記魏郡、巴郡上報祥異；保留原史季節與月份，不換算為遊戲日曆。',introducedRevision:314 },
   { id:'duan-jiong-defeats-xianling-fengyishan-168',kind:EVENT_KIND,title:'段熲大破先零羌於逢義山',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'段熲大破先零羌於逢義山。',carrier:'段熲',description:'記大破。',sourceDateNote:'二月'+YEAR_TRIGGER,introducedRevision:233 },
   { id:'court-offices-reorganized-spring-168',kind:EVENT_KIND,title:'太尉與司空任免交替',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'夏四月太尉周景薨，司空宣酆免；長樂衛尉王暢為司空。五月太中大夫劉矩為太尉。',carrier:'周景、宣酆、王暢、劉矩與漢廷',description:'記職位更替。',sourceDateNote:'夏四月戊辰、五月'+YEAR_TRIGGER,introducedRevision:234 },
   { id:'wang-chang-liu-chong-succession-168',kind:EVENT_KIND,title:'三公官職秋冬交替',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'八月司空王暢免，宗正劉寵為司空；十一月太尉劉矩免，太僕沛國聞人襲為太尉。',carrier:'王暢、劉寵、劉矩、聞人襲',description:'記八、十一月任免，不推定原因、任期或玩家官職。',sourceDateNote:'八月、十一月'+YEAR_TRIGGER,introducedRevision:236 },
