@@ -381,7 +381,7 @@ describe('A752 220 年漢魏禪代雙史料核對',()=>{
     const old=createPhase4Model(219,1,[],'phase4-scenario-374');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-379');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-380');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -411,7 +411,7 @@ describe('A753 釐清黃初二年孫權受封吳王的月份註記',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-375');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-379');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-380');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -439,7 +439,7 @@ describe('A754 釐清孫權使魏與孫登立太子的未繫月記事',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-376');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-379');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-380');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -454,7 +454,7 @@ describe('A755 區分魏文帝南征與魏軍多路攻吳的史料日期',()=>{
   const id='wei-three-front-campaign-and-dongkou-storm-222';
 
   it('並列魏、吳紀年而不把六月南征等同九月攻吳',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('文帝紀');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃初三年六月');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃武元年秋九月');
@@ -494,7 +494,7 @@ describe('A756 補列黃武三年秋八月赦死罪記事',()=>{
   const id='sun-wu-amnesty-death-crimes-224';
 
   it('只記史書赦令與原史日期精度，不推測赦免範圍',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year'});
     expect(node?.source).toContain('黃武三年秋八月');
@@ -504,11 +504,11 @@ describe('A756 補列黃武三年秋八月赦死罪記事',()=>{
     expect(node?.description).toContain('不推測赦免對象');
   });
 
-  it('v378 舊存檔跨年至 224 年才觸發，保留舊事件帳且不回補已到年份',()=>{
+  it('v378 舊存檔升至 v379 後跨年至 224 年才觸發，保留舊事件帳且不回補已到年份',()=>{
     const old=createPhase4Model(223,1,[],'phase4-scenario-378');
     const prefix=structuredClone(old.eventLedger);
-    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    const upgraded=upgradePhase4Content(old,'phase4-scenario-379');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-379');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
 
@@ -517,9 +517,44 @@ describe('A756 補列黃武三年秋八月赦死罪記事',()=>{
     expect(continued.eventLedger.filter(item=>item.type==='史實事件形成'&&item.detail.includes('赦免死罪'))).toHaveLength(1);
 
     for(const year of [224,225]){
-      const alreadyThere=upgradePhase4Content(createPhase4Model(year,1,[],'phase4-scenario-378'),PHASE4_CONTENT_VERSION);
+      const alreadyThere=upgradePhase4Content(createPhase4Model(year,1,[],'phase4-scenario-378'),'phase4-scenario-379');
       expect(alreadyThere.nodes.find(item=>item.contentId===id)).toMatchObject({status:'resolved',resolvedYear:224});
       expect(alreadyThere.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('赦免死罪'))).toBe(false);
+    }
+  });
+});
+
+describe('A757 補列黃武五年東安郡行政記事',()=>{
+  const id='wu-establishes-dongan-and-appoints-quan-cong-226';
+
+  it('依原文記錄置郡、任官與討擊，不推測縣界或戰果',()=>{
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
+    const node=HISTORY_CONTENT.find(item=>item.id===id);
+    expect(node).toMatchObject({startYear:226,endYear:226,precision:'year',introducedRevision:380});
+    expect(node?.source).toContain('黃武五年條');
+    expect(node?.source).toContain('分三郡惡地十縣置東安郡');
+    expect(node?.source).toContain('以全琮為太守，平討山越');
+    expect(node?.description).toContain('未載縣名、疆界、討擊結果與後續治理，不作推演');
+  });
+
+  it('v379 舊存檔跨年至 226 年才觸發，既有事件帳前綴不變且晚年不回補',()=>{
+    const old=createPhase4Model(225,1,[],'phase4-scenario-379');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
+
+    const continued=advancePhase4(upgraded,360);
+    expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
+    const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('東安郡'));
+    expect(event?.source).toContain('分三郡惡地十縣置東安郡');
+    expect(event?.source).toContain('全琮為太守');
+
+    for(const year of [226,227]){
+      const late=upgradePhase4Content(createPhase4Model(year,1,[],'phase4-scenario-379'),PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find(item=>item.contentId===id)).toMatchObject({status:'resolved',resolvedYear:226});
+      expect(late.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('東安郡'))).toBe(false);
     }
   });
 });

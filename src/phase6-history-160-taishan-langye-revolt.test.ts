@@ -879,7 +879,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const old = createPhase4Model(164, 1, [], 'phase4-scenario-289');
     const prefix = structuredClone(old.eventLedger);
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     for (const id of ids) expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(HISTORY_CONTENT.find((item) => item.id === ids[0])).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 290 });
@@ -914,7 +914,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 291 });
@@ -955,7 +955,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 293 });
@@ -988,7 +988,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 294 });
@@ -1024,7 +1024,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
     const content = HISTORY_CONTENT.find((item) => item.id === id);
 
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
     expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
     expect(content).toMatchObject({ startYear: 165, endYear: 165, precision: 'year', introducedRevision: 295 });
@@ -1054,7 +1054,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
     const id = 'hu-lan-zhu-gai-revolt-165';
     const content = HISTORY_CONTENT.find((item) => item.id === id);
     const oldVersion = 'phase4-scenario-295';
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
     expect(content?.source).toContain('零陵太守陳球拒之');
     expect(content?.source).toContain('蒼梧太守張叙為賊所執');
     expect(content?.source).toContain('桂陽太守任胤背敵畏懦，二人皆棄市');
@@ -1083,7 +1083,7 @@ describe('A644 補列 160 年泰山、琅邪賊勞丙等記事', () => {
       'southern-palace-intercalary-fire-165',
       'capital-earthquake-165',
     ];
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-379');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-380');
     const entries = ids.map((id) => HISTORY_CONTENT.find((item) => item.id === id));
     expect(entries.map((item) => item?.introducedRevision)).toEqual([297, 297, 297]);
     expect(entries[0]?.sourceDateNote).toContain('五月壬申');
