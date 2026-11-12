@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-376';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-377';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:374},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:375},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -795,6 +795,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'hou-yin-rebellion-218': '原史紀年：建安二十三年冬十月。漢曆月份不換算為遊戲日曆日期。',
   'sun-quan-hunts-tiger-lingting-218': '原史紀年：建安二十三年十月孫權於庱亭射虎。原文未載月內日期；漢曆月份不換算為遊戲日曆日期。',
   'sun-quan-accepts-king-of-wu-title-221': '原史紀年：《三國志》卷四十七黃初二年十一月記魏文帝策命孫權為吳王。傳文另回述自魏文帝即位以來孫權遣使稱藩，未標該使節的月份；遊戲只按 221 年級觸發，不把十一月註記套用於未繫月的回述。',
+  'sun-quan-wei-envoys-and-sun-deng-investiture-221': '原史紀年：《三國志》卷四十七黃初二年條記趙咨使魏、孫權辭封孫登並立為太子，未繫月日；只按 221 年觸發，不把相鄰十一月受封之月移植於此。',
   'yiling-campaign-222': '原史紀年：章武二年夏六月夷陵戰局、十二月遣使白帝。兩者仍是同一年級節點，不推成連續日程。',
   'sun-quan-renews-alliance-with-shu-224': '原史紀年：黃武三年夏遣張溫聘蜀，同年蜀遣鄧芝來聘。原文僅載夏季，不推定月份或月內日期。',
   'dongxing-battle-252': '原史紀年：孫亮建興元年冬，魏軍圍東興後吳軍赴援交戰。原文記冬季，不推定月日。',

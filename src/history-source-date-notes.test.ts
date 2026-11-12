@@ -167,6 +167,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'sun-quan-hunts-tiger-lingting-218': ['建安二十三年十月', '庱亭射虎', '投以雙戟'],
       'sun-quan-falls-ill-after-southern-suburb-sacrifice-251': ['太元元年冬十一月', '權祭南郊還，寢疾'],
       'sun-quan-accepts-king-of-wu-title-221': ['黃初二年', '十一月魏文帝策命'],
+      'sun-quan-wei-envoys-and-sun-deng-investiture-221': ['黃初二年記事', '趙咨使魏', '孫登年幼辭封', '立孫登為王太子'],
       'sun-quan-ruxu-campaign-216': ['建安二十一年冬曹操至居巢', '攻濡須'],
       'sun-quan-sends-envoy-to-cao-217': ['建安二十二年春', '徐詳', '請降', '修好'],
       'yiling-campaign-222': ['章武二年夏六月', '十二月孫權遣'],
@@ -295,7 +296,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(192);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(193);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -733,7 +734,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(192);
-    expect(uniqueNotedEvents.size).toBe(509);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(193);
+    expect(uniqueNotedEvents.size).toBe(510);
   });
 });

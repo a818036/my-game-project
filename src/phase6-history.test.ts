@@ -381,7 +381,7 @@ describe('A752 220 年漢魏禪代雙史料核對',()=>{
     const old=createPhase4Model(219,1,[],'phase4-scenario-374');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-376');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-377');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -393,7 +393,7 @@ describe('A752 220 年漢魏禪代雙史料核對',()=>{
   });
 });
 
-describe('A753 補列黃初二年孫權受封吳王的月份註記',()=>{
+describe('A753 釐清黃初二年孫權受封吳王的月份註記',()=>{
   const id='sun-quan-accepts-king-of-wu-title-221';
 
   it('只將十一月註記用於吳王策命，不移植到未標月的稱藩回述',()=>{
@@ -411,7 +411,7 @@ describe('A753 補列黃初二年孫權受封吳王的月份註記',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-375');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-376');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-377');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -419,6 +419,34 @@ describe('A753 補列黃初二年孫權受封吳王的月份註記',()=>{
     expect(continued.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
     const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('受魏封吳王'));
     expect(event?.source).toContain('十一月魏文帝策命孫權為吳王');
+  });
+});
+
+describe('A754 釐清孫權使魏與孫登立太子的未繫月記事',()=>{
+  const id='sun-quan-wei-envoys-and-sun-deng-investiture-221';
+
+  it('不把同段相鄰的十一月受封日期移植到使魏、辭封與立太子記事',()=>{
+    const node=HISTORY_CONTENT.find(item=>item.id===id);
+    expect(node).toMatchObject({startYear:221,endYear:221,precision:'year'});
+    expect(node?.source).toContain('黃初二年記事');
+    expect(node?.source).toContain('遣都尉趙咨使魏');
+    expect(node?.source).toContain('孫權以孫登年幼辭封');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('未繫月日');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('不把相鄰十一月受封之月移植於此');
+  });
+
+  it('v376 的 220 年世界線升至 v377 後保留事件帳，跨年至 221 年才形成記事',()=>{
+    const old=createPhase4Model(220,1,[],'phase4-scenario-376');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.contentVersion).toBe('phase4-scenario-377');
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+
+    const continued=advancePhase4(upgraded,360);
+    expect(continued.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('趙咨使魏'));
+    expect(event?.source).toContain('遣都尉趙咨使魏');
   });
 });
 
