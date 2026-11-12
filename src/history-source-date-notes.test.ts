@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(315);
+    expect(withinCatalogYears).toHaveLength(323);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -595,6 +595,14 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'xinping-commandery-established-194',
       'sun-ce-defeats-liu-yao-qu-e-194',
       'ma-rifu-dies-shouchun-194',
+      'xingping-amnesty-li-jue-guo-si-conflict-195',
+      'li-jue-coerces-emperor-burns-palace-195',
+      'empress-fu-appointed-195',
+      'guo-si-attacks-li-jue-emperor-moved-195',
+      'drought-195',
+      'li-jue-self-appointed-grand-marshal-195',
+      'zhang-ji-reconciles-li-jue-guo-si-195',
+      'yuan-shao-defeats-gongsun-zan-baogou-195',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -620,6 +628,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(165);
-    expect(uniqueNotedEvents.size).toBe(421);
+    expect(uniqueNotedEvents.size).toBe(429);
   });
 });
