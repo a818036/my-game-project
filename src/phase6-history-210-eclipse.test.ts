@@ -6,8 +6,8 @@ const persons:PersonRef[]=[];
 
 describe('A740 補列 210 年建安十五年日食記事',()=>{
   it('依原典記錄春二月乙巳朔日食，保留年級精度',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(619);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-363');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(620);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-364');
     const content=HISTORY_CONTENT.find(item=>item.id===id);
     expect(content).toMatchObject({kind:'event',startYear:210,endYear:210,precision:'year',introducedRevision:363});
     expect(content?.source).toContain('建安十五年春二月乙巳朔');
@@ -18,7 +18,7 @@ describe('A740 補列 210 年建安十五年日食記事',()=>{
   it('v362 舊 v6 存檔升至 v363 保留事件帳前綴並可跨年觸發',()=>{
     const prior=createPhase4Model(209,1,persons,'phase4-scenario-362');
     const prefix=structuredClone(prior.eventLedger);
-    const upgraded=upgradePhase4Content(prior,PHASE4_CONTENT_VERSION);
+    const upgraded=upgradePhase4Content(prior,'phase4-scenario-363');
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(upgraded,360).nodes.find(node=>node.contentId===id)?.status).toBe('triggered');

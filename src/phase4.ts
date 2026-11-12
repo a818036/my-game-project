@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-363';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-364';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:361},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:362},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -558,7 +558,8 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'wu-enfeoffs-eleven-princes-278',kind:EVENT_KIND,title:'吳廷再封十一王',...sameYear(278),precision:YEAR_PRECISION,source:SG48+'天紀二年秋七月記立成紀、宣威等十一王，王各給三千兵，大赦。本內容包採公元年級精度。',carrier:'孫皓與吳廷（歷史事件）',description:'記錄冊封十一王及各給三千兵，不推演封國疆界或實際兵力。',introducedRevision:70 },
   { id:'guo-ma-rebellion-279',kind:EVENT_KIND,title:'郭馬起兵、廣州督虞授遇害',...sameYear(279),precision:YEAR_PRECISION,source:SG48+'天紀三年夏記郭馬反，與部曲將何典、王族、吳述、殷興等聚眾攻殺廣州督虞授；吳廷命滕循等率軍討伐。本內容包採公元年級精度。',carrier:'郭馬、虞授、滕循與吳軍（歷史事件）',description:'記錄廣州兵變、虞授遇害及吳廷出兵討伐，不推演完整戰役或實際控制範圍。',introducedRevision:71 },
   { id:'sima-yi-feigns-illness-248',kind:EVENT_KIND,title:'李勝辭行、司馬懿示病',...sameYear(248),precision:YEAR_PRECISION,source:'《三國志》卷九〈魏書·曹爽傳〉記正始九年冬李勝出任荊州刺史、辭行時拜訪司馬懿，司馬懿示以病弱；《資治通鑑》卷七十五亦載此事。本內容包採公元年級精度。',carrier:'司馬懿、李勝與曹爽（歷史事件）',description:'記錄李勝拜訪司馬懿及其示病情形，作為 249 年政局轉折前的史實背景；不模擬密謀內容、人物內心或政權控制變化。',introducedRevision:39 },
-  { id:'tong-pass-campaign-211',kind:EVENT_KIND,title:'潼關戰事與關中平定',...sameYear(211),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉記建安十六年馬超、韓遂等起兵，曹操西征、渡渭並擊破關中聯軍；本內容包採年級精度。',causes:['guanzhong-rebellion'],carrier:'曹操、馬超、韓遂及關中諸將（歷史事件）',description:'記錄潼關及渭南戰事、關中聯軍敗退的年級節點；不模擬完整戰役、兵力或州郡控制。',introducedRevision:17 },
+  { id:'tong-pass-campaign-211',kind:EVENT_KIND,title:'潼關戰事與關中平定',...sameYear(211),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉記建安十六年馬超、韓遂等起兵，曹操西征、渡渭並擊破關中聯軍；《後漢書》卷九補記秋九月曹操與韓遂、馬超戰於渭南，遂等大敗、關西平。本內容包採年級精度。',causes:['guanzhong-rebellion'],carrier:'曹操、馬超、韓遂及關中諸將（歷史事件）',description:'記錄潼關及渭南戰事、關中聯軍敗退的年級節點；補列《後漢書》秋九月記事，不模擬完整戰役、兵力或州郡控制。',sourceDateNote:'《後漢書》卷九建安十六年秋九月記曹操與韓遂、馬超戰於渭南，遂等大敗、關西平；月份僅作原史日期註記，遊戲仍按 211 年級觸發。',introducedRevision:17 },
+  { id:'zhao-prince-she-dies-211',kind:EVENT_KIND,title:'趙王赦去世',...sameYear(211),precision:YEAR_PRECISION,source:HH9+'建安十六年「是歲」記趙王赦薨。只記本紀所載，不推測死因、月份、王國後續或繼承。',carrier:'趙王赦與漢廷（史料記事）',description:'記錄《後漢書》所載趙王赦去世；原文未標月份，不推測死因、繼承安排或封國處置。',sourceDateNote:'《後漢書》卷九建安十六年「是歲」記趙王赦薨，未標月份；遊戲只按 211 年級呈現。',introducedRevision:364 },
   { id:'yi-province-surrender-214',kind:EVENT_KIND,title:'雒城陷落與劉璋出降',...sameYear(214),precision:YEAR_PRECISION,source:'《三國志》卷三十二〈蜀書·先主傳〉記建安十九年夏雒城破、劉備進圍成都數十日後劉璋出降；本內容包採年級精度。',causes:['yi-province-campaign'],carrier:'劉備與劉璋（歷史事件）',description:'記錄雒城陷落及劉璋向劉備出降；不模擬完整益州戰役、郡縣控制或地方人口變化。',introducedRevision:17 },
   { id:'sun-quan-hefei-bridge-retreat-214',kind:EVENT_KIND,title:'合肥未克，孫權撤軍時遭張遼襲擊',...sameYear(214),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉將孫權征合肥未下、撤軍遭張遼襲擊，凌統、甘寧等護衛孫權，孫權乘駿馬越津橋得去，列於建安十九年（214）記事之下；但卷十七〈魏書·張遼傳〉將同一合肥圍城戰記在建安二十年（215）曹操征張魯段。原典繫年有異，本內容包暫按卷四十七採 214 年級觸發，並保留差異，不宣稱年次已無爭議。',carrier:'孫權、凌統、甘寧與張遼（歷史記載）',description:'記錄征合肥未克、撤軍途中遭襲及孫權脫離的原典概述；不推演未載的完整交戰、額外傷亡、橋梁狀態或個人傷勢。',sourceDateNote:'繫年有異：《三國志》卷四十七篇章列於建安十九年（214）；卷十七〈張遼傳〉列於建安二十年（215）。遊戲為保留既有 v101 存檔相容性，暫按卷四十七置於 214 年；不補月日。',introducedRevision:101 },
   { id:'sun-quan-captures-wancheng-214',kind:EVENT_KIND,title:'孫權征皖城、克城並獲朱光',...sameYear(214),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記建安十九年五月孫權征皖城，閏月克之，獲廬江太守朱光及參軍董和。本內容包保留原史漢曆月份，不換算為遊戲日期，並採年級觸發。',carrier:'孫權、朱光與孫吳軍（歷史記載）',description:'記錄征皖城、克城及朱光被獲；不推估俘獲人口數，不模擬完整圍城、戰損、城邑長期控制或個人遭遇。',sourceDateNote:'原史紀年：建安十九年五月征皖城、閏月克之。漢曆月份保留於史料註記，不映射為遊戲日曆月份或精確日。',introducedRevision:111 },
