@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-366';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-367';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:364},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:365},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -571,7 +571,10 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'sima-yi-feigns-illness-248',kind:EVENT_KIND,title:'李勝辭行、司馬懿示病',...sameYear(248),precision:YEAR_PRECISION,source:'《三國志》卷九〈魏書·曹爽傳〉記正始九年冬李勝出任荊州刺史、辭行時拜訪司馬懿，司馬懿示以病弱；《資治通鑑》卷七十五亦載此事。本內容包採公元年級精度。',carrier:'司馬懿、李勝與曹爽（歷史事件）',description:'記錄李勝拜訪司馬懿及其示病情形，作為 249 年政局轉折前的史實背景；不模擬密謀內容、人物內心或政權控制變化。',introducedRevision:39 },
   { id:'tong-pass-campaign-211',kind:EVENT_KIND,title:'潼關戰事與關中平定',...sameYear(211),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉記建安十六年馬超、韓遂等起兵，曹操西征、渡渭並擊破關中聯軍；《後漢書》卷九補記秋九月曹操與韓遂、馬超戰於渭南，遂等大敗、關西平。本內容包採年級精度。',causes:['guanzhong-rebellion'],carrier:'曹操、馬超、韓遂及關中諸將（歷史事件）',description:'記錄潼關及渭南戰事、關中聯軍敗退的年級節點；補列《後漢書》秋九月記事，不模擬完整戰役、兵力或州郡控制。',sourceDateNote:'《後漢書》卷九建安十六年秋九月記曹操與韓遂、馬超戰於渭南，遂等大敗、關西平；月份僅作原史日期註記，遊戲仍按 211 年級觸發。',introducedRevision:17 },
   { id:'zhao-prince-she-dies-211',kind:EVENT_KIND,title:'趙王赦去世',...sameYear(211),precision:YEAR_PRECISION,source:HH9+'建安十六年「是歲」記趙王赦薨。只記本紀所載，不推測死因、月份、王國後續或繼承。',carrier:'趙王赦與漢廷（史料記事）',description:'記錄《後漢書》所載趙王赦去世；原文未標月份，不推測死因、繼承安排或封國處置。',sourceDateNote:'《後漢書》卷九建安十六年「是歲」記趙王赦薨，未標月份；遊戲只按 211 年級呈現。',introducedRevision:364 },
-  { id:'yi-province-surrender-214',kind:EVENT_KIND,title:'雒城陷落與劉璋出降',...sameYear(214),precision:YEAR_PRECISION,source:'《三國志》卷三十二〈蜀書·先主傳〉記建安十九年夏雒城破、劉備進圍成都數十日後劉璋出降；本內容包採年級精度。',causes:['yi-province-campaign'],carrier:'劉備與劉璋（歷史事件）',description:'記錄雒城陷落及劉璋向劉備出降；不模擬完整益州戰役、郡縣控制或地方人口變化。',introducedRevision:17 },
+  { id:'yi-province-surrender-214',kind:EVENT_KIND,title:'雒城陷落與劉璋出降',...sameYear(214),precision:YEAR_PRECISION,source:'《三國志》卷三十二〈蜀書·先主傳〉記建安十九年夏雒城破、劉備進圍成都數十日後劉璋出降；《後漢書》卷九亦概記同年劉備破劉璋、據益州。兩書記事沿用同一節點，不重複結算；本內容包採年級精度。',causes:['yi-province-campaign'],carrier:'劉備與劉璋（歷史事件）',description:'合記兩部史書對劉備與劉璋戰局的記載；不模擬完整益州戰役、郡縣控制或地方人口變化。',introducedRevision:17 },
+  { id:'drought-and-rainwater-214',kind:EVENT_KIND,title:'建安十九年旱、雨水記事',...sameYear(214),precision:YEAR_PRECISION,source:HH9+'建安十九年夏四月記「旱」，五月記「雨水」。分列原文季節與月份，僅保留天候記事，不推測雨水詞義、旱情區域、持續時間、農損或兩事間的因果。',carrier:'漢廷天候記事（史料記載）',description:'記錄建安十九年夏四月旱、五月雨水；不推演洪災、受災範圍或玩家資源變化。',sourceDateNote:'《後漢書》卷九建安十九年夏四月記旱、五月記雨水；保留漢曆月份，遊戲按 214 年級觸發，不換算模型日期。',introducedRevision:367 },
+  { id:'xiahou-yuan-captures-song-jian-214',kind:EVENT_KIND,title:'夏侯淵討宋建，獲之',...sameYear(214),precision:YEAR_PRECISION,source:HH9+'建安十九年冬十月記曹操遣將夏侯淵討宋建於枹罕，獲之。只依原文記錄行動與結果，不補戰況、傷亡、宋建後續或地方控制細節。',carrier:'夏侯淵與宋建（史料記事）',description:'記錄夏侯淵奉遣討宋建並獲之；不推演逐日戰況、兵力、額外傷亡或州郡控制變化。',sourceDateNote:'《後漢書》卷九建安十九年冬十月記夏侯淵討宋建於枹罕、獲之；遊戲按 214 年級觸發，月份不換算模型日期。',introducedRevision:367 },
+  { id:'empress-fu-killed-214',kind:EVENT_KIND,title:'皇后伏氏遇害及其族、二皇子被殺',...sameYear(214),precision:YEAR_PRECISION,source:HH9+'建安十九年十一月丁卯記曹操殺皇后伏氏，滅其族及二皇子。只記原文所載，不延伸未載身分、過程、個別姓名或其他後果。',carrier:'皇后伏氏、其族及二皇子（史料記事）',description:'記錄《後漢書》所載伏皇后及其族、二皇子遇害；不補寫個人遭遇、死因以外細節或未載名單。',sourceDateNote:'《後漢書》卷九建安十九年冬十一月丁卯記曹操殺皇后伏氏、滅其族及二皇子；保留原典日期，遊戲只按年級觸發。',introducedRevision:367 },
   { id:'sun-quan-hefei-bridge-retreat-214',kind:EVENT_KIND,title:'合肥未克，孫權撤軍時遭張遼襲擊',...sameYear(214),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉將孫權征合肥未下、撤軍遭張遼襲擊，凌統、甘寧等護衛孫權，孫權乘駿馬越津橋得去，列於建安十九年（214）記事之下；但卷十七〈魏書·張遼傳〉將同一合肥圍城戰記在建安二十年（215）曹操征張魯段。原典繫年有異，本內容包暫按卷四十七採 214 年級觸發，並保留差異，不宣稱年次已無爭議。',carrier:'孫權、凌統、甘寧與張遼（歷史記載）',description:'記錄征合肥未克、撤軍途中遭襲及孫權脫離的原典概述；不推演未載的完整交戰、額外傷亡、橋梁狀態或個人傷勢。',sourceDateNote:'繫年有異：《三國志》卷四十七篇章列於建安十九年（214）；卷十七〈張遼傳〉列於建安二十年（215）。遊戲為保留既有 v101 存檔相容性，暫按卷四十七置於 214 年；不補月日。',introducedRevision:101 },
   { id:'sun-quan-captures-wancheng-214',kind:EVENT_KIND,title:'孫權征皖城、克城並獲朱光',...sameYear(214),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉記建安十九年五月孫權征皖城，閏月克之，獲廬江太守朱光及參軍董和。本內容包保留原史漢曆月份，不換算為遊戲日期，並採年級觸發。',carrier:'孫權、朱光與孫吳軍（歷史記載）',description:'記錄征皖城、克城及朱光被獲；不推估俘獲人口數，不模擬完整圍城、戰損、城邑長期控制或個人遭遇。',sourceDateNote:'原史紀年：建安十九年五月征皖城、閏月克之。漢曆月份保留於史料註記，不映射為遊戲日曆月份或精確日。',introducedRevision:111 },
   { id:'sun-quan-lukou-jingzhou-partition-dating-215',kind:EVENT_KIND,title:'陸口駐軍與湘水分荊州的繫年異文',...sameYear(215),precision:YEAR_PRECISION,source:'《資治通鑑》卷六十七將相關事件置於獻帝建安二十年（215）：孫權進駐陸口節度諸軍、魯肅屯益陽拒關羽，其後劉備與孫權議和並以湘水分界。《三國志》卷四十七則把征取荊州三郡、陸口駐軍、關羽至益陽及湘水分界等記事列在建安十九年（214）。本節點只記兩部史書的編年差異，不代表第二次發生，也不裁定唯一正確年份。',carrier:'孫權、魯肅、關羽與劉備（史籍編年）',description:'作為陸口駐軍及湘水分界相關記事的另一種年次記錄；214 年原型節點依《三國志》卷四十七保留，215 年節點依《資治通鑑》編年呈現。不要把它解讀為重複出兵、再度議和或確定發生在不同年份；史料未提供可供本模型採用的月日。',introducedRevision:130 },
@@ -788,6 +791,9 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'guo-ma-rebellion-279': '原史紀年：天紀三年夏郭馬起事。原文未載月日，不推定月份。',
   'sima-yi-feigns-illness-248': '原史紀年：正始九年冬，李勝赴荊州前拜訪司馬懿。保留原文季節，不推定月份或日程。',
   'yi-province-surrender-214': '原史紀年：建安十九年夏雒城破，劉備進圍成都後劉璋出降。原文季節不換算成遊戲月份。',
+  'drought-and-rainwater-214': '原史紀年：建安十九年夏四月旱、五月雨水。保留漢曆月份，不推論因果或災損。',
+  'xiahou-yuan-captures-song-jian-214': '原史紀年：建安十九年冬十月夏侯淵討宋建於枹罕、獲之。月份不換算模型日期。',
+  'empress-fu-killed-214': '原史紀年：建安十九年十一月丁卯。原文所載遇害記事按年級觸發。',
   'cao-crowned-king-of-wei-216': '原史紀年：建安二十一年五月天子進曹操爵為魏王。漢曆月份不換算為遊戲日期。',
   'zhugeliang-moves-to-hanzhong-227': '原史紀年：建興五年春諸葛亮出屯漢中。保留原文季節，不補月日。',
   'shu-yang-yi-demoted-jiang-wan-promoted-235': '原史紀年：建興十三年春正月楊儀廢徙，夏四月蔣琬進位。兩個月份同列，不推演月內日程。',

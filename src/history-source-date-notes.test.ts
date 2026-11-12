@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(381);
+    expect(withinCatalogYears).toHaveLength(384);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -188,7 +188,10 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wu-enfeoffs-eleven-princes-278': ['天紀二年秋七月記立成紀'],
       'guo-ma-rebellion-279': ['天紀三年夏記郭馬反'],
       'sima-yi-feigns-illness-248': ['正始九年冬李勝出任荊州刺史'],
-      'yi-province-surrender-214': ['建安十九年夏雒城破'],
+      'yi-province-surrender-214': ['建安十九年夏雒城破', '據益州'],
+      'drought-and-rainwater-214': ['夏四月記「旱」', '五月記「雨水」'],
+      'xiahou-yuan-captures-song-jian-214': ['冬十月記曹操遣將夏侯淵', '討宋建於枹罕，獲之'],
+      'empress-fu-killed-214': ['十一月丁卯', '滅其族及二皇子'],
       'cao-crowned-king-of-wei-216': ['建安二十一年五月記天子進公爵'],
       'zhugeliang-moves-to-hanzhong-227': ['建興五年春丞相亮出屯漢中'],
       'shu-yang-yi-demoted-jiang-wan-promoted-235': ['建興十三年春正月', '夏四月'],
@@ -279,7 +282,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(176);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(179);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -677,6 +680,9 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'zhu-ran-zha-zhong-246',
       'tong-pass-campaign-211',
       'zhao-prince-she-dies-211',
+      'drought-and-rainwater-214',
+      'xiahou-yuan-captures-song-jian-214',
+      'empress-fu-killed-214',
       'sun-quan-hefei-bridge-retreat-214',
       'sun-quan-captures-wancheng-214',
       'sun-quan-hunts-tiger-lingting-218',
@@ -699,7 +705,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(176);
-    expect(uniqueNotedEvents.size).toBe(490);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(179);
+    expect(uniqueNotedEvents.size).toBe(493);
   });
 });
