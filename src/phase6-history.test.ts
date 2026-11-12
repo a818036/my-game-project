@@ -381,7 +381,7 @@ describe('A752 220 年漢魏禪代雙史料核對',()=>{
     const old=createPhase4Model(219,1,[],'phase4-scenario-374');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-382');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-383');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -411,7 +411,7 @@ describe('A753 釐清黃初二年孫權受封吳王的月份註記',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-375');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-382');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-383');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -439,7 +439,7 @@ describe('A754 釐清孫權使魏與孫登立太子的未繫月記事',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-376');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-382');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-383');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -454,7 +454,7 @@ describe('A755 區分魏文帝南征與魏軍多路攻吳的史料日期',()=>{
   const id='wei-three-front-campaign-and-dongkou-storm-222';
 
   it('並列魏、吳紀年而不把六月南征等同九月攻吳',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-382');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-383');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('文帝紀');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃初三年六月');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃武元年秋九月');
@@ -494,7 +494,7 @@ describe('A756 補列黃武三年秋八月赦死罪記事',()=>{
   const id='sun-wu-amnesty-death-crimes-224';
 
   it('只記史書赦令與原史日期精度，不推測赦免範圍',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-382');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-383');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year'});
     expect(node?.source).toContain('黃武三年秋八月');
@@ -528,7 +528,7 @@ describe('A757 補列黃武五年東安郡行政記事',()=>{
   const id='wu-establishes-dongan-and-appoints-quan-cong-226';
 
   it('依原文記錄置郡、任官與討擊，不推測縣界或戰果',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-382');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-383');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:226,endYear:226,precision:'year',introducedRevision:380});
     expect(node?.source).toContain('黃武五年條');
@@ -563,7 +563,7 @@ describe('A758 補列黃武七年罷東安郡記事',()=>{
   const id='wu-abolishes-dongan-commandery-228';
 
   it('依原典記錄 228 年三月罷郡，不推定後續疆界或人口變化',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-382');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-383');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:228,endYear:228,precision:'year',introducedRevision:381});
     expect(node?.source).toContain('黃武七年三月');
@@ -597,7 +597,7 @@ describe('A759 補列黃龍二年置廣州後復舊記事',()=>{
   const id='wu-temporarily-establishes-guangzhou-230';
 
   it('依《吳主傳》保留「是歲」精度與復舊記載，不推定疆界或存續日數',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-382');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-383');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:230,endYear:230,precision:'year',introducedRevision:382});
     expect(node?.source).toContain('黃龍二年「是歲」');
@@ -622,6 +622,42 @@ describe('A759 補列黃龍二年置廣州後復舊記事',()=>{
       const late=upgradePhase4Content(createPhase4Model(year,1,[],'phase4-scenario-381'),PHASE4_CONTENT_VERSION);
       expect(late.nodes.find(item=>item.contentId===id)).toMatchObject({status:'resolved',resolvedYear:230});
       expect(late.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('分交州置廣州'))).toBe(false);
+    }
+  });
+});
+
+describe('A760 補列衛溫、諸葛直下獄誅記事',()=>{
+  const id='wu-executes-wei-wen-zhuge-zhi-231';
+
+  it('依《吳主傳》記載處置結果及月份段落，不補獄案或擴成死亡硬節點',()=>{
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-383');
+    const node=HISTORY_CONTENT.find(item=>item.id===id);
+    expect(node).toMatchObject({startYear:231,endYear:231,precision:'year',introducedRevision:383});
+    expect(node?.source).toContain('黃龍三年');
+    expect(node?.source).toContain('皆以違詔無功，下獄誅');
+    expect(node?.sourceDateNote).toContain('春二月記事段');
+    expect(node?.sourceDateNote).toContain('不將二月精度擴張為本句另有明載月日');
+    expect(node?.description).toContain('不建立玩家可介入的死亡節點');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='death'&&item.id===id)).toHaveLength(0);
+  });
+
+  it('v382 舊存檔跨年至 231 年才觸發，保留帳本前綴且不回補晚年',()=>{
+    const old=createPhase4Model(230,1,[],'phase4-scenario-382');
+    const prefix=structuredClone(old.eventLedger);
+    const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
+    expect(upgraded.contentVersion).toBe(PHASE4_CONTENT_VERSION);
+    expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
+    expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
+
+    const continued=advancePhase4(upgraded,360);
+    expect(continued.nodes.find(item=>item.contentId===id)?.status).toBe('triggered');
+    const event=continued.eventLedger.find(item=>item.type==='史實事件形成'&&item.detail.includes('下獄誅'));
+    expect(event?.source).toContain('下獄誅');
+
+    for(const year of [231,232]){
+      const late=upgradePhase4Content(createPhase4Model(year,1,[],'phase4-scenario-382'),PHASE4_CONTENT_VERSION);
+      expect(late.nodes.find(item=>item.contentId===id)).toMatchObject({status:'resolved',resolvedYear:231});
+      expect(late.eventLedger.some(item=>item.type==='史實事件形成'&&item.detail.includes('下獄誅'))).toBe(false);
     }
   });
 });

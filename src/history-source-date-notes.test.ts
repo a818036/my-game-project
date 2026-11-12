@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(402);
+    expect(withinCatalogYears).toHaveLength(403);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -729,6 +729,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-morning-raid-ruxu-defeated-223',
       'wu-captures-jin-zong-at-qichun-223',
       'sun-quan-campaigns-at-hefei-234',
+      'wu-executes-wei-wen-zhuge-zhi-231',
       'shu-wei-qishan-lucheng-campaign-231',
       'wu-lu-dai-pacifies-luling-238',
       'lu-xun-pacifies-pengdan-revolt-237',
@@ -739,6 +740,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(196);
-    expect(uniqueNotedEvents.size).toBe(512);
+    expect(uniqueNotedEvents.size).toBe(513);
   });
 });
