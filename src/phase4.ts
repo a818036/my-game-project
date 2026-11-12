@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-318';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-319';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:316},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:317},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -121,6 +121,13 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'taiwei-sikong-appointments-169',kind:EVENT_KIND,title:'169年三公任免',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年五月太尉聞人襲罷、司空許栩免；六月劉寵為太尉、許訓為司徒、劉囂為司空。',carrier:'朝廷',description:'只記任免，不改玩家官職。',sourceDateNote:'五月、六月；只按年級呈現。',introducedRevision:239 },
   { id:'bingzhou-raid-169',kind:EVENT_KIND,title:'鮮卑寇并州',...sameYear(169),precision:YEAR_PRECISION,source:HH8+'建寧二年條記「鮮卑寇并州」。',carrier:'鮮卑',description:'只記侵擾，不推演未載後果。',introducedRevision:240 },
   { id:'epidemic-lingdi-171',kind:EVENT_KIND,title:'建寧四年春三月大疫',...sameYear(171),precision:YEAR_PRECISION,source:HH8+'建寧四年三月記「大疫，使中謁者巡行致醫藥」。只記疫病記事與朝廷遣員巡行致醫藥，不推演傳播、受治人數、傷亡或救療成效。',carrier:'漢廷（史料記載）',description:'記錄建寧四年三月大疫及中謁者巡行致醫藥；不推演疫病傳播、受治人數、病況、傷亡或救療成效。',sourceDateNote:'《後漢書》卷八記建寧四年三月大疫。保留漢曆三月註記；遊戲只按 171 年級觸發，不換算模型日期。',introducedRevision:241 },
+  { id:'earthquake-sea-overflow-clear-river-171',kind:EVENT_KIND,title:'二月地震、海水溢與河水清',...sameYear(171),precision:YEAR_PRECISION,source:HH8+'建寧四年二月癸卯記「地震，海水溢，河水清」。只記原文並列現象，不推定地點、範圍、河流名稱或因果。',carrier:'史書所記地震及水文現象（史料記載）',description:'記錄二月地震、海水溢與河水清；不推測發生地點、損害或各現象間的關係。',sourceDateNote:'《後漢書》卷八建寧四年二月癸卯條；遊戲只按 171 年級觸發，不換算漢曆為模型日期。',introducedRevision:319 },
+  { id:'solar-eclipse-jianing-4-171',kind:EVENT_KIND,title:'三月辛酉朔日食',...sameYear(171),precision:YEAR_PRECISION,source:HH8+'建寧四年三月辛酉朔記「日有食之」。只保留原文天象及曆日，不推算現代日期、可見範圍、成因或政治意義。',carrier:'漢廷天象紀錄（史料記載）',description:'記錄三月辛酉朔日食；不推定觀測地、天文參數、災異含義或政治後果。',sourceDateNote:'《後漢書》卷八記建寧四年三月辛酉朔日食；遊戲只按 171 年級觸發，不換算漢曆為模型日期。',introducedRevision:319 },
+  { id:'taiwei-li-xian-succeeds-wenren-xi-171',kind:EVENT_KIND,title:'太尉聞人襲免，李咸繼任',...sameYear(171),precision:YEAR_PRECISION,source:HH8+'建寧四年條記「太尉聞人襲免，太僕李咸為太尉」。只記原文任免，不改動玩家官職或推測任免原因、任期。',carrier:'太尉聞人襲、太僕李咸與漢廷（史料記載）',description:'記錄聞人襲免太尉、李咸由太僕任太尉；不推演任命原因、任期或玩家世界官職變動。',sourceDateNote:'《後漢書》卷八建寧四年三月日食條後記聞人襲免、李咸為太尉，原文未另標月日；只按 171 年級觸發。',introducedRevision:319 },
+  { id:'court-memorial-edict-jianing-4-171',kind:EVENT_KIND,title:'詔公卿至六百石各上封事',...sameYear(171),precision:YEAR_PRECISION,source:HH8+'建寧四年條記「詔公卿至六百石各上封事」。原文未載封事內容、採納情況或執行結果。',carrier:'漢廷與受詔官員（史料記載）',description:'記錄朝廷詔公卿至六百石上封事；不推測奏議內容、採納結果或具體政策。',sourceDateNote:'《後漢書》卷八將此詔置於建寧四年日食記事後，未另標月日；只按 171 年級觸發，不推定因果。',introducedRevision:319 },
+  { id:'sikong-appointments-jianing-4-171',kind:EVENT_KIND,title:'許訓、橋玄、來豔與宗俱官職更替',...sameYear(171),precision:YEAR_PRECISION,source:HH8+'建寧四年條記司徒許訓免、司空橋玄為司徒，夏四月太常來豔為司空；秋七月來豔免，立宋氏為皇后後又記橋玄免、宗俱為司空、許栩為司徒。只保留原文任免次序，不改動玩家官職或推測任免原因。',carrier:'許訓、橋玄、來豔、宗俱、許栩與漢廷（史料記載）',description:'記錄原典列出的司徒、司空任免與更替順序；不推演原因、任期、同日先後或玩家官職變動。',sourceDateNote:'《後漢書》卷八建寧四年條記許訓、橋玄、來豔、宗俱、許栩任免；僅夏四月及秋七月部分任免另標月份，遊戲按 171 年級觸發。',introducedRevision:319 },
+  { id:'song-lady-made-empress-171',kind:EVENT_KIND,title:'立貴人宋氏為皇后',...sameYear(171),precision:YEAR_PRECISION,source:HH8+'建寧四年秋七月記事段記「癸丑，立貴人宋氏為皇后」。只記冊立，不推測儀式、政治後果或其後身分。',carrier:'漢廷與貴人宋氏（史料記載）',description:'記錄立貴人宋氏為皇后；不推測未載儀式細節、政治效果或後續待遇。',sourceDateNote:'《後漢書》卷八建寧四年秋七月記事段記癸丑立宋氏為皇后；遊戲只按 171 年級觸發，不換算為模型日期。',introducedRevision:319 },
+  { id:'xianbei-raids-bingzhou-171',kind:EVENT_KIND,title:'冬季鮮卑寇并州',...sameYear(171),precision:YEAR_PRECISION,source:HH8+'建寧四年冬記「鮮卑寇并州」。原文未載戰事結果；不推演傷亡、路線或控制變化。',carrier:'鮮卑與并州地方（史料記載）',description:'記錄冬季鮮卑侵擾并州；不推估戰事規模、傷亡、路線或地方控制變化。',sourceDateNote:'《後漢書》卷八建寧四年冬記鮮卑寇并州；遊戲只按 171 年級觸發，不換算為模型日期。',introducedRevision:319 },
   { id:'hu-guang-dies-172',kind:EVENT_KIND,title:'172年太傅胡廣薨',...sameYear(172),precision:YEAR_PRECISION,source:HH8+'熹平元年春三月壬戌條記「太傅胡廣薨」。',carrier:'太傅胡廣與漢廷（史料記載）',description:'記錄太傅胡廣去世；不改動玩家人物、官職或朝廷權力狀態。',sourceDateNote:'《後漢書》卷八記熹平元年春三月壬戌太傅胡廣薨。保留漢曆日期註記；遊戲只按 172 年級觸發，不換算模型日期。',introducedRevision:242 },
   { id:'taixue-classics-stone-inscription-175',kind:EVENT_KIND,title:'太學校正五經文字並刻石',...sameYear(175),precision:YEAR_PRECISION,source:HH8+'熹平四年條記詔令諸儒校正五經文字，刻石立於太學門外。本內容包只採公元年級精度，不補工程工期、參與者名單或石經保存狀況。',carrier:'漢廷、受詔諸儒與太學（史料記載）',description:'記錄朝廷校正經典文字及太學刻石；不據此推演普及程度、教育政策成效或後世版本傳承。',introducedRevision:145 },
   { id:'lu-zhi-jiujiang-revolt-175',kind:EVENT_KIND,title:'九江起事，盧植任太守後以疾去官',...sameYear(175),precision:YEAR_PRECISION,source:'《後漢書》卷六十四〈吳延史盧趙列傳〉盧植傳記熹平四年九江蠻反，四府以植才兼文武，拜九江太守，蠻寇賓服，植以疾去官；原傳未述起事群體細節或戰事過程。',carrier:'盧植、九江地方起事者與郡府（史料記載）',description:'記錄史料所述九江蠻反、盧植任太守後蠻寇賓服，以及盧植因病去官；不推演族群身分、兵力、傷亡、任期或玩家官職變動。',sourceDateNote:'《後漢書》卷六十四〈吳延史盧趙列傳〉盧植傳繫於熹平四年，未另標月份；遊戲只按 175 年級觸發，不推算月日或回合。',introducedRevision:247 },

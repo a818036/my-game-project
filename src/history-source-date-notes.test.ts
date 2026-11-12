@@ -298,6 +298,13 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'jiangxia-uprising-169',
       'taiwei-sikong-appointments-169',
       'epidemic-lingdi-171',
+      'earthquake-sea-overflow-clear-river-171',
+      'solar-eclipse-jianing-4-171',
+      'taiwei-li-xian-succeeds-wenren-xi-171',
+      'court-memorial-edict-jianing-4-171',
+      'sikong-appointments-jianing-4-171',
+      'song-lady-made-empress-171',
+      'xianbei-raids-bingzhou-171',
       'hu-guang-dies-172',
       'lu-zhi-jiujiang-revolt-175',
       'han-campaign-against-xianbei-defeated-177',
@@ -378,6 +385,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(222);
+    expect(uniqueNotedEvents.size).toBe(229);
   });
 });
