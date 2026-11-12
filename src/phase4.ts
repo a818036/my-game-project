@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-320';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-321';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:318},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:319},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -156,6 +156,11 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'epidemic-east-commandery-flood-173',kind:EVENT_KIND,title:'大疫與北海、東萊海水溢',...sameYear(173),precision:YEAR_PRECISION,source:HH8+'熹平二年條記春季大疫、使者巡行致醫藥；六月記北海地震、東萊與北海海水溢。本節點保留年級精度，不推估疫病傳播、死亡數或洪水損失。',carrier:'漢廷及北海、東萊地方（史料記載）',description:'記錄史書所載疫病救療、地震與海水溢出；不推演疫病範圍、傷亡或地方災損。',introducedRevision:146 },
   { id:'zong-ju-dies-yang-ci-sikong-173',kind:EVENT_KIND,title:'司空宗俱薨，楊賜為司空',...sameYear(173),precision:YEAR_PRECISION,source:HH8+'熹平二年條記「丁丑，司空宗俱薨」，後記二月大赦及「以光祿勳楊賜為司空」。',carrier:'司空宗俱、光祿勳楊賜與漢廷（史料記載）',description:'記錄司空宗俱去世及楊賜任司空；不改動玩家官職，不推演任命原因、任期或其他官制效果。',sourceDateNote:'《後漢書》卷八熹平二年條依序記春正月記事、丁丑司空宗俱薨，後記二月大赦及楊賜為司空。保留史文次序與干支，不換算為模型日期；遊戲只按 173 年級觸發。',introducedRevision:243 },
   { id:'li-xian-dismissed-duan-jiong-appointed-173',kind:EVENT_KIND,title:'太尉李咸免，段熲任太尉',...sameYear(173),precision:YEAR_PRECISION,source:HH8+'熹平二年三月記「太尉李咸免」，夏五月記「以司隷校尉段熲為太尉」。',carrier:'太尉李咸、司隷校尉段熲與漢廷（史料記載）',description:'記錄李咸免太尉及段熲任太尉；不改動玩家官職，不推測免職原因、任期或其他官制效果。',sourceDateNote:'《後漢書》卷八熹平二年三月記太尉李咸免，夏五月記以司隷校尉段熲為太尉。保留漢曆原註，不換算為模型日期或推斷日數間隔；遊戲只按 173 年級觸發。',introducedRevision:244 },
+  { id:'situ-tang-zhen-succeeds-yang-ci-173',kind:EVENT_KIND,title:'司空楊賜免，唐珍任司空',...sameYear(173),precision:YEAR_PRECISION,source:HH8+'熹平二年秋七月記「司空楊賜免，太常潁川唐珍為司空」。只記免職與任命，不推測原因、任期或玩家官職變化。',carrier:'司空楊賜、太常唐珍與漢廷（史料記載）',description:'記錄楊賜免司空、唐珍由太常任司空；不推測任免原因、任期或玩家官職變動。',sourceDateNote:'《後漢書》卷八熹平二年秋七月記楊賜免、唐珍為司空；遊戲只按 173 年級觸發，不換算為模型日期。',introducedRevision:321 },
+  { id:'rinan-foreign-envoys-tribute-173',kind:EVENT_KIND,title:'日南徼外國重譯貢獻',...sameYear(173),precision:YEAR_PRECISION,source:HH8+'熹平二年冬十二月記「日南徼外國重譯貢獻」。原文未列國名、使者或貢物，不補推具體對象、路線與外交結果。',carrier:'日南徼外來使（史料記載）',description:'記錄日南徼外國重譯貢獻；不推測國名、使者、貢物、路線或外交效果。',sourceDateNote:'《後漢書》卷八熹平二年冬十二月記日南徼外國重譯貢獻；遊戲按 173 年級觸發，不換算漢曆日期。',introducedRevision:321 },
+  { id:'duan-jiong-dismissed-taiwei-173',kind:EVENT_KIND,title:'太尉段熲罷',...sameYear(173),precision:YEAR_PRECISION,source:HH8+'熹平二年冬十二月記事段另記「太尉段熲罷」。原文未交代免職原因、具體日次或繼任者。',carrier:'太尉段熲與漢廷（史料記載）',description:'記錄段熲免太尉；不推測任免原因、日期、繼任者或玩家官職變動。',sourceDateNote:'《後漢書》卷八於熹平二年冬十二月記事後記太尉段熲罷，但未另標其月份或日次；保留篇章次序，只按年級觸發。',introducedRevision:321 },
+  { id:'xianbei-raid-you-bing-173',kind:EVENT_KIND,title:'鮮卑寇幽并二州',...sameYear(173),precision:YEAR_PRECISION,source:HH8+'熹平二年記事段記「鮮卑寇幽并二州」。只記侵擾，不推演戰事、傷亡、路線或地方控制變化。',carrier:'鮮卑與幽、并二州地方（史料記載）',description:'記錄鮮卑侵擾幽、并二州；不推測戰事結果、傷亡或疆界變化。',sourceDateNote:'《後漢書》卷八熹平二年記事段記鮮卑寇幽并二州，未另標月份；遊戲只按 173 年級觸發。',introducedRevision:321 },
+  { id:'solar-eclipse-xiping-2-173',kind:EVENT_KIND,title:'癸酉晦日日食',...sameYear(173),precision:YEAR_PRECISION,source:HH8+'熹平二年末記「癸酉晦，日有食之」。不推算現代日期、觀測範圍、天文成因或政治含義。',carrier:'漢廷天象紀錄（史料記載）',description:'記錄癸酉晦日日食；不推算現代日期、觀測範圍、成因或政治後果。',sourceDateNote:'《後漢書》卷八熹平二年末記癸酉晦日日食；保留干支與晦日原註，遊戲僅按 173 年級觸發。',introducedRevision:321 },
   { id:'xusheng-revolt-suppressed-174',kind:EVENT_KIND,title:'臧旻、陳夤於會稽破許生並斬之',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年十一月條記楊州刺史臧旻率丹陽太守陳夤大破許生於會稽並斬之。本節點採年級精度，不補戰鬥日程或未載的傷亡數。',carrier:'臧旻、陳夤與許生（史料記載）',description:'記錄對 172 年會稽起事的後續處置，依來源記載許生被斬；不補寫兵力、戰場細節或其他人物命運。',introducedRevision:146 },
   { id:'xianbei-raid-beidi-bingzhou-174',kind:EVENT_KIND,title:'鮮卑寇北地、并州，夏育追擊破敵',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年十二月條記「鮮卑寇北地，北地太守夏育追擊破之」，又記「鮮卑又寇并州」。原文未載第二次侵擾的結果。',carrier:'鮮卑、北地太守夏育與并州地方（史料記載）',description:'記錄十二月鮮卑侵擾北地及夏育追擊破敵，並分開保留同條「又寇并州」的記事；不把北地戰果延伸至并州，不推演傷亡或控制變化。',sourceDateNote:'《後漢書》卷八熹平三年十二月條先記鮮卑寇北地、北地太守夏育追擊破之，又記鮮卑寇并州但未載結果。保留漢曆十二月原註與兩則記事差異；遊戲只按 174 年級觸發，不換算模型日期。',introducedRevision:245 },
   { id:'tang-zhen-dismissed-xu-xun-sikong-174',kind:EVENT_KIND,title:'司空唐珍罷，許訓為司空',...sameYear(174),precision:YEAR_PRECISION,source:HH8+'熹平三年條記「司空唐珍罷，永樂少府許訓為司空」。',carrier:'司空唐珍、永樂少府許訓與漢廷（史料記載）',description:'記錄唐珍免司空、許訓任司空；不改動玩家官職，不推測免職原因、任期或其他官制效果。',sourceDateNote:'《後漢書》卷八熹平三年條記司空唐珍罷、永樂少府許訓為司空；原典未對此句另標月份，保留年級精度，不推算月日，遊戲只按 174 年級觸發。',introducedRevision:246 },

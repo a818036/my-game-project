@@ -322,7 +322,11 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'attendant-temple-hen-transforms-178',
       'jiaozhi-wuhuh-man-uprising-178',
       'zong-ju-dies-yang-ci-sikong-173',
-      'li-xian-dismissed-duan-jiong-appointed-173',
+      'li-xian-dismissed-duan-jiong-appointed-173',      'situ-tang-zhen-succeeds-yang-ci-173',
+      'rinan-foreign-envoys-tribute-173',
+      'duan-jiong-dismissed-taiwei-173',
+      'xianbei-raid-you-bing-173',
+      'solar-eclipse-xiping-2-173',
       'xianbei-raid-beidi-bingzhou-174',
       'tang-zhen-dismissed-xu-xun-sikong-174',
       'drought-locust-seven-provinces-176',
@@ -394,6 +398,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(238);
+    expect(uniqueNotedEvents.size).toBe(243);
   });
 });
