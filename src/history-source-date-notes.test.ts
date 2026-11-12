@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(390);
+    expect(withinCatalogYears).toHaveLength(392);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -210,6 +210,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'jianan-epidemic-217': ['去冬天降疫癘', '《後漢書》卷九', '是歲大疫'],
       'hua-xin-appointed-yushi-dafu-217': ['建安二十二年夏六月', '華歆為御史大夫'],
       'comet-northeast-jianan-22-217': ['建安二十二年冬', '有星孛於東北'],
+      'geng-ji-wei-huang-rebellion-218': ['建安二十三年春正月甲子', '少府耿紀、丞相司直韋晃起兵誅曹操'],
+      'comet-east-jianan-23-218': ['建安二十三年三月', '有星孛於東方'],
       'wu-shu-alliance-partition-229': ['黃龍元年六月蜀使陳震來賀孫權踐位', '沒有提供盟約簽訂月日'],
       'wu-chancellor-succession-225': ['黃武四年夏五月丞相孫邵卒', '六月以太常顧雍為丞相'],
       'zhuge-liang-dies-234': ['青龍二年秋諸葛亮病卒'],
@@ -286,7 +288,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(183);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(185);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -696,6 +698,8 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'langya-prince-xi-killed-216',
       'hua-xin-appointed-yushi-dafu-217',
       'comet-northeast-jianan-22-217',
+      'geng-ji-wei-huang-rebellion-218',
+      'comet-east-jianan-23-218',
       'sun-quan-hunts-tiger-lingting-218',
       'guan-yu-falls-219',
       'sun-quan-declines-imperial-title-221',
@@ -716,7 +720,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(183);
-    expect(uniqueNotedEvents.size).toBe(500);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(185);
+    expect(uniqueNotedEvents.size).toBe(502);
   });
 });

@@ -1226,4 +1226,26 @@ describe('A05／A06 存檔交易與重播', () => {
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
     expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   },30_000);
+
+  it('A748 v370 217 年 v6 JSON 升級後觸發 218 年記事並可再匯入重播',()=>{
+    const current=makeSave('phase6-v370-jianan-23',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-370'}};
+    let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v370 fixture');
+    const oldEvents:GameEvent[]=[oldStart];
+    for(let year=185;year<=217;year++){
+      const continued=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v370-jianan-23-${year}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+      if(!continued.state||!continued.event)throw new Error('could not advance the v370 fixture');
+      oldState=continued.state;oldEvents.push(continued.event);
+    }
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState},migrated=verifySave(toJson(old));
+    const ids=['geng-ji-wei-huang-rebellion-218','comet-east-jianan-23-218'];
+    expect(migrated.events[0]).toEqual(oldStart);
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    for(const id of ids)expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v370-jianan-23-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event)throw new Error('could not continue v370 fixture');
+    for(const id of ids)expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
+    expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  },30_000);
 });
