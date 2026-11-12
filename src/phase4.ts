@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-342';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-343';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:340},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:341},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -356,6 +356,11 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'yizhou-ma-xiang-revolt-188',kind:EVENT_KIND,title:'益州馬相起事、賈龍迎劉焉',...sameYear(188),precision:YEAR_PRECISION,source:'《資治通鑑》卷五十九繫於中平五年六月，記益州賊馬相、趙祇等起兵緜竹、自號黃巾、殺刺史郤儉並進擊巴郡、犍為；州從事賈龍率吏民攻破其軍並迎劉焉。《後漢書》卷七十五亦記馬相自號黃巾、攻取三郡及賈龍破之。本內容包只採公元年級精度。',carrier:'馬相、趙祇、賈龍與劉焉（歷史事件）',description:'記錄益州地方武裝起事及州從事賈龍破之、迎劉焉；不推演完整戰役、傷亡、行政邊界或劉焉後續控制。',introducedRevision:85 },
   { id:'palace-succession-189',kind:EVENT_KIND,title:'少帝與獻帝更替、董卓入朝',...sameYear(189),precision:YEAR_PRECISION,source:HH8+'、卷九〈孝獻帝紀〉記中平六年四月少帝即位，劉協先封勃海王、後徙封陳留王；九月甲戌劉協即皇帝位，年九歲，皇太后遷於永安宮；卷九注文指明此遷由董卓所為，並記丙子董卓殺皇太后何氏。本內容包只採公元年級觸發，不把漢曆月日映射到遊戲日期。',causes:['palace-succession-crisis','dong-zhuo-central-control'],carrier:'朝廷與董卓勢力（歷史事件）',carriersByCause:{'palace-succession-crisis':'宮廷繼承危機（因果承載）','dong-zhuo-central-control':'董卓及其中央控制力量（因果承載）'},description:'並列四月少帝即位及劉協封王、九月甲戌劉協即皇帝位（年九歲）、遷皇太后於永安宮與丙子董卓殺何太后等原典記事。雖原典記有漢曆月日，遊戲仍只在 189 年形成一筆年級節點；不換算成遊戲日期、不推演未載動機或權力後果，也不代替完整朝廷模擬。',sourceDateNote:'《後漢書》卷九〈孝獻帝紀〉將少帝即位繫於中平六年四月，九月甲戌獻帝即位，並記丙子董卓殺何太后；卷九注文稱遷皇太后於永安宮為董卓所為。僅保留原典日期精度，遊戲只按 189 年觸發，不映射模型月份或日數。',introducedRevision:2 },
   { id:'eastern-coalition-capital-relocation-190',kind:EVENT_KIND,title:'關東州郡起兵與獻帝遷都長安',...sameYear(190),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉記初平元年春正月山東州郡起兵；二月丁亥遷都長安；三月乙巳車駕入長安、幸未央宮，己酉董卓焚洛陽宮廟及人家。《三國志》卷一〈魏書·武帝紀〉亦記關東州郡起兵討董卓、遷都長安並焚毀洛陽宮室。本內容包保留原典月日次序，但只按 190 年級觸發，不推定模型日期。',causes:['eastern-coalition-190','imperial-court-relocation'],carrier:'關東州郡與董卓（歷史事件）',description:'並列正月關東州郡起兵、二月朝廷遷都長安、三月車駕入長安及董卓焚毀洛陽宮廟與人家等原典記事；不將州郡聯軍寫成單一統一軍隊，也不推演完整戰事、各地控制或模型日期。',sourceDateNote:'《後漢書》卷九記初平元年春正月山東州郡起兵；二月乙亥太尉黃琬、司徒楊彪免，庚辰董卓殺伍瓊、周珌，丁亥遷都長安；三月乙巳車駕入長安、幸未央宮，己酉董卓焚洛陽宮廟及人家。遊戲仍只按 190 年級觸發，保留原典次序，不換算成遊戲日期。',introducedRevision:26 },
+  { id:'hongnong-prince-killed-190',kind:EVENT_KIND,title:'董卓殺弘農王',...sameYear(190),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平元年春正月記「辛亥，大赦天下。癸酉，董卓殺弘農王」。本節點只記來源所載記事，不推測死因、地點、處置過程或未載政治後果；不建立玩家死亡硬節點。',carrier:'弘農王與董卓（史料記事）',description:'記錄董卓殺弘農王的史書記事；只按 190 年級呈現，不推測死因、處置細節或後續政治影響，也不改動玩家人物狀態。',sourceDateNote:'《後漢書》卷九初平元年春正月記大赦，癸酉記董卓殺弘農王；保留漢曆干支，不換算成遊戲日期。',introducedRevision:343 },
+  { id:'dong-zhuo-kills-wu-qiong-zhou-bi-190',kind:EVENT_KIND,title:'董卓殺伍瓊、周珌',...sameYear(190),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平元年二月庚辰記「董卓殺城門校尉伍瓊、督軍校尉周珌」。只記原文所載，不補兩人參與聯軍的動機、死亡過程或其他涉事者。',carrier:'伍瓊、周珌與董卓（史料記事）',description:'記錄董卓殺城門校尉伍瓊、督軍校尉周珌；不推測動機、司法程序、死亡過程或對其他人物的未載影響。',sourceDateNote:'《後漢書》卷九初平元年二月庚辰記董卓殺伍瓊、周珌；保留漢曆干支，不換算成遊戲日期。',introducedRevision:343 },
+  { id:'yuan-wei-yuan-ji-executed-clan-190',kind:EVENT_KIND,title:'董卓殺袁隗、袁基並夷其族',...sameYear(190),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平元年三月戊午記董卓殺太傅袁隗、太僕袁基並夷其族；注文說明袁隗為袁紹叔父、袁基與袁術為同母兄弟，並引《獻帝春秋》稱尺口以上男女五十餘人皆下獄死。本節點不把注文擴寫為完整名單或死亡統計。',carrier:'袁隗、袁基及袁氏族人（史料記事）',description:'記錄董卓殺袁隗、袁基及夷族的本紀記事；保留注文異文來源，不推演完整家族名單、程序、傷亡總數或權力後果。',sourceDateNote:'《後漢書》卷九初平元年三月戊午記董卓殺袁隗、袁基並夷其族；注文另引《獻帝春秋》所載下獄者概數。保留漢曆干支與正文、注文界線，不換算遊戲日期。',introducedRevision:343 },
+  { id:'white-wave-raids-hedong-190',kind:EVENT_KIND,title:'白波賊寇河東，牛輔奉命出擊',...sameYear(190),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平元年冬十月記「白波賊寇河東，董卓遣其將牛輔擊之」。注文引薛瑩《書》稱黃巾郭泰等起於西河白波谷、時人稱白波賊。本節點保留本紀與注文各自表述，不推測兩者以外的組織細節或此次出擊結果。',carrier:'白波賊、牛輔與河東（史料記事）',description:'記錄白波賊侵擾河東、董卓遣牛輔出擊；注文另述白波賊稱呼來源。原典未在本條記此次出擊結果，不推演戰況、傷亡或後續控制。',sourceDateNote:'《後漢書》卷九初平元年冬十月記白波賊寇河東、董卓遣牛輔擊之；保留月份，不推定戰役結果或換算遊戲日期。',introducedRevision:343 },
+  { id:'dong-zhuo-appointed-chancellor-190',kind:EVENT_KIND,title:'董卓自為相國',...sameYear(190),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉初平元年十一月癸酉記「董卓為相國」。只記任命記事，不推定制度變化、實際權限或其他未載政策效果。',carrier:'董卓與漢廷（史料記事）',description:'記錄董卓於十一月任相國；不推演官制效果、權力範圍或未載政令。',sourceDateNote:'《後漢書》卷九初平元年十一月癸酉記董卓為相國；保留漢曆月份及干支，不換算遊戲日期。',introducedRevision:343 },
   { id:'liu-yu-installation-proposal-191',kind:EVENT_KIND,title:'袁紹、韓馥等議奉劉虞為主',...sameYear(191),precision:YEAR_PRECISION,source:'《後漢書》卷一〇三〈劉虞傳〉明記初平二年冀州刺史韓馥、勃海太守袁紹及山東諸將議立劉虞為主，劉虞拒絕；本內容包採年級精度。',carrier:'韓馥、袁紹及山東諸將（歷史事件）',description:'記錄諸將提出奉劉虞為主及劉虞拒絕；不寫成已即帝位，不推演政權合法性或州郡控制。',introducedRevision:26 },
   { id:'dong-zhuo-killed-192',kind:EVENT_KIND,title:'董卓遇弒與李傕、郭汜攻陷長安',...sameYear(192),precision:YEAR_PRECISION,source:'《三國志》卷六〈魏書·董二袁劉傳〉記初平三年王允、士孫瑞與呂布共謀殺董卓；其後李傕、郭汜等攻長安，城陷並殺王允。本內容包採年級精度，不推定模型月日。',causes:['dong-zhuo-central-control','regional-arms-resistance'],carrier:'董卓舊部與漢廷（歷史事件）',carriersByCause:{'dong-zhuo-central-control':'仍維持董卓舊部中央武裝的勢力（因果承載）','regional-arms-resistance':'反董武裝與地方勢力（因果承載）'},description:'記錄董卓被殺，以及其舊部攻陷長安、王允遇害的年級轉折；不模擬完整圍城、人口死傷或各地控制變化。',introducedRevision:22 },
   { id:'qingzhou-yellow-turbans-surrender-192',kind:EVENT_KIND,title:'青州黃巾入兗與受降編為青州兵',...sameYear(192),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉記初平三年青州黃巾進入兗州、殺任城相鄭遂並轉入東平；劉岱出擊身死。其後曹操追至濟北受降，來源稱降卒三十餘萬、男女百餘萬口，並記收其精銳者號為青州兵。人數照錄為原典概數，不視作現代精確統計；遊戲僅按 192 年級呈現。',causes:['qingzhou-yellow-turban-invasion-192'],carrier:'青州黃巾、兗州地方官軍與曹操部（史料記載）',description:'記錄青州黃巾入兗、鄭遂遇害、劉岱出擊身死，以及曹操追至濟北受降並收其精銳稱青州兵的來源敘事；不推演完整戰役、精確人口、軍隊編制細節、平民命運或州郡控制變化。',introducedRevision:167 },
@@ -592,6 +597,11 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'bao-hong-imprisoned-dies-189': '原史紀年：《後漢書》卷八中平六年三月記下軍校尉鮑鴻下獄死；只按 189 年級觸發，不推測案情或死因。',
   'ling-emperor-dies-bian-succeeds-189': '原史紀年：《後漢書》卷八中平六年夏四月丙辰記靈帝崩、戊午皇子辯即位；保留漢曆干支，僅按年級觸發。',
   'he-jin-killed-eunuch-palace-crisis-189': '原史紀年：《後漢書》卷八中平六年秋八月記何進遇害及少帝、陳留王一度離宮後還宮；保留月份，不補戰事細節。',
+  'hongnong-prince-killed-190': '原史紀年：《後漢書》卷九初平元年春正月記大赦及董卓殺弘農王，分保干支順序；不換算模型日期或推測死因。',
+  'dong-zhuo-kills-wu-qiong-zhou-bi-190': '原史紀年：《後漢書》卷九初平元年二月庚辰記董卓殺伍瓊、周珌；保留漢曆干支，不推測動機。',
+  'yuan-wei-yuan-ji-executed-clan-190': '原史紀年：《後漢書》卷九初平元年三月戊午記董卓殺袁隗、袁基並夷其族；注文概數另列，不作完整名單。',
+  'white-wave-raids-hedong-190': '原史紀年：《後漢書》卷九初平元年冬十月記白波賊寇河東、牛輔奉命出擊；原文未載出擊結果。',
+  'dong-zhuo-appointed-chancellor-190': '原史紀年：《後漢書》卷九初平元年十一月癸酉記董卓為相國；保留漢曆月份與干支。',
   'zhang-xiu-ba-commander-revolt-184': '原史紀年：《後漢書》卷八中平元年秋七月記巴郡妖巫張脩反、寇郡縣；遊戲只按 184 年級觸發，不推定戰事日期。',
   'henan-yin-xu-guan-dies-in-prison-184': '原史紀年：《後漢書》卷八中平元年秋七月記河南尹徐灌下獄死；遊戲只按 184 年級觸發，不推定案情或執行日期。',
   'huangfu-song-cangting-captures-yellow-turban-leader-184': '原史紀年：《後漢書》卷八中平元年八月記皇甫嵩與黃巾戰於倉亭，獲其帥；注文辨其帥為卜已（異本作卜己）。遊戲只按 184 年級觸發。',

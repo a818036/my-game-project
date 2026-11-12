@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(258);
+    expect(withinCatalogYears).toHaveLength(263);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -249,11 +249,16 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'amnesty-and-zhongping-era-begins-184': ['十二月己巳', '大赦天下，改元中平'],
       'xiapi-prince-yi-dies-without-heir-184': ['是歲', '下邳王意薨，無子，國除'],
       'reports-of-unusual-plants-184': ['是歲', '郡國生異草'],
+      'hongnong-prince-killed-190': ['癸酉', '董卓殺弘農王'],
+      'dong-zhuo-kills-wu-qiong-zhou-bi-190': ['二月庚辰', '董卓殺城門校尉伍瓊'],
+      'yuan-wei-yuan-ji-executed-clan-190': ['三月戊午', '董卓殺太傅袁隗'],
+      'white-wave-raids-hedong-190': ['冬十月', '白波賊寇河東'],
+      'dong-zhuo-appointed-chancellor-190': ['十一月癸酉', '董卓為相國'],
       'wu-xiangyang-jiangxia-campaign-236': ['嘉禾五年', '攻襄陽'],
       'taoxi-campaign-247': ['正始八年', '戰於洮西'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(149);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(154);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -522,6 +527,11 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'zhang-chun-wuhuan-revolt-187',
       'palace-succession-189',
       'eastern-coalition-capital-relocation-190',
+      'hongnong-prince-killed-190',
+      'dong-zhuo-kills-wu-qiong-zhou-bi-190',
+      'yuan-wei-yuan-ji-executed-clan-190',
+      'white-wave-raids-hedong-190',
+      'dong-zhuo-appointed-chancellor-190',
       'sun-quan-appoints-lu-xun-chancellor-244',
       'zhu-ran-zha-zhong-246',
       'sun-quan-hefei-bridge-retreat-214',
@@ -546,7 +556,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(149);
-    expect(uniqueNotedEvents.size).toBe(364);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(154);
+    expect(uniqueNotedEvents.size).toBe(369);
   });
 });
