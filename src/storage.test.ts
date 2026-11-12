@@ -1270,4 +1270,27 @@ describe('A05／A06 存檔交易與重播', () => {
     const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
     expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
   },30_000);
+
+  it('A750 v372 219 年 v6 JSON 升級後跨年至 220 年觸發日食並可重播',()=>{
+    const current=makeSave('phase6-v372-jianan-25',184),start=current.events[0];if(start.type!=='WorldCreated')throw new Error('expected opening event');
+    const oldStart:GameEvent={...start,payload:{...start.payload,phase4ContentVersion:'phase4-scenario-372'}};
+    let oldState=applyEvent(null,oldStart);if(!oldState)throw new Error('could not build v372 fixture');
+    const oldEvents:GameEvent[]=[oldStart];
+    for(let year=185;year<=219;year++){
+      const continued=dispatch(oldState,{version:ENGINE_VERSION,commandId:`phase6-v372-jianan-25-${year}`,expectedRevision:oldState.revision,worldlineId:oldState.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+      if(!continued.state||!continued.event)throw new Error('could not advance the v372 fixture');
+      oldState=continued.state;oldEvents.push(continued.event);
+    }
+    const old:SaveFile={...current,worldlineId:oldState.worldlineId,events:oldEvents,state:oldState},migrated=verifySave(toJson(old));
+    const id='solar-eclipse-jianan-25-220';
+    expect(migrated.events[0]).toEqual(oldStart);
+    expect(migrated.events.slice(0,oldEvents.length)).toEqual(oldEvents);
+    expect(migrated.events.at(-1)).toMatchObject({type:'Phase4ContentUpdated',payload:{contentVersion:PHASE4_CONTENT_VERSION}});
+    expect(migrated.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
+    const continued=dispatch(migrated.state,{version:ENGINE_VERSION,commandId:'phase6-v372-jianan-25-continue',expectedRevision:migrated.state.revision,worldlineId:migrated.worldlineId,type:'Phase4Action',action:{type:'AdvanceDays',days:360}});
+    if(!continued.state||!continued.event)throw new Error('could not continue v372 fixture');
+    expect(continued.state.phase4?.nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
+    const saved:SaveFile={...migrated,events:[...migrated.events,continued.event],state:continued.state};
+    expect(replay(saved.events)).toEqual(saved.state);expect(verifySave(toJson(saved))).toEqual(saved);
+  },30_000);
 });
