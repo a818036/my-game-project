@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-324';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-325';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:322},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:323},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -152,6 +152,13 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'pingzhun-renamed-zhongzhun-175',kind:EVENT_KIND,title:'改平準為中準並以宦者為令',...sameYear(175),precision:YEAR_PRECISION,source:HH8+'熹平四年條記「改平準為中準，使宦者為令，列於內署」，並述自是諸署悉以宦者為丞、令。原文不說明其財政成效。',carrier:'漢廷與內署（史料記載）',description:'記錄平準改稱中準及宦者任令，並保留原文所述各署任用概況；不推測制度成效、財政收入或玩家經濟變動。',sourceDateNote:'《後漢書》卷八熹平四年於繫囚贖令及尊拜記事後記平準改中準，未另標月份；只按 175 年級觸發。',introducedRevision:323 },
   { id:'han-campaign-against-xianbei-defeated-177',kind:EVENT_KIND,title:'漢軍三路出塞征鮮卑失利',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年條記朝廷於秋八月分三路伐鮮卑：田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並記「晏等大敗」。《資治通鑑》卷五十七補述夏育先請出兵、朝廷議論中蔡邕反對，靈帝未從其議；各路將萬騎、出塞二千餘里，檀石槐命三部大人迎戰，漢軍大敗，三將各帶數十騎退還並下獄，後贖為庶人。《資治通鑑》另以「死者什七八」記載傷亡比例；《後漢書》本紀未列傷亡數。本內容包保留兩書詳略，不換算成精確傷亡總數或遊戲兵力。',carrier:'漢廷出塞諸軍、南匈奴與鮮卑（史料記載）',description:'呈現熹平六年夏育請求出塞、朝廷議論、蔡邕反對、靈帝仍決定出兵及秋八月三路行軍戰敗的史料次序。《後漢書》記田晏出雲中、臧旻與南單于出雁門、夏育出高柳，並稱「晏等大敗」；《資治通鑑》補記各路將萬騎、出塞二千餘里、檀石槐部三部迎戰、漢軍死者「什七八」、三將帶數十騎退還及後續處置。比例只作原書引述，不計算精確人數；不把史載部署寫成玩家部隊狀態、完整戰線或新增具名傷亡名冊。',sourceDateNote:'《後漢書》卷八記熹平六年秋八月三路出兵；《資治通鑑》卷五十七記同年秋七月夏育請兵與朝議、八月出征。遊戲只按 177 年級呈現，不把漢曆日期換算為模型時間。',introducedRevision:145 },
   { id:'xianbei-raids-liaoxi-177',kind:EVENT_KIND,title:'鮮卑寇遼西',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年條記鮮卑寇遼西，未述結果或損失。',carrier:'鮮卑與遼西（史載）',description:'只記鮮卑寇遼西；不補戰事、傷亡或控制變化，不推演與三路出塞的關係。',sourceDateNote:'《後漢書》卷八熹平六年條此句未標月份；遊戲只按 177 年級觸發。',introducedRevision:250 },
+  { id:'amnesty-xiping-6-177',kind:EVENT_KIND,title:'熹平六年大赦天下',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年春正月辛丑記「大赦天下」；原文未述赦免個案或實際執行情況。',carrier:'漢廷與受詔者（史料記載）',description:'記錄熹平六年春正月大赦天下；不推定赦免對象、個案結果或玩家法律狀態。',sourceDateNote:'《後漢書》卷八熹平六年春正月辛丑記大赦天下；保留漢曆註記，只按 177 年級觸發。',introducedRevision:325 },
+  { id:'xuling-filial-commendation-177',kind:EVENT_KIND,title:'宣陵孝子數十人除太子舍人',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年條記「市賈民為宣陵孝子者數十人，皆除太子舍人」。保留原文稱謂與概數，不擅自解釋身分或任用制度。',carrier:'宣陵孝子與漢廷（史料記載）',description:'記錄史書所載數十人被除為太子舍人；不將「數十」換算為確數，不推定人物名單、選任標準或實際履職。',introducedRevision:325 },
+  { id:'xianbei-raids-three-frontiers-177',kind:EVENT_KIND,title:'鮮卑寇三邊',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年條另記「鮮卑寇三邊」，未說明具體地點、月份或侵擾結果。',carrier:'鮮卑與漢廷三邊（史料記載）',description:'記錄熹平六年鮮卑侵擾三邊；原文未列具體地點、傷亡或控制變化，不與 176 年《資治通鑑》記事或 177 年三路出塞合併推演。',introducedRevision:325 },
+  { id:'chen-qiu-appointed-sikong-177',kind:EVENT_KIND,title:'陳球任司空',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年秋七月記司空劉逸免，衞尉陳球為司空；原文未述免職原因或交接日。',carrier:'劉逸、陳球與漢廷（史料記載）',description:'記錄七月劉逸免司空、陳球由衞尉任司空；不推測免職原因、交接日或任期。',sourceDateNote:'《後漢書》卷八熹平六年秋七月記劉逸免、陳球為司空；只保留漢曆月份，不換算模型日期。',introducedRevision:325 },
+  { id:'xiping-6-autumn-eclipse-biyong-earthquake-ransom-177',kind:EVENT_KIND,title:'日食、臨辟雍、京師地震及繫囚入贖',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年冬十月記癸丑朔日食，帝臨辟雍，辛丑京師地震，辛亥令天下繫囚罪未決入縑贖；按原文順序合列，不推定彼此因果。',carrier:'漢廷、京師與繫囚罪未決者（史料記載）',description:'依原文順序記錄冬十月日食、皇帝臨辟雍、京師地震及繫囚入縑贖令；不推測天象與地震成因、災損、贖額或個案結果。',sourceDateNote:'《後漢書》卷八熹平六年冬十月記癸丑朔日食、辛丑地震及辛亥繫囚入贖令；保留原文干支與先後，遊戲僅按年級觸發。',introducedRevision:325 },
+  { id:'meng-yu-appointed-taiwei-chen-dan-sikong-177',kind:EVENT_KIND,title:'孟戫任太尉、陳球免與陳耽任司空',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年十一月記司空陳球免；十二月甲寅太常孟戫為太尉、庚辰司徒楊賜免、太常陳耽為司空。分列原文任免，不推定未載交接原因。',carrier:'陳球、孟戫、楊賜、陳耽與漢廷（史料記載）',description:'記錄十一月至十二月司空陳球免、孟戫任太尉、楊賜免司徒及陳耽任司空；不補任免原因、未載的職位承接或任期。',sourceDateNote:'《後漢書》卷八熹平六年十一月、十二月甲寅與庚辰記事；保留漢曆月份及干支，僅按 177 年級觸發。',introducedRevision:325 },
+  { id:'wang-min-dies-in-prison-177',kind:EVENT_KIND,title:'永安太僕王旻下獄死',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年條記「永安太僕王旻下獄死」，未另標月份或說明案由。',carrier:'永安太僕王旻（史料記載）',description:'記錄王旻下獄而死；原文未載月份、案由或審判過程，不補推個人罪名與政治因果。',introducedRevision:325 },
   { id:'southern-palace-pingcheng-gate-arsenal-wall-collapse-177',kind:EVENT_KIND,title:'南宮平城門及武庫東垣屋自壞',...sameYear(177),precision:YEAR_PRECISION,source:HH8+'熹平六年二月記南宮平城門及武庫東垣屋自壞；原文未載成因或損害範圍。',carrier:'南宮與武庫（史料記載）',description:'記錄南宮平城門及武庫東垣屋自壞；不推定成因、傷亡、修復或後續影響。',sourceDateNote:'《後漢書》卷八熹平六年二月條記南宮平城門及武庫東垣屋自壞；保留漢曆月份，只按 177 年級觸發。',introducedRevision:251 },
   { id:'xidi-sale-178',kind:EVENT_KIND,title:'西邸售官',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年記初開西邸賣官，原文列公千萬、卿五百萬。',carrier:'漢廷',description:'只記來源所載，不推算購買力、任官結果或玩家經濟效果。',introducedRevision:252 },
   { id:'xianbei-raids-jiuquan-178',kind:EVENT_KIND,title:'鮮卑寇酒泉',...sameYear(178),precision:YEAR_PRECISION,source:HH8+'光和元年記「是歲，鮮卑寇酒泉」；原條未詳月份、戰事或結果。',carrier:'鮮卑與酒泉地方（史料記載）',description:'只記來源所載侵擾，不推演戰事、傷亡或控制變化。',introducedRevision:253 },
