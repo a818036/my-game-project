@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-330';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-331';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:328},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:329},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -260,6 +260,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'solar-eclipse-guanghe-4-181',kind:EVENT_KIND,title:'光和四年九月庚寅朔日食',...sameYear(181),precision:YEAR_PRECISION,source:HH8+'光和四年九月庚寅朔記「日有食之」。只記原文天象與曆日，不推算現代日期、可見範圍、成因或政治含義。',carrier:'漢廷天象記事（史料記載）',description:'記錄九月庚寅朔日食；不推算現代曆日、觀測地、天文參數或政治後果。',sourceDateNote:'《後漢書》卷八光和四年九月庚寅朔記日食；保留漢曆日期，只按 181 年級觸發，不換算模型日期。',introducedRevision:329 },
   { id:'north-palace-yongxiang-office-fire-181',kind:EVENT_KIND,title:'北宮東掖庭永巷署災',...sameYear(181),precision:YEAR_PRECISION,source:HH8+'光和四年閏月辛酉記「北宮東掖庭永巷署災」。只記史書所載火災記事，不推測起火原因、損害、傷亡或宮署後續。',carrier:'北宮東掖庭永巷署（史書記事）',description:'記錄北宮東掖庭永巷署發生災害；原文未說明火因、損失或處置，不補推相關情節。',sourceDateNote:'《後漢書》卷八光和四年閏月辛酉記北宮東掖庭永巷署災；保留漢曆閏月干支，只按 181 年級觸發。',introducedRevision:329 },
   { id:'great-amnesty-guanghe-4-181',kind:EVENT_KIND,title:'光和四年夏四月大赦天下',...sameYear(181),precision:YEAR_PRECISION,source:HH8+'光和四年夏四月庚子，大赦天下。原典未於此句說明赦免對象、例外或個案結果。',carrier:'漢廷與受赦者（史料記事）',description:'記錄夏四月大赦天下；不推定赦免對象、例外、執行情況或個別案件結果。',sourceDateNote:'《後漢書》卷八光和四年夏四月庚子記大赦天下。保留漢曆年月干支，只按 181 年級觸發，不換算模型日期。',introducedRevision:330 },
+  { id:'great-amnesty-guanghe-5-182',kind:EVENT_KIND,title:'光和五年春正月大赦天下',...sameYear(182),precision:YEAR_PRECISION,source:HH8+'光和五年春正月條記休屠各胡寇西河、殺郡守邢紀；其後記「丁酉，大赦天下」。原典未說明赦免對象、例外或執行情況。',carrier:'漢廷與受赦者（史料記事）',description:'記錄春正月大赦天下；不推定赦免對象、例外、執行情況或個別案件結果，亦不推定該赦令與同條西河戰事的因果關係。',sourceDateNote:'《後漢書》卷八光和五年春正月條於休屠各胡寇西河、殺郡守邢紀後記「丁酉，大赦天下」。保留篇章次序與漢曆干支，只按 182 年級觸發，不換算模型日期。',introducedRevision:331 },
   { id:'bajun-banshun-submit-182',kind:EVENT_KIND,title:'板楯蠻向巴郡太守曹謙降服',...sameYear(182),precision:YEAR_PRECISION,source:HH8+'光和五年秋七月條記「巴郡板楯蠻詣太守曹謙降」。《後漢書》卷八十六〈南蠻西南夷列傳〉另敘靈帝遣曹謙宣詔赦之、板楯即皆降服；該傳將復叛繫於光和三年，校記指出本紀及《華陽國志》作光和二年。保留兩傳敘事與繫年，不把列傳繫年改作本節點降服年份。',carrier:'巴郡板楯蠻與巴郡太守曹謙（史料記載）',description:'本節點按本紀光和五年所記降服記事呈現；列傳補有程包陳述更賦、徭役等背景及曹謙宣詔赦降的敘事，但其復叛繫年與本紀不同。來源沒有為列傳中的宣詔降服另標日期，因此不把 180 年當作降服年，也不補推與 179 年討伐未克之間的經過。',sourceDateNote:'《後漢書》卷八將曹謙受降記事繫於光和五年秋七月；卷八十六的敘事前記板楯復叛於光和三年，校記指出《孝靈帝紀》及《華陽國志》作光和二年。列傳未另標宣詔降服的年份；遊戲依本紀將本事件定為 182 年級，不換算漢曆月日。',introducedRevision:158 },
   { id:'taiwei-xu-yang-succession-182',kind:EVENT_KIND,title:'太尉許戫免職，太常楊賜繼任',...sameYear(182),precision:YEAR_PRECISION,source:HH8+'光和五年冬十月記「太尉許戫罷，太常楊賜為太尉」。按年級呈現；不推測免職原因、交接日或任期。',carrier:'許戫與楊賜（史書任免記事）',description:'記錄原文所載太尉更替；不推演免職原因、任期或其他官制效果。',introducedRevision:222 },
   { id:'xianbei-raids-you-bing-181',kind:EVENT_KIND,title:'鮮卑寇幽、并二州',...sameYear(181),precision:YEAR_PRECISION,source:HH8+'光和四年條記「鮮卑寇幽并二州」。本節點按年級精度呈現，不推演各地戰線、傷亡或疆界變化。',carrier:'鮮卑與幽、并二州地方（史料記載）',description:'記錄鮮卑侵擾幽、并二州；不擴寫成未見於該條的戰役、兵力或地方控制結果。',introducedRevision:146 },
