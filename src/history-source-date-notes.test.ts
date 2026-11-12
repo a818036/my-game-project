@@ -403,6 +403,11 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'earthquake-sea-overflow-clear-river-181',
       'hedong-earth-split-hail-mountain-water-181',
       'great-epidemic-medical-relief-181',
+      'lujisi-stable-and-horse-market-181',
+      'prefectures-report-zhi-ying-grass-181',
+      'phoenix-reported-xincheng-181',
+      'solar-eclipse-guanghe-4-181',
+      'north-palace-yongxiang-office-fire-181',
       'bajun-banshun-submit-182',
       'chen-dan-yuan-wei-minister-of-masses-182',
       'comet-at-taiwei-182',
@@ -458,6 +463,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(96);
-    expect(uniqueNotedEvents.size).toBe(303);
+    expect(uniqueNotedEvents.size).toBe(308);
   });
 });
