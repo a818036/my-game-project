@@ -6,8 +6,8 @@ const persons:PersonRef[]=[];
 
 describe('A739 補列 209 年荊州地震記事',()=>{
   it('依原典記錄冬十月荊州地震，保持年級精度與災害推論界線',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(618);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-362');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(619);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-363');
     const content=HISTORY_CONTENT.find(item=>item.id===id);
     expect(content).toMatchObject({kind:'event',startYear:209,endYear:209,precision:'year',introducedRevision:362});
     expect(content?.source).toContain('建安十四年冬十月記荊州地震');
@@ -19,7 +19,7 @@ describe('A739 補列 209 年荊州地震記事',()=>{
   it('v361 舊 v6 存檔升至 v362 保留事件帳前綴並可跨年觸發',()=>{
     const prior=createPhase4Model(208,1,persons,'phase4-scenario-361');
     const prefix=structuredClone(prior.eventLedger);
-    const upgraded=upgradePhase4Content(prior,PHASE4_CONTENT_VERSION);
+    const upgraded=upgradePhase4Content(prior,'phase4-scenario-362');
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(advancePhase4(upgraded,360).nodes.find(node=>node.contentId===id)?.status).toBe('triggered');
@@ -27,7 +27,7 @@ describe('A739 補列 209 年荊州地震記事',()=>{
 
   it('已到 209 年與 210 年的存檔升版不回補新增記事',()=>{
     for(const year of [209,210]){
-      const late=upgradePhase4Content(createPhase4Model(year,1,persons,'phase4-scenario-361'),PHASE4_CONTENT_VERSION);
+      const late=upgradePhase4Content(createPhase4Model(year,1,persons,'phase4-scenario-361'),'phase4-scenario-362');
       expect(late.nodes.find(node=>node.contentId===id)).toMatchObject({status:'resolved',resolvedYear:209});
       expect(late.eventLedger.some(event=>event.source===HISTORY_CONTENT.find(item=>item.id===id)?.source)).toBe(false);
     }
