@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(385);
+    expect(withinCatalogYears).toHaveLength(388);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -194,7 +194,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'drought-and-rainwater-214': ['夏四月記「旱」', '五月記「雨水」'],
       'xiahou-yuan-captures-song-jian-214': ['冬十月記曹操遣將夏侯淵', '討宋建於枹罕，獲之'],
       'empress-fu-killed-214': ['十一月丁卯', '滅其族及二皇子'],
-      'cao-crowned-king-of-wei-216': ['建安二十一年五月記天子進公爵'],
+      'cao-crowned-king-of-wei-216': ['夏四月甲午曹操自進號魏王','建安二十一年五月記天子進公爵'],
       'zhugeliang-moves-to-hanzhong-227': ['建興五年春丞相亮出屯漢中'],
       'shu-yang-yi-demoted-jiang-wan-promoted-235': ['建興十三年春正月', '夏四月'],
       'wu-lu-dai-luling-revolt-response-235': ['嘉禾三年冬記廬陵李桓', '嘉禾四年夏條承前記遣呂岱'],
@@ -689,6 +689,9 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'sun-quan-captures-wancheng-214',
       'cao-consort-made-empress-215',
       'han-zhong-campaign-215',
+      'han-eclipse-jianan-21-216',
+      'southern-xiongnu-chanyu-court-216',
+      'langya-prince-xi-killed-216',
       'sun-quan-hunts-tiger-lingting-218',
       'guan-yu-falls-219',
       'sun-quan-declines-imperial-title-221',
@@ -710,6 +713,6 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(181);
-    expect(uniqueNotedEvents.size).toBe(495);
+    expect(uniqueNotedEvents.size).toBe(498);
   });
 });
