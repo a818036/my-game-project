@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-310';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-311';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH86='《後漢書》卷八十六〈南蠻西南夷列傳〉';
@@ -15,7 +15,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:308},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:309},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -93,6 +93,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'qiang-incursions-167',kind:EVENT_KIND,title:'永康元年先零、當煎羌侵擾與官軍討擊',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條：春正月先零羌寇三輔，張奐破之；當煎羌寇武威，段熲追擊於鸞鳥大破。夏四月先零羌再寇三輔，冬十月張奐擊破之。「西羌悉平」不解作全年無後續；記事不合併為單一戰事。',carrier:'先零羌、當煎羌、張奐與段熲（史料記載）',description:'記羌事；不推演戰果。',sourceDateNote:'原典記春正月、夏四月、冬十月；遊戲只按 167 年級呈現，不換算模型月份。',introducedRevision:227 },
   { id:'capital-and-shangdang-earth-split-167',kind:EVENT_KIND,title:'京師及上黨地裂',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年五月丙申記「京師及上黨地裂」。只保留原文所載現象與地名，不推定成因、範圍、損害或政治含義。',carrier:'京師、上黨（史料記載）',description:'記錄五月丙申京師及上黨地裂；不推測災情、地質成因、影響範圍或人員後果。',sourceDateNote:'《後漢書》卷七永康元年五月丙申記京師及上黨地裂；遊戲僅按 167 年級觸發，不換算漢曆日期為模型時間。',introducedRevision:309 },
   { id:'lujiang-raiders-167',kind:EVENT_KIND,title:'廬江賊起，侵擾郡界',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條記「廬江賊起，寇郡界」。原文未載起事者姓名、具體郡縣、規模、持續時間、戰事結果或傷亡；本內容包只按年級記錄。',carrier:'廬江賊及郡界（史料記載）',description:'記錄廬江賊起並侵擾郡界；不推定起事者身分、精確地點、規模、傷亡、平定結果或後續控制。',sourceDateNote:'《後漢書》卷七永康元年條記「廬江賊起，寇郡界」；遊戲只按 167 年級呈現，不補月份或換算為模型日期。',introducedRevision:310 },
+  { id:'solar-eclipse-yongkang-167',kind:EVENT_KIND,title:'永康元年壬子晦日日食',...sameYear(167),precision:YEAR_PRECISION,source:HH7+'永康元年條記「壬子晦，日有食之」。只記原文所載天象及曆日，不推算現代日期、可見範圍、成因或政治含義。',carrier:'漢廷天象紀錄（史料記載）',description:'記錄原典所載永康元年壬子晦日日食；不推測天文參數、觀測地、因果或政治後果。',sourceDateNote:'《後漢書》卷七永康元年條記「壬子晦，日有食之」；保留原史干支與晦日註記，遊戲僅按 167 年級觸發，不換算為模型日期。',introducedRevision:311 },
   { id:'duan-jiong-defeats-xianling-fengyishan-168',kind:EVENT_KIND,title:'段熲大破先零羌於逢義山',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'段熲大破先零羌於逢義山。',carrier:'段熲',description:'記大破。',sourceDateNote:'二月'+YEAR_TRIGGER,introducedRevision:233 },
   { id:'court-offices-reorganized-spring-168',kind:EVENT_KIND,title:'太尉與司空任免交替',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'夏四月太尉周景薨，司空宣酆免；長樂衛尉王暢為司空。五月太中大夫劉矩為太尉。',carrier:'周景、宣酆、王暢、劉矩與漢廷',description:'記職位更替。',sourceDateNote:'夏四月戊辰、五月'+YEAR_TRIGGER,introducedRevision:234 },
   { id:'wang-chang-liu-chong-succession-168',kind:EVENT_KIND,title:'三公官職秋冬交替',...sameYear(168),precision:YEAR_PRECISION,source:HH8+'八月司空王暢免，宗正劉寵為司空；十一月太尉劉矩免，太僕沛國聞人襲為太尉。',carrier:'王暢、劉寵、劉矩、聞人襲',description:'記八、十一月任免，不推定原因、任期或玩家官職。',sourceDateNote:'八月、十一月'+YEAR_TRIGGER,introducedRevision:236 },
