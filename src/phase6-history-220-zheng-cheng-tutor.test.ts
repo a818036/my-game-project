@@ -6,7 +6,7 @@ const detail = '任鄭稱為武德侯傅';
 
 describe('A809 裴注所載任鄭稱為武德侯傅', () => {
   it('保留裴注引《魏略》來源，且不把五月戊寅套用於注中任命', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-435');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-436');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 430 });
     expect(content.source).toContain('裴松之注引《魏略》');

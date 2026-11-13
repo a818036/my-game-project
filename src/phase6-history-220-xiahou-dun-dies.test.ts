@@ -6,7 +6,7 @@ const detail = '大將軍夏侯惇薨';
 
 describe('A797 補列延康元年夏四月夏侯惇去世記事', () => {
   it('保留四月庚午原史日期註記，不推測死因或另建玩家死亡節點', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-435');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-436');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 418 });
     expect(content.source).toContain('延康元年夏四月');

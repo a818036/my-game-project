@@ -6,7 +6,7 @@ const detail = '孫權命三署依四科選用郎吏';
 
 describe('A813 嘉禾二年選任郎吏詔令', () => {
   it('保留裴注引《江表傳》的正月詔令與選任界線', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-435');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-436');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 233, endYear: 233, precision: 'year', introducedRevision: 434 });
     expect(content.source).toContain('裴注引《江表傳》');

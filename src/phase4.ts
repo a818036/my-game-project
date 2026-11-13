@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-435';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-436';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:433},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:434},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -681,6 +681,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'sun-quan-court-debate-on-suburban-sacrifice-232',kind:EVENT_KIND,title:'群臣議請郊祀，孫權答辯其地與典據',...sameYear(232),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾元年冬十月公孫淵稱藩記事下，裴注引《江表傳》記原文明記「是冬」；群臣因嘉瑞與遠方來附而奏請郊祀；孫權以當在土中、時地非宜為由答辯，群臣再引周文王、武王與匡衡之說，孫權仍據其理解反駁。裴注另引《志林》評議雙方典據，認為孫權批評匡衡並不周全。此處只記史載的奏議、答辯及裴注評論，不推定實際舉行郊祀或裁定禮學爭論。',carrier:'孫權、群臣及裴注所引《江表傳》《志林》（史料記載）',description:'記錄群臣請行郊祀、孫權以地點與典籍答辯，以及裴注《志林》對論據的評論；不推定祭祀實際舉行，不裁定經典爭議或政治正當性。',sourceDateNote:'《三國志》卷四十七嘉禾元年冬十月記事下，裴注引《江表傳》稱「是冬」群臣議郊祀；只保留冬季來源精度，遊戲按 232 年級呈現。',introducedRevision:433 },
   { id:'sun-quan-orders-three-offices-appointments-by-four-standards-233',kind:EVENT_KIND,title:'孫權命三署依四科選用郎吏',...sameYear(233),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾二年春記事下，裴注引《江表傳》載孫權正月詔，稱郎吏為宿衛之臣、古之命士，指出近來所用之人頗有不稱，命自今選三署皆依四科，不得以虛辭相飾。此處只記注文所載詔令，不推測後續選任、執行成效或官制實際變化。',carrier:'孫權與三署郎吏選任（裴注引《江表傳》）',description:'記錄裴注所引詔令要求依四科選任三署郎吏，並警惕以虛辭修飾；不推定實際候選人、選拔結果、官制變化或政策成效。',sourceDateNote:'嘉禾二年春正月，裴注引《江表傳》載詔；遊戲按 233 年級觸發，不換算為模型日期。',introducedRevision:434 },
   { id:'wu-envoys-attack-wei-garrisons-in-liaodong-233',kind:EVENT_KIND,title:'吳使赴遼東攻魏守將，俘獲男女',...sameYear(233),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾二年三月記遣使者羊衜、鄭冑及將軍孫怡赴遼東，並擊魏守將張持、高慮等，虜得男女。原文未載所獲人數、傷亡、戰鬥經過或後續安置；本節點只按年級記錄，不擴寫為全面攻取遼東。',carrier:'羊衜、鄭冑、孫怡與魏守將張持、高慮（史料記載）',description:'記錄吳廷派遣羊衜、鄭冑、孫怡赴遼東並擊魏守將、虜得男女；不補人數、傷亡、完整戰線或俘獲者後續安置。此事與張彌等冊立公孫淵的使團分開，不推定兩次任務的具體關係。',sourceDateNote:'嘉禾二年三月，遣羊衜、鄭冑、孫怡之遼東並擊魏守將；保留漢曆月份，不換算為模型日期。',introducedRevision:435 },
+  { id:'wu-builds-shaxian-233',kind:EVENT_KIND,title:'吳廷於沙羨築城',...sameYear(233),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾二年夏五月記「城沙羨」。原文未載工程規模、築城原因、建造時長或後續用途；本內容包只採年級精度。',carrier:'吳廷與沙羨（歷史記載）',description:'記錄《吳主傳》嘉禾二年夏五月所載城沙羨；不推測城址範圍、工程規模、軍政用途或其對周邊控制的影響。',sourceDateNote:'原史紀年：嘉禾二年夏五月記城沙羨。保留月份來源精度，遊戲只按 233 年觸發，不換算模型日期。',introducedRevision:436 },
   { id:'wu-liaodong-envoy-mission-232',kind:EVENT_KIND,title:'吳使赴遼東、周賀於成山遇截',...sameYear(232),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾元年記三月遣周賀、裴潛乘海赴遼東；九月魏將田豫於成山截擊並斬周賀；冬十月公孫淵遣宿舒、孫綜稱藩並獻貂馬，孫權加淵爵位。本內容包只採公元年級精度，不推演海程或遼東控制變化。',carrier:'周賀、裴潛與公孫淵（歷史記載）',description:'記錄吳廷遣使赴遼東、周賀於成山遭魏軍截擊，以及公孫淵後遣使稱藩；不擴寫為全面戰爭，也不推定遼東領土控制變化。',introducedRevision:73 },
   { id:'wu-liaodong-envoy-execution-233',kind:EVENT_KIND,title:'吳使冊封公孫淵，公孫淵轉而殺使',...sameYear(233),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾二年記三月孫權遣太常張彌、執金吾許晏、將軍賀達等將兵萬人，奉金寶珍貨與九錫備物乘海授公孫淵；淵斬張彌等、送其首於魏、沒其兵資。卷五十二〈吳書·張昭傳〉補記張昭曾諫稱公孫淵遠來求援未必本意，若改圖則使者將受天下譏笑；孫權與張昭反覆議論，張昭仍陳忠諫，孫權擲刀與之對泣，最後仍遣張彌、許晏。張昭傳未在此段另繫月日，不另推其與三月出使之間隔。原文未記萬人全數被殺，本節點不作此推斷；只採公元年級精度。',carrier:'孫權、公孫淵與吳廷使團（歷史記載）',description:'記錄吳廷冊命公孫淵、張昭進諫、孫權與張昭議論及使團遇害的史載；區分兩傳所述，不推定全體兵員死傷、張昭議論的月內日期、完整遼東戰事或領土控制變化。',introducedRevision:74 },
   { id:'shu-yang-yi-demoted-jiang-wan-promoted-235',kind:EVENT_KIND,title:'楊儀廢徙漢嘉、蔣琬進位大將軍',...sameYear(235),precision:YEAR_PRECISION,source:'《三國志》卷三十三〈蜀書·後主傳〉記建興十三年春正月「中軍師楊儀廢徙漢嘉郡」，夏四月「進蔣琬位為大將軍」。本內容包採公元年級精度，原文月份僅供來源核對。',carrier:'楊儀、蔣琬與蜀漢朝廷（歷史記載）',description:'並列同年對楊儀與蔣琬的處置記載；不補寫廢徙理由、完整官制權限、人物私下動機或玩家勢力變化。',introducedRevision:83 },
@@ -931,6 +932,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'sun-quan-court-debate-on-suburban-sacrifice-232': '原史紀年：《三國志》卷四十七嘉禾元年冬十月記事下，裴注引《江表傳》稱「是冬」群臣奏請郊祀、孫權答辯；只保留冬季，不推定更精確日期或郊祀已舉行。',
   'sun-quan-orders-three-offices-appointments-by-four-standards-233': '原史紀年：嘉禾二年春正月，裴注引《江表傳》載選任三署郎吏依四科之詔；保留漢曆來源月份，不換算為模型日期或推定執行效果。',
   'wu-envoys-attack-wei-garrisons-in-liaodong-233': '原史紀年：嘉禾二年三月遣羊衜、鄭冑、孫怡赴遼東並擊魏守將。保留月份及年級精度，不換算日數或推定俘獲後續。',
+  'wu-builds-shaxian-233': '原史紀年：嘉禾二年夏五月記城沙羨。保留夏、五月來源精度，遊戲只按 233 年觸發，不換算模型日期或推定工程規模。',
   'wu-liaodong-envoy-mission-232': '原史紀年：嘉禾元年三月遣使、九月遇截、冬十月公孫淵遣使。多段年內事件仍以年級觸發。',
   'wu-liaodong-envoy-execution-233': '原史紀年：《三國志》卷四十七記嘉禾二年三月遣使授命；卷五十二張昭傳補述進諫及後續議論，但未另繫月日。漢曆月份不換算為遊戲日曆日期。',
   'sun-he-crown-prince-and-zhuya-campaign-242': '原史紀年：赤烏五年正月立太子、四月詔令、七月出兵、八月立魯王。保留月序，不模擬月內日程。',
