@@ -6,8 +6,8 @@ const persons:PersonRef[]=[];
 
 describe('A739 補列 209 年荊州地震記事',()=>{
   it('依原典記錄冬十月荊州地震，保持年級精度與災害推論界線',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(704);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-438');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(705);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-439');
     const content=HISTORY_CONTENT.find(item=>item.id===id);
     expect(content).toMatchObject({kind:'event',startYear:209,endYear:209,precision:'year',introducedRevision:362});
     expect(content?.source).toContain('建安十四年冬十月記荊州地震');

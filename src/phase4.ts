@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-438';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-439';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:436},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:437},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -671,6 +671,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'sun-quan-shiting-campaign-228',kind:EVENT_KIND,title:'周魴誘曹休、孫權命陸遜破魏軍於石亭',...sameYear(228),precision:YEAR_PRECISION,source:SG47+'記黃武七年鄱陽太守周魴偽叛誘曹休，秋八月孫權至皖口，命陸遜督諸將大破曹休於石亭。本內容包採年級精度。',carrier:'孫權、周魴、陸遜、曹休與魏吳軍隊（歷史記載）',description:'記錄誘敵、孫權到皖口及陸遜在石亭擊破曹休；不推演兵力、傷亡數、完整戰術或疆界變更。',introducedRevision:97 },
   { id:'wu-abolishes-dongan-commandery-228',kind:EVENT_KIND,title:'吳廷罷東安郡',...sameYear(228),precision:YEAR_PRECISION,source:SG47+'黃武七年三月條記「罷東安郡」。',carrier:'吳廷與東安郡',description:'記罷郡；不推定後續縣郡歸屬或人口移置。',introducedRevision:381 },
   { id:'sun-quan-campaigns-at-hefei-234',kind:EVENT_KIND,title:'孫權進向合肥新城、分遣吳軍入淮沔',...sameYear(234),precision:YEAR_PRECISION,source:'《三國志》卷三〈魏書·明帝紀〉記青龍二年五月孫權入居巢湖口、向合肥新城，另遣陸議、孫韶各將萬餘人入淮、沔；六月滿寵進軍拒守，秋七月魏明帝親東征，孫權及陸議、孫韶各軍退回。卷四十七〈吳主傳〉記同年孫權下詔察農桑時役事、修城備盜及開倉賑貧。本內容包採年級精度，不將跨傳記載合併成逐日行程。',carrier:'孫權、陸議、孫韶及魏吳軍隊（歷史記載）',description:'記錄孫權進向合肥新城與分遣部隊入淮沔、滿寵進軍拒守及魏帝東征後各軍撤回；不推演戰鬥、路線、傷亡或疆界變更。',sourceDateNote:'原史紀年：青龍二年五月孫權向合肥新城，六月滿寵拒守，秋七月魏明帝東征、孫權諸軍退回。這些是漢曆月份，不映射為本遊戲 30 日制日期。',introducedRevision:98 },
+  { id:'luoyang-earthquake-234',kind:EVENT_KIND,title:'青龍二年十一月京都地震',...sameYear(234),precision:YEAR_PRECISION,source:'《三國志》卷三〈魏書·明帝紀〉青龍二年冬記「十一月，京都地震，從東南來，隱隱有聲，搖動屋瓦」。本內容包保留原文所記來向、聲響與屋瓦搖動，不推定震央、規模、損害、傷亡或因果。',causes:['luoyang-earthquake-234'],carrier:'京都地震記事（《明帝紀》記載）',description:'記錄原典所載十一月京都地震、震動由東南而來、隱隱有聲並搖動屋瓦；不推算震央、規模、建物損壞、傷亡或玩家資源。',sourceDateNote:'原史紀年：青龍二年十一月記京都地震。保留漢曆月份及史書描述，遊戲仍按 234 年級觸發，不換算為現代日期或模型月份。',introducedRevision:439 },
   { id:'zhugeliang-moves-to-hanzhong-227',kind:EVENT_KIND,title:'諸葛亮進屯漢中',...sameYear(227),precision:YEAR_PRECISION,source:'《三國志》卷三十三〈蜀書·後主傳〉記建興五年春丞相亮出屯漢中；卷三十五〈蜀書·諸葛亮傳〉記其後於建興六年出祁山。本內容包採公元年級精度。',causes:['shu-northern-expedition-preparation'],carrier:'蜀漢朝廷與漢中軍（歷史事件）',description:'記錄蜀漢北伐前的進屯與準備；不推演完整軍隊規模、屯田或疆界變更。',introducedRevision:19 },
   { id:'sun-quan-protects-families-of-defectors-227',kind:EVENT_KIND,title:'孫權下令不得因部下亡叛而殺其妻子',...sameYear(227),precision:YEAR_PRECISION,source:SG47+'裴松之注引《江表傳》載：「督將亡叛而殺其妻子，是使妻去夫，子棄父，甚傷義教，自今勿殺也。」此注文列於黃武七年記事段中，但沒有提供詔令月日；本內容包只採年級精度，明示為裴注所引材料。',carrier:'孫權與吳廷督將（裴注所引史料）',description:'記錄裴注所引材料中的禁令；不推演成完整司法制度、執行情況、適用範圍或人物動機。',introducedRevision:117 },
   { id:'wu-expedition-yizhou-230',kind:EVENT_KIND,title:'孫權遣衛溫、諸葛直浮海求夷洲',...sameYear(230),precision:YEAR_PRECISION,source:SG47+'黃龍二年條承前記遣衛溫、諸葛直率甲士萬人浮海求夷洲及亶洲，未至亶洲而得夷洲數千人還；此為孫權紀傳中的省略主語記事，本內容包只採公元年級精度。',causes:['wu-maritime-expedition-230'],carrier:'孫權、衛溫與諸葛直（《吳主傳》記事）',description:'記錄孫權紀傳中所載出海行動及史料所記返回人數；不將古地名直接對應現代地理，不推演航路、控制權或完整人口後果。',introducedRevision:20 },
@@ -937,6 +938,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'wu-builds-shaxian-233': '原史紀年：嘉禾二年夏五月記城沙羨。保留夏、五月來源精度，遊戲只按 233 年觸發，不換算模型日期或推定工程規模。',
   'liao-shi-revolt-lingling-guiyang-233': '原史紀年：嘉禾二年冬十月記蔣秘南討及廖式起事；「歲餘皆破」為跨年後續結果。保留先後次序，不推定平定的公元年或模型日期。',
   'sun-quan-edict-relieves-arrears-234': '原史紀年：嘉禾三年春正月，孫權詔寬諸逋、勿復督課；保留漢曆月份，遊戲只按 234 年級觸發，不推定執行結果。',
+  'luoyang-earthquake-234': '原史紀年：青龍二年十一月記京都地震，稱震動由東南而來、隱隱有聲、屋瓦搖動；不推測震央、規模與災損。遊戲按 234 年級觸發，不換算漢曆月份。',
   'wu-liaodong-envoy-mission-232': '原史紀年：嘉禾元年三月遣使、九月遇截、冬十月公孫淵遣使。多段年內事件仍以年級觸發。',
   'wu-liaodong-envoy-execution-233': '原史紀年：《三國志》卷四十七記嘉禾二年三月遣使授命；卷五十二張昭傳補述進諫及後續議論，但未另繫月日。漢曆月份不換算為遊戲日曆日期。',
   'sun-he-crown-prince-and-zhuya-campaign-242': '原史紀年：赤烏五年正月立太子、四月詔令、七月出兵、八月立魯王。保留月序，不模擬月內日程。',

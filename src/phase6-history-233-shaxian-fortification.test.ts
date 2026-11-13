@@ -6,7 +6,7 @@ const detail = '吳廷於沙羨築城';
 
 describe('A815 嘉禾二年夏五月吳廷城沙羨', () => {
   it('保留史料月份、年級觸發與工程細節界線', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-438');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-439');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 233, endYear: 233, precision: 'year', introducedRevision: 436 });
     expect(content.source).toContain('嘉禾二年夏五月');

@@ -6,7 +6,7 @@ const detail = '孫權詔寬緩逋課';
 
 describe('A817 嘉禾三年春正月寬緩逋課詔', () => {
   it('保留詔文、日期精度及執行結果界線', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-438');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-439');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 234, endYear: 234, precision: 'year', introducedRevision: 438 });
     expect(content.source).toContain('嘉禾三年春正月');
