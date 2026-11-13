@@ -758,7 +758,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-mars-enters-taiwei-renxu-225',
       'li-cheng-revolt-pacified-225',
       'cao-pi-enfeoffs-prince-jian-225',
-      'wei-decree-burial-for-fallen-soldiers-225',
+      'wei-decree-burial-for-fallen-soldiers-220',
       'wei-limits-accusations-224',
       'wei-three-front-campaign-and-dongkou-storm-222',
       'cao-rui-enfeoffed-prince-of-pingyuan-222',
