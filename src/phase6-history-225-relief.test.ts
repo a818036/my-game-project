@@ -5,7 +5,7 @@ describe('A780 黃初六年遣使問疾苦並振貸記事',()=>{
   const id='wei-circulates-east-of-xuchang-relieves-poor-225';
 
   it('保留春二月及原文記載，不推測貸予對象、數量或成效',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-413');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-414');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:225,endYear:225,precision:'year',introducedRevision:401,kind:'event'});
     expect(node?.source).toContain('黃初六年春二月');
@@ -18,7 +18,7 @@ describe('A780 黃初六年遣使問疾苦並振貸記事',()=>{
     const old=createPhase4Model(224,1,[],'phase4-scenario-400');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-413');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-414');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.some(item=>item.detail.includes('問疾苦並振貸'))).toBe(false);
