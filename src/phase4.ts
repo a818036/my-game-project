@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-425';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-426';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:423},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:424},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -602,6 +602,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'era-name-changes-to-yankang-220',kind:EVENT_KIND,title:'三月改元延康',...sameYear(220),precision:YEAR_PRECISION,source:HH9+'建安二十五年三月改元延康。只記原典所載改元與年序；不推定詔令日期、儀式、制度效果或其他政局因果。',carrier:'漢廷年號記事（史料記載）',description:'記錄建安二十五年三月改元延康；本節點只按 220 年級呈現，不改變玩家世界線制度或政治狀態。',sourceDateNote:'《後漢書》卷九建安二十五年三月記改元延康；保留漢曆月份註記，遊戲按公元年級觸發。',introducedRevision:374 },
   { id:'wei-cao-pi-southern-expedition-220',kind:EVENT_KIND,title:'魏王於東郊治兵後南征',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年六月記「辛亥，治兵於東郊」，其後記「庚午，遂南征」。本節點只保留治兵與南征記事，不推測南征目標、路線、對手、戰果或其與 222 年南征的關係。',carrier:'魏王與魏廷（《三國志》記事）',description:'記錄延康元年六月魏王於東郊治兵、其後南征的年級記事；原文未在此處交代目標、路線或戰果，不與 222 年的南征記事混為一談。',introducedRevision:412 },
   { id:'wei-cao-pi-orders-official-remonstrance-220',kind:EVENT_KIND,title:'魏王令百官有司依職責盡規諫',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年秋七月庚辰記魏王令：「百官有司，其務以職盡規諫，將率陳軍法，朝士明制度，牧守申政事，縉紳考六藝，吾將兼覽焉。」本節點只記詔令原文與所列職責，不推定百官實際進諫、奏議內容、採納情形或政務效果。',carrier:'魏王與百官有司（史料詔令）',description:'記錄魏王令百官有司依職責盡規諫，並列將率、朝士、牧守、縉紳各自應陳述或考察的事項；只保存詔令，不推定實際執行、奏議內容或政務結果。',introducedRevision:413 },
+  { id:'raonan-reports-white-pheasant-220',kind:EVENT_KIND,title:'饒安縣上報白雉',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年夏四月丁巳記「饒安縣言白雉見」；裴松之注引《魏書》另載賜饒安田租、勃海郡百戶牛酒、大酺三日及太常以太牢祠宗廟。分清正文上報與注文所述處置，不判定祥瑞真偽，不推測免租範圍、受賜名單、執行或玩家資源。',carrier:'饒安縣、魏廷與原文所述勃海郡百戶（史料記事）',description:'記錄饒安縣上報白雉及裴注引《魏書》所述賜租、牛酒、大酺與祭祀；保留史料層次，不判定所報內容為已核實事實，不套入玩家資源或推演政治效果。',sourceDateNote:'原史紀年：《三國志》卷二延康元年夏四月丁巳記饒安縣言白雉見；裴注引《魏書》另載賜租、牛酒、大酺與祭祀。保留四月與丁巳原註，遊戲按 220 年級觸發，不換算漢曆日月。',introducedRevision:426 },
   { id:'wei-court-envoys-and-submissions-220',kind:EVENT_KIND,title:'魏廷記孫權遣使、孟達與楊僕來附',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年條記「孫權遣使奉獻。蜀將孟達率衆降。武都氐王楊僕率種人內附，居漢陽郡。」原文未在此處詳記使者姓名與所獻物品、孟達率眾歸降的對象及日期、楊僕所率人口數或其後續治理。',carrier:'孫權使者、孟達及其部眾、武都氐王楊僕及其部眾（史料記事）',description:'依魏廷本紀按 220 年年級記錄孫權遣使奉獻、孟達率眾降、楊僕率部內附並居漢陽郡三項記事；不把它們合成同一行動或因果，不補使者身分、所獻物品、孟達歸降對象與日期、內附人數或後續實控。',introducedRevision:414 },
   { id:'wei-cao-pi-reduces-barrier-and-park-taxes-220',kind:EVENT_KIND,title:'魏王令除池籞之禁、輕關津之稅',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年二月條引《魏書》記庚戌令：「關津所以通商旅，池苑所以御災荒也。設禁重稅，非所以便民；其除池籞之禁，輕關津之稅，皆復什一。」本節點保留詔令引文，不換算「什一」為現代稅率，不推測適用範圍、實際執行或經濟效果。',carrier:'魏王及魏廷（史料詔令）',description:'記錄魏王下令解除池籞之禁、減輕關津之稅並保留「皆復什一」原文；只按年級呈現，不換算現代稅率，也不推定實際執行、受影響地區、交易量或財政效果。',introducedRevision:415 },
   { id:'wei-cao-pi-grants-grain-silk-and-orders-inspection-220',kind:EVENT_KIND,title:'魏王賜諸侯王將相粟帛並遣使巡行郡國',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年二月辛亥記：「賜諸侯王將相已下大將粟萬斛，帛千匹，金銀各有差等。遣使者循行郡國，有違理掊克暴虐者，舉其罪。」本節點保留原文所列賜予及巡行舉罪記事，不擴寫「已下」的範圍，不折算資源數量，也不推定實際發放、個別調查或處分結果。',carrier:'魏王、詔令所列受賜者及巡行郡國的使者（史料詔令）',description:'記錄延康元年二月辛亥魏王賜予諸侯王、將相以下的粟帛金銀，並遣使巡行郡國舉報違法掊克暴虐者；保留原文範圍，不推測清單所指官員層級、各人所得、實際發放、所舉案件或後續處分。',introducedRevision:416 },
@@ -730,6 +731,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
 ] as HistoricalNodeContent[]).map((content) => content.lateSameYear === undefined && (content.introducedRevision ?? 0) >= DEFAULT_LATE_SAME_YEAR_REVISION ? { ...content, lateSameYear: true } : content);
 /** Sourced Han-calendar dates shown separately from the annual simulation trigger. */
 export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
+  'raonan-reports-white-pheasant-220': '原史紀年：《三國志》卷二延康元年夏四月丁巳記饒安縣言白雉見；裴注引《魏書》另載賜租、牛酒、大酺與祭祀。保留正文與注文界線，不判定祥瑞真偽，遊戲按 220 年級觸發。',
   'wei-three-front-campaign-and-dongkou-storm-222': '原史紀年：《三國志》卷二〈文帝紀〉另記黃初三年六月治兵、庚午南征，七月軍次譙；《吳主傳》明繫洞口、濡須與南郡多路攻勢於黃武元年秋九月。分清南征啟程與各路攻吳的原文日期，不把六月移作九月戰事起始日；遊戲仍按 222 年級觸發。',
   'cao-rui-enfeoffed-prince-of-pingyuan-222': '原史紀年：黃初三年，曹叡為平原王；本紀未在此句另繫月日，遊戲按 222 年級觸發。',
   'shu-zhuge-liang-opens-government-223': '原史紀年：建興元年，封諸葛亮武鄉侯、開府治事，後領益州牧；原文未為此記事另繫月日，遊戲按 223 年級觸發。',

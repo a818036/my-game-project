@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(442);
+    expect(withinCatalogYears).toHaveLength(443);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -322,6 +322,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-zhangjin-huanghua-rebellion-suzhe-response-220': ['延康元年條', '酒泉黃華、張掖張進等各執太守以叛', '金城太守蘇則討進，斬之', '華降'],
       'shiyi-county-reports-phoenix-220': ['延康元年八月', '石邑縣言鳳皇集'],
       'qiao-reports-yellow-dragon-again-220': ['延康元年條承前載熹平五年', '三月，黃龍見譙', '至四十五年', '殷登聞之曰', '其驗茲乎'],
+      'raonan-reports-white-pheasant-220': ['延康元年夏四月丁巳', '饒安縣言白雉見', '裴松之注引《魏書》另載'],
       'wei-grants-amnesty-and-changes-garrisons-at-guangling-224': ['黃初五年九月', '遂至廣陵', '赦青、徐二州', '改易諸將守'],
       'wei-venus-daylight-and-return-to-xuchang-224': ['冬十月乙卯', '太白晝見', '行還許昌宮'],
       'wei-solar-eclipse-wushen-224': ['黃初五年十一月', '戊申晦', '日有食之'],
@@ -330,7 +331,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wu-abolishes-dongan-commandery-228': ['黃武七年三月', '罷東安郡'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(227);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(228);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -750,6 +751,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'han-river-flood-219',
       'solar-eclipse-jianan-25-220',
       'era-name-changes-to-yankang-220',
+      'raonan-reports-white-pheasant-220',
       'cao-pi-arrives-qiao-banquet-tax-remission-220',
       'wei-zhangjin-huanghua-rebellion-suzhe-response-220',
       'shiyi-county-reports-phoenix-220',
@@ -801,7 +803,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(227);
-    expect(uniqueNotedEvents.size).toBe(554);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(228);
+    expect(uniqueNotedEvents.size).toBe(555);
   });
 });
