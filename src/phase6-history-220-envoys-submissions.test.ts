@@ -5,7 +5,7 @@ const id = 'wei-court-envoys-and-submissions-220';
 
 describe('A793 補列 220 年使者、歸降與內附記事', () => {
   it('保留本紀原文及年級精度，不補細部日期、歸降對象或因果', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-437');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-438');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 220, endYear: 220, precision: 'year', introducedRevision: 414 });
     expect(content.source).toContain('孫權遣使奉獻');

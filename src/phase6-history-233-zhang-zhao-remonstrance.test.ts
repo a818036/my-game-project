@@ -6,7 +6,7 @@ const detail = '吳使冊封公孫淵，公孫淵轉而殺使';
 
 describe('A811 補列張昭反對冊立公孫淵為燕王', () => {
   it('合併《吳主傳》出使記事與《張昭傳》進諫脈絡，不推定月內日期', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-437');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-438');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 233, endYear: 233, precision: 'year' });
     expect(content.source).toContain('卷四十七〈吳書·吳主傳〉');

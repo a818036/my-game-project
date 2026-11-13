@@ -6,7 +6,7 @@ const detail = '魏王至譙大饗六軍與父老並復譙租稅二年';
 
 describe('A801 補列魏王至譙大饗與復譙租稅記事', () => {
   it('區分本紀正文與《魏書》注文，保留未明月份及玩家資源界線', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-437');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-438');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 422 });
     expect(content.source).toContain('甲午，軍次於譙，大饗六軍及譙父老百姓於邑東');

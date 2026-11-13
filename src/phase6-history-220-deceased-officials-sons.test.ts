@@ -6,7 +6,7 @@ const detail = '追念故臣並任其子弟為郎中';
 
 describe('A808 裴注所載追念故臣並任其子弟為郎中', () => {
   it('保留裴注來源、丁亥干支與未明載的月內日期界線', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-437');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-438');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 429 });
     expect(content.source).toContain('裴松之注引《魏書》');
