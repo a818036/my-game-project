@@ -381,7 +381,7 @@ describe('A752 220 年漢魏禪代雙史料核對',()=>{
     const old=createPhase4Model(219,1,[],'phase4-scenario-374');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-420');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-421');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -411,7 +411,7 @@ describe('A753 釐清黃初二年孫權受封吳王的月份註記',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-375');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-420');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-421');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -439,7 +439,7 @@ describe('A754 釐清孫權使魏與孫登立太子的未繫月記事',()=>{
     const old=createPhase4Model(220,1,[],'phase4-scenario-376');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-420');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-421');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(node=>node.contentId===id)?.status).toBe('pending');
 
@@ -454,7 +454,7 @@ describe('A755 區分魏文帝南征與魏軍多路攻吳的史料日期',()=>{
   const id='wei-three-front-campaign-and-dongkou-storm-222';
 
   it('並列魏、吳紀年而不把六月南征等同九月攻吳',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('文帝紀');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃初三年六月');
     expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('黃武元年秋九月');
@@ -494,7 +494,7 @@ describe('A763 補列曹叡受封平原王記事',()=>{
   const id='cao-rui-enfeoffed-prince-of-pingyuan-222';
 
   it('只記《明帝紀》明載的封王記事與年級精度',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:222,endYear:222,precision:'year',introducedRevision:385});
     expect(node?.source).toContain('黃初三年');
@@ -507,7 +507,7 @@ describe('A763 補列曹叡受封平原王記事',()=>{
     const old=createPhase4Model(221,1,[],'phase4-scenario-384');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-420');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-421');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.some(item=>item.detail.includes('曹叡受封平原王'))).toBe(false);
@@ -528,7 +528,7 @@ describe('A764 補列蜀漢開府任官記事',()=>{
   const id='shu-zhuge-liang-opens-government-223';
 
   it('依《諸葛亮傳》記錄建興元年任事，保留未繫月的年級精度',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:223,endYear:223,precision:'year',introducedRevision:386});
     expect(node?.source).toContain('開府治事');
@@ -541,7 +541,7 @@ describe('A764 補列蜀漢開府任官記事',()=>{
     const old=createPhase4Model(222,1,[],'phase4-scenario-385');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-420');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-421');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.some(item=>item.detail.includes('諸葛亮開府治事並領益州牧'))).toBe(false);
@@ -562,7 +562,7 @@ describe('A765 補列蜀漢遣使聘吳記事',()=>{
   const id='shu-zhuge-liang-sends-envoy-to-wu-223';
 
   it('只記建興元年遣使聘吳、結為和親，不補使者姓名或盟約細節',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:223,endYear:223,precision:'year',introducedRevision:387});
     expect(node?.source).toContain('遣使聘吳');
@@ -576,7 +576,7 @@ describe('A765 補列蜀漢遣使聘吳記事',()=>{
     const old=createPhase4Model(222,1,[],'phase4-scenario-386');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-420');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-421');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.some(item=>item.detail.includes('蜀漢遣使聘吳、結為和親'))).toBe(false);
@@ -597,7 +597,7 @@ describe('A767 補列魏廷禁止私自復仇詔令',()=>{
   const id='wei-bans-private-vengeance-223';
 
   it('只記魏廷詔令及原史日期精度，不推定個案或玩家世界效果',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:223,endYear:223,precision:'year',introducedRevision:388});
     expect(node?.source).toContain('黃初四年春正月');
@@ -610,7 +610,7 @@ describe('A767 補列魏廷禁止私自復仇詔令',()=>{
     const old=createPhase4Model(222,1,[],'phase4-scenario-387');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-420');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-421');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.some(item=>item.detail.includes('禁止民間私自復仇'))).toBe(false);
@@ -633,7 +633,7 @@ describe('A768 補列曹仁去世及同月大疫記事',()=>{
   const id='wei-cao-ren-dies-and-epidemic-223';
 
   it('保留干支與同月疫癘原文，不推定月份、疫情範圍或人物死因',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:223,endYear:223,precision:'year',introducedRevision:389,kind:'event'});
     expect(node?.source).toContain('丁未，大司馬曹仁薨。是月大疫');
@@ -668,7 +668,7 @@ describe('A769 補列魏廷限定告發罪名及處置妄告詔令',()=>{
   const id='wei-limits-accusations-224';
 
   it('依黃初五年春正月原文記詔令，不推演施行及司法個案',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:390,kind:'event'});
     expect(node?.source).toContain('謀反大逆乃得相告');
@@ -703,7 +703,7 @@ describe('A770 補列魏廷立太學及五經課試制度',()=>{
   const id='wei-establishes-taixue-and-classics-examinations-224';
 
   it('依黃初五年夏四月記太學、課試法及博士職置，不推演教育成效',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:391,kind:'event'});
     expect(node?.source).toContain('夏四月');
@@ -738,7 +738,7 @@ describe('A771 補列魏廷公卿朔望奏疑事記事',()=>{
   const id='wei-monthly-court-hearings-224';
 
   it('依黃初五年五月原文記朝議記事，不推演裁決或施行成效',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:392,kind:'event'});
     expect(node?.source).toContain('五月');
@@ -773,7 +773,7 @@ describe('A772 補列魏廷祀典詔令',()=>{
   const id='wei-restricts-noncanonical-sacrifices-224';
 
   it('依黃初五年十二月記祀典詔令，不推演執法或玩家世界規則',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:393,kind:'event'});
     expect(node?.source).toContain('黃初五年十二月');
@@ -808,7 +808,7 @@ describe('A773 補列魏廷開鑿天淵池記事',()=>{
   const id='wei-digs-tianyuan-pool-224';
 
   it('保留「是歲」年級精度，不推測池址、用途或施工月份',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:394,kind:'event'});
     expect(node?.source).toContain('是歲穿天淵池');
@@ -843,7 +843,7 @@ describe('A774 補列魏廷賑濟冀州饑民記事',()=>{
   const id='wei-relieves-jizhou-famine-224';
 
   it('保留原史十一月庚寅日期，不推測災情或賑濟成效',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:395,kind:'event'});
     expect(node?.source).toContain('黃初五年十一月庚寅');
@@ -878,7 +878,7 @@ describe('A775 補列魏廷水軍行至壽春記事',()=>{
   const id='wei-naval-expedition-shouchun-224';
 
   it('保留黃初五年八月水軍行程，不推測兵力、戰鬥或成果',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:396,kind:'event'});
     expect(node?.source).toContain('黃初五年八月');
@@ -913,7 +913,7 @@ describe('A776 補列揚州界刑者原除記事',()=>{
   const id='wei-pardons-yangzhou-under-five-year-sentences-224';
 
   it('只記揚州界五歲刑已下者原除，不擴寫赦免制度',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:397,kind:'event'});
     expect(node?.source).toContain('揚州界將吏士民，犯五歲刑已下，皆原除之');
@@ -947,7 +947,7 @@ describe('A777 補列廣陵赦青徐二州及改易將守記事',()=>{
   const id='wei-grants-amnesty-and-changes-garrisons-at-guangling-224';
 
   it('保留黃初五年九月記事及原文界線，不推測赦免對象或將領名單',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:398,kind:'event'});
     expect(node?.source).toContain('黃初五年九月');
@@ -960,7 +960,7 @@ describe('A777 補列廣陵赦青徐二州及改易將守記事',()=>{
     const old=createPhase4Model(223,1,[],'phase4-scenario-397');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-420');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-421');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.some(item=>item.detail.includes('廣陵赦青、徐二州並改易諸將守'))).toBe(false);
@@ -983,7 +983,7 @@ describe('A778 補列太白晝見及還許昌宮記事',()=>{
   const id='wei-venus-daylight-and-return-to-xuchang-224';
 
   it('保留冬十月乙卯原史註記，不推測現代天文日期或返程路線',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year',introducedRevision:399,kind:'event'});
     expect(node?.source).toContain('冬十月乙卯，太白晝見。行還許昌宮');
@@ -995,7 +995,7 @@ describe('A778 補列太白晝見及還許昌宮記事',()=>{
     const old=createPhase4Model(223,1,[],'phase4-scenario-398');
     const prefix=structuredClone(old.eventLedger);
     const upgraded=upgradePhase4Content(old,PHASE4_CONTENT_VERSION);
-    expect(upgraded.contentVersion).toBe('phase4-scenario-420');
+    expect(upgraded.contentVersion).toBe('phase4-scenario-421');
     expect(upgraded.eventLedger.slice(0,prefix.length)).toEqual(prefix);
     expect(upgraded.nodes.find(item=>item.contentId===id)?.status).toBe('pending');
     expect(upgraded.eventLedger.some(item=>item.detail.includes('冬十月乙卯太白晝見'))).toBe(false);
@@ -1018,7 +1018,7 @@ describe('A756 補列黃武三年秋八月赦死罪記事',()=>{
   const id='sun-wu-amnesty-death-crimes-224';
 
   it('只記史書赦令與原史日期精度，不推測赦免範圍',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:224,endYear:224,precision:'year'});
     expect(node?.source).toContain('黃武三年秋八月');
@@ -1052,7 +1052,7 @@ describe('A757 補列黃武五年東安郡行政記事',()=>{
   const id='wu-establishes-dongan-and-appoints-quan-cong-226';
 
   it('依原文記錄置郡、任官與討擊，不推測縣界或戰果',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:226,endYear:226,precision:'year',introducedRevision:380});
     expect(node?.source).toContain('黃武五年條');
@@ -1087,7 +1087,7 @@ describe('A758 補列黃武七年罷東安郡記事',()=>{
   const id='wu-abolishes-dongan-commandery-228';
 
   it('依原典記錄 228 年三月罷郡，不推定後續疆界或人口變化',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:228,endYear:228,precision:'year',introducedRevision:381});
     expect(node?.source).toContain('黃武七年三月');
@@ -1121,7 +1121,7 @@ describe('A759 補列黃龍二年置廣州後復舊記事',()=>{
   const id='wu-temporarily-establishes-guangzhou-230';
 
   it('依《吳主傳》保留「是歲」精度與復舊記載，不推定疆界或存續日數',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:230,endYear:230,precision:'year',introducedRevision:382});
     expect(node?.source).toContain('黃龍二年「是歲」');
@@ -1154,7 +1154,7 @@ describe('A760 補列衛溫、諸葛直下獄誅記事',()=>{
   const id='wu-executes-wei-wen-zhuge-zhi-231';
 
   it('依《吳主傳》記載處置結果及月份段落，不補獄案或擴成死亡硬節點',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:231,endYear:231,precision:'year',introducedRevision:383});
     expect(node?.source).toContain('黃龍三年');
@@ -1190,7 +1190,7 @@ describe('A761 補充 221 年魏廷求珍玩記事',()=>{
   const id='sun-quan-accepts-king-of-wu-title-221';
 
   it('依裴注引《江表傳》記所求物品、群臣奏議與備送結果，不推測外交動機',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const node=HISTORY_CONTENT.find(item=>item.id===id);
     expect(node).toMatchObject({startYear:221,endYear:221,precision:'year',introducedRevision:93});
     expect(node?.source).toContain('裴松之注引《江表傳》');

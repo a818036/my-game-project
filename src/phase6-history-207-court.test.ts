@@ -6,7 +6,7 @@ const persons:PersonRef[]=[];
 
 describe('A737 補列 207 年建安十二年記事',()=>{
   it('補列星孛與濟南王遇害，並把袁氏兄弟記事月份併入既有節點',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(687);
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(688);
     for(const id of ids){
       const content=HISTORY_CONTENT.find(item=>item.id===id);
       expect(content).toMatchObject({kind:'event',startYear:207,endYear:207,precision:'year',introducedRevision:360});

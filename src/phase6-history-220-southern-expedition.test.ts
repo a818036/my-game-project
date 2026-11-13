@@ -5,7 +5,7 @@ const id = 'wei-cao-pi-southern-expedition-220';
 
 describe('A791 延康元年魏王六月治兵南征記事', () => {
   it('保留辛亥治兵、庚午南征，不補目標或戰果', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-421');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 220, endYear: 220, precision: 'year', introducedRevision: 412 });
     expect(content.source).toContain('辛亥，治兵於東郊');
