@@ -6,7 +6,7 @@ const detail = '饒安縣上報白雉';
 
 describe('A805 饒安縣上報白雉與注文處置', () => {
   it('區分四月丁巳正文上報與裴注所述處置，不判定祥瑞真偽', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-434');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-435');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 426 });
     expect(content.source).toContain('延康元年夏四月丁巳記「饒安縣言白雉見」');

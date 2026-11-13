@@ -6,7 +6,7 @@ const id = 'wei-naval-expedition-east-225';
 
 describe('A784 曹丕為舟師東征記事', () => {
   it('保留辛未干支，不補定月份或推定已實際出航', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-434');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-435');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 225, endYear: 225, precision: 'year', introducedRevision: 405 });
     expect(content.source).toContain('辛未，帝為舟師東征');
