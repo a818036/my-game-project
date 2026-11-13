@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-419';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-420';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:417},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:418},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -608,6 +608,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'wei-cao-pi-appointments-and-office-regulations-220',kind:EVENT_KIND,title:'魏廷任命三公並記官職員額與宦官限制',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年二月記：「壬戌，以大中大夫賈詡為太尉，御史大夫華歆為相國，大理王朗為御史大夫。置散騎常侍、侍郎各四人，其宦人為官者不得過諸署令；為金策著令，藏之石室。」壬戌明繫三公任命；其後員額、宦人任官限制與著令記事未另繫日期。本節點不把壬戌套用至未標日期的後項，也不推演制度沿革或實際成效。',carrier:'魏廷、賈詡、華歆、王朗（史料記載）',description:'記錄二月壬戌所載賈詡、華歆、王朗任命，並保留同段散騎常侍、侍郎員額、宦人任官限制及金策著令藏於石室等原文；後項未另標日期，不推定其皆發生於壬戌，也不補官制背景、任期或執行結果。',introducedRevision:417 },
   { id:'wei-general-xiahou-dun-dies-220',kind:EVENT_KIND,title:'大將軍夏侯惇薨',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年夏四月記「庚午，大將軍夏侯惇薨」。只記史載月份、干支、官職與死訊，不推測死因、享年、死亡經過、喪葬或繼任安排。',carrier:'夏侯惇與魏廷（史料記事）',description:'記錄延康元年夏四月庚午大將軍夏侯惇去世；遊戲只按 220 年級呈現，不補死因、享年、喪葬或官職繼任，也不建立玩家死亡介入節點。',introducedRevision:418 },
   { id:'wei-prince-cao-pi-honors-ancestors-and-enfeoffs-cao-rui-220',kind:EVENT_KIND,title:'魏王追尊皇祖太尉與夫人丁氏、封曹叡武德侯',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年五月戊寅記「天子命王追尊皇祖太尉曰太王，夫人丁氏曰太王后，封王子叡為武德侯」。保留原文稱謂與受封記事，不另推定未載親屬姓名、封邑範圍、待遇或後續繼承。',carrier:'漢帝、魏王、魏王子叡與魏廷（史料記事）',description:'記錄五月戊寅詔命所載追尊與受封事項；不模擬完整冊封儀節、封地治理、朝廷權力或玩家勢力狀態。',introducedRevision:419 },
+  { id:'fufeng-zheng-gan-wang-zhao-surrender-220',kind:EVENT_KIND,title:'馮翊山賊鄭甘、王照率眾降並封列侯',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年五月記事段記「是月，馮翊山賊鄭甘、王照率衆降，皆封列侯」。保留原文稱謂及「是月」所承五月背景，不推定降附對象、「皆」的涵蓋範圍或未載後續。',carrier:'鄭甘、王照與馮翊眾人（史料記事）',description:'記錄原典所載鄭甘、王照率眾降及封列侯記事；不推測降附對象、人物背景、受封範圍或後續土地與官職變化。',introducedRevision:420 },
   { id:'wei-han-transition-220',kind:EVENT_KIND,title:'漢魏禪代',...sameYear(220),precision:YEAR_PRECISION,source:'《後漢書》卷九〈孝獻帝紀〉建安二十五年冬十月乙卯記皇帝遜位、魏王丕稱天子，奉帝為山陽公，並記其邑一萬戶及四皇子由王降為列侯；《三國志》卷二〈魏書·文帝紀〉另記延康元年冬十一月癸卯令後「丙午，行至曲蠡」，黃初元年十一月癸酉奉漢帝為山陽公、行漢正朔、以天子之禮郊祭，並封公之四子為列侯。兩書月份與干支記法有異，並列原文，不裁定差異或換算日期；曲蠡僅保留原文地名，不推測今址或路線。',causes:['han-dynasty-abdication'],carrier:'漢帝、魏王朝廷與原文所記曲蠡行程（歷史記載）',description:'記錄漢魏禪代、漢帝受封山陽公及四子封侯等兩書所載結果；並保留《三國志》記魏王丙午行至曲蠡的相鄰記事，只按年級呈現，不推測曲蠡今址、行程路線或其與禪代的因果，也不推演玩家世界的制度、疆域或結局。',introducedRevision:3 },
   { id:'cao-cao-dies-cao-pi-succeeds-220',kind:EVENT_KIND,title:'曹操卒於洛陽、曹丕承接魏王事務',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷一〈魏書·武帝紀〉記建安二十五年春正月至洛陽、庚子太祖崩；卷二〈魏書·文帝紀〉記曹丕嗣位為丞相、魏王，後改建安二十五年為延康元年。本內容包依年序列為公元 220 年並採年級精度。',causes:['cao-cao-death-and-cao-pi-succession-220'],carrier:'曹操、曹丕與魏王朝廷（史書所載）',description:'記錄曹操去世及曹丕承接丞相、魏王職位的政權交接背景；不補月內行程、私下遺言或繼承爭議，也不改變玩家角色狀態。',introducedRevision:138 },
   { id:'liu-bei-proclaims-emperor-221',kind:EVENT_KIND,title:'劉備於成都即皇帝位',...sameYear(221),precision:YEAR_PRECISION,source:'《三國志》卷三十二〈蜀書·先主傳〉記章武元年劉備於成都武擔之南即皇帝位；本內容包採年級精度。',causes:['shu-han-imperial-proclamation'],carrier:'劉備與蜀漢朝廷（歷史事件）',description:'記錄劉備建立蜀漢政權的稱帝節點；不替玩家選擇陣營，也不模擬完整建國制度。',introducedRevision:6 },
@@ -831,6 +832,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'wei-cao-pi-appointments-and-office-regulations-220': '原史紀年：《三國志》卷二延康元年二月壬戌記賈詡、華歆、王朗任命；同段所載官職員額、宦人任官限制及金策記事未另繫日期，不將壬戌移套至後項；遊戲僅按 220 年級觸發。',
   'wei-general-xiahou-dun-dies-220': '原史紀年：《三國志》卷二延康元年夏四月庚午記大將軍夏侯惇薨；保留漢曆月份與干支，不推測死因或繼任，遊戲僅按 220 年級觸發。',
   'wei-prince-cao-pi-honors-ancestors-and-enfeoffs-cao-rui-220': '原史紀年：《三國志》卷二延康元年五月戊寅記天子命魏王追尊皇祖太尉為太王、夫人丁氏為太王后，並封王子叡為武德侯；遊戲僅按 220 年級觸發，不推定未載親屬姓名或封邑。',
+  'fufeng-zheng-gan-wang-zhao-surrender-220': '原史紀年：《三國志》卷二延康元年五月記事段以「是月」記馮翊山賊鄭甘、王照率眾降並封列侯；保留承前月份背景，不推定降附對象或封爵範圍，遊戲僅按 220 年級觸發。',
   'sun-quan-defeats-huang-zu-jiangxia-208': '原史紀年：建安十三年春孫權再征黃祖。只保留原文季節，遊戲仍按公元年級觸發。',
   'taiwei-succession-guanghe-1-178': '原史紀年：《後漢書》卷八記三月張顥任太尉、九月張顥罷而陳球繼任、十一月陳球免及十二月丁巳橋玄繼任。保留漢曆月份與干支註記；遊戲只按 178 年級觸發，不換算模型日期。',
   'taiwei-and-minister-succession-guanghe-2-179': '原史紀年：《後漢書》卷八記光和二年三月袁滂免、劉郃為司徒，乙丑日橋玄罷、段熲為太尉；同段後續記司空袁逢罷、太常張濟為司空，但未另標該項日月。保留原文已標日期，不推算日數間隔，遊戲仍只按年級觸發。',

@@ -6,8 +6,8 @@ const persons:PersonRef[]=[];
 
 describe('A748 補列 218 年建安二十三年記事',()=>{
   it('依原典登錄耿紀、韋晃起兵及三月東方星孛，保留日期精度',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-419');
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(686);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-420');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(687);
     const rebellion=HISTORY_CONTENT.find(item=>item.id===ids[0]);
     expect(rebellion).toMatchObject({startYear:218,endYear:218,precision:'year',introducedRevision:371,sourceDateNote:expect.stringContaining('春正月甲子')});
     expect(rebellion?.source).toContain('春正月甲子');
