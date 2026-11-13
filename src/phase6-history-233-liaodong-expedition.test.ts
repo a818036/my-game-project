@@ -6,7 +6,7 @@ const detail = '吳使赴遼東攻魏守將，俘獲男女';
 
 describe('A814 嘉禾二年三月吳使赴遼東', () => {
   it('只記錄來源明載行動並保留月份與年級精度', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-439');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-440');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 233, endYear: 233, precision: 'year', introducedRevision: 435 });
     expect(content.source).toContain('嘉禾二年三月');

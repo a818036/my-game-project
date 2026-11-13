@@ -3,11 +3,11 @@ import { advancePhase4, createPhase4Model, HISTORY_CONTENT, PHASE4_CONTENT_VERSI
 
 describe('歷史內容的精簡修訂標記', () => {
   it('保留最新內容的版本門檻，並拒絕不支援的版本字串', () => {
-    const newest = HISTORY_CONTENT.filter((item) => item.introducedRevision === 439);
+    const newest = HISTORY_CONTENT.filter((item) => item.introducedRevision === 440);
     expect(newest.length).toBeGreaterThan(0);
 
     const v237 = createPhase4Model(168, 1, [], 'phase4-scenario-237');
-    const prior = createPhase4Model(168, 1, [], 'phase4-scenario-438');
+    const prior = createPhase4Model(168, 1, [], 'phase4-scenario-439');
     const v238 = createPhase4Model(168, 1, [], 'phase4-scenario-238');
     const current = createPhase4Model(168, 1, [], PHASE4_CONTENT_VERSION);
     const unknown = createPhase4Model(168, 1, [], 'phase4-scenario-unknown');
@@ -43,6 +43,26 @@ describe('歷史內容的精簡修訂標記', () => {
     const sameYear = upgradePhase4Content(createPhase4Model(234, 1, [], 'phase4-scenario-438'), PHASE4_CONTENT_VERSION);
     expect(sameYear.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 234 });
     expect(sameYear.eventLedger.some((item) => item.detail.includes('青龍二年十一月京都地震'))).toBe(false);
+  });
+
+  it('A823 新增 234 年十二月刪定大辟詔；v439 續玩可觸發，同年升版不回補', () => {
+    const id = 'wei-court-revises-death-penalties-234';
+    const fresh = advancePhase4(createPhase4Model(233, 1, [], PHASE4_CONTENT_VERSION), 360);
+    expect(fresh.nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+    const event = fresh.eventLedger.find((item) => item.detail.includes('魏廷詔有司刪定大辟、減死罪'));
+    expect(event?.source).toContain('十二月，詔有司刪定大辟，減死罪');
+    expect(event?.source).toContain('不推定修訂範圍、適用對象、實際施行或個案結果');
+
+    const old = createPhase4Model(233, 1, [], 'phase4-scenario-439');
+    const prefix = structuredClone(old.eventLedger);
+    const upgraded = upgradePhase4Content(old, PHASE4_CONTENT_VERSION);
+    expect(upgraded.nodes.find((node) => node.contentId === id)?.status).toBe('pending');
+    expect(upgraded.eventLedger.slice(0, prefix.length)).toEqual(prefix);
+    expect(advancePhase4(upgraded, 360).nodes.find((node) => node.contentId === id)?.status).toBe('triggered');
+
+    const sameYear = upgradePhase4Content(createPhase4Model(234, 1, [], 'phase4-scenario-439'), PHASE4_CONTENT_VERSION);
+    expect(sameYear.nodes.find((node) => node.contentId === id)).toMatchObject({ status: 'resolved', resolvedYear: 234 });
+    expect(sameYear.eventLedger.some((item) => item.detail.includes('魏廷詔有司刪定大辟、減死罪'))).toBe(false);
   });
 
   it('省略與節點同名的單一原因時仍沿用相同因果結算', () => {

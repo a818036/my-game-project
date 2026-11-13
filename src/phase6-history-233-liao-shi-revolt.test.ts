@@ -6,7 +6,7 @@ const detail = '廖式起事並攻零陵、桂陽';
 
 describe('A816 嘉禾二年冬十月廖式起事', () => {
   it('記錄原文所載人物、地名與跨年結果界線', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-439');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-440');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 233, endYear: 233, precision: 'year', introducedRevision: 437 });
     expect(content.source).toContain('嘉禾二年冬十月');

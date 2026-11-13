@@ -6,7 +6,7 @@ const detail = '魏王賜諸侯王將相粟帛並遣使巡行郡國';
 
 describe('A795 補列延康元年二月賜粟帛與巡行舉罪記事', () => {
   it('保留辛亥詔令原文，不擴張受賜範圍或推定執行結果', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-439');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-440');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 220, endYear: 220, precision: 'year', introducedRevision: 416 });
     expect(content.source).toContain('延康元年二月辛亥');

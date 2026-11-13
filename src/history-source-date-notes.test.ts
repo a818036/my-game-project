@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(455);
+    expect(withinCatalogYears).toHaveLength(456);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -246,6 +246,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'liao-shi-revolt-lingling-guiyang-233': ['嘉禾二年冬十月', '廖式殺臨賀太守嚴綱等', '與弟廖潛攻零陵、桂陽', '交州蒼梧、鬱林', '眾數萬人', '歲餘皆破'],
       'sun-quan-edict-relieves-arrears-234': ['嘉禾三年春正月', '兵久不輟', '民困於役', '歳或不登', '其寬諸逋，勿復督課'],
       'luoyang-earthquake-234': ['十一月，京都地震', '從東南來', '隱隱有聲', '搖動屋瓦'],
+      'wei-court-revises-death-penalties-234': ['十二月，詔有司刪定大辟，減死罪'],
       'wu-liaodong-envoy-mission-232': ['嘉禾元年記三月', '九月魏將田豫', '冬十月公孫淵'],
       'wu-liaodong-envoy-execution-233': ['嘉禾二年記三月'],
       'sun-he-crown-prince-and-zhuya-campaign-242': ['赤烏五年記正月', '四月禁進獻御物', '七月遣聶友', '八月立孫霸'],
@@ -343,7 +344,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wu-abolishes-dongan-commandery-228': ['黃武七年三月', '罷東安郡'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(240);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(241);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -812,6 +813,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-campaign-guangling-225',
       'sun-quan-campaigns-at-hefei-234',
       'luoyang-earthquake-234',
+      'wei-court-revises-death-penalties-234',
       'wu-executes-wei-wen-zhuge-zhi-231',
       'shu-wei-qishan-lucheng-campaign-231',
       'sun-quan-court-debate-on-suburban-sacrifice-232',
@@ -828,7 +830,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(240);
-    expect(uniqueNotedEvents.size).toBe(567);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(241);
+    expect(uniqueNotedEvents.size).toBe(568);
   });
 });
