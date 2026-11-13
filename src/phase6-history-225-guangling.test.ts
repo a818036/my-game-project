@@ -7,7 +7,7 @@ const correctedId = 'cao-campaign-guangling-225';
 
 describe('A781 黃初六年廣陵觀兵記事年序勘誤', () => {
   it('原典將臨江觀兵繫於黃初六年，舊索引退役且新索引保留史料界線', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-422');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-423');
     expect(HISTORY_CONTENT.find(item => item.id === oldId)).toMatchObject({ retired: true, retiredIn: 'phase4-scenario-402', startYear: 224 });
     expect(HISTORY_CONTENT.find(item => item.id === correctedId)).toMatchObject({ startYear: 225, endYear: 225, precision: 'year' });
     const corrected = HISTORY_CONTENT.find(item => item.id === correctedId)!;
