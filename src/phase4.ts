@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-431';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-432';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -16,7 +16,7 @@ const YEAR_TRIGGER='；遊戲僅年級觸發。';
 const EVENT_KIND='event' as const;
 const YEAR_PRECISION='year' as const;
 const sameYear=(year:number)=>({startYear:year,endYear:year});
-const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:429},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
+const PHASE4_CONTENT_VERSIONS: readonly string[]=[PHASE4_LEGACY_CONTENT_VERSION,...Array.from({length:430},(_,index)=>`phase4-scenario-${index+2}`),PHASE4_CONTENT_VERSION];
 export const ENGINEERING: { travelDaysPerRoute:number; appointmentTravelDays:number; recruitmentDays:number; policyYieldPerMonth:number; battleBaseCasualties:number; battleExampleImpactForce:number; battlePhysicsContactIterations:number; battlePhysicsContactSlopMeters:number; battlePhysicsPositionCorrection:number; playerVisitTrustGain:number; endingReofferNaturalNodeCount:number; deathInterventionWindowDaysByEvent:Record<string,number> } = {
  travelDaysPerRoute:2, appointmentTravelDays:3, recruitmentDays:7, policyYieldPerMonth:2, battleBaseCasualties:2, battleExampleImpactForce:80, battlePhysicsContactIterations:8, battlePhysicsContactSlopMeters:0.001, battlePhysicsPositionCorrection:0.8, playerVisitTrustGain:2, endingReofferNaturalNodeCount:3,
  // Engineering choice for the single named historical sample; this is not a general rule.
@@ -679,7 +679,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'wu-executes-wei-wen-zhuge-zhi-231',kind:EVENT_KIND,title:'衛溫、諸葛直因違詔無功下獄誅',...sameYear(231),precision:YEAR_PRECISION,source:SG47+'黃龍三年條記「衛溫、諸葛直皆以違詔無功，下獄誅。」本內容包只採公元年級精度，不補獄案細節。',carrier:'衛溫、諸葛直與孫吳朝廷（歷史記載）',description:'記錄原文所載二人下獄誅；作為一般史實事件，不建立玩家可介入的死亡節點，也不推演獄案或其他被派者的命運。',sourceDateNote:'黃龍三年春二月記事段記衛溫、諸葛直「以違詔無功，下獄誅」；保留原典段落位置，不將二月精度擴張為本句另有明載月日。遊戲按 231 年級觸發，不換算模型日期。',introducedRevision:383 },
   { id:'shu-wei-qishan-lucheng-campaign-231',kind:EVENT_KIND,title:'蜀魏隴右戰事與鹵城交鋒',...sameYear(231),precision:YEAR_PRECISION,source:'《資治通鑑》卷七十二太和五年條記蜀漢丞相亮率軍圍祁山，以木牛運糧；魏廷命司馬懿西屯長安並督張郃、費曜、戴陵、郭淮等拒之。其後司馬懿救祁山、郭淮與費曜等邀擊亮軍，亮破之並刈麥；兩軍在上邽之東相遇後未交戰。其後追至鹵城，五月魏軍攻擊蜀軍南圍，魏延、高翔、吳班逆戰，通鑑記魏軍大敗；六月亮因糧盡退軍，司馬懿遣張郃追擊，張郃於木門中伏受傷而卒。本內容包只採公元年級精度；不拼作逐日戰報。',carrier:'蜀漢與曹魏兩軍；涉及諸葛亮、司馬懿、張郃、郭淮、魏延、高翔、吳班等（《資治通鑑》記事）',description:'並列蜀軍圍祁山、魏軍西援、上邽與鹵城附近交戰及蜀軍糧盡退兵等來源主線；保留參戰方與多名將領，不把整場戰事歸為單一人物。通鑑記張郃追擊中伏身亡；遊戲不模擬完整戰役、兵力、精確地點、傷亡數或各郡控制，也不把史書月份映射到遊戲日曆。',sourceDateNote:'《資治通鑑》分記二月遣潘濬、五月鹵城交戰及六月退軍；本節點只按公元 231 年觸發，不換算為模型月份或日。',introducedRevision:149 },
   { id:'wu-liaodong-envoy-mission-232',kind:EVENT_KIND,title:'吳使赴遼東、周賀於成山遇截',...sameYear(232),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾元年記三月遣周賀、裴潛乘海赴遼東；九月魏將田豫於成山截擊並斬周賀；冬十月公孫淵遣宿舒、孫綜稱藩並獻貂馬，孫權加淵爵位。本內容包只採公元年級精度，不推演海程或遼東控制變化。',carrier:'周賀、裴潛與公孫淵（歷史記載）',description:'記錄吳廷遣使赴遼東、周賀於成山遭魏軍截擊，以及公孫淵後遣使稱藩；不擴寫為全面戰爭，也不推定遼東領土控制變化。',introducedRevision:73 },
-  { id:'wu-liaodong-envoy-execution-233',kind:EVENT_KIND,title:'吳使冊封公孫淵，公孫淵轉而殺使',...sameYear(233),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾二年記三月孫權遣太常張彌、執金吾許晏、將軍賀達等將兵萬人，奉金寶珍貨與九錫備物乘海授公孫淵；淵斬張彌等、送其首於魏、沒其兵資。原文未記萬人全數被殺，本節點不作此推斷；只採公元年級精度。',carrier:'孫權、公孫淵與吳廷使團（歷史記載）',description:'記錄孫權遣使授予公孫淵燕王冊命及其後公孫淵殺張彌等、送首於魏並沒收兵資；不推定全體兵員死傷、完整遼東戰事或領土控制變化。',introducedRevision:74 },
+  { id:'wu-liaodong-envoy-execution-233',kind:EVENT_KIND,title:'吳使冊封公孫淵，公孫淵轉而殺使',...sameYear(233),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾二年記三月孫權遣太常張彌、執金吾許晏、將軍賀達等將兵萬人，奉金寶珍貨與九錫備物乘海授公孫淵；淵斬張彌等、送其首於魏、沒其兵資。卷五十二〈吳書·張昭傳〉補記張昭曾諫稱公孫淵遠來求援未必本意，若改圖則使者將受天下譏笑；孫權與張昭反覆議論，張昭仍陳忠諫，孫權擲刀與之對泣，最後仍遣張彌、許晏。張昭傳未在此段另繫月日，不另推其與三月出使之間隔。原文未記萬人全數被殺，本節點不作此推斷；只採公元年級精度。',carrier:'孫權、公孫淵與吳廷使團（歷史記載）',description:'記錄吳廷冊命公孫淵、張昭進諫、孫權與張昭議論及使團遇害的史載；區分兩傳所述，不推定全體兵員死傷、張昭議論的月內日期、完整遼東戰事或領土控制變化。',introducedRevision:74 },
   { id:'shu-yang-yi-demoted-jiang-wan-promoted-235',kind:EVENT_KIND,title:'楊儀廢徙漢嘉、蔣琬進位大將軍',...sameYear(235),precision:YEAR_PRECISION,source:'《三國志》卷三十三〈蜀書·後主傳〉記建興十三年春正月「中軍師楊儀廢徙漢嘉郡」，夏四月「進蔣琬位為大將軍」。本內容包採公元年級精度，原文月份僅供來源核對。',carrier:'楊儀、蔣琬與蜀漢朝廷（歷史記載）',description:'並列同年對楊儀與蔣琬的處置記載；不補寫廢徙理由、完整官制權限、人物私下動機或玩家勢力變化。',introducedRevision:83 },
   { id:'wu-lu-dai-luling-revolt-response-235',kind:EVENT_KIND,title:'吳廷遣呂岱等分部討擊多地起事',...sameYear(235),precision:YEAR_PRECISION,source:'《三國志》卷四十七〈吳書·吳主傳〉嘉禾三年冬記廬陵李桓、羅厲等起事，嘉禾四年夏條承前記遣呂岱討伐，未載同年結果；卷六十〈吳書·呂岱傳〉另記嘉禾四年廬陵李桓、路合、會稽東冶隨春、南海羅厲等同時起事，孫權詔呂岱督劉纂、唐咨分部討擊，隨春即降並任偏將軍，李桓、羅厲等見斬獲、傳首詣都。本內容包只採公元年級精度；兩傳詳略分開保留，不補月內日序。',carrier:'孫權、呂岱、劉纂、唐咨、隨春、李桓、路合、羅厲等（《吳主傳》《呂岱傳》記事）',description:'並列廬陵、會稽東冶、南海三地起事及呂岱督劉纂、唐咨分部討擊；《呂岱傳》記隨春即降並任偏將軍、李桓與羅厲等見斬獲；《吳主傳》夏條只記遣軍而未載同年結果。保留兩傳詳略，不改寫成單一地方叛亂。只採年級呈現，不推演兵力、戰果幅度、傷亡、人口或地方控制。',introducedRevision:84 },
   { id:'wu-lu-dai-pacifies-luling-238',kind:EVENT_KIND,title:'呂岱討平廬陵賊，事畢還屯陸口',...sameYear(238),precision:YEAR_PRECISION,source:SG47+'赤烏元年夏記「呂岱討盧陵賊，畢，還陸口」。此為孫權紀傳中的記事；原文未在此句重述賊首姓名，也未明言與嘉禾三年李桓、羅厲起事為同一事件。本內容包採公元年級精度。',carrier:'呂岱與廬陵賊（《吳主傳》記事）',description:'記錄原文所載呂岱討廬陵賊後返回陸口；不擅自將其與 235 年記事認作同一場起事，不補兵力、傷亡、確切日期或戰事細節。',sourceDateNote:'原史赤烏元年夏呂岱討廬陵賊，事畢還屯陸口；只保留夏季，不補月日，也不擅自認定與 235 年李桓、羅厲記事為同一事件。',introducedRevision:133 },
@@ -926,7 +926,7 @@ export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
   'pan-jun-wuling-expedition-231': '原史紀年：黃龍三年春二月。漢曆月份不換算為遊戲日曆日期。',
   'shu-wei-qishan-lucheng-campaign-231': '原史紀年：《資治通鑑》按二月、五月、六月分記事件。保留月序作來源線索；遊戲只按 231 年觸發，不將漢曆換算成模型月份或日。',
   'wu-liaodong-envoy-mission-232': '原史紀年：嘉禾元年三月遣使、九月遇截、冬十月公孫淵遣使。多段年內事件仍以年級觸發。',
-  'wu-liaodong-envoy-execution-233': '原史紀年：嘉禾二年三月遣使授命。漢曆月份不換算為遊戲日曆日期。',
+  'wu-liaodong-envoy-execution-233': '原史紀年：《三國志》卷四十七記嘉禾二年三月遣使授命；卷五十二張昭傳補述進諫及後續議論，但未另繫月日。漢曆月份不換算為遊戲日曆日期。',
   'sun-he-crown-prince-and-zhuya-campaign-242': '原史紀年：赤烏五年正月立太子、四月詔令、七月出兵、八月立魯王。保留月序，不模擬月內日程。',
   'zhuge-ke-lu-an-campaign-243': '原史紀年：赤烏六年春正月。漢曆月份不換算為遊戲日曆日期。',
   'wu-captures-pengqi-243': '原史紀年：赤烏五年冬彭綺起事，赤烏六年春正月吳將擒獲。保留跨兩年記事，不換算模型日期。',
