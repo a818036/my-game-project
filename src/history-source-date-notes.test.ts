@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(433);
+    expect(withinCatalogYears).toHaveLength(434);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -224,6 +224,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-court-envoys-and-submissions-220': ['孫權遣使奉獻', '蜀將孟達率衆降', '武都氐王楊僕率種人內附', '原文未在此處詳記使者姓名'],
       'wei-cao-pi-reduces-barrier-and-park-taxes-220': ['延康元年二月條引《魏書》', '庚戌令', '其除池籞之禁', '輕關津之稅', '皆復什一'],
       'wei-cao-pi-grants-grain-silk-and-orders-inspection-220': ['延康元年二月辛亥', '賜諸侯王將相已下大將粟萬斛', '遣使者循行郡國', '有違理掊克暴虐者，舉其罪'],
+      'wei-cao-pi-appointments-and-office-regulations-220': ['延康元年二月', '壬戌，以大中大夫賈詡為太尉', '置散騎常侍、侍郎各四人', '其宦人為官者不得過諸署令', '未另繫日期'],
       'wei-han-transition-220': ['建安二十五年冬十月乙卯', '皇帝遜位', '黃初元年十一月癸酉', '山陽公', '行漢正朔', '四皇子'],
       'wu-shu-alliance-partition-229': ['黃龍元年六月蜀使陳震來賀孫權踐位', '沒有提供盟約簽訂月日'],
       'wu-chancellor-succession-225': ['黃武四年夏五月丞相孫邵卒', '六月以太常顧雍為丞相'],
@@ -321,7 +322,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wu-abolishes-dongan-commandery-228': ['黃武七年三月', '罷東安郡'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(218);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(219);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -788,7 +789,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(218);
-    expect(uniqueNotedEvents.size).toBe(545);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(219);
+    expect(uniqueNotedEvents.size).toBe(546);
   });
 });
