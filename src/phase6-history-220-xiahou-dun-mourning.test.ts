@@ -6,7 +6,7 @@ const detail = '魏王為夏侯惇發哀';
 
 describe('A807 裴注所載魏王發哀及孫盛禮議', () => {
   it('分清裴注所記發哀與孫盛評論，不另造確切日期', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-429');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-430');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 428 });
     expect(content.source).toContain('裴松之注引《魏書》');

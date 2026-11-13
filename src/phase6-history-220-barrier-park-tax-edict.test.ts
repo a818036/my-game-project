@@ -6,7 +6,7 @@ const detail = '魏王令除池籞之禁、輕關津之稅';
 
 describe('A794 補列延康元年魏王減輕關津與池籞禁令', () => {
   it('保留庚戌令原文與日期精度，不換算稅率或推定執行效果', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-429');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-430');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 220, endYear: 220, precision: 'year', introducedRevision: 415 });
     expect(content.source).toContain('延康元年二月條引《魏書》');

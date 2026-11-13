@@ -6,7 +6,7 @@ const detail = '馮翊山賊鄭甘、王照率眾降並封列侯';
 
 describe('A799 補列延康元年五月鄭甘、王照率眾降記事', () => {
   it('保留「是月」承接五月的來源界線，不推定降附對象或封爵範圍', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-429');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-430');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 420 });
     expect(content.source).toContain('延康元年五月記事段');
