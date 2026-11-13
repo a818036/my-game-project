@@ -10,6 +10,8 @@ import {battleScenarioOptions,createBattleScenario} from '../battle-scenario-exa
 import {loadBattleScenarioModule} from '../battle-scenario-loader';
 
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
+// 開局整合測試會掛載多個面板並執行無障礙掃描；大型測試套件並行時可能超過預設 5 秒。
+vi.setConfig({testTimeout:15_000});
 
 vi.mock('../storage',async(importOriginal)=>{
   const actual=await importOriginal<typeof import('../storage')>();
