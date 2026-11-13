@@ -6,7 +6,7 @@ const persons:PersonRef[]=[];
 
 describe('A746 補列 216 年建安二十一年記事',()=>{
   it('保留原典日食、南單于來朝與琅邪王熙遇害記事的日期精度',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-410');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-411');
     expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(678);
     const eclipse=HISTORY_CONTENT.find(item=>item.id===ids[0]);
     expect(eclipse).toMatchObject({startYear:216,endYear:216,precision:'year',introducedRevision:369,sourceDateNote:expect.stringContaining('五月己亥朔')});
