@@ -5,7 +5,7 @@ const transitionId = 'wei-han-transition-220';
 
 describe('A790 補列漢魏禪代年表中的曲蠡記事', () => {
   it('保留丙午行至曲蠡原文，不推測今址或行程路線', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-412');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-413');
     const content = HISTORY_CONTENT.find(item => item.id === transitionId)!;
     expect(content).toMatchObject({ startYear: 220, endYear: 220, precision: 'year' });
     expect(content.source).toContain('丙午，行至曲蠡');

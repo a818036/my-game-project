@@ -5,7 +5,7 @@ const id = 'cao-pi-enfeoffs-prince-jian-225';
 
 describe('A788 黃初六年秋七月立皇子鑒為東武陽王', () => {
   it('依原文保留封爵及月份，不推測封地與人物背景', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-412');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-413');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 225, endYear: 225, precision: 'year', introducedRevision: 409 });
     expect(content.source).toContain('秋七月');
