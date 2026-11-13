@@ -6,7 +6,7 @@ const detail = '濊貃、扶餘單于、焉耆、于闐各遣使奉獻';
 
 describe('A800 補列延康元年遣使記事並釐清干支界線', () => {
   it('保留三月記事段與原典稱謂，不把任命句的己卯套用到遣使句', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-423');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-424');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 421 });
     expect(content.source).toContain('延康元年三月記事段');
