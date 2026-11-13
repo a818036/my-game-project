@@ -5,7 +5,7 @@ const id = 'wei-decree-burial-for-fallen-soldiers-220';
 
 describe('A789 延康元年冬十一月收殮從軍死亡士卒詔令', () => {
   it('只記錄原典所述未收殮士卒及詔令處置，不推演個案或成效', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-424');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-425');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 220, endYear: 220, precision: 'year', introducedRevision: 410 });
     expect(content.source).toContain('延康元年冬十一月癸卯');
