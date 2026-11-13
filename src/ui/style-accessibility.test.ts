@@ -81,6 +81,13 @@ function contrastRatio(foreground: string, background: string): number {
 }
 
 describe('主要淺色介面的文字對比', () => {
+  it('通用輔助說明與次要文字在紙色表單、面板與輸入底色均達 WCAG AA', () => {
+    const secondaryText = lastRuleColor('.caption,.muted');
+    for (const background of ['#f7f1e4', '#efe5d1', '#fffaf0']) {
+      expect(contrastRatio(secondaryText, background), background).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it('新聞列小字在新聞底色上達到 WCAG AA 一般文字對比', () => {
     expect(contrastRatio(ruleColor('.news-strip .caption'), '#eee4d1')).toBeGreaterThanOrEqual(4.5);
   });

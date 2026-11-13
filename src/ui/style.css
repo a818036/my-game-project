@@ -58,6 +58,7 @@ footer{border-color:#aa987c}
 /* Phase 4 editorial layout: narrative first, practical tools in a compact drawer. */
 :root{color-scheme:light;--ink:#2a2118;--ink-soft:#514437;--paper:#f5eedf;--paper-deep:#ede2cc;--wood:#59432d;--seal:#9b3328;--rule:#cbb99a}
 body{background:linear-gradient(180deg,#efe6d4 0,#f7f1e4 38rem,#f2eadb 100%);color:var(--ink)}
+.caption,.muted{color:#6d5b45}
 .game-shell{max-width:1320px;padding:0 38px}
 .topbar{height:auto;min-height:64px;gap:20px;padding:10px 0;border-bottom:1px solid var(--rule)}
 .brand-mark{width:32px;height:36px;background:var(--seal);color:#fff7eb;font-family:serif}
