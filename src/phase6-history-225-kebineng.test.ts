@@ -6,7 +6,7 @@ const id = 'liang-xi-defeats-kebineng-225';
 
 describe('A783 梁習討破軻比能記事', () => {
   it('依原典只列 225 年，不將未繫月日的記事併入前後日期', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-408');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-409');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 225, endYear: 225, precision: 'year', introducedRevision: 404 });
     expect(content.source).toContain('并州刺史梁習討鮮卑軻比能，大破之');
