@@ -6,7 +6,7 @@ const detail = '魏廷任命三公並記官職員額與宦官限制';
 
 describe('A796 補列延康元年二月三公任命與官職記事', () => {
   it('區分明繫壬戌的任命與同段未另繫日期的官制記事', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-418');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-419');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 220, endYear: 220, precision: 'year', introducedRevision: 417 });
     expect(content.source).toContain('延康元年二月');

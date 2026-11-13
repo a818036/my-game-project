@@ -6,7 +6,7 @@ const persons:PersonRef[]=[];
 
 describe('A738 補列 208 年建安十三年記事',()=>{
   it('新增趙溫免職、官制更替、孔融遇害與日食，合併補述赤壁來源',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(685);
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(686);
     for(const id of ids){
       const content=HISTORY_CONTENT.find(item=>item.id===id);
       expect(content).toMatchObject({kind:'event',startYear:208,endYear:208,precision:'year',introducedRevision:361});
