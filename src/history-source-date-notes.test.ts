@@ -234,7 +234,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-han-transition-220': ['建安二十五年冬十月乙卯', '皇帝遜位', '黃初元年十一月癸酉', '山陽公', '行漢正朔', '四皇子'],
       'wu-shu-alliance-partition-229': ['黃龍元年六月蜀使陳震來賀孫權踐位', '沒有提供盟約簽訂月日'],
       'wu-chancellor-succession-225': ['黃武四年夏五月丞相孫邵卒', '六月以太常顧雍為丞相'],
-      'zhuge-liang-dies-234': ['青龍二年秋諸葛亮病卒'],
+      'zhuge-liang-dies-234': ['建興十二年春', '武功五丈原', '相持百餘日', '其年八月病卒於軍', '時年五十四', '本內容包仍採 234 年級觸發'],
       'sun-quan-moves-capital-to-jianye-229': ['黃龍元年秋九月', '徵上大將軍陸遜輔太子孫登', '掌武昌留事'],
       'sun-quan-shiting-campaign-228': ['黃武七年', '秋八月'],
       'pan-jun-wuling-expedition-231': ['黃龍三年春二月'],
@@ -355,6 +355,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
     }
     expect(HISTORY_SOURCE_DATE_NOTES['gao-gan-defeat-206']).toContain('不是漢曆三月');
     expect(HISTORY_SOURCE_DATE_NOTES['sun-quan-campaigns-against-shiyang-226']).toContain('黃武五年秋七月');
+    expect(HISTORY_SOURCE_DATE_NOTES['zhuge-liang-dies-234']).toContain('其年八月病卒於軍，時年五十四');
   });
 
   it('年級遊戲精度與帶原史月份的顯示註記並存，不推算時辰', () => {
