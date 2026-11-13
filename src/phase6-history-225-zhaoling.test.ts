@@ -6,7 +6,7 @@ const id = 'wei-visits-zhaoling-and-tulao-canal-225';
 
 describe('A782 黃初六年行幸召陵、通討虜渠記事', () => {
   it('只保留春三月年級記事，並明示乙巳日期不繫於本句', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-427');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-428');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 225, endYear: 225, precision: 'year', introducedRevision: 403 });
     expect(content.source).toContain('黃初六年春三月');

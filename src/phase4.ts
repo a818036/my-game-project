@@ -3,7 +3,7 @@
  * Unspecified formulas are exported engineering parameters, not manual rules.
  */
 export const PHASE4_LEGACY_CONTENT_VERSION = 'phase4-scenario-1';
-export const PHASE4_CONTENT_VERSION = 'phase4-scenario-427';
+export const PHASE4_CONTENT_VERSION = 'phase4-scenario-428';
 const DEFAULT_LATE_SAME_YEAR_REVISION=91;
 const HH8='《後漢書》卷八〈孝靈帝紀〉';
 const HH9='《後漢書》卷九〈孝獻帝紀〉';
@@ -609,6 +609,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
   { id:'wei-cao-pi-grants-grain-silk-and-orders-inspection-220',kind:EVENT_KIND,title:'魏王賜諸侯王將相粟帛並遣使巡行郡國',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年二月辛亥記：「賜諸侯王將相已下大將粟萬斛，帛千匹，金銀各有差等。遣使者循行郡國，有違理掊克暴虐者，舉其罪。」本節點保留原文所列賜予及巡行舉罪記事，不擴寫「已下」的範圍，不折算資源數量，也不推定實際發放、個別調查或處分結果。',carrier:'魏王、詔令所列受賜者及巡行郡國的使者（史料詔令）',description:'記錄延康元年二月辛亥魏王賜予諸侯王、將相以下的粟帛金銀，並遣使巡行郡國舉報違法掊克暴虐者；保留原文範圍，不推測清單所指官員層級、各人所得、實際發放、所舉案件或後續處分。',introducedRevision:416 },
   { id:'wei-cao-pi-appointments-and-office-regulations-220',kind:EVENT_KIND,title:'魏廷任命三公並記官職員額與宦官限制',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年二月記：「壬戌，以大中大夫賈詡為太尉，御史大夫華歆為相國，大理王朗為御史大夫。置散騎常侍、侍郎各四人，其宦人為官者不得過諸署令；為金策著令，藏之石室。」壬戌明繫三公任命；其後員額、宦人任官限制與著令記事未另繫日期。本節點不把壬戌套用至未標日期的後項，也不推演制度沿革或實際成效。',carrier:'魏廷、賈詡、華歆、王朗（史料記載）',description:'記錄二月壬戌所載賈詡、華歆、王朗任命，並保留同段散騎常侍、侍郎員額、宦人任官限制及金策著令藏於石室等原文；後項未另標日期，不推定其皆發生於壬戌，也不補官制背景、任期或執行結果。',introducedRevision:417 },
   { id:'wei-general-xiahou-dun-dies-220',kind:EVENT_KIND,title:'大將軍夏侯惇薨',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年夏四月記「庚午，大將軍夏侯惇薨」。只記史載月份、干支、官職與死訊，不推測死因、享年、死亡經過、喪葬或繼任安排。',carrier:'夏侯惇與魏廷（史料記事）',description:'記錄延康元年夏四月庚午大將軍夏侯惇去世；遊戲只按 220 年級呈現，不補死因、享年、喪葬或官職繼任，也不建立玩家死亡介入節點。',introducedRevision:418 },
+  { id:'wei-prince-mourns-xiahou-dun-and-sun-sheng-critique-220',kind:EVENT_KIND,title:'裴注記魏王為夏侯惇發哀及孫盛禮議',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年夏四月夏侯惇薨記事下，裴松之注引《魏書》記「王素服幸鄴東城門發哀」；孫盛另評稱依禮天子哭同姓於宗廟門外，認為哭於城門失其所。區分魏書所記發哀與孫盛評論，不裁定禮議，也不替原文未明載的發哀另定月內日期。',carrier:'魏王、夏侯惇與孫盛（裴注所載記事及評論）',description:'記錄裴注所載魏王素服赴鄴東城門發哀，以及孫盛對禮制位置的評論；不把評論當成原典正文，不裁定禮儀正誤或推演政治後果。',sourceDateNote:'原史紀年：《三國志》卷二延康元年夏四月夏侯惇薨記事下，裴注引《魏書》記魏王素服至鄴東城門發哀，孫盛附評；未另標月內日期，遊戲按 220 年級呈現。',introducedRevision:428 },
   { id:'wei-prince-cao-pi-honors-ancestors-and-enfeoffs-cao-rui-220',kind:EVENT_KIND,title:'魏王追尊皇祖太尉與夫人丁氏、封曹叡武德侯',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年五月戊寅記「天子命王追尊皇祖太尉曰太王，夫人丁氏曰太王后，封王子叡為武德侯」。保留原文稱謂與受封記事，不另推定未載親屬姓名、封邑範圍、待遇或後續繼承。',carrier:'漢帝、魏王、魏王子叡與魏廷（史料記事）',description:'記錄五月戊寅詔命所載追尊與受封事項；不模擬完整冊封儀節、封地治理、朝廷權力或玩家勢力狀態。',introducedRevision:419 },
   { id:'fufeng-zheng-gan-wang-zhao-surrender-220',kind:EVENT_KIND,title:'馮翊山賊鄭甘、王照率眾降並封列侯',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年五月記事段記「是月，馮翊山賊鄭甘、王照率衆降，皆封列侯」。保留原文稱謂及「是月」所承五月背景，不推定降附對象、「皆」的涵蓋範圍或未載後續。',carrier:'鄭甘、王照與馮翊眾人（史料記事）',description:'記錄原典所載鄭甘、王照率眾降及封列侯記事；不推測降附對象、人物背景、受封範圍或後續土地與官職變化。',introducedRevision:420 },
   { id:'wei-court-envoys-from-northwest-and-western-regions-220',kind:EVENT_KIND,title:'濊貃、扶餘單于、焉耆、于闐各遣使奉獻',...sameYear(220),precision:YEAR_PRECISION,source:'《三國志》卷二〈魏書·文帝紀〉延康元年三月記事段在己卯任命記事後記「濊貃、扶餘單于、焉耆、于闐王皆各遣使奉獻」。保留原典稱謂及段落脈絡；原文未為遣使另標干支，不把前句己卯套用於本句。',carrier:'原文所列濊貃、扶餘單于、焉耆、于闐王與各自使者（史料記事）',description:'記錄原典所列各方遣使奉獻；不把古稱直接等同現代族群或國界，不推測使者身分、貢物內容、路線、實際外交關係或政治效果。',introducedRevision:421 },
@@ -732,6 +733,7 @@ export const HISTORY_CONTENT: HistoricalNodeContent[] = ([
 ] as HistoricalNodeContent[]).map((content) => content.lateSameYear === undefined && (content.introducedRevision ?? 0) >= DEFAULT_LATE_SAME_YEAR_REVISION ? { ...content, lateSameYear: true } : content);
 /** Sourced Han-calendar dates shown separately from the annual simulation trigger. */
 export const HISTORY_SOURCE_DATE_NOTES: Record<string, string> = {
+  'wei-prince-mourns-xiahou-dun-and-sun-sheng-critique-220': '原史紀年：《三國志》卷二延康元年夏四月夏侯惇薨記事下，裴注引《魏書》記魏王素服至鄴東城門發哀，孫盛附評；未另標月內日期，遊戲按 220 年級呈現。',
   'wei-huo-xing-remonstrance-and-death-220': '原史紀年：《三國志》卷二延康元年六月南征條下，裴注引《魏略》記霍性上疏諫阻及其後被考問而死、魏王悔而追原不及；注文未另標月內日期，遊戲按 220 年級呈現。',
   'raonan-reports-white-pheasant-220': '原史紀年：《三國志》卷二延康元年夏四月丁巳記饒安縣言白雉見；裴注引《魏書》另載賜租、牛酒、大酺與祭祀。保留正文與注文界線，不判定祥瑞真偽，遊戲按 220 年級觸發。',
   'wei-three-front-campaign-and-dongkou-storm-222': '原史紀年：《三國志》卷二〈文帝紀〉另記黃初三年六月治兵、庚午南征，七月軍次譙；《吳主傳》明繫洞口、濡須與南郡多路攻勢於黃武元年秋九月。分清南征啟程與各路攻吳的原文日期，不把六月移作九月戰事起始日；遊戲仍按 222 年級觸發。',
