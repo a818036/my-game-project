@@ -25,6 +25,22 @@ describe('A817 嘉禾三年春正月寬緩逋課詔', () => {
     expect(advanced.eventLedger.filter(event => event.detail.includes(detail))).toHaveLength(1);
   });
 
+  it('A818 區分嘉禾三年 234 年詔令與赤烏三年 240 年農政修城記事', () => {
+    const jiahe = HISTORY_CONTENT.find(item => item.id === id)!;
+    const chiwu = HISTORY_CONTENT.find(item => item.id === 'wu-agriculture-relief-and-fortifications-240')!;
+    expect(jiahe).toMatchObject({ startYear: 234, endYear: 234 });
+    expect(jiahe.source).toContain('嘉禾三年春正月');
+    expect(jiahe.source).toContain('其寬諸逋，勿復督課');
+    expect(HISTORY_SOURCE_DATE_NOTES[id]).toContain('嘉禾三年春正月');
+    expect(chiwu).toMatchObject({ startYear: 240, endYear: 240 });
+    expect(chiwu.retired).toBeFalsy();
+    expect(chiwu.source).toContain('赤烏三年');
+    expect(chiwu.source).toContain('夏四月詔諸郡縣修治城郭');
+    expect(chiwu.source).toContain('冬十一月民饑，詔開倉廩');
+    expect(HISTORY_SOURCE_DATE_NOTES[chiwu.id]).toContain('赤烏三年');
+    expect(jiahe.id).not.toBe(chiwu.id);
+  });
+
   it('v437 遷移保留事件帳前綴、未到年份可觸發且不回補已過年份', () => {
     const old = createPhase4Model(233, 1, [], 'phase4-scenario-437');
     const prefix = structuredClone(old.eventLedger);
