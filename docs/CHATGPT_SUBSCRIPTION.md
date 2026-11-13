@@ -20,7 +20,7 @@ npm.cmd run dev
 
 開啟 Vite 顯示的網址，展開「AI 連線設定」：
 
-1. 按 **Continue with ChatGPT**，再按「開啟 OpenAI 官方登入頁面」。
+1. 按「使用 ChatGPT 帳戶登入」，再按「開啟 OpenAI 官方登入頁面」。
 2. 在官方頁面自行登入、確認方案使用授權。不要將密碼、授權碼或金鑰貼給任何開發工具。
 3. 返回遊戲，按「重新整理連線」，確認已登入且訂閱已授權。
 4. 按「取得可用模型」，選擇帳戶實際提供的模型。此步只查模型，不生成故事。
@@ -33,7 +33,7 @@ npm.cmd run dev
 - OpenAI 官方動態登錄、PKCE、state、nonce；ID token 驗證簽章、issuer、audience、到期及身份。
 - access／refresh／ID token 僅保留在代理記憶體，不寫入檔案、遊戲存檔、localStorage、前端或日誌。
 - Windows 的 `%LOCALAPPDATA%/ShenzhouThreeKingdoms/chatgpt-registrations.json` 只保存主機 ID、已核驗帳戶標識、email 與 issued client ID；不是密鑰檔。
-- 關閉代理後需重新登入。使用「重新登入此帳戶」沿用既有登錄；新帳戶使用 Continue with ChatGPT。不同登錄分開管理。
+- 關閉代理後需重新登入。使用「重新登入此帳戶」沿用既有登錄；新帳戶使用「使用 ChatGPT 帳戶登入」。不同登錄分開管理。
 - 登出停止正在進行的推論，嘗試撤銷 refresh token 並清除本機憑證。若無法確認遠端撤銷，畫面會提示到 ChatGPT 設定斷開應用。
 
 ## 額度、錯誤與已知限制
