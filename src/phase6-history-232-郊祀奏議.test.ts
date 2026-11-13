@@ -6,7 +6,7 @@ const detail = '群臣議請郊祀，孫權答辯其地與典據';
 
 describe('A812 群臣議請郊祀及孫權答辯', () => {
   it('分清《江表傳》奏議與裴注《志林》評論，只保留冬季精度', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-433');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-434');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 232, endYear: 232, precision: 'year', introducedRevision: 433 });
     expect(content.source).toContain('嘉禾元年冬十月');

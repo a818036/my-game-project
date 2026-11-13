@@ -5,8 +5,8 @@ const id='era-name-changes-to-yankang-220';
 
 describe('A751 補列 220 年三月改元延康',()=>{
   it('依《後漢書》卷九保留三月註記並按年級觸發',()=>{
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-433');
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(699);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-434');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(700);
     expect(HISTORY_CONTENT.find(item=>item.id===id)).toMatchObject({
       startYear:220,
       endYear:220,
