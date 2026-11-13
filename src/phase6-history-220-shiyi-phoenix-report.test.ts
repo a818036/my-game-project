@@ -6,7 +6,7 @@ const detail = '石邑縣上言鳳皇集';
 
 describe('A803 補列石邑縣八月上報鳳皇集記事', () => {
   it('保留八月日期與地方上報語氣，不把祥瑞推定為已核實事實', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-430');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-431');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 424 });
     expect(content.source).toContain('延康元年八月記「石邑縣言鳳皇集」');
