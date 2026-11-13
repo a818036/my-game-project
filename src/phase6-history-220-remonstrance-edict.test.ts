@@ -5,7 +5,7 @@ const id = 'wei-cao-pi-orders-official-remonstrance-220';
 
 describe('A792 延康元年秋七月魏王令百官盡規諫記事', () => {
   it('保留詔令日期與職責原文，不推定實際執行或政務效果', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-417');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-418');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 220, endYear: 220, precision: 'year', introducedRevision: 413 });
     expect(content.source).toContain('秋七月庚辰');

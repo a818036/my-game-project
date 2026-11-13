@@ -6,8 +6,8 @@ const persons:PersonRef[]=[];
 
 describe('A740 補列 210 年建安十五年日食記事',()=>{
   it('依原典記錄春二月乙巳朔日食，保留年級精度',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(684);
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-417');
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(685);
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-418');
     const content=HISTORY_CONTENT.find(item=>item.id===id);
     expect(content).toMatchObject({kind:'event',startYear:210,endYear:210,precision:'year',introducedRevision:363});
     expect(content?.source).toContain('建安十五年春二月乙巳朔');
