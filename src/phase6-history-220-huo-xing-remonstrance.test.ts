@@ -6,7 +6,7 @@ const detail = '霍性諫南征';
 
 describe('A806 裴注所載霍性諫南征後遇害', () => {
   it('保留裴注引《魏略》的來源層次與年級精度', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-432');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-433');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 427 });
     expect(content.source).toContain('裴松之注引《魏略》');
