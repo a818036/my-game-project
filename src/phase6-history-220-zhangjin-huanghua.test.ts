@@ -6,7 +6,7 @@ const detail = '酒泉黃華、張掖張進起事與蘇則討斬張進';
 
 describe('A802 補列酒泉黃華、張掖張進起事及蘇則討伐記事', () => {
   it('保留起事、討斬、降附原句及未繫月份界線', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-428');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-429');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 423 });
     expect(content.source).toContain('酒泉黃華、張掖張進等各執太守以叛');

@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(445);
+    expect(withinCatalogYears).toHaveLength(446);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -221,6 +221,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'era-name-changes-to-yankang-220': ['建安二十五年三月', '改元延康'],
       'wei-huo-xing-remonstrance-and-death-220': ['延康元年六月南征記事下', '霍性上疏諫阻出兵', '霍性竟死', '魏王悔而追原不及'],
       'wei-prince-mourns-xiahou-dun-and-sun-sheng-critique-220': ['延康元年夏四月夏侯惇薨記事下', '王素服幸鄴東城門發哀', '孫盛另評'],
+      'wei-appoints-deceased-officials-sons-as-langzhong-220': ['延康元年記事下', '丁亥令', '毛玠', '拜郎中'],
       'wei-cao-pi-southern-expedition-220': ['延康元年六月', '辛亥，治兵於東郊', '庚午，遂南征'],
       'wei-cao-pi-orders-official-remonstrance-220': ['延康元年秋七月庚辰', '百官有司', '以職盡規諫', '將率陳軍法'],
       'wei-court-envoys-and-submissions-220': ['孫權遣使奉獻', '蜀將孟達率衆降', '武都氐王楊僕率種人內附', '原文未在此處詳記使者姓名'],
@@ -333,7 +334,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wu-abolishes-dongan-commandery-228': ['黃武七年三月', '罷東安郡'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(230);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(231);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -756,6 +757,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wei-huo-xing-remonstrance-and-death-220',
       'raonan-reports-white-pheasant-220',
       'wei-prince-mourns-xiahou-dun-and-sun-sheng-critique-220',
+      'wei-appoints-deceased-officials-sons-as-langzhong-220',
       'cao-pi-arrives-qiao-banquet-tax-remission-220',
       'wei-zhangjin-huanghua-rebellion-suzhe-response-220',
       'shiyi-county-reports-phoenix-220',
@@ -807,7 +809,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(230);
-    expect(uniqueNotedEvents.size).toBe(557);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(231);
+    expect(uniqueNotedEvents.size).toBe(558);
   });
 });
