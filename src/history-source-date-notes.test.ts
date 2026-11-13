@@ -87,7 +87,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       && item.id !== 'sun-quan-inferred-birth-182',
     );
     const withinCatalogYears = indexedNodes.filter((event) => event.startYear >= 183 && event.endYear <= 280);
-    expect(withinCatalogYears).toHaveLength(428);
+    expect(withinCatalogYears).toHaveLength(429);
     expect(withinCatalogYears.every((event) => event.precision === 'year' && Boolean(event.source))).toBe(true);
     const coveredYears = new Set<number>();
     for (const event of withinCatalogYears) {
@@ -219,6 +219,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'han-river-flood-219': ['建安二十四年八月', '漢水溢'],
       'solar-eclipse-jianan-25-220': ['建安二十五年二月丁未朔', '日有食之'],
       'era-name-changes-to-yankang-220': ['建安二十五年三月', '改元延康'],
+      'wei-cao-pi-southern-expedition-220': ['延康元年六月', '辛亥，治兵於東郊', '庚午，遂南征'],
       'wei-han-transition-220': ['建安二十五年冬十月乙卯', '皇帝遜位', '黃初元年十一月癸酉', '山陽公', '行漢正朔', '四皇子'],
       'wu-shu-alliance-partition-229': ['黃龍元年六月蜀使陳震來賀孫權踐位', '沒有提供盟約簽訂月日'],
       'wu-chancellor-succession-225': ['黃武四年夏五月丞相孫邵卒', '六月以太常顧雍為丞相'],
@@ -316,7 +317,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'wu-abolishes-dongan-commandery-228': ['黃武七年三月', '罷東安郡'],
     };
 
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(213);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(214);
     expect(Object.keys(HISTORY_SOURCE_DATE_NOTES).sort()).toEqual(Object.keys(evidence).sort());
     for (const [id, sourcePhrases] of Object.entries(evidence)) {
       const content = HISTORY_CONTENT.find((item) => item.id === id);
@@ -783,7 +784,7 @@ describe('原典日期註記與遊戲日期精度分離', () => {
       'cao-zhen-expedition-against-shu-230',
     ]);
     const uniqueNotedEvents = new Set([...Object.keys(HISTORY_SOURCE_DATE_NOTES), ...inlineNotes]);
-    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(213);
-    expect(uniqueNotedEvents.size).toBe(540);
+    expect(Object.keys(HISTORY_SOURCE_DATE_NOTES)).toHaveLength(214);
+    expect(uniqueNotedEvents.size).toBe(541);
   });
 });
