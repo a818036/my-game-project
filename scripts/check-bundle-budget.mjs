@@ -34,7 +34,7 @@ if(initial.length===1){
       .reduce((total,size)=>total+size,0);
     // Keep at least 1 KB of incremental allowance; this guards static size only, not device performance.
     // Source-backed historical additions increment this allowance while preserving the 1 KB reserve.
-    const limit=1_050_000;
+    const limit=1_052_000;
     const status=bytes<limit?'通過':'超出';
     console.log(`${status}：首頁初始 JavaScript 靜態相依總量 ${bytes.toLocaleString('en-US')}／${limit.toLocaleString('en-US')} bytes（各檔分別 gzip ${gzipBytes.toLocaleString('en-US')} bytes；${closure.length} 個檔案）`);
     if(bytes>=limit)failed=true;

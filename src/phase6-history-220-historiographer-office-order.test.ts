@@ -6,7 +6,7 @@ const detail = '裴注所載命史官修重黎羲和之職';
 
 describe('A810 裴注所載命史官修重黎羲和之職', () => {
   it('區分裴注所載命令與裴松之按語，保留丙戌且不推定施行結果', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-436');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-437');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 431 });
     expect(content.source).toContain('裴松之注引《魏書》');

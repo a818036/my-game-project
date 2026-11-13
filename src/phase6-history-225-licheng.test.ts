@@ -5,7 +5,7 @@ const id = 'li-cheng-revolt-pacified-225';
 
 describe('A787 黃初六年六月利成郡兵起事及討平', () => {
   it('依原文記錄起事、討平與赦免，不補戰況及個案', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-436');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-437');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ startYear: 225, endYear: 225, precision: 'year', introducedRevision: 408 });
     expect(content.source).toContain('六月');

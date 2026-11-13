@@ -6,7 +6,7 @@ const persons:PersonRef[]=[];
 
 describe('A735 補列 205 年建安十年記事',()=>{
   it('記錄張燕歸降與朝廷賜百官金帛，不延伸未載結果',()=>{
-    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(702);
+    expect(HISTORY_CONTENT.filter(item=>item.kind==='event'&&!item.retired)).toHaveLength(703);
     for(const id of ids){
       const content=HISTORY_CONTENT.find(item=>item.id===id);
       expect(content).toMatchObject({kind:'event',startYear:205,endYear:205,precision:'year',introducedRevision:358});

@@ -6,7 +6,7 @@ const detail = '譙縣再報黃龍、殷登以昔言相驗';
 
 describe('A804 補列譙縣三月黃龍記事及殷登言', () => {
   it('保留三月註記、記事與注文界線，不把祥瑞傳聞寫成實證', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-436');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-437');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 425 });
     expect(content.source).toContain('延康元年條承前載熹平五年黃龍見譙');
