@@ -6,7 +6,7 @@ const detail = '魏王追尊皇祖太尉與夫人丁氏、封曹叡武德侯';
 
 describe('A798 補列延康元年五月追尊與曹叡受封記事', () => {
   it('保留五月戊寅原文稱謂與記事範圍，不推定親屬姓名或封邑', () => {
-    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-426');
+    expect(PHASE4_CONTENT_VERSION).toBe('phase4-scenario-427');
     const content = HISTORY_CONTENT.find(item => item.id === id)!;
     expect(content).toMatchObject({ kind: 'event', startYear: 220, endYear: 220, precision: 'year', introducedRevision: 419 });
     expect(content.source).toContain('延康元年五月戊寅');
