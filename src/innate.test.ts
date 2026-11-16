@@ -373,7 +373,7 @@ describe('v1.10 天生技可重播行為',()=>{
 
   it('正式能力清冊包含手冊全部能力；未支援者明確拒絕，不產生成功事件',()=>{
     const state=world();expect(OFFICIAL_ABILITIES.length).toBe(46);
-    expect(()=>applyInnateAction(state.innate!,{type:'UsePower',ability:'天雷破城',targetIds:['example-clerk'],excluded:[],intensity:3,instruction:'破城'},0,scene,state.phase2!)).toThrow('尚未實作');
+    expect(()=>applyInnateAction(state.innate!,{type:'UsePower',ability:'天雷破城',targetIds:['example-clerk'],excluded:[],intensity:3,instruction:'破城'},0,scene,state.phase2!)).toThrow('對應專屬操作台');
   });
 
   it('天生技操作以 v3 事件保存並可完整重播',()=>{
