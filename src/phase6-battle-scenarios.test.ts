@@ -1,0 +1,101 @@
+import {describe,expect,it} from 'vitest';
+import {applyPhase4Action,createPhase4Model} from './phase4';
+import {battleScenarioOptions,createBattleScenario,type BattleScenarioId} from './battle-scenario-examples';
+import {isBattleScenarioRevisionCurrent} from './battle-scenario-safety';
+import {computeBattleVisibility} from './battle-geometry';
+
+const people=[{id:'protagonist',name:'主角',alive:true,location:'汝南郡',office:''}];
+
+describe('A291 多類戰役場景的可驗證敘事資料',()=>{
+  it('提供渡口、城門、山道撤退三種可選且參照完整的示例場景',()=>{
+    const options=battleScenarioOptions();
+    expect(options.map(option=>option.id)).toEqual(['river-ford','city-gate','mountain-retreat']);
+    for(const option of options){
+      const scenario=createBattleScenario(option.id as BattleScenarioId);
+      const started=applyPhase4Action(createPhase4Model(184,1,people),{type:'StartBattle',id:`scenario-${scenario.id}`,location:scenario.location,units:scenario.units,protagonistPresent:true,scene:scenario.scene},people);
+      expect(started.battle?.scene?.narrativeContext?.tacticalObjectives.length).toBeGreaterThan(0);
+      expect(started.battle?.scene?.narrativeContext?.aftermathLimits.length).toBeGreaterThan(0);
+      expect(started.battle?.scene?.observers.length).toBeGreaterThanOrEqual(2);
+      expect(started.battle?.scene?.potentialChains.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('城門與山道的已列因果只改變場景／士氣，不會憑空增加傷亡',()=>{
+    for(const id of ['city-gate','mountain-retreat'] as const){
+      const scenario=createBattleScenario(id),started=applyPhase4Action(createPhase4Model(184,1,people),{type:'StartBattle',id:`cause-${id}`,location:scenario.location,units:scenario.units,protagonistPresent:true,scene:scenario.scene},people);
+      const sourceId=scenario.scene.potentialChains[0]!.fromObjectId,source=scenario.scene.objects.find(object=>object.id===sourceId)!;
+      const resolved=applyPhase4Action(started,{type:'ResolveBattleImpact',targetObjectId:sourceId,force:100},people);
+      expect(resolved.battle?.scene?.settledChainIds?.length).toBeGreaterThan(0);
+      expect(resolved.battle?.units.map(unit=>({killed:unit.killed,wounded:unit.wounded,routed:unit.routed}))).toEqual(started.battle?.units.map(unit=>({killed:unit.killed,wounded:unit.wounded,routed:unit.routed})));
+      expect(resolved.battle?.scene?.objects.find(object=>object.id===sourceId)?.destroyed).toBe(true);
+      expect(resolved.battle?.logs.some(log=>log.includes(source.label))).toBe(true);
+    }
+  });
+
+  it('A469 逐段驗證三個示例完整可達的因果鏈與傷亡界線',()=>{
+    const expectations={
+      'river-ford':{firstCascade:['platform-rope','rope-barrier','barrier-shield-rank'],blockedSource:undefined,finalMorale:57,finalObject:{id:'blue-shield-rank',integrity:16}},
+      'city-gate':{firstCascade:['ram-beam','beam-leaf'],blockedSource:'gate-leaf',finalMorale:60,finalObject:{id:'inner-barrier',integrity:2}},
+      'mountain-retreat':{firstCascade:['cart-rocks','rocks-road'],blockedSource:'narrow-road',finalMorale:59,finalObject:{id:'rear-rank',integrity:18}},
+    } as const;
+
+    for(const [id,expected] of Object.entries(expectations) as [BattleScenarioId,typeof expectations[BattleScenarioId]][]){
+      const scenario=createBattleScenario(id),started=applyPhase4Action(createPhase4Model(184,1,people),{type:'StartBattle',id:`a469-${id}`,location:scenario.location,units:scenario.units,protagonistPresent:true,scene:scenario.scene},people);
+      const firstSourceId=scenario.scene.potentialChains[0]!.fromObjectId;
+      const notBroken=applyPhase4Action(started,{type:'ResolveBattleImpact',targetObjectId:firstSourceId,force:1},people);
+      expect(notBroken.battle?.scene?.settledChainIds??[]).toEqual([]);
+
+      const broken=applyPhase4Action(notBroken,{type:'ResolveBattleImpact',targetObjectId:firstSourceId,force:100},people);
+      expect(broken.battle?.scene?.settledChainIds).toEqual(expected.firstCascade);
+      expect(broken.battle?.units.map(unit=>({killed:unit.killed,wounded:unit.wounded,routed:unit.routed}))).toEqual(started.battle?.units.map(unit=>({killed:unit.killed,wounded:unit.wounded,routed:unit.routed})));
+
+      const completed=expected.blockedSource
+        ? applyPhase4Action(broken,{type:'ResolveBattleImpact',targetObjectId:expected.blockedSource,force:100},people)
+        : broken;
+      expect(completed.battle?.scene?.settledChainIds).toEqual(scenario.scene.potentialChains.map(chain=>chain.id));
+      expect(completed.battle?.units.every(unit=>unit.killed===0&&unit.wounded===0&&unit.routed===0)).toBe(true);
+      expect(completed.battle?.units[0]?.morale).toBe(expected.finalMorale);
+      expect(completed.battle?.scene?.objects.find(object=>object.id===expected.finalObject.id)).toMatchObject(expected.finalObject);
+    }
+  });
+
+  it('A470 三個示例的觀察位置都有幾何可見目標，且呈現不同視野',()=>{
+    for(const id of ['river-ford','city-gate','mountain-retreat'] as const){
+      const scenario=createBattleScenario(id);
+      const visibleByObserver=scenario.scene.observers.map(observer=>{
+        const result=computeBattleVisibility(scenario.scene,observer,scenario.units);
+        expect(result,`${id}/${observer.id} 應有座標與視距`).not.toBeNull();
+        const visible=result!.filter(item=>item.visible).map(item=>item.targetId);
+        expect(visible,`${id}/${observer.id} 至少看見一個目標`).not.toHaveLength(0);
+        return visible;
+      });
+      expect(visibleByObserver[0],`${id} 不同觀察者的目標集合應不同`).not.toEqual(visibleByObserver[1]);
+    }
+
+    const river=createBattleScenario('river-ford');
+    const rearView=computeBattleVisibility(river.scene,river.scene.observers[1]!,river.units)!;
+    expect(rearView.find(item=>item.targetId==='object:crossbow-platform')?.visible).toBe(true);
+    expect(rearView.find(item=>item.targetId==='object:tether-rope')?.visible).toBe(true);
+    expect(rearView.find(item=>item.targetId==='object:refuse-barrier')).toMatchObject({visible:false,reason:'beyond-range'});
+    expect(rearView.find(item=>item.targetId==='object:blue-shield-rank')?.visible).toBe(false);
+  });
+
+  it('拒絕過長或空白的敘事目標與後效限制',()=>{
+    const scenario=createBattleScenario('city-gate');
+    for(const narrativeContext of [
+      {...scenario.scene.narrativeContext!,tacticalObjectives:[' ']},
+      {...scenario.scene.narrativeContext!,aftermathLimits:['x'.repeat(301)]},
+      {...scenario.scene.narrativeContext!,confirmedConsequences:Array.from({length:9},()=> '已確認')},
+    ])expect(()=>applyPhase4Action(createPhase4Model(184,1,people),{type:'StartBattle',id:'invalid-context',location:scenario.location,units:scenario.units,protagonistPresent:false,scene:{...scenario.scene,narrativeContext}},people)).toThrow('戰場敘事事實與限制無效');
+  });
+});
+
+describe('A292 動態載入戰役資料的世界線版本檢查',()=>{
+  it('只有來源世界線與 revision 都未變時才允許派發',()=>{
+    const origin={worldlineId:'line-a',revision:12};
+    expect(isBattleScenarioRevisionCurrent(origin,{...origin})).toBe(true);
+    expect(isBattleScenarioRevisionCurrent(origin,{worldlineId:'line-b',revision:12})).toBe(false);
+    expect(isBattleScenarioRevisionCurrent(origin,{worldlineId:'line-a',revision:13})).toBe(false);
+    expect(isBattleScenarioRevisionCurrent(origin,null)).toBe(false);
+  });
+});

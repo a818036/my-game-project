@@ -1,0 +1,743 @@
+// @vitest-environment jsdom
+import {act,createElement} from 'react';
+import {createRoot} from 'react-dom/client';
+import axe from 'axe-core';
+import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import {activateWorldline,commitWorldline,loadWorkspace,type SaveFile} from '../storage';
+import {createOpeningFacts,dispatch,ENGINE_VERSION} from '../engine';
+import {fetchNarration} from '../narration/client';
+import {battleScenarioOptions,createBattleScenario} from '../battle-scenario-examples';
+import {loadBattleScenarioModule} from '../battle-scenario-loader';
+
+Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
+// 開局整合測試會掛載多個面板並執行無障礙掃描；大型測試套件並行時可能超過預設 5 秒。
+vi.setConfig({testTimeout:15_000});
+
+vi.mock('../storage',async(importOriginal)=>{
+  const actual=await importOriginal<typeof import('../storage')>();
+  return {...actual,activateWorldline:vi.fn(),commitWorldline:vi.fn(),loadWorkspace:vi.fn()};
+});
+vi.mock('./ChatGptConnection',()=>({ChatGptConnection:()=>null}));
+vi.mock('../narration/client',async(importOriginal)=>{
+  const actual=await importOriginal<typeof import('../narration/client')>();
+  return {...actual,fetchNarration:vi.fn()};
+});
+vi.mock('../battle-scenario-loader',()=>({loadBattleScenarioModule:vi.fn()}));
+vi.mock('./HistoricalGeographyRegisters',async()=>{
+  const {createElement,useState}=await import('react');
+  return {HistoricalGeographyRegisters:()=>{
+    const [query,setQuery]=useState('');
+    return createElement('div',{className:'county-register-search'},[
+      createElement('label',{key:'label',htmlFor:'county-register-search'},'搜尋郡縣名目'),
+      createElement('input',{key:'input',id:'county-register-search',type:'search',value:query,onChange:(event:{target:{value:string}})=>setQuery(event.target.value)}),
+      query&&createElement('section',{key:'result',className:'county-search-result'},createElement('h3',null,`豫州・${query}`)),
+    ]);
+  }};
+});
+
+import App from './App';
+
+const emptyWorkspace={saves:[],profile:{regions:[],surnames:[],activeWorldlineId:null}};
+
+function visibleText(node:Node):string{
+  if(node instanceof Element&&(node.hasAttribute('hidden')||node.getAttribute('aria-hidden')==='true'))return '';
+  if(node.nodeType===Node.TEXT_NODE)return node.textContent??'';
+  return [...node.childNodes].map(visibleText).join(' ');
+}
+
+function hasReferencedName(element:Element,root:ParentNode):boolean{
+  const label=element.getAttribute('aria-label')?.trim();
+  if(label)return true;
+  const ids=element.getAttribute('aria-labelledby')?.trim().split(/\s+/).filter(Boolean)??[];
+  return ids.length>0&&ids.every(id=>{
+    const target=[...root.querySelectorAll<HTMLElement>('[id]')].find(candidate=>candidate.id===id);
+    return !!target&&!!target.textContent?.trim();
+  });
+}
+
+function hasControlName(control:HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement,root:ParentNode):boolean{
+  return [...(control.labels??[])].some(label=>!!visibleText(label).trim())||hasReferencedName(control,root);
+}
+
+function hasButtonName(button:HTMLButtonElement,root:ParentNode):boolean{
+  return !!visibleText(button).trim()||hasReferencedName(button,root);
+}
+
+function invalidAriaIdReferences(root:ParentNode):string[]{
+  const attributes=['aria-labelledby','aria-describedby','aria-controls','aria-owns','aria-details','aria-errormessage'];
+  return [...root.querySelectorAll<HTMLElement>(attributes.map(attribute=>`[${attribute}]`).join(','))].flatMap(element=>attributes.flatMap(attribute=>{
+    const ids=element.getAttribute(attribute)?.trim().split(/\s+/).filter(Boolean)??[];
+    return ids.filter(id=>![...root.querySelectorAll<HTMLElement>('[id]')].some(target=>target.id===id)).map(id=>`${element.tagName.toLowerCase()}[${attribute}="${id}"]`);
+  }));
+}
+
+describe('開局存檔載入提示',()=>{
+  let host:HTMLDivElement;
+  let root:ReturnType<typeof createRoot>;
+
+  beforeEach(()=>{
+    host=document.createElement('div');document.body.append(host);root=createRoot(host);
+    vi.mocked(loadBattleScenarioModule).mockReset().mockResolvedValue({battleScenarioOptions,createBattleScenario});
+  });
+  afterEach(async()=>{
+    await act(async()=>root.unmount());
+    host.remove();
+  });
+
+  it('A362 名稱抽查排除隱藏裝飾文字並拒絕無效的 ARIA 參照',()=>{
+    const button=document.createElement('button');
+    const icon=document.createElement('span');
+    icon.setAttribute('aria-hidden','true');
+    icon.textContent='›';
+    button.append(icon);
+    host.append(button);
+    expect(hasButtonName(button,host)).toBe(false);
+
+    const field=document.createElement('input');
+    field.setAttribute('aria-labelledby','missing-name');
+    host.append(field);
+    expect(hasControlName(field,host)).toBe(false);
+    expect(invalidAriaIdReferences(host)).toEqual(['input[aria-labelledby="missing-name"]']);
+
+    const label=document.createElement('label');
+    label.htmlFor='named-field';
+    label.textContent='有效欄位名稱';
+    field.id='named-field';
+    field.removeAttribute('aria-labelledby');
+    host.append(label);
+    expect(hasControlName(field,host)).toBe(true);
+    expect(invalidAriaIdReferences(host)).toEqual([]);
+  });
+
+  it('IndexedDB 載入失敗時，將錯誤顯示在出生確認畫面並以 alert 播報',async()=>{
+    vi.mocked(loadWorkspace).mockRejectedValueOnce(new DOMException('The operation is insecure.', 'SecurityError'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    const alert=host.querySelector('[role="alert"]');
+    expect(alert?.textContent).toBe('無法讀取瀏覽器存檔；請確認 IndexedDB 可用。');
+    expect(host.querySelector('#start-content')?.contains(alert)).toBe(true);
+    expect(host.querySelector('summary')?.textContent).toBe('查看錯誤詳情');
+    expect(host.querySelector('.notice code')?.textContent).toBe('SecurityError: The operation is insecure.');
+  });
+
+  it('暫時讀取失敗後重試成功，載入世界線並清除錯誤',async()=>{
+    type Workspace=Awaited<ReturnType<typeof loadWorkspace>>;
+    let finishRetry!:(workspace:Workspace)=>void;
+    const retryResult=new Promise<Workspace>(resolve=>{finishRetry=resolve;});
+    vi.mocked(loadWorkspace).mockRejectedValueOnce(new Error('temporary IndexedDB error')).mockReturnValueOnce(retryResult);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    expect(host.querySelector('[role="alert"]')).not.toBeNull();
+    const retry=host.querySelector<HTMLButtonElement>('.notice button');
+    expect(retry?.textContent).toBe('重新讀取存檔');
+    await act(async()=>{retry?.click();});
+    expect(retry?.disabled).toBe(true);
+    expect(retry?.textContent).toBe('正在重新讀取…');
+    await act(async()=>{finishRetry(emptyWorkspace);await retryResult;});
+    expect(loadWorkspace).toHaveBeenCalledTimes(2);
+    expect(host.querySelector('[role="alert"]')).toBeNull();
+    expect(host.querySelector('#start-content')).not.toBeNull();
+  });
+
+  it('重試仍失敗時保留說明並重新啟用重試按鈕',async()=>{
+    vi.mocked(loadWorkspace).mockRejectedValueOnce(new Error('initial IndexedDB error')).mockRejectedValueOnce(new DOMException('Blocked by storage policy.', 'SecurityError'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    const retry=host.querySelector<HTMLButtonElement>('.notice button');
+    await act(async()=>{retry?.click();await Promise.resolve();});
+    expect(host.querySelector('[role="alert"]')?.textContent).toBe('仍無法讀取瀏覽器存檔；請確認 IndexedDB 可用，再試一次。');
+    expect(host.querySelector('.notice code')?.textContent).toBe('SecurityError: Blocked by storage policy.');
+    expect(retry?.disabled).toBe(false);
+    expect(retry?.textContent).toBe('重新讀取存檔');
+  });
+
+  it('載入成功時不顯示存檔錯誤提示',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    expect(host.querySelector('#start-content')).not.toBeNull();
+    expect(host.querySelector<HTMLAnchorElement>('a.skip-link')?.getAttribute('href')).toBe('#start-content');
+    expect(host.querySelector<HTMLElement>('#start-content')?.tabIndex).toBe(-1);
+    expect(host.querySelector('[role="alert"]')).toBeNull();
+  });
+
+  it('A637 瀏覽器封鎖 localStorage 時仍可開局並調整目前分頁字級',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    const getItem=vi.spyOn(Storage.prototype,'getItem').mockImplementation(()=>{throw new DOMException('Blocked by storage policy.','SecurityError');});
+    const setItem=vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{throw new DOMException('Blocked by storage policy.','SecurityError');});
+    try{
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+      expect(host.querySelector('#start-content')).not.toBeNull();
+      expect(document.documentElement.style.getPropertyValue('--reader-size')).toBe('18px');
+      const sizeControl=host.querySelector<HTMLInputElement>('.reader-control input[type="range"]');
+      expect(sizeControl).not.toBeNull();
+      const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+      await act(async()=>{setValue.call(sizeControl,'23');sizeControl!.dispatchEvent(new Event('input',{bubbles:true}));sizeControl!.dispatchEvent(new Event('change',{bubbles:true}));});
+      expect(document.documentElement.style.getPropertyValue('--reader-size')).toBe('23px');
+      expect(host.querySelector('[role="alert"]')).toBeNull();
+      expect(getItem).toHaveBeenCalledWith('shenzhou-font-size');
+      expect(setItem).toHaveBeenCalledWith('shenzhou-font-size','23');
+    }finally{
+      getItem.mockRestore();setItem.mockRestore();
+    }
+  });
+
+  it('A638 localStorage 封鎖不會阻止既有世界線載入',async()=>{
+    const facts=createOpeningFacts(638,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a638-start',expectedRevision:0,type:'StartGame',name:'封鎖儲存續玩測試',seed:638,facts});
+    if(!started.state||!started.event)throw new Error('建立既有世界線測試存檔失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    const getItem=vi.spyOn(Storage.prototype,'getItem').mockImplementation(()=>{throw new DOMException('Blocked by storage policy.','SecurityError');});
+    const setItem=vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{throw new DOMException('Blocked by storage policy.','SecurityError');});
+    try{
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+      expect(host.querySelector('#main-content')).not.toBeNull();
+      expect(host.textContent).toContain('封鎖儲存續玩測試');
+      expect(host.querySelector<HTMLInputElement>('.reader-control.compact input[type="range"]')?.value).toBe('18');
+      expect(host.querySelector('[role="alert"]')).toBeNull();
+      expect(getItem).toHaveBeenCalledWith('shenzhou-font-size');
+      expect(setItem).toHaveBeenCalledWith('shenzhou-font-size','18');
+    }finally{
+      getItem.mockRestore();setItem.mockRestore();
+    }
+  });
+
+  it.each([
+    {saved:'999',expected:'24'},
+    {saved:'10',expected:'16'},
+    {saved:'not-a-number',expected:'18'},
+  ])('A639 將無效或過期字級偏好 $saved 限制為 $expected px',async({saved,expected})=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    const getItem=vi.spyOn(Storage.prototype,'getItem').mockReturnValue(saved);
+    const setItem=vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{});
+    try{
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+      expect(host.querySelector<HTMLInputElement>('.reader-control input[type="range"]')?.value).toBe(expected);
+      expect(document.documentElement.style.getPropertyValue('--reader-size')).toBe(`${expected}px`);
+      expect(setItem).toHaveBeenCalledWith('shenzhou-font-size',expected);
+    }finally{
+      getItem.mockRestore();setItem.mockRestore();
+    }
+  });
+
+  it('開局畫面有單一主要地標、頁面標題及具可讀標籤的表單控制項',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    expect(host.querySelectorAll('main')).toHaveLength(1);
+    expect(host.querySelectorAll('h1')).toHaveLength(1);
+    expect(host.querySelector('h1')?.textContent).toBe('神洲三國');
+    expect(host.querySelector('.eyebrow')?.textContent).toContain('開啟獨立世界線');
+    expect(host.textContent).not.toContain('第六階段開發中原型');
+    const controls=[...host.querySelectorAll<HTMLInputElement>('input:not([type="hidden"]):not([hidden])')];
+    expect(controls.length).toBeGreaterThan(0);
+    expect(controls.every(control=>control.labels?.length)).toBe(true);
+    const buttons=[...host.querySelectorAll<HTMLButtonElement>('button')];
+    expect(buttons.filter(button=>!hasButtonName(button,host)).map(button=>button.outerHTML)).toEqual([]);
+    expect(invalidAriaIdReferences(host)).toEqual([]);
+  });
+
+  it('遊戲畫面保持地標、標題層級及可見控制項名稱',async()=>{
+    const facts=createOpeningFacts(123,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a313-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}景初`,seed:123,facts});
+    if(!started.state||!started.event)throw new Error('建立遊戲畫面測試存檔失敗');
+    const state=started.state;
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({
+      saves:[{format:'shenzhou-save',version:6,worldlineId:state.worldlineId,events:[started.event],state}],
+      profile:{regions:[],surnames:[],activeWorldlineId:state.worldlineId},
+    });
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+
+    expect(host.querySelectorAll('main')).toHaveLength(1);
+    expect(host.querySelectorAll('h1')).toHaveLength(1);
+    expect(host.querySelector('footer')?.textContent).toContain('神洲三國・亂世生涯原型');
+    expect(host.querySelector('footer')?.textContent).not.toContain('第四階段示例原型');
+    expect(host.querySelector('a.skip-link')?.getAttribute('href')).toBe('#main-content');
+    expect(host.querySelector<HTMLElement>('#main-content')?.tabIndex).toBe(-1);
+    expect(host.querySelector('[role="radiogroup"][aria-labelledby="feature-nav-label"]')).not.toBeNull();
+    const headingLevels=[...host.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(heading=>Number(heading.tagName.slice(1)));
+    expect(headingLevels[0]).toBe(1);
+    expect(headingLevels.slice(1).every((level,index)=>level<=headingLevels[index]+1)).toBe(true);
+    const controls=[...host.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('input:not([type="hidden"]):not([hidden]),select,textarea')];
+    expect(controls.filter(control=>!hasControlName(control,host)).map(control=>control.outerHTML)).toEqual([]);
+    const buttons=[...host.querySelectorAll<HTMLButtonElement>('button')];
+    expect(buttons.filter(button=>!hasButtonName(button,host)).map(button=>button.outerHTML)).toEqual([]);
+    const panelRadios=[...host.querySelectorAll<HTMLInputElement>('.feature-nav input[type="radio"][name="game-panel"]')];
+    expect(panelRadios.map(radio=>radio.value)).toEqual(['人物','家產','天生技','軍政','記事']);
+    expect(panelRadios.filter(radio=>radio.checked)).toHaveLength(1);
+    for(const panel of ['家產','天生技','軍政','記事']){
+      const radio=panelRadios.find(input=>input.value===panel);
+      expect(radio,`找不到「${panel}」單選控制項`).toBeDefined();
+      await act(async()=>{radio!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+      const selectedRadios=[...host.querySelectorAll<HTMLInputElement>('.feature-nav input[type="radio"][name="game-panel"]')].filter(input=>input.checked);
+      expect(selectedRadios,`「${panel}」切換後應只有目前選項為選取`).toHaveLength(1);
+      expect(selectedRadios[0]?.value).toBe(panel);
+      const panelControls=[...host.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('input:not([type="hidden"]):not([hidden]),select,textarea')];
+      expect(panelControls.filter(control=>!hasControlName(control,host)).map(control=>control.outerHTML),`「${panel}」分頁有無有效名稱的表單欄位`).toEqual([]);
+      const panelButtons=[...host.querySelectorAll<HTMLButtonElement>('button')];
+      expect(panelButtons.filter(button=>!hasButtonName(button,host)).map(button=>button.outerHTML),`「${panel}」分頁有無有效名稱的按鈕`).toEqual([]);
+      expect(invalidAriaIdReferences(host),`「${panel}」分頁有指向不存在元素的 ARIA ID`).toEqual([]);
+      const levels=[...host.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(heading=>Number(heading.tagName.slice(1)));
+      expect(levels.slice(1).every((level,index)=>level<=levels[index]+1),`「${panel}」分頁標題層級跳階：${levels.join('→')}`).toBe(true);
+      if(panel==='軍政'){
+        const geographyDisclosure=[...host.querySelectorAll('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'));
+        expect(geographyDisclosure).toBeDefined();
+        await act(async()=>{geographyDisclosure!.click();await Promise.resolve();});
+        const search=host.querySelector<HTMLInputElement>('#county-register-search');
+        expect(search).not.toBeNull();
+        const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+        await act(async()=>{setValue.call(search,'豫州');search!.dispatchEvent(new Event('input',{bubbles:true}));await Promise.resolve();});
+        expect(host.querySelector('.county-search-result h3')?.textContent).toContain('豫州');
+        const searchLevels=[...host.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(heading=>Number(heading.tagName.slice(1)));
+        expect(searchLevels.slice(1).every((level,index)=>level<=searchLevels[index]+1),`郡縣搜尋結果標題層級跳階：${searchLevels.join('→')}`).toBe(true);
+        vi.mocked(commitWorldline).mockResolvedValue(undefined);
+        const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+        expect(startBattle).toBeDefined();
+        let finishScenarioLoad!:(module:Awaited<ReturnType<typeof loadBattleScenarioModule>>)=>void;
+        const pendingScenarioLoad=new Promise<Awaited<ReturnType<typeof loadBattleScenarioModule>>>(resolve=>{finishScenarioLoad=resolve;});
+        vi.mocked(loadBattleScenarioModule).mockReturnValueOnce(pendingScenarioLoad);
+        await act(async()=>{startBattle!.click();await Promise.resolve();});
+        expect(host.querySelector('.visually-hidden[role="status"]')?.textContent).toContain('正在載入戰場資料。');
+        expect(startBattle?.disabled).toBe(true);
+        expect(startBattle?.textContent).toContain('正在載入戰場資料…');
+        finishScenarioLoad({battleScenarioOptions,createBattleScenario});
+        await act(async()=>{await new Promise(resolve=>setTimeout(resolve,300));});
+        const battleText=host.textContent??'';
+        expect(battleText).toContain('後陣觀察者在渡口對岸後陣：北岸木弩臺（示例）可見、牽繫木索（示例）可見');
+        expect(battleText).toContain('拒馬（示例）超出視距');
+        expect(battleText).not.toContain('北岸木弩臺（示例）超出視距');
+      }
+    }
+  });
+
+  it('A481 載入戰役資料期間鎖定情境選擇，避免顯示與實際戰場不一致',async()=>{
+    const facts=createOpeningFacts(482,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a481-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}載入選擇驗收`,seed:482,facts});
+    if(!started.state||!started.event)throw new Error('建立戰役選擇測試存檔失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    vi.mocked(commitWorldline).mockResolvedValue(undefined);
+    let finishScenarioLoad!:(module:Awaited<ReturnType<typeof loadBattleScenarioModule>>)=>void;
+    const pendingScenarioLoad=new Promise<Awaited<ReturnType<typeof loadBattleScenarioModule>>>(resolve=>{finishScenarioLoad=resolve;});
+    vi.mocked(loadBattleScenarioModule).mockReturnValueOnce(pendingScenarioLoad);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();});
+    await act(async()=>{[...host.querySelectorAll<HTMLElement>('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();});
+    const scenarioLabel=[...host.querySelectorAll<HTMLLabelElement>('.phase4-panel label')].find(label=>label.textContent?.includes('戰場情境'));
+    const scenario=scenarioLabel?.querySelector<HTMLSelectElement>('select');
+    const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+    expect(scenario?.value).toBe('ford');
+    expect(startBattle).toBeDefined();
+    await act(async()=>{startBattle!.click();await Promise.resolve();});
+    expect(scenario?.disabled).toBe(true);
+    expect(scenario?.value).toBe('ford');
+    finishScenarioLoad({battleScenarioOptions,createBattleScenario});
+    await act(async()=>{await new Promise(resolve=>setTimeout(resolve,300));});
+    expect(host.textContent).toContain('汝南渡口・前線（示例）');
+    expect(host.textContent).not.toContain('山道撤退與補給車（示例）');
+  });
+
+  it('各戰役選項均由共用場景資料建立',async()=>{
+    const facts=createOpeningFacts(474,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a477-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}共用場景`,seed:474,facts});
+    if(!started.state||!started.event)throw new Error('建立戰役選項測試存檔失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(commitWorldline).mockResolvedValue(undefined);
+
+    for(const id of ['city-gate','mountain-retreat'] as const){
+      vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+      await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();});
+      await act(async()=>{[...host.querySelectorAll<HTMLElement>('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();});
+      const scene=createBattleScenario(id);
+      const scenarioLabel=[...host.querySelectorAll<HTMLLabelElement>('.phase4-panel label')].find(label=>label.textContent?.includes('戰場情境'));
+      const selector=scenarioLabel?.querySelector<HTMLSelectElement>('select');
+      expect(selector).not.toBeNull();
+      await act(async()=>{selector!.value=id;selector!.dispatchEvent(new Event('change',{bubbles:true}));});
+      const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+      expect(startBattle).toBeDefined();
+      await act(async()=>{startBattle!.click();await new Promise(resolve=>setTimeout(resolve,300));});
+      const battleText=host.textContent??'';
+      expect(battleText).toContain(scene.location);
+      for(const object of scene.scene.objects)expect(battleText).toContain(object.label);
+      for(const observer of scene.scene.observers)expect(battleText).toContain(`${observer.side}在${observer.location}：`);
+      await act(async()=>root.render(null));
+    }
+  },30000);
+
+  it('戰役資料載入失敗時播報錯誤並保持原存檔',async()=>{
+    const facts=createOpeningFacts(478,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a478-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}載入失敗驗收`,seed:478,facts});
+    if(!started.state||!started.event)throw new Error('建立戰役載入失敗測試存檔失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    vi.mocked(commitWorldline).mockClear();
+    vi.mocked(loadBattleScenarioModule).mockRejectedValueOnce(new Error('隔離測試的動態 chunk 失敗'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();});
+    await act(async()=>{[...host.querySelectorAll<HTMLElement>('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();});
+    const scenarioLabel=[...host.querySelectorAll<HTMLLabelElement>('.phase4-panel label')].find(label=>label.textContent?.includes('戰場情境'));
+    const scenario=scenarioLabel?.querySelector<HTMLSelectElement>('select');
+    expect(scenario).not.toBeNull();
+    await act(async()=>{scenario!.value='city-gate';scenario!.dispatchEvent(new Event('change',{bubbles:true}));});
+    const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+    expect(startBattle).toBeDefined();
+    await act(async()=>{startBattle!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+    expect(host.querySelector('.visually-hidden[role="status"]')?.textContent).toContain('戰役示例資料載入失敗；世界線未變更，請稍後再試。');
+    expect(startBattle?.disabled).toBe(false);
+    expect(startBattle?.textContent).toContain('進入所選戰役情境');
+    expect(scenario?.disabled).toBe(false);
+    expect(scenario?.value).toBe('city-gate');
+    expect(commitWorldline).not.toHaveBeenCalled();
+    expect(host.textContent).toContain('第 0 回合');
+    expect(host.textContent).not.toContain('汝南渡口・前線（示例）');
+  });
+
+  it('載入戰役期間切換世界線時拒絕過期場景',async()=>{
+    const makeSave=(seed:number,name:string)=>{
+      const facts=createOpeningFacts(seed,184,{regions:[],surnames:[]});
+      const started=dispatch(null,{version:ENGINE_VERSION,commandId:`a479-start-${seed}`,expectedRevision:0,type:'StartGame',name,facts,seed});
+      if(!started.state||!started.event)throw new Error('建立過期戰役測試存檔失敗');
+      return {format:'shenzhou-save' as const,version:6 as const,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    };
+    const first=makeSave(479,'載入來源線');
+    const second=makeSave(480,'目標世界線');
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[first,second],profile:{regions:[],surnames:[],activeWorldlineId:first.worldlineId}});
+    vi.mocked(activateWorldline).mockResolvedValue(undefined);
+    vi.mocked(commitWorldline).mockClear();
+    let finishScenarioLoad!:(module:Awaited<ReturnType<typeof loadBattleScenarioModule>>)=>void;
+    const pendingScenarioLoad=new Promise<Awaited<ReturnType<typeof loadBattleScenarioModule>>>(resolve=>{finishScenarioLoad=resolve;});
+    vi.mocked(loadBattleScenarioModule).mockReturnValueOnce(pendingScenarioLoad);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();});
+    await act(async()=>{[...host.querySelectorAll<HTMLElement>('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();});
+    const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+    expect(startBattle).toBeDefined();
+    await act(async()=>{startBattle!.click();await Promise.resolve();});
+    expect(host.querySelector('.visually-hidden[role="status"]')?.textContent).toContain('正在載入戰場資料。');
+    const worldline=host.querySelector<HTMLSelectElement>('select[aria-label="切換世界線"]');
+    await act(async()=>{worldline!.value=second.worldlineId;worldline!.dispatchEvent(new Event('change',{bubbles:true}));await Promise.resolve();});
+    expect(host.querySelector('h1')?.textContent).toContain('目標世界線');
+    finishScenarioLoad({battleScenarioOptions,createBattleScenario});
+    await act(async()=>{await new Promise(resolve=>setTimeout(resolve,0));});
+    expect(host.querySelector('.visually-hidden[role="status"]')?.textContent).toContain('載入戰役期間，世界線狀態已有變更；請重新確認後再開始。');
+    expect(host.querySelector('h1')?.textContent).toContain('目標世界線');
+    expect(commitWorldline).not.toHaveBeenCalled();
+    expect(host.textContent).not.toContain('汝南渡口・前線（示例）');
+    expect(startBattle?.disabled).toBe(false);
+  });
+
+  it('載入戰役期間世界線修訂改變時不提交舊場景',async()=>{
+    const facts=createOpeningFacts(481,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a480-game-ui',expectedRevision:0,type:'StartGame',name:`${facts.surname}修訂驗收`,seed:481,facts});
+    if(!started.state||!started.event)throw new Error('建立修訂競態測試存檔失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    vi.mocked(commitWorldline).mockClear().mockResolvedValue(undefined);
+    let finishScenarioLoad!:(module:Awaited<ReturnType<typeof loadBattleScenarioModule>>)=>void;
+    const pendingScenarioLoad=new Promise<Awaited<ReturnType<typeof loadBattleScenarioModule>>>(resolve=>{finishScenarioLoad=resolve;});
+    vi.mocked(loadBattleScenarioModule).mockReturnValueOnce(pendingScenarioLoad);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();});
+    await act(async()=>{[...host.querySelectorAll<HTMLElement>('summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();});
+    const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+    expect(startBattle).toBeDefined();
+    await act(async()=>{startBattle!.click();await Promise.resolve();});
+    const saveDraft=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('保存草案（不改主權）'));
+    expect(saveDraft?.disabled).toBe(false);
+    await act(async()=>{saveDraft!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+    expect(commitWorldline).toHaveBeenCalledTimes(1);
+    expect(host.textContent).toContain('待決條款');
+    finishScenarioLoad({battleScenarioOptions,createBattleScenario});
+    await act(async()=>{await new Promise(resolve=>setTimeout(resolve,0));});
+    expect(host.querySelector('.visually-hidden[role="status"]')?.textContent).toContain('載入戰役期間，世界線狀態已有變更；請重新確認後再開始。');
+    expect(commitWorldline).toHaveBeenCalledTimes(1);
+    expect(host.textContent).toContain('第 0 回合');
+    expect(host.textContent).not.toContain('汝南渡口・前線（示例）');
+    expect(startBattle?.disabled).toBe(false);
+  });
+
+  it('A588 開局欄位有可及名稱，出生變更會重新要求確認',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    expect(hasControlName(name,host)).toBe(true);
+    expect(host.querySelector('button.primary.wide')).toBeNull();
+
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'鍵盤驗收');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    const confirmation=host.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+    const startButton=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='確認出生並開始')!;
+    expect(hasControlName(confirmation,host)).toBe(true);
+    expect(startButton.disabled).toBe(true);
+    expect(startButton.disabled).toBe(true);
+    await act(async()=>{confirmation.click();});
+    expect(startButton.disabled).toBe(false);
+
+    const birthYear=host.querySelector<HTMLSelectElement>('select')!;
+    await act(async()=>{birthYear.value='183';birthYear.dispatchEvent(new Event('change',{bubbles:true}));});
+    expect(confirmation.checked).toBe(false);
+    expect(startButton.disabled).toBe(true);
+    expect(commitWorldline).not.toHaveBeenCalled();
+  });
+
+  it('A589 成功開局後將鍵盤焦點移至故事與行動',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    vi.mocked(commitWorldline).mockResolvedValueOnce(undefined);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'焦點驗收');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    const startButton=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='確認出生並開始')!;
+    await act(async()=>{startButton.click();await new Promise(resolve=>setTimeout(resolve,0));});
+
+    const main=host.querySelector<HTMLElement>('#main-content');
+    expect(main).not.toBeNull();
+    expect(main?.getAttribute('aria-label')).toBe('故事與行動');
+    expect(document.activeElement).toBe(main);
+  });
+
+  it('A590 開局保存失敗時保留焦點於出生確認按鈕',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    vi.mocked(commitWorldline).mockRejectedValueOnce(new Error('synthetic storage failure'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'保存失敗驗收');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    const startButton=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='確認出生並開始')!;
+    startButton.focus();
+    await act(async()=>{startButton.click();await new Promise(resolve=>setTimeout(resolve,0));});
+
+    expect(document.activeElement).toBe(startButton);
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain('未保存任何變更');
+    expect(host.querySelector('#main-content')).toBeNull();
+  });
+
+  it('A365 axe-core 檢查開局與遊戲五個資料分頁',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    const violations:Array<{panel:string;id:string;impact:string|null;targets:string[];help:string}>=[];
+    const scan=async(panel:string)=>{
+      const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+      for(const violation of results.violations){
+        violations.push({panel,id:violation.id,impact:violation.impact??null,targets:violation.nodes.flatMap(node=>node.target.map(String)),help:violation.help});
+      }
+    };
+    const expandDetails=async()=>act(async()=>{
+      for(const summary of host.querySelectorAll<HTMLElement>('details:not([open]) > summary'))summary.click();
+    });
+    await expandDetails();
+    await scan('開局');
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'無障礙');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    await act(async()=>{host.querySelector<HTMLButtonElement>('button.primary')!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+    await expandDetails();
+    await scan('人物');
+    for(const panel of ['家產','天生技','軍政','記事']){
+      await act(async()=>{host.querySelector<HTMLInputElement>(`.feature-nav input[type="radio"][value="${panel}"]`)!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+      await expandDetails();
+      await scan(panel);
+    }
+
+    await act(async()=>{host.querySelector<HTMLInputElement>('.feature-nav input[type="radio"][value="軍政"]')!.click();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{[...host.querySelectorAll<HTMLElement>('details:not([open]) > summary')].find(summary=>summary.textContent?.includes('歷史、軍政與重大決策'))?.click();await Promise.resolve();});
+    const startBattle=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent?.includes('進入所選戰役情境'));
+    expect(startBattle).toBeDefined();
+    await act(async()=>{startBattle!.click();await new Promise(resolve=>setTimeout(resolve,300));});
+    await expandDetails();
+    await scan('渡口戰役');
+
+    expect(violations,JSON.stringify(violations,null,2)).toEqual([]);
+  },30000);
+
+  it('世界線切換成功與失敗都以狀態角色通知，失敗時保留原線',async()=>{
+    const makeSave=(seed:number,name:string)=>{
+      const facts=createOpeningFacts(seed,184,{regions:[],surnames:[]});
+      const started=dispatch(null,{version:ENGINE_VERSION,commandId:`a355-start-${seed}`,expectedRevision:0,type:'StartGame',name,facts,seed});
+      if(!started.state||!started.event)throw new Error('建立世界線切換測試存檔失敗');
+      return {format:'shenzhou-save' as const,version:6 as const,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    };
+    const first=makeSave(355,'測試甲');
+    const second=makeSave(356,'測試乙');
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[first,second],profile:{regions:[],surnames:[],activeWorldlineId:first.worldlineId}});
+    vi.mocked(activateWorldline).mockResolvedValue(undefined);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    const persistentStatuses=host.querySelectorAll<HTMLElement>('.game-shell > .visually-hidden[role="status"]');
+    const persistentStatus=persistentStatuses[1];
+    expect(persistentStatuses).toHaveLength(3);
+    expect(persistentStatus?.textContent).toBe('');
+
+    const select=host.querySelector<HTMLSelectElement>('select[aria-label="切換世界線"]');
+    expect(select).not.toBeNull();
+    await act(async()=>{select!.value=second.worldlineId;select!.dispatchEvent(new Event('change',{bubbles:true}));await Promise.resolve();});
+    expect(activateWorldline).toHaveBeenCalledWith(second.worldlineId);
+    expect(host.querySelector('h1')?.textContent).toContain('測試乙');
+    expect(host.querySelectorAll('.game-shell > .visually-hidden[role="status"]')[1]).toBe(persistentStatus);
+    expect(persistentStatus?.textContent).toBe('已切換世界線；舊存檔仍保留。');
+    expect(host.querySelector('p.notice')?.textContent).toBe('已切換世界線；舊存檔仍保留。');
+    expect(host.querySelector('p.notice')?.hasAttribute('role')).toBe(false);
+
+    vi.mocked(activateWorldline).mockRejectedValueOnce(new Error('storage unavailable'));
+    await act(async()=>{select!.value=first.worldlineId;select!.dispatchEvent(new Event('change',{bubbles:true}));await Promise.resolve();});
+    expect(host.querySelector('h1')?.textContent).toContain('測試乙');
+    expect(host.querySelector<HTMLSelectElement>('select[aria-label="切換世界線"]')?.value).toBe(second.worldlineId);
+    expect(host.querySelectorAll('.game-shell > .visually-hidden[role="status"]')[1]).toBe(persistentStatus);
+    expect(persistentStatus?.textContent).toBe('切換失敗；所有存檔均保留。');
+    expect(host.querySelector('p.notice')?.textContent).toBe('切換失敗；所有存檔均保留。');
+    expect(host.querySelector('p.notice')?.hasAttribute('role')).toBe(false);
+  });
+
+  it('單一世界線無法驗證時仍顯示開局畫面與原始備份操作',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({...emptyWorkspace,unreadableSaves:[{worldlineId:'broken-world',version:6,reason:'存檔狀態與事件重播結果不一致',raw:{format:'shenzhou-save',version:6,worldlineId:'broken-world',events:[],state:{worldlineId:'broken-world'}} as never}]});
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    expect(host.querySelector('.save-recovery')?.textContent).toContain('原始資料仍保留');
+    expect(host.querySelector('.save-recovery button')?.textContent).toBe('下載原始存檔備份');
+    expect(host.querySelector('input[maxlength="16"]')).not.toBeNull();
+  });
+
+  it('A617 無法驗證的存檔提示與備份操作通過 axe-core 啟用規則',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({...emptyWorkspace,unreadableSaves:[{worldlineId:'broken-world',version:6,reason:'存檔狀態與事件重播結果不一致',raw:{format:'shenzhou-save',version:6,worldlineId:'broken-world',events:[],state:{worldlineId:'broken-world'}} as never}]});
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const recovery=host.querySelector<HTMLElement>('.save-recovery');
+    expect(recovery?.getAttribute('role')).toBe('alert');
+    expect(recovery?.querySelector('h2')?.textContent).toBe('有存檔未能通過驗證');
+    expect(recovery?.querySelector('details code')?.textContent).toBe('存檔狀態與事件重播結果不一致');
+    expect(recovery?.querySelector('button')?.textContent).toBe('下載原始存檔備份');
+
+    const results=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+    expect(results.violations.map(({id,help,nodes})=>({id,help,targets:nodes.flatMap(node=>node.target.map(String))})),JSON.stringify(results.violations,null,2)).toEqual([]);
+  });
+
+  it('A618 匯出無法驗證存檔時保留原始資料並保留復原提示',async()=>{
+    const raw={format:'shenzhou-save',version:6,worldlineId:'broken-world',events:[],state:{worldlineId:'broken-world',unexpected:{value:'原始值'}}};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({...emptyWorkspace,unreadableSaves:[{worldlineId:'broken-world',version:6,reason:'存檔狀態與事件重播結果不一致',raw:raw as never}]});
+    let downloadedBlob:Blob|undefined;
+    const createObjectURL=vi.fn((blob:Blob)=>{downloadedBlob=blob;return 'blob:recovery-test';});
+    const revokeObjectURL=vi.fn();
+    const createDescriptor=Object.getOwnPropertyDescriptor(URL,'createObjectURL');
+    const revokeDescriptor=Object.getOwnPropertyDescriptor(URL,'revokeObjectURL');
+    Object.defineProperty(URL,'createObjectURL',{configurable:true,value:createObjectURL});
+    Object.defineProperty(URL,'revokeObjectURL',{configurable:true,value:revokeObjectURL});
+    const downloadedNames:string[]=[];
+    const click=vi.spyOn(HTMLAnchorElement.prototype,'click').mockImplementation(function(this:HTMLAnchorElement){downloadedNames.push(this.download);});
+    try{
+      await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+      await act(async()=>{host.querySelector<HTMLButtonElement>('.save-recovery button')!.click();});
+      expect(click).toHaveBeenCalledOnce();
+      expect(downloadedNames).toEqual(['shenzhou-broken-world-原始備份.json']);
+      expect(createObjectURL).toHaveBeenCalledOnce();
+      expect(downloadedBlob?.type).toBe('application/json');
+      expect(JSON.parse(await downloadedBlob!.text())).toEqual(raw);
+      expect(host.querySelector('.save-recovery h2')?.textContent).toBe('有存檔未能通過驗證');
+    }finally{
+      if(createDescriptor)Object.defineProperty(URL,'createObjectURL',createDescriptor);else delete (URL as Partial<typeof URL>).createObjectURL;
+      if(revokeDescriptor)Object.defineProperty(URL,'revokeObjectURL',revokeDescriptor);else delete (URL as Partial<typeof URL>).revokeObjectURL;
+      click.mockRestore();
+    }
+  });
+
+  it('開局保存期間在開局畫面播報狀態，保存後更新同一節點',async()=>{
+    let finishSave!:()=>void;
+    const saveResult=new Promise<void>(resolve=>{finishSave=resolve;});
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    vi.mocked(commitWorldline).mockReturnValueOnce(saveResult);
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'安');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    const saveButton=[...host.querySelectorAll('button')].find(button=>button.textContent==='確認出生並開始')!;
+    await act(async()=>{saveButton.click();});
+
+    const status=host.querySelector('[role="status"]');
+    expect(status?.textContent).toBe('正在保存並結算操作。');
+    expect(host.querySelector<HTMLAnchorElement>('a.skip-link')?.getAttribute('href')).toBe('#start-content');
+    expect(host.querySelector<HTMLElement>('#start-content')?.tabIndex).toBe(-1);
+    expect(saveButton.disabled).toBe(true);
+    await act(async()=>{finishSave();await saveResult;});
+    expect(host.querySelector('[role="status"]')?.textContent).toBe('操作已保存。');
+    expect(host.querySelector<HTMLAnchorElement>('a.skip-link')?.getAttribute('href')).toBe('#main-content');
+    expect(host.querySelector<HTMLElement>('#main-content')?.tabIndex).toBe(-1);
+  });
+
+  it('新局保存失敗時不顯示只適用於存檔讀取失敗的重試按鈕',async()=>{
+    vi.mocked(loadWorkspace).mockResolvedValueOnce(emptyWorkspace);
+    vi.mocked(commitWorldline).mockRejectedValueOnce(new Error('disk full'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();});
+    const name=host.querySelector<HTMLInputElement>('input[maxlength="16"]')!;
+    const setValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!;
+    await act(async()=>{setValue.call(name,'安');name.dispatchEvent(new Event('input',{bubbles:true}));});
+    await act(async()=>{host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();});
+    const saveButton=[...host.querySelectorAll('button')].find(button=>button.textContent==='確認出生並開始')!;
+    await act(async()=>{saveButton.click();await Promise.resolve();});
+    expect(host.querySelector('[role="alert"]')?.textContent).toBe('未保存任何變更：disk full');
+    expect(host.querySelector('.notice button')).toBeNull();
+    expect(loadWorkspace).toHaveBeenCalledTimes(1);
+  });
+
+  it('A359 敘事服務失敗時以預先掛載播報區通知並保留畫面錯誤',async()=>{
+    const facts=createOpeningFacts(359,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a359-start',expectedRevision:0,type:'StartGame',name:'播報測試',seed:359,facts});
+    if(!started.event||!started.state)throw new Error('建立敘事錯誤測試世界線失敗');
+    const save={format:'shenzhou-save' as const,version:6 as const,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    vi.mocked(commitWorldline).mockResolvedValue(undefined);
+    vi.mocked(fetchNarration).mockRejectedValueOnce(new Error('敘事服務暫時不可用'));
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>{await new Promise(resolve=>setTimeout(resolve,50));});
+
+    const statusNodes=host.querySelectorAll<HTMLElement>('.game-shell > .visually-hidden[role="status"]');
+    expect(statusNodes).toHaveLength(3);
+    const errorAnnouncer=statusNodes[2];
+    expect(errorAnnouncer.textContent).toBe('');
+    await act(async()=>host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+    await act(async()=>host.querySelector<HTMLButtonElement>('.plan-review button.primary')!.click());
+
+    expect(fetchNarration).toHaveBeenCalledOnce();
+    expect(host.querySelectorAll('.game-shell > .visually-hidden[role="status"]')[2]).toBe(errorAnnouncer);
+    expect(errorAnnouncer.textContent).toBe('敘事服務暫時不可用');
+    expect(host.querySelector('.ai-narrative .notice')?.textContent).toBe('敘事服務暫時不可用');
+    expect(host.querySelector('.ai-narrative .notice')?.hasAttribute('role')).toBe(false);
+  });
+
+  it('A633 首次敘事生成期間可取消敘事且不撤銷已保存行動',async()=>{
+    const facts=createOpeningFacts(633,184,{regions:[],surnames:[]});
+    const started=dispatch(null,{version:ENGINE_VERSION,commandId:'a633-start',expectedRevision:0,type:'StartGame',name:'取消敘事驗收',seed:633,facts});
+    if(!started.event||!started.state)throw new Error('建立取消敘事測試世界線失敗');
+    const save:SaveFile={format:'shenzhou-save',version:6,worldlineId:started.state.worldlineId,events:[started.event],state:started.state};
+    vi.mocked(loadWorkspace).mockResolvedValueOnce({saves:[save],profile:{regions:[],surnames:[],activeWorldlineId:save.worldlineId}});
+    vi.mocked(commitWorldline).mockResolvedValue(undefined);
+    let abortSignal:AbortSignal|undefined;
+    vi.mocked(fetchNarration).mockImplementationOnce((_payload,signal)=>{
+      abortSignal=signal;
+      return new Promise((_resolve,reject)=>signal?.addEventListener('abort',()=>reject(new DOMException('已取消','AbortError')),{once:true}));
+    });
+    await act(async()=>{root.render(createElement(App));await Promise.resolve();await new Promise(resolve=>setTimeout(resolve,0));});
+    await act(async()=>host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+    await act(async()=>host.querySelector<HTMLButtonElement>('button.primary.wide')!.click());
+    await act(async()=>host.querySelector<HTMLButtonElement>('.plan-review button.primary')!.click());
+
+    const cancel=[...host.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='取消敘事（行動已保存）');
+    expect(cancel).toBeDefined();
+    expect(abortSignal?.aborted).toBe(false);
+    const scan=await axe.run(host,{rules:{'color-contrast':{enabled:false}}});
+    expect(scan.violations).toEqual([]);
+    await act(async()=>cancel!.click());
+    await act(async()=>{await new Promise(resolve=>setTimeout(resolve,0));});
+
+    expect(abortSignal?.aborted).toBe(true);
+    expect([...host.querySelectorAll<HTMLButtonElement>('button')].some(button=>button.textContent==='取消敘事（行動已保存）')).toBe(false);
+    expect(host.querySelectorAll('[role="status"]')[0]?.textContent).toBe('敘事取消；行動已保存。');
+    expect(host.textContent).toContain('第 1 回合');
+    expect(commitWorldline).toHaveBeenCalledTimes(1);
+    expect(fetchNarration).toHaveBeenCalledOnce();
+    expect(host.querySelector('[role="alert"]')).toBeNull();
+  });
+});

@@ -21,6 +21,7 @@ export interface Speech { speakerId: string; name: string; label: string; text: 
 export interface SceneRecord { turn: number; location: string; presentIds: string[]; enteredIds: string[]; leftIds: string[]; speeches: Speech[]; }
 export interface NameRequest { id: string; relation: RelationshipKind; role: string; birthYear: number; anchorId: string; }
 export interface Observation { id: string; witnessId: string; turn: number; observation: string; known: string[]; unknown: string[]; }
+export interface DialogueExchange { speakerId:string; speakerName:string; turn:number; playerText:string; npcText:string; }
 export interface Phase2Model {
   version: 2;
   persons: Phase2Person[]; kin: KinEdge[]; relationships: RelationshipRecord[];
@@ -31,6 +32,8 @@ export interface Phase2Model {
   items: Array<{ id: string; item: string; quantity: number; ownerId: string; custodianId: string; locationId: string }>;
   injuries: Injury[]; messages: Message[]; scene: SceneRecord;
   worldUpdates: string[]; pendingNames: NameRequest[]; observations: Observation[];
+  /** Bounded, player-visible conversation continuity. Optional for old event-sourced saves. */
+  dialogueHistory?: DialogueExchange[];
 }
 
 export type Phase2Action =
@@ -48,7 +51,8 @@ export type Phase2Action =
   | { type: 'SendMessage'; id: string; recipientId: string; channel: Message['channel']; text: string; turn: number }
   | { type: 'AddInjury'; injury: Injury }
   | { type: 'TreatInjury'; injuryId: string }
-  | { type: 'RecordObservation'; observation: Observation };
+  | { type: 'RecordObservation'; observation: Observation }
+  | { type:'RecordDialogueExchange'; exchange:DialogueExchange };
 
 const accounts: AccountName[] = ['private', 'family', 'public', 'military', 'sovereign'];
 function blankBalances(): Phase2Model['assetBalances'] {
@@ -218,6 +222,15 @@ export function applyPhase2Action(model: Phase2Model, action: Phase2Action): Pha
       injury.active = false; next.practiceLog.push({ turn: next.scene.turn, focus: '傷勢照護', note: `${injury.label}於玩家確認的處置後記為康復。` }); return next;
     }
     case 'RecordObservation': next.observations.push(action.observation); return next;
+    case 'RecordDialogueExchange': {
+      const exchange=action.exchange,person=next.persons.find(item=>item.id===exchange.speakerId);
+      if(!person||!person.alive||person.name!==exchange.speakerName||!next.scene.presentIds.includes(person.id))throw new Error('對話對象已不在當前場景');
+      if(!Number.isInteger(exchange.turn)||exchange.turn!==next.scene.turn||!exchange.playerText.trim()||exchange.playerText.length>1200||!exchange.npcText.trim()||exchange.npcText.length>1000)throw new Error('對話記憶內容無效');
+      const all=[...(next.dialogueHistory??[]),{...exchange}];
+      const recentPerSpeaker=all.filter((item,index)=>all.slice(index+1).filter(later=>later.speakerId===item.speakerId).length<4);
+      next.dialogueHistory=recentPerSpeaker.slice(-40);
+      return next;
+    }
   }
 }
 

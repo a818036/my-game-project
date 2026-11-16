@@ -8,8 +8,13 @@
     "narration": "node server/index.mjs",
     "narration:chatgpt": "node server/index.mjs --chatgpt",
     "build": "tsc -b && vite build",
+    "check:bundle": "node scripts/check-bundle-budget.mjs",
+    "check:history-links": "node scripts/check-history-links.mjs",
+    "check:preview": "node scripts/check-production-preview.mjs",
     "typecheck": "tsc -b --pretty",
-    "test": "vitest run"
+    "test": "vitest run",
+    "benchmark:history": "node scripts/benchmark-history.mjs",
+    "fixture:ending-reoffer": "node scripts/create-phase6-ending-reoffer-fixture.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
@@ -21,6 +26,7 @@
   "devDependencies": {
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "axe-core": "^4.14.0",
     "fake-indexeddb": "^6.2.6",
     "jsdom": "latest",
     "typescript": "latest",

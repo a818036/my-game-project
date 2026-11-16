@@ -26,7 +26,7 @@ export interface OpeningHistory { regions: string[]; surnames: string[]; }
 export interface Character {
   name: string; birthYear: number; age: number; home: string; surname: string; family: FamilyMember[];
   background: string; health: string; potential: Record<Stat, number>; growth: Record<'study'|'practice'|'social', number>;
-  profile: { rules: typeof RULES_VERSION; skills: typeof SKILLS_VERSION; modernMemory: true; expertise: readonly string[]; personality: readonly string[]; abilitiesStatus: 'catalogued-not-implemented'|'phase-three-partial' };
+  profile: { rules: string; skills: string; modernMemory: true; expertise: readonly string[]; personality: readonly string[]; abilitiesStatus: 'catalogued-not-implemented'|'phase-three-partial' };
   money: number; reputation: number; contacts: string[];
 }
 export interface World { seed: number; worldlineId: string; year: number; month: number; eventCount: number; }
@@ -194,7 +194,7 @@ export function applyEvent(state: GameState | null, event: GameEvent): GameState
   if (!INTENTS.includes(intent) || !event.eventId.startsWith(`${state.worldlineId}:`)) throw new Error('回合事件無效或屬於其他世界線');
   const turn = state.turn + 1, roll = random(state.world.seed, turn * 7 + INTENTS.indexOf(intent));
   let moneyDelta = 0, reputationDelta = 0, title = '', details = '';
-  let character = { ...state.character, growth: { ...state.character.growth }, contacts: [...state.character.contacts] };
+  let character: Character = { ...state.character, growth: { ...state.character.growth }, contacts: [...state.character.contacts] };
   switch (intent) {
     case '耕讀自持': character.growth.study += 1; title = '田畝與書卷'; details = `在${character.home}整理薄田、溫習經書，累積一段學習與家計經驗。`; moneyDelta = roll > .82 ? 4 : 2; break;
     case '訪求人才': { const result = resolvePersonnel(character, state.world.seed, turn, roll); character = result.character; reputationDelta = result.reputationDelta; title = result.title; details = result.details; break; }
